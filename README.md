@@ -1,8 +1,8 @@
-# vite-plugin-html-pages
+# orivo
 
-[![npm version](https://img.shields.io/npm/v/vite-plugin-html-pages.svg)](https://www.npmjs.com/package/vite-plugin-html-pages)
-[![npm downloads](https://img.shields.io/npm/dm/vite-plugin-html-pages.svg)](https://www.npmjs.com/package/vite-plugin-html-pages)
-[![license](https://img.shields.io/npm/l/vite-plugin-html-pages.svg)](LICENSE)
+[![npm version](https://img.shields.io/npm/v/orivo.svg)](https://www.npmjs.com/package/orivo)
+[![npm downloads](https://img.shields.io/npm/dm/orivo.svg)](https://www.npmjs.com/package/orivo)
+[![license](https://img.shields.io/npm/l/orivo.svg)](LICENSE)
 [![vite](https://img.shields.io/badge/vite-plugin-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
 
 **Static site generation for Vite — no framework, no components, no magic.**
@@ -81,7 +81,7 @@ Sometimes you just want to:
 - organize pages in folders
 - run `vite build`
 
-`vite-plugin-html-pages` exists for exactly that. Pages are plain
+`orivo` exists for exactly that. Pages are plain
 functions that return a string of HTML. No runtime ships to the
 browser unless *you* add a script.
 
@@ -90,7 +90,7 @@ browser unless *you* add a script.
 ## Installation
 
 ```bash
-npm install -D vite-plugin-html-pages
+npm install -D orivo
 ```
 
 Requires **Node 18+** and **Vite 8+**.
@@ -98,7 +98,7 @@ Requires **Node 18+** and **Vite 8+**.
 ```js
 // vite.config.js
 import { defineConfig } from "vite"
-import htmlPages from "vite-plugin-html-pages"
+import htmlPages from "orivo"
 
 export default defineConfig({
   plugins: [htmlPages()]
@@ -113,7 +113,7 @@ vite build  # static site in dist/
 Add the generated helper types to your `.gitignore`:
 
 ```
-.vite-plugin-html-pages/
+.orivo/
 ```
 
 ---
@@ -306,7 +306,7 @@ export default ({ data }) => `
 Building 500 pages against the same API? Cache the responses:
 
 ```js
-import { fetchWithCache } from 'vite-plugin-html-pages'
+import { fetchWithCache } from 'orivo'
 
 export async function data({ params }) {
   const res = await fetchWithCache(
@@ -329,7 +329,7 @@ Cache modes:
 
 - **`auto`** (default) — memory in dev, filesystem in production builds
 - **`memory`** — in-process, cleared when the process exits
-- **`fs`** — persisted in `node_modules/.cache/vite-plugin-html-pages/fetch/`
+- **`fs`** — persisted in `node_modules/.cache/orivo/fetch/`
 - **`none`** — always fetch
 
 Only `GET` requests are cached by default (pass a `cacheKey` to cache
@@ -347,7 +347,7 @@ Helper functions give your page modules full type inference:
 
 ```ts
 // src/blog/[slug].ht.ts
-import { definePageModule } from 'vite-plugin-html-pages/page'
+import { definePageModule } from 'orivo/page'
 
 export default definePageModule({
   generateStaticParams: () => [{ slug: 'hello' }],
@@ -363,7 +363,7 @@ from the filename: `[slug]` → `{ slug: string }`, `[...path]` →
 `{ path: string[] }`, `[...path]?` → `{ path?: string[] }`.
 
 Matching type declarations are generated into
-`.vite-plugin-html-pages/types/` whenever the dev server or a build
+`.orivo/types/` whenever the dev server or a build
 runs — add that folder to `.gitignore`.
 
 ---
@@ -523,7 +523,7 @@ htmlPages({
 | Astro | Component-based SSG with its own compiler and islands |
 | Next.js | Full React framework with SSR/ISR |
 | Eleventy | Template-language SSG (Nunjucks, Liquid, ...) |
-| **vite-plugin-html-pages** | **Functions returning HTML, powered by plain Vite** |
+| **orivo** | **Functions returning HTML, powered by plain Vite** |
 
 If you want components, hydration, and a framework — use a framework.
 If you want HTML files out of JavaScript functions with the Vite dev

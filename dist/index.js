@@ -210,7 +210,7 @@ async function removeEmptyDirectories(dir, stopAt) {
   await removeEmptyDirectories(path2.dirname(normalizedDir), normalizedStopAt);
 }
 function getGeneratedTypesRoot(root) {
-  return normalizeFsPath(path2.join(root, ".vite-plugin-html-pages", "types"));
+  return normalizeFsPath(path2.join(root, ".orivo", "types"));
 }
 function getGeneratedHelperPath(args) {
   const pagesRoot = normalizeFsPath(path2.join(args.root, args.pagesDir));
@@ -403,7 +403,7 @@ function formatDevPageError(args) {
 }
 
 // src/constants.ts
-var PLUGIN_NAME = "vite-plugin-html-pages";
+var PLUGIN_NAME = "orivo";
 var VIRTUAL_BUILD_ENTRY_ID = `\0${PLUGIN_NAME}:build-entry`;
 var VIRTUAL_PAGE_HELPER_ID = `${PLUGIN_NAME}/page`;
 var RESOLVED_VIRTUAL_PAGE_HELPER_PREFIX = `\0${PLUGIN_NAME}/page:`;
@@ -666,7 +666,7 @@ import path6 from "path";
 function invalidHtmlReturn(page, value) {
   const type = value === null ? "null" : Array.isArray(value) ? "array" : typeof value;
   return new Error(
-    `[vite-plugin-html-pages] ${page.relativePath}: page render must return a string or a JSX/React renderable value, but received ${type}.`
+    `[orivo] ${page.relativePath}: page render must return a string or a JSX/React renderable value, but received ${type}.`
   );
 }
 function missingDefaultExport(page) {
@@ -719,7 +719,7 @@ async function validateStaticJsxTree(node, ctx) {
       const elementName = getElementName(el.type);
       warnOnce(
         `${ctx.page.routePath}:${elementName}:${key}`,
-        `[vite-plugin-html-pages] ${ctx.page.relativePath ?? ctx.page.routePath}: prop "${key}" on ${elementName} will not be interactive in static TSX/JSX output. Use a client script or future hydration/islands support instead.`,
+        `[orivo] ${ctx.page.relativePath ?? ctx.page.routePath}: prop "${key}" on ${elementName} will not be interactive in static TSX/JSX output. Use a client script or future hydration/islands support instead.`,
         ctx.onWarn
       );
     }
@@ -791,7 +791,7 @@ async function ensureReactAvailable(page) {
     await import("react-dom/server");
   } catch {
     throw new Error(
-      `[vite-plugin-html-pages] ${page.relativePath}: TSX/JSX page rendering requires "react" and "react-dom" to be installed in the consuming app.`
+      `[orivo] ${page.relativePath}: TSX/JSX page rendering requires "react" and "react-dom" to be installed in the consuming app.`
     );
   }
 }
@@ -843,7 +843,7 @@ async function importPageModule(server, url) {
   const environment = server.environments.ssr;
   if (!isRunnableDevEnvironment(environment)) {
     throw new Error(
-      "[vite-plugin-html-pages] The Vite SSR environment is not runnable. A RunnableDevEnvironment is required to evaluate page modules."
+      "[orivo] The Vite SSR environment is not runnable. A RunnableDevEnvironment is required to evaluate page modules."
     );
   }
   const mod = await environment.runner.import(url);
@@ -917,7 +917,7 @@ export {
   defineData,
   defineStaticParams,
   definePageModule
-} from 'vite-plugin-html-pages/page';
+} from 'orivo/page';
 `;
       }
       if (!id.startsWith(RESOLVED_VIRTUAL_PAGE_HELPER_PREFIX)) {
@@ -937,7 +937,7 @@ async function createPageModuleLoader(args) {
   const { mode, root, server, getPages } = args;
   if (mode === "dev") {
     if (!server) {
-      throw new Error("[vite-plugin-html-pages] dev server not available");
+      throw new Error("[orivo] dev server not available");
     }
     return {
       loadModule: async (_entryPath, relativePath) => importPageModule(server, `/${relativePath}`),
@@ -947,7 +947,7 @@ async function createPageModuleLoader(args) {
   }
   if (!getPages) {
     throw new Error(
-      "[vite-plugin-html-pages] getPages is required in build mode"
+      "[orivo] getPages is required in build mode"
     );
   }
   const configMode = args.configMode ?? "production";
@@ -1395,7 +1395,7 @@ async function buildProcessedStaticAssets(args) {
               if (!warnedMissingAssets.has(resolveArgs.path)) {
                 warnedMissingAssets.add(resolveArgs.path);
                 console.warn(
-                  `[vite-plugin-html-pages] \u26A0\uFE0F Missing CSS asset: ${resolveArgs.path}
+                  `[orivo] \u26A0\uFE0F Missing CSS asset: ${resolveArgs.path}
   Looked in:
   - ${fromSrc}
   - ${fromPublic}`
@@ -1676,7 +1676,7 @@ export {
   defineData,
   defineStaticParams,
   definePageModule
-} from 'vite-plugin-html-pages/page';
+} from 'orivo/page';
 `;
       }
       return null;
@@ -1690,7 +1690,7 @@ export {
         loader: isHtTsxFile(normalizedId) ? "tsx" : "jsx",
         format: "esm",
         jsx: "automatic",
-        jsxImportSource: "vite-plugin-html-pages",
+        jsxImportSource: "orivo",
         sourcemap: true,
         sourcefile: normalizedId,
         target: "esnext"
