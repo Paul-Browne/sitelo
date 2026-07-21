@@ -10,7 +10,7 @@ export function invalidHtmlReturn(page: HtPageInfo, value: unknown): Error {
         : typeof value;
 
   return new Error(
-    `[vite-plugin-html-pages] ${page.relativePath}: page render must return a string or a JSX/React renderable value, but received ${type}.`,
+    `[orivo] ${page.relativePath}: page render must return a string or a JSX/React renderable value, but received ${type}.`,
   );
 }
 

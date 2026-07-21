@@ -88,7 +88,7 @@ async function ensureReactAvailable(page: HtPageInfo): Promise<void> {
     await import('react-dom/server');
   } catch {
     throw new Error(
-      `[vite-plugin-html-pages] ${page.relativePath}: TSX/JSX page rendering requires "react" and "react-dom" to be installed in the consuming app.`,
+      `[orivo] ${page.relativePath}: TSX/JSX page rendering requires "react" and "react-dom" to be installed in the consuming app.`,
     );
   }
 }

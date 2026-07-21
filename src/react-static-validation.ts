@@ -57,7 +57,7 @@ type WarnContext = {
   
         warnOnce(
           `${ctx.page.routePath}:${elementName}:${key}`,
-          `[vite-plugin-html-pages] ${ctx.page.relativePath ?? ctx.page.routePath}: prop "${key}" on ${elementName} will not be interactive in static TSX/JSX output. Use a client script or future hydration/islands support instead.`,
+          `[orivo] ${ctx.page.relativePath ?? ctx.page.routePath}: prop "${key}" on ${elementName} will not be interactive in static TSX/JSX output. Use a client script or future hydration/islands support instead.`,
           ctx.onWarn,
         );
       }

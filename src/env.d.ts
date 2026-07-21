@@ -1,4 +1,4 @@
-declare module 'vite-plugin-html-pages/page' {
+declare module 'orivo/page' {
     export type PageParams = Record<string, string | string[] | undefined>;
   
     export type PageContext = {

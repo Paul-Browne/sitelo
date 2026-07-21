@@ -136,7 +136,7 @@ async function listFilesRecursive(dir: string): Promise<string[]> {
   }
 
 export function getGeneratedTypesRoot(root: string): string {
-  return normalizeFsPath(path.join(root, '.vite-plugin-html-pages', 'types'));
+  return normalizeFsPath(path.join(root, '.orivo', 'types'));
 }
 
 export function getGeneratedHelperPath(args: {

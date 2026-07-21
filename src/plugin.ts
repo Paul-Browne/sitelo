@@ -380,7 +380,7 @@ export {
   defineData,
   defineStaticParams,
   definePageModule
-} from 'vite-plugin-html-pages/page';
+} from 'orivo/page';
 `;
       }        
 
@@ -398,7 +398,7 @@ export {
         loader: isHtTsxFile(normalizedId) ? 'tsx' : 'jsx',
         format: 'esm',
         jsx: 'automatic',
-        jsxImportSource: 'vite-plugin-html-pages',
+        jsxImportSource: 'orivo',
         sourcemap: true,
         sourcefile: normalizedId,
         target: 'esnext',

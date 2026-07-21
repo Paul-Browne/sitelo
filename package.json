@@ -1,6 +1,6 @@
 {
-  "name": "vite-plugin-html-pages",
-  "version": "2.1.0",
+  "name": "orivo",
+  "version": "1.0.0",
   "author": "Paul Browne",
   "type": "module",
   "license": "MIT",
@@ -21,13 +21,13 @@
     "dist/**/*"
   ],
   "description": "Minimal static site generation (SSG) for Vite using JavaScript functions that return HTML",
-  "homepage": "https://github.com/paul-browne/vite-plugin-html-pages",
+  "homepage": "https://github.com/paul-browne/orivo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/paul-browne/vite-plugin-html-pages.git"
+    "url": "https://github.com/paul-browne/orivo.git"
   },
   "bugs": {
-    "url": "https://github.com/paul-browne/vite-plugin-html-pages/issues"
+    "url": "https://github.com/paul-browne/orivo/issues"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",

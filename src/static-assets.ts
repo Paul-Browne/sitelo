@@ -173,7 +173,7 @@ export async function buildProcessedStaticAssets(args: {
                 if (!warnedMissingAssets.has(resolveArgs.path)) {
                   warnedMissingAssets.add(resolveArgs.path);
                   console.warn(
-                    `[vite-plugin-html-pages] ⚠️ Missing CSS asset: ${resolveArgs.path}\n` +
+                    `[orivo] ⚠️ Missing CSS asset: ${resolveArgs.path}\n` +
                     `  Looked in:\n` +
                     `  - ${fromSrc}\n` +
                     `  - ${fromPublic}`
