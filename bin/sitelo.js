@@ -8,12 +8,14 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import htmlPages from '../src/index.js';
 import {
   build,
+  createLogger,
   createServer,
   loadConfigFromFile,
   preview,
 } from 'vite';
 
 const PLUGIN_NAME = 'vite-plugin-html-pages';
+const LOG_PREFIX = '[sitelo]';
 const SITELO_CONFIG_FILES = ['sitelo.config.js', 'sitelo.config.mjs'];
 const VERSION = JSON.parse(
   fs.readFileSync(
@@ -262,13 +264,18 @@ async function resolvePluginInjection({ root, configFile, command, mode, debug }
 
 function buildInlineConfig(cli, command) {
   const mode = cli.mode ?? (command === 'build' ? 'production' : 'development');
+  const logLevel = cli.logLevel ?? 'info';
   const inline = {
     root: cli.root,
     configFile: cli.config,
     mode,
-    logLevel: cli.logLevel ?? (cli.debug ? 'info' : undefined),
+    logLevel,
     clearScreen: cli.clearScreen,
     base: cli.base,
+    customLogger: createLogger(logLevel, {
+      prefix: LOG_PREFIX,
+      allowClearScreen: cli.clearScreen !== false,
+    }),
     build: {
       outDir: cli.outDir,
       assetsDir: cli.assetsDir,
