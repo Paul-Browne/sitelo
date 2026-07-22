@@ -1,14 +1,15 @@
 {
   "name": "sitelo",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "author": "Paul Browne",
   "type": "module",
   "license": "MIT",
   "keywords": [
+    "sitelo",
     "vite",
-    "vite-plugin",
-    "vite-plugin-pages",
     "vite-ssg",
+    "vite-plugin-html-pages",
+    "static-site",
     "static-site-generator",
     "ssg",
     "file-based-routing",
@@ -17,10 +18,7 @@
     "static-html",
     "blog-generator"
   ],
-  "files": [
-    "dist/**/*"
-  ],
-  "description": "Minimal static site generation (SSG) for Vite using JavaScript functions that return HTML",
+  "description": "Zero-config static site generation powered by Vite and vite-plugin-html-pages",
   "homepage": "https://github.com/paul-browne/sitelo",
   "repository": {
     "type": "git",
@@ -29,69 +27,49 @@
   "bugs": {
     "url": "https://github.com/paul-browne/sitelo/issues"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
     },
     "./page": {
-      "types": "./dist/page.d.ts",
-      "import": "./dist/page.js"
+      "types": "./src/page.d.ts",
+      "import": "./src/page.js"
     },
     "./types": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/types.js"
+      "types": "./src/types.d.ts",
+      "import": "./src/types.js"
     },
     "./jsx-runtime": {
-      "types": "./dist/jsx-runtime.d.ts",
-      "import": "./dist/jsx-runtime.js"
+      "types": "./src/jsx-runtime.d.ts",
+      "import": "./src/jsx-runtime.js"
     },
     "./jsx-dev-runtime": {
-      "types": "./dist/jsx-dev-runtime.d.ts",
-      "import": "./dist/jsx-dev-runtime.js"
+      "types": "./src/jsx-dev-runtime.d.ts",
+      "import": "./src/jsx-dev-runtime.js"
     }
+  },
+  "files": [
+    "src",
+    "bin"
+  ],
+  "bin": {
+    "sitelo": "./bin/sitelo.js"
   },
   "scripts": {
-    "build": "tsup",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:dev": "vite",
-    "test:build": "vite build",
-    "test:preview": "vite preview"
-  },
-  "peerDependencies": {
-    "react": ">=18",
-    "react-dom": ">=18",
-    "vite": ">=8"
-  },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    }
+    "test": "node --test test/**/*.test.js"
   },
   "dependencies": {
-    "esbuild": "^0.27.5",
-    "fast-glob": "^3.3.3",
-    "p-limit": "^4.0.0",
-    "picocolors": "^1.1.1"
+    "vite": "^8.1.4",
+    "vite-plugin-html-pages": "^2.1.1"
   },
   "engines": {
     "node": ">=18"
   },
   "devDependencies": {
-    "@types/node": "^20.17.0",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "tsup": "^8.3.6",
-    "typescript": "^5.7.3",
-    "vite": "^8.1.4",
-    "vitest": "^4.1.10"
+    "@types/node": "^20.17.0"
   }
 }

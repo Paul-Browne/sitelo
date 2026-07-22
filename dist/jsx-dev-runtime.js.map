@@ -1,1 +1,0 @@
-{"version":3,"sources":["../src/jsx-dev-runtime.ts"],"sourcesContent":["export { Fragment, jsxDEV } from 'react/jsx-dev-runtime';\nexport type { JSX } from 'react';"],"mappings":";AAAA,SAAS,UAAU,cAAc;","names":[]}

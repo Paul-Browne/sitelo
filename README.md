@@ -38,7 +38,7 @@ export default () => `
 Run:
 
 ```bash
-vite build
+sitelo build
 ```
 
 Get:
@@ -79,7 +79,7 @@ Sometimes you just want to:
 
 - write HTML
 - organize pages in folders
-- run `vite build`
+- run `sitelo build`
 
 `sitelo` exists for exactly that. Pages are plain
 functions that return a string of HTML. No runtime ships to the
@@ -93,7 +93,40 @@ browser unless *you* add a script.
 npm install -D sitelo
 ```
 
-Requires **Node 18+** and **Vite 8+**.
+Requires **Node 18+**. Vite is bundled — you don't install it separately.
+
+Create pages in `src/` and run:
+
+```bash
+sitelo        # dev server with live rendering
+sitelo build  # static site in dist/
+sitelo preview  # preview the production build
+```
+
+### Configuration (optional)
+
+Add a `sitelo.config.js` when you need plugin options such as `site`,
+`rss`, or `pagesDir`:
+
+```js
+// sitelo.config.js
+export default {
+  site: 'https://example.com',
+  rss: {
+    site: 'https://example.com',
+    title: 'My Blog',
+    description: 'Latest posts',
+    routePrefix: '/blog',
+  },
+}
+```
+
+No `vite.config.js` is required. If you already have one, sitelo still
+auto-loads it and merges your settings.
+
+### Using with an existing Vite config
+
+Prefer full control over Vite? Register the plugin yourself:
 
 ```js
 // vite.config.js
@@ -101,14 +134,15 @@ import { defineConfig } from "vite"
 import htmlPages from "sitelo"
 
 export default defineConfig({
-  plugins: [htmlPages()]
+  plugins: [htmlPages({
+    site: 'https://example.com',
+  })]
 })
 ```
 
-```bash
-vite        # dev server with live rendering
-vite build  # static site in dist/
-```
+Then run `vite`, `vite build`, or `vite preview` as usual. If the plugin
+is already in your Vite config, options in `sitelo.config.js` are ignored
+(and sitelo will error if both are present).
 
 Add the generated helper types to your `.gitignore`:
 
@@ -407,21 +441,24 @@ Every generated page is checked: a `<script src="/x.js">` or stylesheet
 warning instead?
 
 ```js
-htmlPages({ missingAssets: 'warn' })
+// sitelo.config.js
+export default {
+  missingAssets: 'warn',
+}
 ```
 
 ---
 
 ## Dev server
 
-`vite dev` gives you the real site, not an approximation:
+`sitelo dev` gives you the real site, not an approximation:
 
 - Pages render **on request** through Vite's SSR module runner — edit a
   page, its `data()`, or any imported module and reload.
 - **Dynamic routes render on demand.** Visit `/blog/anything` and
   `blog/[slug].ht.js` renders with `params.slug = 'anything'` — no need
   to list every param in `generateStaticParams` while developing.
-  (`vite build` still only emits the pages you list there.)
+  (`sitelo build` still only emits the pages you list there.)
 - File changes inside your pages directory trigger an automatic
   **full-reload** in the browser.
 - Errors show a **source-mapped code frame** in the terminal pointing
@@ -455,20 +492,24 @@ Set your site URL and `dist/sitemap.xml` is generated from all static
 routes, correctly escaped:
 
 ```js
-htmlPages({ site: 'https://example.com' })
+// sitelo.config.js
+export default {
+  site: 'https://example.com',
+}
 ```
 
 ### RSS feed
 
 ```js
-htmlPages({
+// sitelo.config.js
+export default {
   rss: {
     site: 'https://example.com',
     title: 'My Blog',
     description: 'Latest posts',
     routePrefix: '/blog',   // which routes become feed items
-  }
-})
+  },
+}
 ```
 
 Produces `dist/rss.xml` with an item for every page under `routePrefix`.
@@ -477,14 +518,18 @@ Produces `dist/rss.xml` with an item for every page under `routePrefix`.
 
 ## Plugin options
 
+Set these in `sitelo.config.js` (or pass them to `htmlPages()` in a Vite
+config):
+
 ```js
-htmlPages({
+// sitelo.config.js
+export default {
   pagesDir: 'src',
   cleanUrls: true,
   site: 'https://example.com',
   missingAssets: 'error',
   debug: false,
-})
+}
 ```
 
 | Option | Default | Description |
@@ -508,10 +553,11 @@ htmlPages({
 Large sites can raise the parallelism:
 
 ```js
-htmlPages({
+// sitelo.config.js
+export default {
   renderConcurrency: 16,
   renderBatchSize: 128,
-})
+}
 ```
 
 ---
