@@ -1,8 +1,8 @@
-# orivo
+# sitelo
 
-[![npm version](https://img.shields.io/npm/v/orivo.svg)](https://www.npmjs.com/package/orivo)
-[![npm downloads](https://img.shields.io/npm/dm/orivo.svg)](https://www.npmjs.com/package/orivo)
-[![license](https://img.shields.io/npm/l/orivo.svg)](LICENSE)
+[![npm version](https://img.shields.io/npm/v/sitelo.svg)](https://www.npmjs.com/package/sitelo)
+[![npm downloads](https://img.shields.io/npm/dm/sitelo.svg)](https://www.npmjs.com/package/sitelo)
+[![license](https://img.shields.io/npm/l/sitelo.svg)](LICENSE)
 [![vite](https://img.shields.io/badge/vite-plugin-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
 
 **Static site generation for Vite — no framework, no components, no magic.**
@@ -81,7 +81,7 @@ Sometimes you just want to:
 - organize pages in folders
 - run `vite build`
 
-`orivo` exists for exactly that. Pages are plain
+`sitelo` exists for exactly that. Pages are plain
 functions that return a string of HTML. No runtime ships to the
 browser unless *you* add a script.
 
@@ -90,7 +90,7 @@ browser unless *you* add a script.
 ## Installation
 
 ```bash
-npm install -D orivo
+npm install -D sitelo
 ```
 
 Requires **Node 18+** and **Vite 8+**.
@@ -98,7 +98,7 @@ Requires **Node 18+** and **Vite 8+**.
 ```js
 // vite.config.js
 import { defineConfig } from "vite"
-import htmlPages from "orivo"
+import htmlPages from "sitelo"
 
 export default defineConfig({
   plugins: [htmlPages()]
@@ -113,7 +113,7 @@ vite build  # static site in dist/
 Add the generated helper types to your `.gitignore`:
 
 ```
-.orivo/
+.sitelo/
 ```
 
 ---
@@ -306,7 +306,7 @@ export default ({ data }) => `
 Building 500 pages against the same API? Cache the responses:
 
 ```js
-import { fetchWithCache } from 'orivo'
+import { fetchWithCache } from 'sitelo'
 
 export async function data({ params }) {
   const res = await fetchWithCache(
@@ -329,7 +329,7 @@ Cache modes:
 
 - **`auto`** (default) — memory in dev, filesystem in production builds
 - **`memory`** — in-process, cleared when the process exits
-- **`fs`** — persisted in `node_modules/.cache/orivo/fetch/`
+- **`fs`** — persisted in `node_modules/.cache/sitelo/fetch/`
 - **`none`** — always fetch
 
 Only `GET` requests are cached by default (pass a `cacheKey` to cache
@@ -347,7 +347,7 @@ Helper functions give your page modules full type inference:
 
 ```ts
 // src/blog/[slug].ht.ts
-import { definePageModule } from 'orivo/page'
+import { definePageModule } from 'sitelo/page'
 
 export default definePageModule({
   generateStaticParams: () => [{ slug: 'hello' }],
@@ -363,7 +363,7 @@ from the filename: `[slug]` → `{ slug: string }`, `[...path]` →
 `{ path: string[] }`, `[...path]?` → `{ path?: string[] }`.
 
 Matching type declarations are generated into
-`.orivo/types/` whenever the dev server or a build
+`.sitelo/types/` whenever the dev server or a build
 runs — add that folder to `.gitignore`.
 
 ---
@@ -523,7 +523,7 @@ htmlPages({
 | Astro | Component-based SSG with its own compiler and islands |
 | Next.js | Full React framework with SSR/ISR |
 | Eleventy | Template-language SSG (Nunjucks, Liquid, ...) |
-| **orivo** | **Functions returning HTML, powered by plain Vite** |
+| **sitelo** | **Functions returning HTML, powered by plain Vite** |
 
 If you want components, hydration, and a framework — use a framework.
 If you want HTML files out of JavaScript functions with the Vite dev

@@ -1,6 +1,6 @@
 {
-  "name": "orivo",
-  "version": "1.0.1",
+  "name": "sitelo",
+  "version": "1.0.0",
   "author": "Paul Browne",
   "type": "module",
   "license": "MIT",
@@ -21,13 +21,13 @@
     "dist/**/*"
   ],
   "description": "Minimal static site generation (SSG) for Vite using JavaScript functions that return HTML",
-  "homepage": "https://github.com/paul-browne/orivo",
+  "homepage": "https://github.com/paul-browne/sitelo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/paul-browne/orivo.git"
+    "url": "https://github.com/paul-browne/sitelo.git"
   },
   "bugs": {
-    "url": "https://github.com/paul-browne/orivo/issues"
+    "url": "https://github.com/paul-browne/sitelo/issues"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",

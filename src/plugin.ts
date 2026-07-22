@@ -380,7 +380,7 @@ export {
   defineData,
   defineStaticParams,
   definePageModule
-} from 'orivo/page';
+} from 'sitelo/page';
 `;
       }        
 
@@ -398,7 +398,7 @@ export {
         loader: isHtTsxFile(normalizedId) ? 'tsx' : 'jsx',
         format: 'esm',
         jsx: 'automatic',
-        jsxImportSource: 'orivo',
+        jsxImportSource: 'sitelo',
         sourcemap: true,
         sourcefile: normalizedId,
         target: 'esnext',

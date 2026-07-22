@@ -1,4 +1,4 @@
-declare module 'orivo/page' {
+declare module 'sitelo/page' {
     export type PageParams = Record<string, string | string[] | undefined>;
   
     export type PageContext = {

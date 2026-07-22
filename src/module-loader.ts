@@ -38,7 +38,7 @@ async function importPageModule(
 
   if (!isRunnableDevEnvironment(environment)) {
     throw new Error(
-      '[orivo] The Vite SSR environment is not runnable. ' +
+      '[sitelo] The Vite SSR environment is not runnable. ' +
         'A RunnableDevEnvironment is required to evaluate page modules.',
     );
   }
@@ -140,7 +140,7 @@ export {
   defineData,
   defineStaticParams,
   definePageModule
-} from 'orivo/page';
+} from 'sitelo/page';
 `;
       }
 
@@ -175,7 +175,7 @@ export async function createPageModuleLoader(args: {
 
   if (mode === 'dev') {
     if (!server) {
-      throw new Error('[orivo] dev server not available');
+      throw new Error('[sitelo] dev server not available');
     }
 
     return {
@@ -187,7 +187,7 @@ export async function createPageModuleLoader(args: {
 
   if (!getPages) {
     throw new Error(
-      '[orivo] getPages is required in build mode',
+      '[sitelo] getPages is required in build mode',
     );
   }
 

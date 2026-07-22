@@ -1,4 +1,4 @@
-export const PLUGIN_NAME = 'orivo';
+export const PLUGIN_NAME = 'sitelo';
 export const VIRTUAL_BUILD_ENTRY_ID = `\0${PLUGIN_NAME}:build-entry`;
 export const VIRTUAL_PAGE_HELPER_ID = `${PLUGIN_NAME}/page`;
 export const RESOLVED_VIRTUAL_PAGE_HELPER_PREFIX =`\0${PLUGIN_NAME}/page:`;
