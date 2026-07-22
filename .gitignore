@@ -136,3 +136,10 @@ out
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# sitelo / plugin generated helpers
+.sitelo/
+.vite-plugin-html-pages/
+docs/.sitelo/
+docs/.vite-plugin-html-pages/
+docs/dist/

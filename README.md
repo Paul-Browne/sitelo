@@ -588,3 +588,14 @@ experience, this is the smallest tool that does the whole job.
 ## License
 
 MIT
+
+## Docs site
+
+The documentation at [sitelo.js.org](https://sitelo.js.org) lives in
+[`docs/`](docs/) and is itself built with sitelo +
+[javascript-to-html](https://www.npmjs.com/package/javascript-to-html):
+
+```bash
+npm run docs:dev
+npm run docs:build
+```

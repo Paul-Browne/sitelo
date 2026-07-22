@@ -60,7 +60,10 @@
     "sitelo": "./bin/sitelo.js"
   },
   "scripts": {
-    "test": "node --test test/**/*.test.js"
+    "test": "node --test test/**/*.test.js",
+    "docs:dev": "node ./bin/sitelo.js --root docs",
+    "docs:build": "node ./bin/sitelo.js build --root docs",
+    "docs:preview": "node ./bin/sitelo.js preview --root docs"
   },
   "dependencies": {
     "vite": "^8.1.4",
@@ -70,6 +73,7 @@
     "node": ">=18"
   },
   "devDependencies": {
-    "@types/node": "^20.17.0"
+    "@types/node": "^20.17.0",
+    "javascript-to-html": "^1.1.4"
   }
 }
