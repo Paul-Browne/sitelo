@@ -544,6 +544,7 @@ export default {
 | `rss` | — | RSS config (`site`, `title`, `description`, `routePrefix`) |
 | `missingAssets` | `'error'` | `'error'` or `'warn'` for broken asset references |
 | `mapOutputPath` | — | `(page) => string` to customize output filenames |
+| `generatedTypesDir` | `'.sitelo/types'` | Where generated page helper `.d.ts` files are written |
 | `renderConcurrency` | `8` | Pages rendered in parallel |
 | `renderBatchSize` | `max(concurrency, 32)` | Pages per render batch |
 | `debug` | `false` | Verbose logging of discovery, routing, and emission |

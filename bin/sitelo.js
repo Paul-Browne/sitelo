@@ -5,7 +5,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import htmlPages from 'vite-plugin-html-pages';
+import htmlPages from '../src/index.js';
 import {
   build,
   createServer,
