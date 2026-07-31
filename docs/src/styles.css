@@ -1,17 +1,19 @@
 :root {
-  --ink: #0b1f33;
-  --ink-soft: #44566a;
-  --paper: #eef1f4;
-  --paper-deep: #e2e7ed;
-  --accent: #0a6cff;
-  --accent-ink: #f4f8ff;
-  --code-bg: #101820;
-  --code-fg: #d7e2ec;
+  --ink: #e8f2ee;
+  --ink-soft: #9bb5aa;
+  --ink-faint: #6d857c;
+  --paper: #071410;
+  --paper-elevated: #0c1f19;
+  --accent: #3dff9a;
+  --accent-deep: #1a9a5c;
+  --accent-ink: #04150e;
+  --code-bg: #050d0a;
+  --code-fg: #c5ddd2;
   --line: color-mix(in srgb, var(--ink) 12%, transparent);
-  --font-display: 'Syne', system-ui, sans-serif;
-  --font-body: 'Libre Franklin', 'Segoe UI', sans-serif;
+  --font-display: 'Sora', system-ui, sans-serif;
+  --font-body: 'Source Sans 3', 'Segoe UI', sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
-  --measure: 42rem;
+  --measure: 40rem;
   --page: min(68rem, calc(100% - 2.5rem));
 }
 
@@ -23,11 +25,7 @@
 
 html {
   color: var(--ink);
-  background:
-    radial-gradient(1100px 520px at 8% -8%, #c9daf0 0%, transparent 55%),
-    radial-gradient(800px 480px at 100% 5%, #b8e4d8 0%, transparent 48%),
-    linear-gradient(180deg, var(--paper) 0%, var(--paper-deep) 100%);
-  background-attachment: fixed;
+  background: var(--paper);
   font-family: var(--font-body);
   font-size: 1.0625rem;
   line-height: 1.55;
@@ -37,6 +35,19 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
+  position: relative;
+}
+
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 90% 70% at 50% -10%, #145c45 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 100% 20%, #0a3d55 0%, transparent 45%),
+    radial-gradient(ellipse 50% 40% at 0% 40%, #1a4a28 0%, transparent 40%),
+    linear-gradient(180deg, #0a1c16 0%, var(--paper) 55%, var(--paper) 100%);
 }
 
 a {
@@ -56,8 +67,11 @@ code {
 .nav {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
-  margin-bottom: 4.5rem;
+  gap: 1.35rem;
+  width: var(--page);
+  max-width: 100%;
+  margin: 0 auto 0;
+  padding: 1.35rem 0;
   font-size: 0.95rem;
 }
 
@@ -74,61 +88,105 @@ code {
   margin-right: auto;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   color: var(--ink) !important;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
 }
 
 .hero {
   min-height: 100vh;
-  padding: 1.5rem clamp(1.25rem, 4vw, 2.5rem) 4rem;
+  padding: 0 clamp(1.25rem, 4vw, 2.5rem) 5rem;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
 }
 
-.hero-brand {
-  margin: 0 0 0.75rem;
-  font-family: var(--font-display);
-  font-size: clamp(3.5rem, 12vw, 7.5rem);
-  font-weight: 700;
-  line-height: 0.9;
-  letter-spacing: -0.05em;
-  color: var(--ink);
+.hero-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 0 4rem;
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: stretch;
+  margin: 0 0 1.75rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
   animation: rise 700ms ease both;
 }
 
-.hero h1 {
-  max-width: 18ch;
-  margin: 0 0 1rem;
+.hero-badge:hover {
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+.hero-badge-ver {
+  padding: 0.4rem 0.75rem 0.4rem 0.9rem;
+  background: color-mix(in srgb, var(--accent-deep) 75%, black);
+  color: var(--ink);
+}
+
+.hero-badge-cta {
+  padding: 0.4rem 0.9rem 0.4rem 0.75rem;
+  background: color-mix(in srgb, var(--paper-elevated) 80%, black);
+  color: var(--ink-soft);
+}
+
+.hero-badge:hover .hero-badge-cta {
+  color: var(--ink);
+}
+
+.hero-brand {
+  margin: 0 0 0.85rem;
   font-family: var(--font-display);
-  font-size: clamp(1.55rem, 3.2vw, 2.2rem);
+  font-size: clamp(3.2rem, 11vw, 6.5rem);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.055em;
+  color: var(--ink);
+  animation: rise 700ms 60ms ease both;
+}
+
+.hero h1 {
+  margin: 0 0 1rem;
+  max-width: 18ch;
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 3.6vw, 2.45rem);
   font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.03em;
-  animation: rise 700ms 80ms ease both;
+  line-height: 1.18;
+  letter-spacing: -0.035em;
+  animation: rise 700ms 120ms ease both;
 }
 
 .hero-lede {
   max-width: 34rem;
   margin: 0 0 2rem;
   color: var(--ink-soft);
-  font-size: 1.15rem;
-  animation: rise 700ms 140ms ease both;
+  font-size: 1.12rem;
+  animation: rise 700ms 180ms ease both;
 }
 
 .hero-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin: 0;
-  animation: rise 700ms 200ms ease both;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  animation: rise 700ms 240ms ease both;
 }
 
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(0.6rem);
+    transform: translateY(0.7rem);
   }
   to {
     opacity: 1;
@@ -140,31 +198,65 @@ code {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.7rem 1.15rem;
-  border: 1px solid var(--ink);
+  min-width: 10rem;
+  padding: 0.85rem 1.4rem;
+  border: none;
+  border-radius: 999px;
   background: var(--ink);
-  color: var(--paper);
+  color: var(--accent-ink);
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
   transition: transform 160ms ease, background 160ms ease, color 160ms ease;
 }
 
 .btn:hover {
   background: var(--accent);
-  border-color: var(--accent);
   color: var(--accent-ink);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
-.btn-ghost {
-  background: transparent;
-  color: var(--ink);
+.install {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.55rem 0.55rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--code-bg) 88%, #123);
+  color: var(--code-fg);
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
 }
 
-.btn-ghost:hover {
-  background: var(--ink);
-  color: var(--paper);
+.install-cmd {
+  font: inherit;
+}
+
+.install-cmd::before {
+  content: '> ';
+  color: var(--accent);
+}
+
+.install-copy {
+  appearance: none;
+  border: none;
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  color: var(--ink-soft);
+  font: inherit;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.install-copy:hover,
+.install-copy.is-copied {
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 .section {
@@ -194,7 +286,8 @@ code {
   margin: 0 0 1.25rem;
   padding: 1.35rem 1.15rem 1.15rem;
   overflow-x: auto;
-  border: 1px solid color-mix(in srgb, var(--code-bg) 80%, white);
+  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+  border-radius: 0.75rem;
   background: var(--code-bg);
   color: var(--code-fg);
   font-family: var(--font-mono);
@@ -207,7 +300,7 @@ code {
   position: absolute;
   top: 0.45rem;
   right: 0.7rem;
-  color: color-mix(in srgb, var(--code-fg) 55%, transparent);
+  color: var(--ink-faint);
   font-size: 0.7rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -230,7 +323,7 @@ code {
 .feature-list h3 {
   margin: 0 0 0.35rem;
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 700;
 }
 
@@ -264,10 +357,12 @@ code {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .btn {
+  .btn,
+  .install-copy {
     transition: none;
   }
 
+  .hero-badge,
   .hero-brand,
   .hero h1,
   .hero-lede,
@@ -282,8 +377,19 @@ code {
     padding-bottom: 3rem;
   }
 
+  .hero-center {
+    padding-top: 2rem;
+    align-items: stretch;
+  }
+
   .nav {
-    margin-bottom: 3rem;
+    flex-wrap: wrap;
+    gap: 0.85rem 1.1rem;
+  }
+
+  .install {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .section {

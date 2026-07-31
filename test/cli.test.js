@@ -57,6 +57,44 @@ test('sitelo build renders pages and generated extras', async (t) => {
   );
 });
 
+test('sitelo.config.js vite options are applied', async (t) => {
+  const configPath = path.join(fixtureDir, 'sitelo.config.js');
+  const originalConfig = fs.readFileSync(configPath, 'utf8');
+  const customOutDir = path.join(fixtureDir, 'public-out');
+
+  const cleanup = () => {
+    fs.writeFileSync(configPath, originalConfig);
+    fs.rmSync(distDir, { recursive: true, force: true });
+    fs.rmSync(customOutDir, { recursive: true, force: true });
+    fs.rmSync(path.join(fixtureDir, '.sitelo'), {
+      recursive: true,
+      force: true,
+    });
+  };
+
+  cleanup();
+  t.after(cleanup);
+
+  fs.writeFileSync(
+    configPath,
+    `export default {
+  site: 'https://example.com',
+  vite: {
+    build: {
+      outDir: 'public-out',
+      emptyOutDir: true,
+    },
+  },
+}
+`,
+  );
+
+  await runBuild(fixtureDir);
+
+  assert.ok(fs.existsSync(path.join(customOutDir, 'index.html')));
+  assert.equal(fs.existsSync(path.join(distDir, 'index.html')), false);
+});
+
 test('sitelo errors when sitelo.config.js and vite.config both register the plugin', async () => {
   const viteConfigPath = path.join(fixtureDir, 'vite.config.mjs');
 
@@ -74,7 +112,7 @@ export default defineConfig({
   try {
     await assert.rejects(
       () => runBuild(fixtureDir),
-      /Found both sitelo\.config\.js/,
+      /Found both plugin options in sitelo\.config\.js/,
     );
   } finally {
     fs.rmSync(viteConfigPath, { force: true });

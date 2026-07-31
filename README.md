@@ -105,8 +105,7 @@ sitelo preview  # preview the production build
 
 ### Configuration (optional)
 
-Add a `sitelo.config.js` when you need plugin options such as `site`,
-`rss`, or `pagesDir`:
+Add a `sitelo.config.js` for plugin options and optional Vite settings:
 
 ```js
 // sitelo.config.js
@@ -118,31 +117,53 @@ export default {
     description: 'Latest posts',
     routePrefix: '/blog',
   },
+
+  // any Vite config goes under `vite`
+  vite: {
+    publicDir: 'static',
+    build: {
+      emptyOutDir: true,
+      outDir: 'public',
+    },
+    server: {
+      port: 8888,
+    },
+  },
 }
 ```
 
 No `vite.config.js` is required. If you already have one, sitelo still
-auto-loads it and merges your settings.
+auto-loads it and merges your settings. CLI flags (e.g. `--port`) override
+both.
 
 ### Using with an existing Vite config
 
-Prefer full control over Vite? Register the plugin yourself:
+Prefer a separate Vite config file? You can still use `vite.config.js` —
+either for Vite-only options (plugin stays auto-injected), or by registering
+the plugin yourself:
 
 ```js
-// vite.config.js
-import { defineConfig } from "vite"
+// vite.config.js — Vite options only; sitelo still injects the plugin
+export default {
+  publicDir: 'static',
+  server: { port: 8888 },
+}
+```
+
+```js
+// vite.config.js — full control, including the plugin
 import htmlPages from "sitelo"
 
-export default defineConfig({
+export default {
   plugins: [htmlPages({
     site: 'https://example.com',
   })]
-})
+}
 ```
 
-Then run `vite`, `vite build`, or `vite preview` as usual. If the plugin
-is already in your Vite config, options in `sitelo.config.js` are ignored
-(and sitelo will error if both are present).
+Then you can run `vite` / `vite build` if you prefer. If the plugin is already
+in your Vite config, put plugin options there — not also in `sitelo.config.js`
+(sitelo will error if both register plugin options).
 
 Add the generated helper types to your `.gitignore`:
 

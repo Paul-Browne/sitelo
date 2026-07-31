@@ -11,6 +11,7 @@ import {
   createLogger,
   createServer,
   loadConfigFromFile,
+  mergeConfig,
   preview,
 } from 'vite';
 
@@ -213,9 +214,33 @@ function findSiteloConfigFile(root) {
   return undefined;
 }
 
+function splitSiteloConfig(options) {
+  if (!options) {
+    return { pluginOptions: undefined, viteOptions: undefined };
+  }
+
+  const { vite, ...pluginOptions } = options;
+
+  if (vite != null && (typeof vite !== 'object' || Array.isArray(vite))) {
+    throw new Error('[sitelo] sitelo.config.js "vite" must be an object');
+  }
+
+  return {
+    pluginOptions:
+      Object.keys(pluginOptions).length > 0 ? pluginOptions : undefined,
+    viteOptions: vite ?? undefined,
+  };
+}
+
 async function loadSiteloConfig(root) {
   const configFile = findSiteloConfigFile(root);
-  if (!configFile) return { options: undefined, configFile: undefined };
+  if (!configFile) {
+    return {
+      pluginOptions: undefined,
+      viteOptions: undefined,
+      configFile: undefined,
+    };
+  }
 
   const mod = await import(pathToFileURL(configFile).href);
   const options = mod.default ?? mod;
@@ -226,12 +251,16 @@ async function loadSiteloConfig(root) {
     );
   }
 
-  return { options, configFile };
+  const split = splitSiteloConfig(options);
+  return { ...split, configFile };
 }
 
-async function resolvePluginInjection({ root, configFile, command, mode, debug }) {
-  const { options: siteloOptions, configFile: siteloConfigFile } =
-    await loadSiteloConfig(root);
+async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
+  const {
+    pluginOptions,
+    viteOptions,
+    configFile: siteloConfigFile,
+  } = await loadSiteloConfig(root);
 
   const hasPluginInUserConfig = await userConfigHasHtmlPagesPlugin({
     root,
@@ -240,73 +269,84 @@ async function resolvePluginInjection({ root, configFile, command, mode, debug }
     mode,
   });
 
-  if (siteloOptions && hasPluginInUserConfig) {
+  if (pluginOptions && hasPluginInUserConfig) {
     const viteConfigLabel = configFile ?? 'vite.config.*';
     throw new Error(
-      `[sitelo] Found both ${path.basename(siteloConfigFile)} and a Vite config (${viteConfigLabel}) that already registers ${PLUGIN_NAME}.\n` +
+      `[sitelo] Found both plugin options in ${path.basename(siteloConfigFile)} and a Vite config (${viteConfigLabel}) that already registers ${PLUGIN_NAME}.\n` +
         'Remove the plugin from vite.config or move its options into one place.',
     );
   }
 
   if (hasPluginInUserConfig) {
-    return { plugins: [] };
+    return { plugins: [], viteOptions };
   }
 
   return {
     plugins: [
       htmlPages({
-        ...(siteloOptions ?? {}),
-        debug: debug || Boolean(siteloOptions?.debug),
+        ...(pluginOptions ?? {}),
+        debug: debug || Boolean(pluginOptions?.debug),
       }),
     ],
+    viteOptions,
   };
 }
 
-function buildInlineConfig(cli, command) {
+function definedEntries(object) {
+  return Object.fromEntries(
+    Object.entries(object).filter(([, value]) => value !== undefined),
+  );
+}
+
+function buildInlineConfig(cli, command, viteFromSitelo = {}) {
   const mode = cli.mode ?? (command === 'build' ? 'production' : 'development');
   const logLevel = cli.logLevel ?? 'info';
-  const inline = {
+
+  const cliLayer = {
     root: cli.root,
     configFile: cli.config,
     mode,
     logLevel,
     clearScreen: cli.clearScreen,
-    base: cli.base,
     customLogger: createLogger(logLevel, {
       prefix: LOG_PREFIX,
       allowClearScreen: cli.clearScreen !== false,
     }),
-    build: {
+    ...definedEntries({
+      base: cli.base,
+    }),
+    build: definedEntries({
       outDir: cli.outDir,
       assetsDir: cli.assetsDir,
       emptyOutDir: cli.emptyOutDir,
-    },
+    }),
   };
 
   if (command === 'dev' || command === 'preview') {
-    inline.server = {
+    cliLayer.server = definedEntries({
       host: cli.host,
       port: cli.port,
-      strictPort: cli.strictPort,
+      strictPort: cli.strictPort || undefined,
       open: cli.open,
-    };
+    });
   }
 
   if (command === 'preview') {
-    inline.preview = {
+    cliLayer.preview = definedEntries({
       host: cli.host,
       port: cli.port,
-      strictPort: cli.strictPort,
+      strictPort: cli.strictPort || undefined,
       open: cli.open,
-    };
+    });
   }
 
-  return inline;
+  // sitelo.config.js `vite` first; explicit CLI flags override.
+  return mergeConfig(viteFromSitelo, cliLayer);
 }
 
 async function runDev(cli) {
   const mode = cli.mode ?? 'development';
-  const { plugins } = await resolvePluginInjection({
+  const { plugins, viteOptions } = await resolveSiteloConfig({
     root: cli.root,
     configFile: cli.config,
     command: 'serve',
@@ -314,10 +354,9 @@ async function runDev(cli) {
     debug: cli.debug,
   });
 
-  const server = await createServer({
-    ...buildInlineConfig(cli, 'dev'),
-    plugins,
-  });
+  const server = await createServer(
+    mergeConfig(buildInlineConfig(cli, 'dev', viteOptions), { plugins }),
+  );
 
   await server.listen();
   server.printUrls();
@@ -325,7 +364,7 @@ async function runDev(cli) {
 
 async function runBuild(cli) {
   const mode = cli.mode ?? 'production';
-  const { plugins } = await resolvePluginInjection({
+  const { plugins, viteOptions } = await resolveSiteloConfig({
     root: cli.root,
     configFile: cli.config,
     command: 'build',
@@ -333,15 +372,14 @@ async function runBuild(cli) {
     debug: cli.debug,
   });
 
-  await build({
-    ...buildInlineConfig(cli, 'build'),
-    plugins,
-  });
+  await build(
+    mergeConfig(buildInlineConfig(cli, 'build', viteOptions), { plugins }),
+  );
 }
 
 async function runPreview(cli) {
   const mode = cli.mode ?? 'production';
-  const { plugins } = await resolvePluginInjection({
+  const { plugins, viteOptions } = await resolveSiteloConfig({
     root: cli.root,
     configFile: cli.config,
     command: 'serve',
@@ -349,10 +387,9 @@ async function runPreview(cli) {
     debug: cli.debug,
   });
 
-  const previewServer = await preview({
-    ...buildInlineConfig(cli, 'preview'),
-    plugins,
-  });
+  const previewServer = await preview(
+    mergeConfig(buildInlineConfig(cli, 'preview', viteOptions), { plugins }),
+  );
 
   previewServer.printUrls();
 }
