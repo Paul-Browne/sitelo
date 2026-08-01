@@ -1,3 +1,3 @@
 export default {
-  site: 'https://paul-browne.github.io/sitelo',
+  site: 'https://sitelo.js.org',
 }

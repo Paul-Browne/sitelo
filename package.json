@@ -63,9 +63,7 @@
     "test": "node --test test/**/*.test.js",
     "docs:dev": "node ./bin/sitelo.js --root docs",
     "docs:build": "node ./bin/sitelo.js build --root docs",
-    "docs:build:pages": "npm run docs:build && node ./docs/apply-pages-base.js /sitelo",
-    "docs:preview": "node ./bin/sitelo.js preview --root docs",
-    "docs:preview:pages": "node ./bin/sitelo.js preview --root docs --base /sitelo/"
+    "docs:preview": "node ./bin/sitelo.js preview --root docs"
   },
   "dependencies": {
     "vite": "^8.1.4",

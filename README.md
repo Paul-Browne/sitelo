@@ -614,12 +614,11 @@ MIT
 
 ## Docs site
 
-The documentation at [paul-browne.github.io/sitelo](https://paul-browne.github.io/sitelo/)
-lives in [`docs/`](docs/) and is itself built with sitelo +
+The documentation at [sitelo.js.org](https://sitelo.js.org) lives in
+[`docs/`](docs/) and is itself built with sitelo +
 [javascript-to-html](https://www.npmjs.com/package/javascript-to-html):
 
 ```bash
 npm run docs:dev
-npm run docs:build         # local (base `/`)
-npm run docs:build:pages   # GitHub Pages (base `/sitelo/`)
+npm run docs:build
 ```
