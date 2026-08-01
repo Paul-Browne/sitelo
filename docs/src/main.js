@@ -1,3 +1,9 @@
+import Prism from 'prismjs'
+import 'prismjs/components/prism-javascript'
+import 'prismjs/components/prism-bash'
+
+Prism.highlightAll()
+
 const buttons = document.querySelectorAll('[data-copy]')
 
 for (const button of buttons) {
