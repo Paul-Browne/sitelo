@@ -18,18 +18,19 @@ import {
   title,
 } from 'javascript-to-html'
 
-import { DOC_NAV } from './nav.js'
+import { DOC_NAV, EXAMPLE_NAV } from './nav.js'
 
-function siteNav(activeHref) {
+function siteNav(activeHref = '/') {
+  const onDocs = activeHref.startsWith('/docs')
+  const onExamples = activeHref.startsWith('/examples')
+
   return nav(
     { class: 'nav' },
     a({ class: 'nav-brand', href: '/' }, 'sitelo'),
+    a({ class: onDocs ? 'is-active' : undefined, href: '/docs' }, 'Docs'),
     a(
-      {
-        class: activeHref?.startsWith('/docs') ? 'is-active' : undefined,
-        href: '/docs',
-      },
-      'Docs',
+      { class: onExamples ? 'is-active' : undefined, href: '/examples' },
+      'Examples',
     ),
     a(
       {
@@ -70,13 +71,13 @@ function siteFooter() {
   )
 }
 
-function docsSidebar(activeHref) {
+function sideNav({ label, items, activeHref }) {
   return aside(
-    { class: 'docs-sidebar', 'aria-label': 'Documentation' },
-    p({ class: 'docs-sidebar-label' }, 'Documentation'),
+    { class: 'docs-sidebar', 'aria-label': label },
+    p({ class: 'docs-sidebar-label' }, label),
     nav(
       { class: 'docs-side-nav' },
-      ...DOC_NAV.map((item) =>
+      ...items.map((item) =>
         a(
           {
             href: item.href,
@@ -128,6 +129,40 @@ function pageShell({ pageTitle, description, bodyClass = '', children }) {
   )
 }
 
+function guideLayout({
+  title: heading,
+  description,
+  activeHref,
+  sidebarLabel,
+  sidebarItems,
+  titleSuffix,
+  children,
+}) {
+  const content = Array.isArray(children) ? children : [children]
+
+  return pageShell({
+    pageTitle: `${heading} · ${titleSuffix}`,
+    description,
+    bodyClass: 'page-docs',
+    children: [
+      header(
+        { class: 'topbar' },
+        div({ class: 'topbar-inner' }, siteNav(activeHref)),
+      ),
+      div(
+        { class: 'docs-shell' },
+        sideNav({
+          label: sidebarLabel,
+          items: sidebarItems,
+          activeHref,
+        }),
+        main({ class: 'docs-main' }, h1(heading), ...content),
+      ),
+      siteFooter(),
+    ],
+  })
+}
+
 export function landingLayout({ children, pageTitle, description }) {
   const content = Array.isArray(children) ? children : [children]
 
@@ -146,29 +181,20 @@ export function landingLayout({ children, pageTitle, description }) {
   })
 }
 
-export function docsLayout({
-  title: heading,
-  description,
-  activeHref,
-  children,
-}) {
-  const content = Array.isArray(children) ? children : [children]
+export function docsLayout(args) {
+  return guideLayout({
+    ...args,
+    sidebarLabel: 'Documentation',
+    sidebarItems: DOC_NAV,
+    titleSuffix: 'sitelo docs',
+  })
+}
 
-  return pageShell({
-    pageTitle: `${heading} · sitelo docs`,
-    description,
-    bodyClass: 'page-docs',
-    children: [
-      header(
-        { class: 'topbar' },
-        div({ class: 'topbar-inner' }, siteNav(activeHref)),
-      ),
-      div(
-        { class: 'docs-shell' },
-        docsSidebar(activeHref),
-        main({ class: 'docs-main' }, h1(heading), ...content),
-      ),
-      siteFooter(),
-    ],
+export function examplesLayout(args) {
+  return guideLayout({
+    ...args,
+    sidebarLabel: 'Examples',
+    sidebarItems: EXAMPLE_NAV,
+    titleSuffix: 'sitelo examples',
   })
 }

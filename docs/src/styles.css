@@ -291,16 +291,82 @@ code {
 
 .code {
   position: relative;
-  margin: 0 0 1.25rem;
+  margin: 0;
   padding: 1.35rem 1.15rem 1.15rem;
   overflow-x: auto;
-  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  border-radius: 0.75rem;
+  border: none;
+  border-radius: calc(0.85rem - 1px);
   background: var(--code-bg);
   color: var(--code-fg);
   font-family: var(--font-mono);
   font-size: 0.86rem;
   line-height: 1.55;
+}
+
+@property --glow-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes glow-spin {
+  to {
+    --glow-angle: 360deg;
+  }
+}
+
+.code-glow {
+  --glow-angle: 0deg;
+  position: relative;
+  margin: 0 0 1.25rem;
+  padding: 1px;
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  transition: background 200ms ease;
+}
+
+.code-glow::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  z-index: -1;
+  border-radius: inherit;
+  background: transparent;
+  filter: blur(12px);
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+
+.code-glow:hover {
+  background: conic-gradient(
+    from var(--glow-angle),
+    transparent 0%,
+    color-mix(in srgb, var(--accent) 70%, white) 8%,
+    transparent 22%,
+    color-mix(in srgb, #8fd4ff 65%, transparent) 38%,
+    transparent 52%,
+    color-mix(in srgb, var(--accent-deep) 90%, #3dff9a) 68%,
+    transparent 82%,
+    color-mix(in srgb, var(--accent) 45%, transparent) 92%,
+    transparent 100%
+  );
+  animation: glow-spin 5s linear infinite;
+}
+
+.code-glow:hover::before {
+  opacity: 0.65;
+  background: conic-gradient(
+    from var(--glow-angle),
+    transparent 0%,
+    color-mix(in srgb, var(--accent) 55%, transparent) 10%,
+    transparent 28%,
+    color-mix(in srgb, #8fd4ff 40%, transparent) 42%,
+    transparent 58%,
+    color-mix(in srgb, var(--accent-deep) 55%, transparent) 72%,
+    transparent 88%
+  );
+  animation: glow-spin 5s linear infinite;
 }
 
 .code::before {
@@ -444,6 +510,21 @@ code {
   .hero-lede,
   .hero-actions {
     animation: none;
+  }
+
+  .code-glow,
+  .code-glow::before {
+    animation: none !important;
+  }
+
+  .code-glow:hover {
+    background: color-mix(in srgb, var(--accent) 28%, transparent);
+  }
+
+  .code-glow:hover::before {
+    opacity: 0.35;
+    filter: blur(8px);
+    background: color-mix(in srgb, var(--accent) 28%, transparent);
   }
 }
 

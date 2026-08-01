@@ -93,6 +93,13 @@ function mainSections() {
       ),
       p(a({ class: 'btn btn-inline', href: '/docs' }, 'Read the docs →')),
     ),
+    sectionBlock(
+      'Examples',
+      p(
+        'Recipes for real setups — starting with a WordPress REST API site.',
+      ),
+      p(a({ class: 'btn btn-inline', href: '/examples' }, 'Browse examples →')),
+    ),
   )
 }
 

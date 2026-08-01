@@ -1,4 +1,4 @@
-import { a, code as rawCode, pre } from 'javascript-to-html'
+import { a, code as rawCode, div, pre } from 'javascript-to-html'
 
 function escapeHtml(value) {
   return String(value)
@@ -29,9 +29,12 @@ export function code(...args) {
 }
 
 export function codeBlock(label, source, language = 'javascript') {
-  return pre(
-    { class: `code language-${language}`, 'data-label': label },
-    code({ class: `language-${language}` }, source),
+  return div(
+    { class: 'code-glow' },
+    pre(
+      { class: `code language-${language}`, 'data-label': label },
+      code({ class: `language-${language}` }, source),
+    ),
   )
 }
 

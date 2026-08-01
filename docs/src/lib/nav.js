@@ -8,3 +8,8 @@ export const DOC_NAV = [
   { href: '/docs/configuration', label: 'Configuration' },
   { href: '/docs/cli', label: 'CLI' },
 ]
+
+export const EXAMPLE_NAV = [
+  { href: '/examples', label: 'Overview' },
+  { href: '/examples/wordpress', label: 'WordPress' },
+]
