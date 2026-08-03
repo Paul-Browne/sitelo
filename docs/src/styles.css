@@ -192,13 +192,41 @@ code {
 
 .hero h1 {
   margin: 0 0 1rem;
-  max-width: 16em;
+  max-width: 18em;
   font-family: var(--font-display);
   font-size: clamp(1.55rem, 3.6vw, 2.45rem);
   font-weight: 600;
   line-height: 1.18;
   letter-spacing: -0.035em;
   animation: rise 700ms 60ms ease both;
+  text-wrap: balance;
+}
+
+.hero-typed {
+  display: inline;
+  color: var(--accent);
+}
+
+.hero-typed.is-typing::after {
+  content: '';
+  display: inline-block;
+  width: 0.08em;
+  height: 0.95em;
+  margin-left: 0.08em;
+  vertical-align: -0.08em;
+  background: currentColor;
+  animation: caret-blink 1s steps(1) infinite;
+}
+
+@keyframes caret-blink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
 }
 
 .hero-lede {
@@ -536,6 +564,11 @@ code {
   .hero-lede,
   .hero-actions {
     animation: none;
+  }
+
+  .hero-typed.is-typing::after {
+    animation: none;
+    opacity: 0;
   }
 
   .code-glow,

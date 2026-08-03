@@ -44,3 +44,59 @@ for (const button of buttons) {
     }
   })
 }
+
+startHeroTypewriter()
+
+function startHeroTypewriter() {
+  const el = document.querySelector('.hero-typed')
+  if (!el) return
+
+  const phrases = (el.getAttribute('data-phrases') ?? '')
+    .split('|')
+    .map((p) => p.trim())
+    .filter(Boolean)
+
+  if (phrases.length < 2) return
+
+  if (reduceMotion) {
+    el.textContent = phrases[0]
+    return
+  }
+
+  const typeMs = 75
+  const deleteMs = 38
+  const holdMs = 2500
+  const gapMs = 320
+
+  let index = 0
+  el.textContent = phrases[0]
+  el.classList.add('is-typing')
+
+  const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms))
+
+  async function deleteText() {
+    while (el.textContent.length > 0) {
+      el.textContent = el.textContent.slice(0, -1)
+      await wait(deleteMs)
+    }
+  }
+
+  async function typeText(text) {
+    for (let i = 1; i <= text.length; i += 1) {
+      el.textContent = text.slice(0, i)
+      await wait(typeMs)
+    }
+  }
+
+  async function loop() {
+    while (true) {
+      await wait(holdMs)
+      await deleteText()
+      await wait(gapMs)
+      index = (index + 1) % phrases.length
+      await typeText(phrases[index])
+    }
+  }
+
+  loop()
+}

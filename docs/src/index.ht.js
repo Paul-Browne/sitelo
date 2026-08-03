@@ -20,7 +20,7 @@ const installSnippet = `npm install -D sitelo`
 const features = [
   ['File-based routing', 'src/about.ht.js → /about'],
   ['Dynamic routes', '[slug], [...path], optional catch-alls'],
-  ['Data loading', 'data() at build time, with fetchWithCache'],
+  ['Data loading', 'data() at build time, with fetch caching'],
   ['Asset pipeline', 'Referenced JS/TS/CSS is bundled; the rest stays server-only'],
   ['Dev server', 'Real renders on request — including dynamic routes'],
   ['Extras', '404.html, sitemap.xml, and RSS when you ask'],
@@ -28,7 +28,7 @@ const features = [
 
 export default () =>
   landingLayout({
-    pageTitle: 'sitelo — The modern framework for static websites.',
+    pageTitle: 'sitelo — The modern framework for fast websites',
     description:
       'sitelo turns a folder of pages into a fast static website. Live preview while you work, one command to ship — no heavy framework.',
     children: [
@@ -58,10 +58,21 @@ function headerHero() {
         span({ class: 'hero-badge-ver' }, `sitelo ${version}`),
         span({ class: 'hero-badge-cta' }, 'Available now →'),
       ),
-      h1('The modern framework for static websites.'),
+      h1(
+        { class: 'hero-headline' },
+        'The modern framework for ',
+        span(
+          {
+            class: 'hero-typed',
+            'data-phrases': 'fast websites|blogs|portfolios|landing pages|content-driven sites|e-commerce sites',
+            'aria-live': 'polite',
+          },
+          'fast websites',
+        )
+      ),
       p(
         { class: 'hero-lede' },
-        'Organize pages in folders, preview as you work, and publish a fast static website — one install.',
+        'Zero configuration. Lightening fast builds. Deploy anywhere. — one install.',
       ),
       div(
         { class: 'hero-actions' },
