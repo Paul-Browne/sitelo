@@ -22,7 +22,7 @@ export default () =>
           },
           'javascript-to-html',
         ),
-        ' (also known as ht.js): a simple, extensible way to write HTML ',
+        ' (also known as ', a({ href: 'https://ht.js.org' }, 'ht.js'), '): a simple, extensible way to write HTML ',
         em('in'),
         ' JavaScript. Nested function calls instead of template soup — still plain values you can compose, map, and return.',
       ),
