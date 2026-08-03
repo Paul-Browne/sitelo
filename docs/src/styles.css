@@ -107,7 +107,7 @@ code {
 
 .hero-logo {
   display: block;
-  width: min(17rem, 72vw);
+  width: min(14rem, 72vw);
   height: auto;
   margin: 0 auto 1.5rem;
   filter: invert(1);
@@ -192,7 +192,7 @@ code {
 
 .hero h1 {
   margin: 0 0 1rem;
-  max-width: 18ch;
+  max-width: 16em;
   font-family: var(--font-display);
   font-size: clamp(1.55rem, 3.6vw, 2.45rem);
   font-weight: 600;

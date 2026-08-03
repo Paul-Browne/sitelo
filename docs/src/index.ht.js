@@ -28,9 +28,9 @@ const features = [
 
 export default () =>
   landingLayout({
-    pageTitle: 'sitelo — functions that return HTML',
+    pageTitle: 'sitelo — The modern framework for static websites.',
     description:
-      'sitelo — static site generation for Vite. Write functions that return HTML.',
+      'sitelo turns a folder of pages into a fast static website. Live preview while you work, one command to ship — no heavy framework.',
     children: [
       headerHero(),
       mainSections(),
@@ -58,10 +58,10 @@ function headerHero() {
         span({ class: 'hero-badge-ver' }, `sitelo ${version}`),
         span({ class: 'hero-badge-cta' }, 'Available now →'),
       ),
-      h1('The static site tool for people who just want HTML'),
+      h1('The modern framework for static websites.'),
       p(
         { class: 'hero-lede' },
-        'Write functions that return HTML. Get file-based routing, a Vite dev server, and a production build — with one install.',
+        'Organize pages in folders, preview as you work, and publish a fast static website — one install.',
       ),
       div(
         { class: 'hero-actions' },
