@@ -138,7 +138,7 @@ function pageShell({ pageTitle, description, bodyClass = '', children }) {
     ),
     body(
       { class: bodyClass },
-      div({ class: 'atmosphere', 'aria-hidden': 'true' }),
+      div({ id: 'atmosphere', class: 'atmosphere', 'aria-hidden': 'true' }),
       ...content,
       script({ type: 'module', src: '/main.js' }),
     ),

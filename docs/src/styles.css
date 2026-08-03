@@ -43,11 +43,19 @@ body {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse 90% 70% at 50% -10%, #145c45 0%, transparent 55%),
-    radial-gradient(ellipse 60% 50% at 100% 20%, #0a3d55 0%, transparent 45%),
-    radial-gradient(ellipse 50% 40% at 0% 40%, #1a4a28 0%, transparent 40%),
-    linear-gradient(180deg, #0a1c16 0%, var(--paper) 55%, var(--paper) 100%);
+  overflow: hidden;
+}
+
+/* Required hooks for animated-background-blobs */
+.atmosphere::before,
+.atmosphere::after {
+  position: absolute;
+  content: '';
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 120%;
+  pointer-events: none;
 }
 
 a {
@@ -149,6 +157,9 @@ code {
 .hero-badge {
   display: inline-flex;
   align-items: stretch;
+  align-self: center;
+  width: fit-content;
+  max-width: 100%;
   margin: 0 0 1.75rem;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
@@ -554,9 +565,18 @@ code {
     align-items: stretch;
   }
 
+  .topbar-inner {
+    padding: 0.65rem 0;
+  }
+
   .nav {
-    flex-wrap: wrap;
-    gap: 0.85rem 1.1rem;
+    flex-wrap: nowrap;
+    gap: 0.65rem;
+    font-size: 0.82rem;
+  }
+
+  .nav-logo {
+    height: 1.1rem;
   }
 
   .install {
