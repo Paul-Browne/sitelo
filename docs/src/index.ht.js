@@ -6,6 +6,7 @@ import {
   h1,
   h2,
   h3,
+  img,
   li,
   p,
   span,
@@ -41,6 +42,13 @@ function headerHero() {
     { class: 'hero' },
     div(
       { class: 'hero-center' },
+      img({
+        class: 'hero-logo',
+        src: '/logo.svg',
+        alt: 'sitelo',
+        width: '280',
+        height: '80',
+      }),
       a(
         {
           class: 'hero-badge',

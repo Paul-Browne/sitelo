@@ -84,11 +84,26 @@ code {
 
 .nav-brand {
   margin-right: auto;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: var(--ink) !important;
-  letter-spacing: -0.04em;
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+
+.nav-logo {
+  display: block;
+  height: 1.35rem;
+  width: auto;
+  /* logo is dark ink; invert for the dark docs theme */
+  filter: invert(1);
+}
+
+.hero-logo {
+  display: block;
+  width: min(17rem, 72vw);
+  height: auto;
+  margin: 0 auto 1.5rem;
+  filter: invert(1);
+  animation: rise 700ms ease both;
 }
 
 .topbar {

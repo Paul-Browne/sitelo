@@ -8,6 +8,7 @@ import {
   head,
   header,
   html,
+  img,
   link,
   main,
   meta,
@@ -26,7 +27,16 @@ function siteNav(activeHref = '/') {
 
   return nav(
     { class: 'nav' },
-    a({ class: 'nav-brand', href: '/' }, 'sitelo'),
+    a(
+      { class: 'nav-brand', href: '/' },
+      img({
+        class: 'nav-logo',
+        src: '/logo.svg',
+        alt: 'sitelo',
+        width: '120',
+        height: '34',
+      }),
+    ),
     a({ class: onDocs ? 'is-active' : undefined, href: '/docs' }, 'Docs'),
     a(
       { class: onExamples ? 'is-active' : undefined, href: '/examples' },
@@ -108,6 +118,12 @@ function pageShell({ pageTitle, description, bodyClass = '', children }) {
           'sitelo — static site generation for Vite. Write functions that return HTML.',
       }),
       title(pageTitle),
+      link({ rel: 'icon', href: '/logo.svg', type: 'image/svg+xml' }),
+      link({ rel: 'apple-touch-icon', href: '/logo.png' }),
+      meta({
+        property: 'og:image',
+        content: 'https://sitelo.js.org/logo.png',
+      }),
       link({ rel: 'preconnect', href: 'https://fonts.googleapis.com' }),
       link({
         rel: 'preconnect',
