@@ -24,6 +24,7 @@ import { DOC_NAV, EXAMPLE_NAV } from './nav.js'
 function siteNav(activeHref = '/') {
   const onDocs = activeHref.startsWith('/docs')
   const onExamples = activeHref.startsWith('/examples')
+  const onAbout = activeHref === '/about'
 
   return nav(
     { class: 'nav' },
@@ -42,6 +43,7 @@ function siteNav(activeHref = '/') {
       { class: onExamples ? 'is-active' : undefined, href: '/examples' },
       'Examples',
     ),
+    a({ class: onAbout ? 'is-active' : undefined, href: '/about' }, 'About'),
     a(
       {
         href: 'https://github.com/paul-browne/sitelo',
@@ -192,6 +194,29 @@ export function landingLayout({ children, pageTitle, description }) {
         div({ class: 'topbar-inner' }, siteNav('/')),
       ),
       ...content,
+      siteFooter(),
+    ],
+  })
+}
+
+export function pageLayout({
+  title: heading,
+  description,
+  activeHref,
+  children,
+}) {
+  const content = Array.isArray(children) ? children : [children]
+
+  return pageShell({
+    pageTitle: heading,
+    description,
+    bodyClass: 'page-content',
+    children: [
+      header(
+        { class: 'topbar' },
+        div({ class: 'topbar-inner' }, siteNav(activeHref)),
+      ),
+      main({ class: 'content-main' }, h1(heading), ...content),
       siteFooter(),
     ],
   })

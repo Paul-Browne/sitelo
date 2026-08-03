@@ -1,0 +1,79 @@
+import { a, em, h2, p } from 'javascript-to-html'
+import { code } from './lib/code.js'
+import { pageLayout } from './lib/layout.js'
+
+export default () =>
+  pageLayout({
+    title: 'About',
+    description:
+      'Why sitelo exists — from javascript-to-html to vite-plugin-html-pages to a full static-site toolkit.',
+    activeHref: '/about',
+    children: [
+      p(
+        'sitelo didn’t start as a framework. It started as an itch to write markup in a way that felt natural in JavaScript — and kept growing until the whole path from page file to shipped site was covered.',
+      ),
+      h2('javascript-to-html'),
+      p(
+        'First came ',
+        a(
+          {
+            href: 'https://www.npmjs.com/package/javascript-to-html',
+            rel: 'noopener',
+          },
+          'javascript-to-html',
+        ),
+        ' (also known as ht.js): a simple, extensible way to write HTML ',
+        em('in'),
+        ' JavaScript. Nested function calls instead of template soup — still plain values you can compose, map, and return.',
+      ),
+      h2('Teaching Vite to emit HTML'),
+      p(
+        'That solved authoring. The next problem was the build: Vite treats ',
+        code('.js'),
+        ' / ',
+        code('.ts'),
+        ' as scripts, not as pages. I needed a convention where certain modules were ',
+        em('meant'),
+        ' to become HTML.',
+      ),
+      p(
+        'The idea was straightforward: files named ',
+        code('*.ht.js'),
+        ', ',
+        code('*.html.js'),
+        ', ',
+        code('*.ht.ts'),
+        ', and friends should be processed into HTML instead of bundled as client JavaScript. That convention became ',
+        a(
+          {
+            href: 'https://www.npmjs.com/package/vite-plugin-html-pages',
+            rel: 'noopener',
+          },
+          'vite-plugin-html-pages',
+        ),
+        ' — file-based routing, data loading, assets, and static generation on top of Vite.',
+      ),
+      h2('sitelo'),
+      p(
+        'sitelo wraps Vite and that plugin into one install and one CLI. You get a holistic, top-notch developer experience: ',
+        code('sitelo'),
+        ' for a live server, ',
+        code('sitelo build'),
+        ' for production, sensible defaults, and the plugin’s page model without assembling the toolchain yourself.',
+      ),
+      p(
+        'Same idea all the way down: pages are modules that return HTML. sitelo is the layer that makes that idea feel finished.',
+      ),
+      p(
+        a({ href: '/docs' }, 'Read the docs'),
+        ' · ',
+        a(
+          {
+            href: 'https://github.com/paul-browne/sitelo',
+            rel: 'noopener',
+          },
+          'GitHub',
+        ),
+      ),
+    ],
+  })

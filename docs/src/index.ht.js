@@ -19,6 +19,7 @@ const installSnippet = `npm install -D sitelo`
 
 const features = [
   ['File-based routing', 'src/about.ht.js → /about'],
+  ['JSX & TSX', 'Write pages as .jsx / .tsx with the same routing and build'],
   ['Dynamic routes', '[slug], [...path], optional catch-alls'],
   ['Data loading', 'data() at build time, with fetch caching'],
   ['Asset pipeline', 'Referenced JS/TS/CSS is bundled; the rest stays server-only'],
