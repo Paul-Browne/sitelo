@@ -78,7 +78,14 @@ function siteFooter() {
       { class: 'footer-meta' },
       span('Node 18+'),
       ' · ',
-      span('Vite bundled'),
+      a(
+        {
+          href: 'https://vite.dev',
+          rel: 'noopener',
+          target: '_blank',
+        },
+        '⚡ Powered by Vite',
+      ),
     ),
   )
 }

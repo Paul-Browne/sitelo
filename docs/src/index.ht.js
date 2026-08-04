@@ -14,7 +14,6 @@ import {
 } from 'javascript-to-html'
 import { landingLayout } from './lib/layout.js'
 
-const version = '2.0'
 const installSnippet = `npm install -D sitelo`
 
 const features = [
@@ -50,15 +49,6 @@ function headerHero() {
         width: '280',
         height: '80',
       }),
-      a(
-        {
-          class: 'hero-badge',
-          href: 'https://www.npmjs.com/package/sitelo',
-          rel: 'noopener',
-        },
-        span({ class: 'hero-badge-ver' }, `sitelo ${version}`),
-        span({ class: 'hero-badge-cta' }, 'Available now →'),
-      ),
       h1(
         { class: 'hero-headline' },
         span(
@@ -78,16 +68,6 @@ function headerHero() {
       p(
         { class: 'hero-lede' },
         'Zero configuration. Lightening fast builds. Deploy anywhere. — one install.',
-      ),
-      a(
-        {
-          class: 'vite-badge',
-          href: 'https://vite.dev',
-          rel: 'noopener',
-          target: '_blank',
-        },
-        span({ class: 'vite-badge-icon', 'aria-hidden': 'true' }, '⚡'),
-        'Powered by Vite',
       ),
       div(
         { class: 'hero-actions' },
