@@ -143,3 +143,5 @@ vite.config.ts.timestamp-*
 docs/.sitelo/
 docs/.vite-plugin-html-pages/
 docs/dist/
+examples/**/dist/
+examples/**/node_modules/

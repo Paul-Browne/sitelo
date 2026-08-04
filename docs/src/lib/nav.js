@@ -13,4 +13,5 @@ export const DOC_NAV = [
 export const EXAMPLE_NAV = [
   { href: '/examples', label: 'Overview' },
   { href: '/examples/wordpress', label: 'WordPress' },
+  { href: '/examples/islands', label: 'Server islands' },
 ]

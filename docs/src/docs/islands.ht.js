@@ -1,4 +1,4 @@
-import { h2, li, p, ul } from 'javascript-to-html'
+import { a, h2, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
@@ -95,7 +95,9 @@ export default () =>
       ),
       h2('Production'),
       p(
-        'Your static host keeps serving the pages. Mount a small handler wherever you run server code — Node, serverless, or an edge function — and it renders the same island modules:',
+        'Your static host keeps serving the pages. Mount a small handler wherever you run server code — Node, serverless, or an edge function — and it renders the same island modules. For a full walkthrough with a runnable Node host, see the ',
+        a({ href: '/examples/islands' }, 'Server islands example'),
+        '.',
       ),
       codeBlock('islands-function.js', serverSnippet, 'javascript'),
       p(

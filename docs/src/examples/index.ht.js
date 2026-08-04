@@ -20,6 +20,10 @@ export default () =>
           code('fetchWithCache'),
           ', list them, and generate static post pages.',
         ),
+        li(
+          a({ href: '/examples/islands' }, 'Server islands'),
+          ' — static pages plus a Node host that renders islands at request time.',
+        ),
       ),
       h2('Coming soon'),
       ul(

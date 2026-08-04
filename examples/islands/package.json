@@ -1,0 +1,13 @@
+{
+  "name": "sitelo-example-islands",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "sitelo",
+    "build": "sitelo build",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "sitelo": "file:../.."
+  }
+}
