@@ -22,9 +22,15 @@ export default () =>
           },
           'javascript-to-html',
         ),
-        ' (also known as ', a({ href: 'https://ht.js.org' }, 'ht.js'), '): a simple, extensible way to write HTML ',
-        em('in'),
-        ' JavaScript. Nested function calls instead of template soup — still plain values you can compose, map, and return.',
+        ' (also known as ',
+        a({ href: 'https://ht.js.org', rel: 'noopener' }, 'ht.js'),
+        '): a simple, intuitive way to generate HTML in JavaScript, without complex templating engines or frameworks.',
+      ),
+      p(
+        'Given how ubiquitous full-featured frameworks like React had become, finding a simple templating solution that didn’t include the kitchen sink was surprisingly hard. By focusing only on transforming JavaScript to HTML — basically functions that return strings — ht.js stays lightweight, easy to use, flexible, and extensible.',
+      ),
+      p(
+        'That small surface means it fits many places: directly in the frontend (SPA-style), in a build to create static sites (SSG), or even for server-side rendering (SSR).',
       ),
       h2('Teaching Vite to emit HTML'),
       p(

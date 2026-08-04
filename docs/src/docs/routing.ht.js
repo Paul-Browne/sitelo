@@ -1,4 +1,4 @@
-import { h2, p, table, tbody, td, th, thead, tr } from 'javascript-to-html'
+import { div, h2, p, table, tbody, td, th, thead, tr } from 'javascript-to-html'
 import { code, codeBlock } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
@@ -39,25 +39,28 @@ export default () =>
       p('Routes come straight from the filesystem under ', code('src/'), '.'),
       codeBlock('project', structureSnippet, 'bash'),
       h2('Route table'),
-      table(
-        { class: 'docs-table' },
-        thead(tr(th('Feature'), th('File'), th('URL'))),
-        tbody(
-          row('Static', code('index.ht.js'), code('/')),
-          row('Nested', code('blog/index.ht.js'), code('/blog')),
-          row('Dynamic', code('blog/[slug].ht.js'), code('/blog/my-post')),
-          row(
-            'Multiple params',
-            code('blog/[year]/[slug].ht.js'),
-            code('/blog/2026/my-post'),
+      div(
+        { class: 'docs-table-scroll' },
+        table(
+          { class: 'docs-table' },
+          thead(tr(th('Feature'), th('File'), th('URL'))),
+          tbody(
+            row('Static', code('index.ht.js'), code('/')),
+            row('Nested', code('blog/index.ht.js'), code('/blog')),
+            row('Dynamic', code('blog/[slug].ht.js'), code('/blog/my-post')),
+            row(
+              'Multiple params',
+              code('blog/[year]/[slug].ht.js'),
+              code('/blog/2026/my-post'),
+            ),
+            row('Catch-all', code('docs/[...path].ht.js'), code('/docs/api/auth')),
+            row(
+              'Optional catch-all',
+              code('docs/[...path]?.ht.js'),
+              code('/docs + deeper'),
+            ),
+            row('Route groups', code('(admin)/users.ht.js'), code('/users')),
           ),
-          row('Catch-all', code('docs/[...path].ht.js'), code('/docs/api/auth')),
-          row(
-            'Optional catch-all',
-            code('docs/[...path]?.ht.js'),
-            code('/docs + deeper'),
-          ),
-          row('Route groups', code('(admin)/users.ht.js'), code('/users')),
         ),
       ),
       p(
