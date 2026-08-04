@@ -657,6 +657,11 @@ code {
   max-width: 38rem;
 }
 
+.content-main .docs-table-scroll {
+  margin: 0 0 1.25rem;
+  max-width: 100%;
+}
+
 .content-main a {
   text-decoration: underline;
   text-underline-offset: 0.15em;
@@ -809,6 +814,14 @@ code {
 
 .docs-table td {
   color: var(--ink-soft);
+}
+
+.docs-table--wrap-last th:last-child,
+.docs-table--wrap-last td:last-child {
+  white-space: normal;
+  min-width: 14rem;
+  max-width: 22rem;
+  line-height: 1.45;
 }
 
 .page-docs .footer {

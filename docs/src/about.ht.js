@@ -1,6 +1,22 @@
-import { a, em, h2, p } from 'javascript-to-html'
+import {
+  a,
+  div,
+  em,
+  h2,
+  p,
+  table,
+  tbody,
+  td,
+  th,
+  thead,
+  tr,
+} from 'javascript-to-html'
 import { code } from './lib/code.js'
 import { pageLayout } from './lib/layout.js'
+
+function comparisonRow(tool, model, when) {
+  return tr(td(tool), td(model), td(when))
+}
 
 export default () =>
   pageLayout({
@@ -69,6 +85,47 @@ export default () =>
       ),
       p(
         'Same idea all the way down: pages are modules that return HTML. sitelo is the layer that makes that idea feel finished.',
+      ),
+      h2('How it compares'),
+      p(
+        'Plenty of good tools already ship static sites. sitelo’s niche is narrow on purpose: JavaScript (or TypeScript) functions that return HTML, with Vite’s dev experience, and as little framework as possible.',
+      ),
+      div(
+        { class: 'docs-table-scroll' },
+        table(
+          { class: 'docs-table docs-table--wrap-last' },
+          thead(tr(th('Tool'), th('Model'), th('Reach for it when'))),
+          tbody(
+            comparisonRow(
+              'sitelo',
+              'JS/TS functions → HTML on Vite',
+              'You want HTML out of JavaScript with a real Vite workflow — no component framework required',
+            ),
+            comparisonRow(
+              'Astro',
+              'Components + islands, own compiler',
+              'Content sites that want component islands and a bigger ecosystem',
+            ),
+            comparisonRow(
+              'Next.js',
+              'Full React app (SSR / SSG / ISR)',
+              'You’re building an application in the React ecosystem',
+            ),
+            comparisonRow(
+              'Hugo',
+              'Go templates, very fast builds',
+              'Huge content sites and you’re happy in Go’s toolchain',
+            ),
+            comparisonRow(
+              'Eleventy',
+              'Template languages → HTML',
+              'You want flexible templates (Nunjucks, Liquid, …) without a SPA framework',
+            ),
+          ),
+        ),
+      ),
+      p(
+        'If you want components, hydration, and a framework — use a framework. If you want HTML files out of JavaScript functions with the Vite experience, sitelo is the smallest tool that does the whole job.',
       ),
       p(
         a({ href: '/docs' }, 'Read the docs'),
