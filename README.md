@@ -65,6 +65,7 @@ That's the whole mental model. Everything else is convenience on top.
 - **Smart asset pipeline** — JS/TS/CSS referenced by your HTML is bundled and minified; server-only code never leaks into `dist`
 - **Asset validation** — broken `<script src>` / stylesheet links fail the build
 - **Real dev server** — pages render on request (dynamic routes included, no `generateStaticParams` needed in dev) with full reload and readable error frames
+- **Server islands (experimental)** — static pages with regions rendered on the server at request time
 - **Parallel static generation** — renders large sites concurrently
 - **`404.html`, `sitemap.xml`, RSS** — generated for you
 
@@ -496,6 +497,85 @@ ReferenceError: title is not defined
 Fix the error and save again.
 Watching for file changes...
 ```
+
+---
+
+## Server islands (experimental)
+
+Keep the page static, but render marked regions **on the server at
+request time** — fresh comments on a cached blog post, a stock badge on
+a product page. An island is just another function that returns HTML.
+
+**1. Write the island** — a fragment module under `src/islands/`
+(plain `.js`/`.ts`, *not* `.ht.js` — islands are fragments, not pages):
+
+```js
+// src/islands/comments.js
+export default async function comments({ props, request }) {
+  const comments = await fetchComments(props.postId)
+  return `<ul>${comments.map((c) => `<li>${c.text}</li>`).join('')}</ul>`
+}
+```
+
+**2. Place it in a page** with `island()` — the build ships the fallback:
+
+```js
+// src/blog/[slug].ht.js
+import { island } from 'sitelo/islands'
+
+export default ({ params }) => `
+  <html>
+    <body>
+      <article>…static content…</article>
+      ${island('comments', { postId: params.slug }, '<p>Loading comments…</p>')}
+      <script type="module" src="/islands.js"></script>
+    </body>
+  </html>
+`
+```
+
+**3. Add the client loader** (bundled by the normal asset pipeline):
+
+```js
+// src/islands.js
+import { mountIslands } from 'sitelo/islands/client'
+
+mountIslands()
+```
+
+In **dev** this already works — `sitelo dev` serves islands at
+`/_sitelo/islands/<name>` using the modules in `src/islands/`.
+
+In **production** the static host serves the page; you mount a tiny
+handler wherever you run server code and it renders the same modules:
+
+```js
+// e.g. a Node server, or a serverless/edge function
+import { createIslandsHandler } from 'sitelo/islands/server'
+
+const handleIslands = createIslandsHandler({
+  islands: {
+    comments: () => import('./src/islands/comments.js'),
+  },
+})
+
+// Web Request → Response | null (null = not an island request)
+export default { fetch: (request) => handleIslands(request) }
+```
+
+Plain Node http/express? Use `createIslandsNodeHandler(options)` —
+same options, `(req, res, next)` signature.
+
+Notes:
+
+- Island modules receive `{ name, props, request }` and must return an
+  HTML string. Props are JSON, embedded in the placeholder and sent back
+  on the request — keep them small and non-secret.
+- Islands are **server-only**: unreferenced code under `src/` is never
+  emitted to `dist/`, so island modules (and their imports) don't ship
+  to the browser.
+- No island endpoint in production? The fallback HTML simply stays —
+  pages degrade gracefully.
 
 ---
 

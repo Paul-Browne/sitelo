@@ -23,6 +23,7 @@ const features = [
   ['Data loading', 'data() at build time, with fetch caching'],
   ['Asset pipeline', 'Referenced JS/TS/CSS is bundled; the rest stays server-only'],
   ['Dev server', 'Real renders on request — including dynamic routes'],
+  ['Server islands', 'Static pages with regions rendered on the server at request time'],
   ['Extras', '404.html, sitemap.xml, and RSS when you ask'],
 ]
 

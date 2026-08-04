@@ -1,6 +1,6 @@
 {
   "name": "sitelo",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "author": "Paul Browne",
   "type": "module",
   "license": "MIT",
@@ -50,6 +50,18 @@
     "./jsx-dev-runtime": {
       "types": "./src/jsx-dev-runtime.d.ts",
       "import": "./src/jsx-dev-runtime.js"
+    },
+    "./islands": {
+      "types": "./src/islands.d.ts",
+      "import": "./src/islands.js"
+    },
+    "./islands/client": {
+      "types": "./src/islands-client.d.ts",
+      "import": "./src/islands-client.js"
+    },
+    "./islands/server": {
+      "types": "./src/islands-server.d.ts",
+      "import": "./src/islands-server.js"
     }
   },
   "files": [

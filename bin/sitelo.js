@@ -6,6 +6,8 @@ import process from 'node:process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import htmlPages from '../src/index.js';
+import { renderIsland } from '../src/islands-server.js';
+import { isValidIslandName } from '../src/islands.js';
 import {
   build,
   createLogger,
@@ -17,6 +19,8 @@ import {
 
 const PLUGIN_NAME = 'vite-plugin-html-pages';
 const LOG_PREFIX = '[sitelo]';
+const ISLANDS_ENDPOINT = '/_sitelo/islands';
+const ISLAND_FILE_EXTENSIONS = ['.js', '.mjs', '.ts'];
 const SITELO_CONFIG_FILES = ['sitelo.config.js', 'sitelo.config.mjs'];
 const VERSION = JSON.parse(
   fs.readFileSync(
@@ -278,7 +282,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
   }
 
   if (hasPluginInUserConfig) {
-    return { plugins: [], viteOptions };
+    return { plugins: [], viteOptions, pluginOptions };
   }
 
   return {
@@ -289,6 +293,96 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
       }),
     ],
     viteOptions,
+    pluginOptions,
+  };
+}
+
+/**
+ * Dev-only endpoint for server islands: renders src/<pagesDir>/islands/<name>.js
+ * modules on request at /_sitelo/islands/<name>?props=<json>.
+ *
+ * Production deployments mount their own handler via `sitelo/islands/server`.
+ */
+function islandsDevPlugin({ root, pagesDir = 'src' }) {
+  return {
+    name: 'sitelo:islands-dev',
+
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        const rawUrl = req.url ?? '';
+        const markerIndex = rawUrl.indexOf(`${ISLANDS_ENDPOINT}/`);
+
+        if (markerIndex === -1 || (req.method ?? 'GET') !== 'GET') {
+          return next();
+        }
+
+        const [pathname, query = ''] = rawUrl.slice(markerIndex).split('?');
+        const name = decodeURIComponent(
+          pathname.slice(ISLANDS_ENDPOINT.length + 1),
+        );
+
+        if (!isValidIslandName(name)) {
+          res.statusCode = 400;
+          res.end('Invalid island name');
+          return;
+        }
+
+        const islandsDir = path.join(root, pagesDir, 'islands');
+        const extension = ISLAND_FILE_EXTENSIONS.find((ext) =>
+          fs.existsSync(path.join(islandsDir, `${name}${ext}`)),
+        );
+
+        if (!extension) {
+          res.statusCode = 404;
+          res.end(`Unknown island: ${name} (expected ${pagesDir}/islands/${name}.js)`);
+          return;
+        }
+
+        try {
+          const runner = server.environments.ssr?.runner;
+          if (!runner || typeof runner.import !== 'function') {
+            throw new Error('Vite SSR environment is not runnable');
+          }
+
+          const mod = await runner.import(
+            `/${pagesDir}/islands/${name}${extension}`,
+          );
+
+          const params = new URLSearchParams(query);
+          let props = {};
+          const rawProps = params.get('props');
+          if (rawProps) {
+            try {
+              props = JSON.parse(rawProps);
+            } catch {
+              res.statusCode = 400;
+              res.end('Invalid island props');
+              return;
+            }
+          }
+
+          const host = req.headers.host ?? 'localhost';
+          const request = new Request(`http://${host}${rawUrl}`, {
+            method: 'GET',
+          });
+
+          const html = await renderIsland(mod, { name, props, request });
+
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          res.setHeader('Cache-Control', 'no-store');
+          res.end(html);
+        } catch (error) {
+          server.config.logger.error(
+            `${LOG_PREFIX} island "${name}" render failed: ${
+              error instanceof Error ? error.stack ?? error.message : error
+            }`,
+          );
+          res.statusCode = 500;
+          res.end('Island render failed');
+        }
+      });
+    },
   };
 }
 
@@ -346,7 +440,7 @@ function buildInlineConfig(cli, command, viteFromSitelo = {}) {
 
 async function runDev(cli) {
   const mode = cli.mode ?? 'development';
-  const { plugins, viteOptions } = await resolveSiteloConfig({
+  const { plugins, viteOptions, pluginOptions } = await resolveSiteloConfig({
     root: cli.root,
     configFile: cli.config,
     command: 'serve',
@@ -355,7 +449,15 @@ async function runDev(cli) {
   });
 
   const server = await createServer(
-    mergeConfig(buildInlineConfig(cli, 'dev', viteOptions), { plugins }),
+    mergeConfig(buildInlineConfig(cli, 'dev', viteOptions), {
+      plugins: [
+        islandsDevPlugin({
+          root: cli.root,
+          pagesDir: pluginOptions?.pagesDir,
+        }),
+        ...plugins,
+      ],
+    }),
   );
 
   await server.listen();

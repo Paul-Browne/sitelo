@@ -3,6 +3,7 @@ export const DOC_NAV = [
   { href: '/docs/pages', label: 'Writing pages' },
   { href: '/docs/routing', label: 'Routing' },
   { href: '/docs/data', label: 'Data loading' },
+  { href: '/docs/islands', label: 'Server islands' },
   { href: '/docs/assets', label: 'Assets & styling' },
   { href: '/docs/typescript', label: 'TypeScript' },
   { href: '/docs/configuration', label: 'Configuration' },
