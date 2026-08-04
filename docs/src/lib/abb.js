@@ -1,6 +1,8 @@
 // Patched local copy of animated-background-blobs@1.0.0
 // https://www.npmjs.com/package/animated-background-blobs
 // Upstream uses `export default abb = …` which throws in ESM (abb is not defined).
+// Also: grain noise is generated once as a fixed tile so mobile chrome
+// show/hide (viewport resize) does not rebuild the data-URL every frame.
 
 const updateStyle = (points) =>
   points
@@ -11,8 +13,8 @@ const updateStyle = (points) =>
     .join(',')
 
 const loadNoise = ({
-  width,
-  height,
+  width = 256,
+  height = 256,
   opacity = 0.5,
   baseFrequency = 2,
   numOctaves = 1,
@@ -61,7 +63,15 @@ function abb({
   if (!element) return
 
   const stylesheet = new CSSStyleSheet()
-  document.adoptedStyleSheets = [stylesheet]
+  const grainSheet = new CSSStyleSheet()
+  document.adoptedStyleSheets = [
+    ...document.adoptedStyleSheets.filter(
+      (sheet) => sheet !== stylesheet && sheet !== grainSheet,
+    ),
+    grainSheet,
+    stylesheet,
+  ]
+
   let points = colors.map((color) => ({
     x: Math.random() * 100,
     y: Math.random() * 100,
@@ -73,6 +83,20 @@ function abb({
   const fps = 60
   const interval = 1000 / fps
   let then
+
+  // Fixed tile — do not tie to element size / visual viewport (mobile chrome flicker).
+  if (grainOpacity && strength) {
+    grainSheet.replaceSync(
+      `${element}:after{background:url(${loadNoise({
+        width: 512,
+        height: 512,
+        opacity: grainOpacity,
+        baseFrequency: 2 / strength,
+      })}) repeat;${grainBlur ? `filter:blur(${grainBlur}px);` : ''}}`,
+    )
+  } else {
+    grainSheet.replaceSync('')
+  }
 
   abb.store = abb.store || {}
 
@@ -89,23 +113,9 @@ function abb({
         cancelAnimationFrame(abb.store[element])
       }
       then = timestamp - (delta % interval)
-      const css = `${element}:before{opacity:${opacity};background-color:${background};background-image:${updateStyle(points)};filter:saturate(${saturate}) invert(${invert ? 1 : 0}) blur(${blur}px);}`
-      if (grainOpacity && strength) {
-        const { width, height } = document
-          .querySelector(element)
-          .getBoundingClientRect()
-        const makeNoise = loadNoise({
-          width,
-          height,
-          opacity: grainOpacity,
-          baseFrequency: 2 / strength,
-        })
-        stylesheet.replaceSync(
-          `${element}:after{background:url(${makeNoise});${grainBlur ? `filter:blur(${grainBlur}px);` : ''}}${css}`,
-        )
-      } else {
-        stylesheet.replaceSync(css)
-      }
+      stylesheet.replaceSync(
+        `${element}:before{opacity:${opacity};background-color:${background};background-image:${updateStyle(points)};filter:saturate(${saturate}) invert(${invert ? 1 : 0}) blur(${blur}px);}`,
+      )
       points = updatePosition(points)
     }
   }
