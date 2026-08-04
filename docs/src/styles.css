@@ -191,15 +191,25 @@ code {
 }
 
 .hero h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: 0 0 1rem;
   max-width: 18em;
+  min-height: calc(1.18em * 2);
   font-family: var(--font-display);
   font-size: clamp(1.55rem, 3.6vw, 2.45rem);
   font-weight: 600;
   line-height: 1.18;
   letter-spacing: -0.035em;
   animation: rise 700ms 60ms ease both;
+  text-align: center;
   text-wrap: balance;
+}
+
+.hero-headline-text {
+  display: block;
+  width: 100%;
 }
 
 .hero-typed {

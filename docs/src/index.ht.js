@@ -61,15 +61,19 @@ function headerHero() {
       ),
       h1(
         { class: 'hero-headline' },
-        'The modern framework for ',
         span(
-          {
-            class: 'hero-typed',
-            'data-phrases': 'fast websites|blogs|portfolios|landing pages|content-driven sites|e-commerce sites',
-            'aria-live': 'polite',
-          },
-          'fast websites',
-        )
+          { class: 'hero-headline-text' },
+          'The modern framework for ',
+          span(
+            {
+              class: 'hero-typed',
+              'data-phrases':
+                'fast websites|blogs|portfolios|landing pages|content-driven sites|e-commerce sites',
+              'aria-live': 'polite',
+            },
+            'fast websites',
+          ),
+        ),
       ),
       p(
         { class: 'hero-lede' },
