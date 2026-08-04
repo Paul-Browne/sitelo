@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/sitelo.svg)](https://www.npmjs.com/package/sitelo)
 [![npm downloads](https://img.shields.io/npm/dm/sitelo.svg)](https://www.npmjs.com/package/sitelo)
 [![license](https://img.shields.io/npm/l/sitelo.svg)](LICENSE)
-[![vite](https://img.shields.io/badge/vite-plugin-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
+[![vite](https://img.shields.io/badge/vite-plugin-646CFF?logo=vite&logoColor=white)](https://vite.dev)
 
 **Static site generation for Vite — no framework, no components, no magic.**
 

@@ -79,6 +79,16 @@ function headerHero() {
         { class: 'hero-lede' },
         'Zero configuration. Lightening fast builds. Deploy anywhere. — one install.',
       ),
+      a(
+        {
+          class: 'vite-badge',
+          href: 'https://vite.dev',
+          rel: 'noopener',
+          target: '_blank',
+        },
+        span({ class: 'vite-badge-icon', 'aria-hidden': 'true' }, '⚡'),
+        'Powered by Vite',
+      ),
       div(
         { class: 'hero-actions' },
         a({ class: 'btn', href: '/docs' }, 'Get started'),

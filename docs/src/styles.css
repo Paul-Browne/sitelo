@@ -241,10 +241,39 @@ code {
 
 .hero-lede {
   max-width: 34rem;
-  margin: 0 0 2rem;
+  margin: 0 0 1rem;
   color: var(--ink-soft);
   font-size: 1.12rem;
   animation: rise 700ms 120ms ease both;
+}
+
+.vite-badge {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  gap: 0.35rem;
+  width: fit-content;
+  margin: 0 0 2rem;
+  padding: 0.35rem 0.8rem 0.35rem 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--paper-elevated) 70%, transparent);
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  animation: rise 700ms 150ms ease both;
+}
+
+.vite-badge:hover {
+  border-color: color-mix(in srgb, #9499ff 55%, transparent);
+  color: var(--ink);
+}
+
+.vite-badge-icon {
+  font-size: 0.9em;
+  line-height: 1;
 }
 
 .hero-actions {
@@ -572,6 +601,7 @@ code {
   .hero-badge,
   .hero h1,
   .hero-lede,
+  .vite-badge,
   .hero-actions {
     animation: none;
   }
