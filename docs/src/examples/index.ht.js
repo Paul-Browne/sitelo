@@ -15,6 +15,10 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li(
+          a({ href: '/examples/basic' }, 'Basic site'),
+          ' — minimal project plus static deploy configs for Netlify, Vercel, Cloudflare Pages, and AWS Amplify.',
+        ),
+        li(
           a({ href: '/examples/wordpress' }, 'WordPress'),
           ' — pull posts from the WordPress REST API with ',
           code('fetchWithCache'),

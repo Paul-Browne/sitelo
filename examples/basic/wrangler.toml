@@ -1,0 +1,7 @@
+# Cloudflare Pages — output directory for `wrangler pages deploy` / dashboard builds.
+# Dashboard: Build command `npm run build`, Build output directory `dist`.
+# Monorepo: set Root directory to `examples/basic`.
+
+name = "sitelo-basic"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "dist"

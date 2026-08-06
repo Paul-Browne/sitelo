@@ -20,6 +20,11 @@ npm run dev
 
 `sitelo` already serves islands from `src/islands/`.
 
+## Deploy
+
+- **Static hosts** — use the configs from [`examples/basic`](../basic/) (Netlify, Vercel, Cloudflare Pages, AWS Amplify). Island placeholders keep their fallback until you add a serverless/edge function for `/_sitelo/islands/*`.
+- **Node** — `npm run build && npm start` (set `PORT` on the platform).
+
 ## Layout
 
 - `src/index.ht.js` — page with `island('time', …)`

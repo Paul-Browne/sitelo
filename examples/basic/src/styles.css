@@ -1,0 +1,11 @@
+body {
+  font-family: system-ui, sans-serif;
+  max-width: 36rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  line-height: 1.5;
+}
+
+code {
+  font-size: 0.9em;
+}

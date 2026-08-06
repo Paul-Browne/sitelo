@@ -1,0 +1,6 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Sitelo emits clean URLs as directories with index.html (e.g. about/index.html).
+# Pretty URLs work out of the box; no redirect rules required for static pages.
