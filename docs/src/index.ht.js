@@ -22,8 +22,13 @@ const features = [
   ['Dynamic routes', '[slug], [...path], optional catch-alls'],
   ['Data loading', 'data() at build time, with fetch caching'],
   ['Asset pipeline', 'Referenced JS/TS/CSS is bundled; the rest stays server-only'],
+  [
+    'Zero JavaScript, by default',
+    'Only the scripts you link are bundled — everything else stays off the page for a faster site',
+  ],
   ['Dev server', 'Real renders on request — including dynamic routes'],
   ['Server islands', 'Static pages with regions rendered on the server at request time'],
+  ['One-click deploy', 'Netlify, Vercel, Cloudflare Pages, and AWS Amplify configs included'],
   ['Extras', '404.html, sitemap.xml, and RSS when you ask'],
 ]
 
