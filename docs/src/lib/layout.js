@@ -19,7 +19,26 @@ import {
   title,
 } from 'javascript-to-html'
 
+import { createRequire } from 'node:module'
+
 import { DOC_NAV, EXAMPLE_NAV } from './nav.js'
+
+const viteVersion = createRequire(import.meta.url)('vite/package.json').version
+
+const viteBolt = `<svg class="badge-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 11-13h-8z"/></svg>`
+
+function badge({ variant, href, label, name, value, icon, external = true }) {
+  return a(
+    {
+      class: `badge ${variant}`,
+      href,
+      'aria-label': label,
+      ...(external ? { rel: 'noopener', target: '_blank' } : {}),
+    },
+    span({ class: 'badge-name' }, icon ?? '', name),
+    span({ class: 'badge-value' }, value),
+  )
+}
 
 function siteNav(activeHref = '/') {
   const onDocs = activeHref.startsWith('/docs')
@@ -65,7 +84,6 @@ function siteFooter() {
   return footer(
     { class: 'footer' },
     p(
-      'MIT · ',
       a(
         {
           href: 'https://github.com/paul-browne/sitelo',
@@ -76,16 +94,29 @@ function siteFooter() {
     ),
     p(
       { class: 'footer-meta' },
-      span('Node 18+'),
-      ' · ',
-      a(
-        {
-          href: 'https://vite.dev',
-          rel: 'noopener',
-          target: '_blank',
-        },
-        '⚡ Powered by Vite',
-      ),
+      badge({
+        variant: 'badge-license',
+        href: '/license.txt',
+        label: 'MIT license',
+        name: 'license',
+        value: 'MIT',
+        external: false,
+      }),
+      badge({
+        variant: 'badge-node',
+        href: 'https://nodejs.org/docs/latest/api/',
+        label: 'Requires Node 18 or newer',
+        name: 'node',
+        value: '18+',
+      }),
+      badge({
+        variant: 'badge-vite',
+        href: 'https://vite.dev',
+        label: `Powered by Vite ${viteVersion}`,
+        name: 'vite',
+        value: `v${viteVersion}`,
+        icon: viteBolt,
+      }),
     ),
   )
 }
