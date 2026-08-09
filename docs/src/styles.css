@@ -845,8 +845,11 @@ code {
 }
 
 @media (max-width: 640px) {
+  /* 16px side padding — use px, not rem (html font-size is 1.0625rem) */
   .hero {
     min-height: auto;
+    padding-left: 16px;
+    padding-right: 16px;
     padding-bottom: 3rem;
   }
 
@@ -860,7 +863,25 @@ code {
   }
 
   .topbar-inner {
-    padding: 0.65rem 0;
+    width: 100%;
+    padding: 0.65rem 16px;
+  }
+
+  .section {
+    width: 100%;
+  }
+
+  .footer,
+  .page-docs .footer {
+    width: calc(100% - 32px);
+  }
+
+  .docs-shell {
+    width: calc(100% - 32px);
+  }
+
+  .content-main {
+    width: calc(100% - 32px);
   }
 
   .nav {
@@ -882,6 +903,29 @@ code {
     justify-content: space-between;
   }
 
+  .feature-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .feature-card-body {
+    padding: 1rem 1rem 1.1rem;
+  }
+
+  .feature-chip {
+    width: 2.15rem;
+    height: 2.15rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .feature-list h3 {
+    font-size: 0.98rem;
+  }
+
+  .feature-list p {
+    font-size: 0.88rem;
+  }
+
   .section {
     padding-top: 3rem;
   }
@@ -893,6 +937,14 @@ code {
   max-width: 100%;
   margin: 0 auto;
   padding: 0 clamp(1.25rem, 4vw, 2.5rem) 2rem;
+}
+
+@media (max-width: 640px) {
+  .landing-sections {
+    width: 100%;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 }
 
 .btn-inline {
