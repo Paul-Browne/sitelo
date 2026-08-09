@@ -735,6 +735,10 @@ code {
   height: 1em;
 }
 
+.badge-sitelo .badge-value {
+  background: #1a9a5c;
+}
+
 .badge-license .badge-value {
   background: #97ca00;
 }

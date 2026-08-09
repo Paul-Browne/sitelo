@@ -23,7 +23,9 @@ import { createRequire } from 'node:module'
 
 import { DOC_NAV, EXAMPLE_NAV } from './nav.js'
 
-const viteVersion = createRequire(import.meta.url)('vite/package.json').version
+const require = createRequire(import.meta.url)
+const viteVersion = require('vite/package.json').version
+const siteloVersion = require('../../../package.json').version
 
 const viteBolt = `<svg class="badge-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 11-13h-8z"/></svg>`
 
@@ -83,17 +85,16 @@ function siteNav(activeHref = '/') {
 function siteFooter() {
   return footer(
     { class: 'footer' },
-    p(
-      a(
-        {
-          href: 'https://github.com/paul-browne/sitelo',
-          rel: 'noopener',
-        },
-        'paul-browne/sitelo',
-      ),
-    ),
+    p(`© Paul Browne ${new Date().getFullYear()}`),
     p(
       { class: 'footer-meta' },
+      badge({
+        variant: 'badge-sitelo',
+        href: 'https://github.com/paul-browne/sitelo',
+        label: `sitelo ${siteloVersion} on GitHub`,
+        name: 'sitelo',
+        value: `v${siteloVersion}`,
+      }),
       badge({
         variant: 'badge-license',
         href: '/license.txt',
