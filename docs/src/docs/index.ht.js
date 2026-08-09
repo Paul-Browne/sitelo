@@ -12,6 +12,15 @@ export default () => \`
   </html>
 \``
 
+const pageHtSnippet = `// src/index.ht.js
+import { html, head, title, body, h1 } from 'javascript-to-html'
+
+export default () =>
+  html({ lang: 'en' },
+    head(title('My website')),
+    body(h1('Hello world'))
+  )`
+
 const runSnippet = `sitelo          # dev server
 sitelo build    # write dist/
 sitelo preview  # preview the build`
@@ -33,6 +42,20 @@ export default () =>
       h2('Your first page'),
       p('Create ', code('src/index.ht.js'), ':'),
       codeBlock('src/index.ht.js', pageSnippet, 'javascript'),
+      p(
+        'Or, recommended — use ',
+        a({ href: 'https://ht.js.org', rel: 'noopener' }, 'ht.js'),
+        ' (',
+        a(
+          {
+            href: 'https://www.npmjs.com/package/javascript-to-html',
+            rel: 'noopener',
+          },
+          'javascript-to-html',
+        ),
+        '):',
+      ),
+      codeBlock('src/index.ht.js', pageHtSnippet, 'javascript'),
       h2('Run'),
       codeBlock('shell', runSnippet, 'bash'),
       p(
@@ -50,6 +73,14 @@ export default () =>
         li(a({ href: '/docs/pages' }, 'Writing pages'), ' — template strings, JSX, structured modules'),
         li(a({ href: '/docs/routing' }, 'Routing'), ' — file-based routes and ', code('generateStaticParams')),
         li(a({ href: '/docs/data' }, 'Data loading'), ' — ', code('data()'), ' and ', code('fetchWithCache')),
+        li(
+          a({ href: '/docs/assets' }, 'Assets & styling'),
+          ' — frontend JS/CSS compiled by Vite (',
+          code('src/js'),
+          ', ',
+          code('src/css'),
+          ')',
+        ),
         li(a({ href: '/docs/configuration' }, 'Configuration'), ' — ', code('sitelo.config.js'), ' and Vite options'),
         li(a({ href: '/docs/build-with-ai' }, 'Build with AI'), ' — ', code('llms.txt'), ', project rules, and agent tips'),
       ),

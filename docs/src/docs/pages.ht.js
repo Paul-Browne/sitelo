@@ -37,7 +37,8 @@ export default () =>
 export default () =>
   docsLayout({
     title: 'Writing pages',
-    description: 'How to author sitelo pages with strings, JSX, or javascript-to-html.',
+    description:
+      'How to author sitelo pages — strings, JSX, or javascript-to-html (recommended).',
     activeHref: '/docs/pages',
     children: [
       p(
@@ -65,7 +66,22 @@ export default () =>
       h2('3. A structured module'),
       p('Keep ', code('render'), ', ', code('data'), ', and ', code('generateStaticParams'), ' together:'),
       codeBlock('page.ht.js', structuredSnippet, 'javascript'),
-      h2('4. JSX / TSX'),
+      h2('4. javascript-to-html (recommended)'),
+      p(
+        'The recommended way to write HTML in JavaScript: tag functions that return strings — no templating engine, no React runtime. Install ',
+        a(
+          {
+            href: 'https://ht.js.org',
+            rel: 'noopener',
+          },
+          'javascript-to-html',
+        ),
+        ' (',
+        a({ href: 'https://ht.js.org', rel: 'noopener' }, 'ht.js.org'),
+        '):',
+      ),
+      codeBlock('src/index.ht.js', j2hSnippet, 'javascript'),
+      h2('5. JSX / TSX'),
       p(
         'Name the file ',
         code('*.ht.jsx'),
@@ -82,19 +98,6 @@ export default () =>
         ' will not run in the browser.',
       ),
       codeBlock('src/index.ht.tsx', jsxSnippet, 'javascript'),
-      h2('5. javascript-to-html'),
-      p(
-        'Prefer composable functions? Use ',
-        a(
-          {
-            href: 'https://www.npmjs.com/package/javascript-to-html',
-            rel: 'noopener',
-          },
-          'javascript-to-html',
-        ),
-        ':',
-      ),
-      codeBlock('src/index.ht.js', j2hSnippet, 'javascript'),
       h2('Render context'),
       p('Every page function receives one argument:'),
       h3('params'),

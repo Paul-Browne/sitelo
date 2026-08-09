@@ -1,16 +1,53 @@
-import { h2, li, p, ul } from 'javascript-to-html'
+import { a, h2, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
-const assetSnippet = `export default () => \`
-  <html>
+const layoutSnippet = `my-site/
+  src/
+    index.ht.js          # page — returns HTML
+    css/
+      styles.css         # linked from HTML → bundled
+    js/
+      main.js            # linked from HTML → bundled
+      counter.ts         # imported by main.js → bundled too
+    lib/
+      posts.js           # only used in data() → never ships
+  public/
+    favicon.ico          # copied as-is`
+
+const pageSnippet = `// src/index.ht.js
+export default () => \`
+  <html lang="en">
     <head>
-      <link rel="stylesheet" href="/styles.css">
-      <script type="module" src="/main.js"></script>
+      <title>My site</title>
+      <link rel="stylesheet" href="/css/styles.css">
+      <script type="module" src="/js/main.js"></script>
     </head>
-    <body>...</body>
+    <body>
+      <h1>Hello</h1>
+      <button id="count">0</button>
+    </body>
   </html>
 \``
+
+const jsSnippet = `// src/js/main.js
+import { createCounter } from './counter.ts'
+
+const button = document.querySelector('#count')
+const next = createCounter()
+
+button.addEventListener('click', () => {
+  button.textContent = String(next())
+})`
+
+const cssSnippet = `/* src/css/styles.css */
+@import './tokens.css';
+
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  padding: 2rem;
+}`
 
 const warnSnippet = `// sitelo.config.js
 export default {
@@ -20,35 +57,102 @@ export default {
 export default () =>
   docsLayout({
     title: 'Assets & styling',
-    description: 'How sitelo bundles CSS/JS and validates asset references.',
+    description:
+      'How sitelo compiles frontend JavaScript and CSS with Vite — and keeps server-only code out of the browser.',
     activeHref: '/docs/assets',
     children: [
       p(
-        'Reference assets with root-relative URLs. sitelo bundles what your HTML points at.',
+        'sitelo is built on Vite, so frontend JavaScript and CSS are compiled automatically. Put scripts and styles under ',
+        code('src/'),
+        ' (for example ',
+        code('src/js'),
+        ' and ',
+        code('src/css'),
+        '), link them from your HTML with root-relative URLs, and sitelo handles the rest — TypeScript, CSS imports, bundling, and minification.',
       ),
-      codeBlock('src/index.ht.js', assetSnippet, 'javascript'),
-      h2('At build time'),
+      h2('Project layout'),
+      p(
+        'Pages and assets share ',
+        code('src/'),
+        '. Folders like ',
+        code('js/'),
+        ' and ',
+        code('css/'),
+        ' are conventions, not requirements — sitelo cares about what your HTML references, not the folder names.',
+      ),
+      codeBlock('project', layoutSnippet, 'bash'),
+      h2('Link assets from HTML'),
+      p(
+        'Reference files with root-relative paths. A ',
+        code('<script type="module">'),
+        ' or ',
+        code('<link rel="stylesheet">'),
+        ' is what tells sitelo to include that file in the build:',
+      ),
+      codeBlock('src/index.ht.js', pageSnippet, 'javascript'),
+      codeBlock('src/js/main.js', jsSnippet, 'javascript'),
+      codeBlock('src/css/styles.css', cssSnippet, 'css'),
+      h2('What Vite compiles'),
       ul(
         { class: 'docs-list' },
         li(
-          'Referenced JS / TS / CSS is bundled with esbuild — imports inlined, output minified, ',
-          code('.ts'),
-          ' compiles to ',
           code('.js'),
-          '.',
+          ' / ',
+          code('.ts'),
+          ' / ',
+          code('.jsx'),
+          ' / ',
+          code('.tsx'),
+          ' — bundled as ES modules, TypeScript stripped, imports inlined',
         ),
+        li(
+          code('.css'),
+          ' — processed and minified; ',
+          code('@import'),
+          ' and relative ',
+          code('url()'),
+          ' references are resolved',
+        ),
+        li(
+          'Anything imported from a referenced entry (like ',
+          code('counter.ts'),
+          ' above) is pulled into the same bundle',
+        ),
+        li(
+          'In ',
+          code('sitelo'),
+          ' (dev), the same URLs go through Vite’s transform pipeline — no separate build step to try TypeScript or CSS',
+        ),
+      ),
+      p(
+        'Need PostCSS, Sass, or other Vite plugins? Add them under ',
+        code('vite'),
+        ' in ',
+        a({ href: '/docs/configuration' }, 'sitelo.config.js'),
+        '.',
+      ),
+      h2('Zero JS by default'),
+      ul(
+        { class: 'docs-list' },
         li(
           'Unreferenced code is not emitted. A helper only imported from ',
           code('data()'),
+          ' or ',
+          code('generateStaticParams'),
           ' stays out of ',
           code('dist/'),
           ' — server-only secrets never ship by accident.',
         ),
-        li('Everything else is copied (images, fonts, videos, …).'),
-        li(code('public/'), ' behaves like normal Vite — copied verbatim.'),
-      ),
-      p(
-        'In dev, the same URLs go through Vite’s transform pipeline, so TypeScript and CSS work without a build.',
+        li(
+          'No ',
+          code('<script>'),
+          ' on the page means no client JavaScript in the build. Static HTML and CSS are enough for most sites.',
+        ),
+        li(
+          code('public/'),
+          ' is copied verbatim (favicons, robots.txt, static images you don’t want hashed).',
+        ),
+        li('Other referenced files (images, fonts, videos, …) are copied into ', code('dist/'), '.'),
       ),
       h2('Missing-asset validation'),
       p(
