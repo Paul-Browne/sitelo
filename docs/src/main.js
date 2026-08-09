@@ -105,6 +105,13 @@ async function initDocsSearch() {
     showSubResults: true,
     showImages: false,
   })
+
+  const input = mount.querySelector('input')
+  if (input) {
+    input.setAttribute('spellcheck', 'false')
+    input.setAttribute('autocorrect', 'off')
+    input.setAttribute('autocomplete', 'off')
+  }
 }
 
 function startHeroTypewriter() {

@@ -984,6 +984,13 @@ code {
   margin-bottom: 1.25rem;
 }
 
+#docs-search .pagefind-ui__search-input:focus,
+#docs-search .pagefind-ui__search-input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
 .docs-sidebar-label {
   margin: 0 0 0.75rem;
   color: var(--ink-faint);
