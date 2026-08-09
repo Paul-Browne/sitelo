@@ -1,4 +1,4 @@
-import { h2, h3, li, p, ul } from 'javascript-to-html'
+import { a, h2, h3, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
