@@ -27,7 +27,9 @@ const features = [
     'Only the scripts you link are bundled — everything else stays off the page for a faster site',
   ],
   ['Dev server', 'Real renders on request — including dynamic routes'],
+  ['Dev toolbar', 'Route, source file, params, and island count while you develop'],
   ['Server islands', 'Static pages with regions rendered on the server at request time'],
+  ['AI-ready', 'llms.txt, project rules, and tips so agents write sitelo — not React'],
   ['One-click deploy', 'Netlify, Vercel, Cloudflare Pages, and AWS Amplify configs included'],
   ['Extras', '404.html, sitemap.xml, and RSS when you ask'],
 ]
