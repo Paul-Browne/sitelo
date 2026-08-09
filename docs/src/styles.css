@@ -254,6 +254,13 @@ code {
   transform: translateY(-2px);
 }
 
+.btn-arrow {
+  width: 1em;
+  height: 1em;
+  margin-left: 0.45em;
+  flex-shrink: 0;
+}
+
 .install {
   display: inline-flex;
   align-items: center;

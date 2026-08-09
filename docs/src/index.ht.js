@@ -16,6 +16,8 @@ import { landingLayout } from './lib/layout.js'
 
 const installSnippet = `npm install -D sitelo`
 
+const arrowIcon = `<svg class="btn-arrow" viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true"><path d="M2 8h11M8.5 3.5 13 8l-4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+
 const features = [
   ['File-based routing', 'src/about.ht.js → /about'],
   ['JSX & TSX', 'Write pages as .jsx / .tsx with the same routing and build'],
@@ -113,14 +115,14 @@ function mainSections() {
       p(
         'Guides for routing, data loading, TypeScript, configuration, and the CLI.',
       ),
-      p(a({ class: 'btn btn-inline', href: '/docs' }, 'Read the docs →')),
+      p(a({ class: 'btn btn-inline', href: '/docs' }, 'Read the docs', arrowIcon)),
     ),
     sectionBlock(
       'Examples',
       p(
         'Recipes for real setups — starting with a WordPress REST API site.',
       ),
-      p(a({ class: 'btn btn-inline', href: '/examples' }, 'Browse examples →')),
+      p(a({ class: 'btn btn-inline', href: '/examples' }, 'Browse examples', arrowIcon)),
     ),
   )
 }
