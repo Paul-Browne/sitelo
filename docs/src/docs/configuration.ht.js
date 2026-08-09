@@ -74,6 +74,40 @@ export default () =>
         li(code('generatedTypesDir'), ' — default ', code("'.sitelo/types'")),
         li(code('renderConcurrency'), ' / ', code('renderBatchSize'), ' — build parallelism'),
         li(code('debug'), ' — verbose logging'),
+        li(
+          code('devToolbar'),
+          ' — default ',
+          code('true'),
+          '; set ',
+          code('false'),
+          ' to hide the dev-only toolbar (route, source file, params, island count)',
+        ),
+        li(
+          code('devToolbarDocsUrl'),
+          ' — Docs link in the toolbar (default ',
+          code('https://sitelo.js.org/docs'),
+          ')',
+        ),
+      ),
+      h2('Dev toolbar'),
+      p(
+        'While ',
+        code('sitelo'),
+        ' (dev) is running, a small bar at the bottom of each page shows the current route, page file, params, and how many ',
+        a({ href: '/docs/islands' }, 'server islands'),
+        ' are on the page. Use ',
+        code('Copy'),
+        ' for a debug blob when filing issues. It never appears in ',
+        code('sitelo build'),
+        ' output.',
+      ),
+      codeBlock(
+        'sitelo.config.js',
+        `// sitelo.config.js
+export default {
+  devToolbar: false, // hide for everyone on this project
+}`,
+        'javascript',
       ),
       h2('Vite options'),
       p(

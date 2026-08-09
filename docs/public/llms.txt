@@ -16,11 +16,12 @@ Requires Node 18+. Vite is bundled.
 
 ## Commands
 
-- `sitelo` — dev server (pages render on request)
+- `sitelo` — dev server (pages render on request; includes a small dev toolbar)
 - `sitelo build` — write static site to `dist/`
 - `sitelo preview` — preview the production build
 
 Optional config: `sitelo.config.js` (or `.mjs`). Vite options go under the `vite` key.
+Set `devToolbar: false` to hide the dev-only toolbar.
 
 ## Mental model
 

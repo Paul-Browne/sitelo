@@ -483,6 +483,10 @@ export default {
   (`sitelo build` still only emits the pages you list there.)
 - File changes inside your pages directory trigger an automatic
   **full-reload** in the browser.
+- A small **dev toolbar** on every page shows the route, source file,
+  params, and server-island count — plus Copy debug info / Docs.
+  Disable with `devToolbar: false` in `sitelo.config.js`. Production
+  builds never include it.
 - Errors show a **source-mapped code frame** in the terminal pointing
   at the exact line in your page — the server stays alive while you fix it.
 
@@ -647,6 +651,8 @@ export default {
 | `mapOutputPath` | — | `(page) => string` to customize output filenames |
 | `generatedTypesDir` | `'.sitelo/types'` | Where generated page helper `.d.ts` files are written |
 | `displayName` | `'sitelo'` | Label used in console / overlay messages |
+| `devToolbar` | `true` | Dev-only bottom toolbar (route, file, params, islands). Set `false` to hide |
+| `devToolbarDocsUrl` | sitelo docs | Docs link in the toolbar |
 | `renderConcurrency` | `8` | Pages rendered in parallel |
 | `renderBatchSize` | `max(concurrency, 32)` | Pages per render batch |
 | `debug` | `false` | Verbose logging of discovery, routing, and emission |

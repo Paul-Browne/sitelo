@@ -1,6 +1,6 @@
 {
   "name": "sitelo",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "author": "Paul Browne",
   "type": "module",
   "license": "MIT",
@@ -79,7 +79,7 @@
   },
   "dependencies": {
     "vite": "^8.1.4",
-    "vite-plugin-html-pages": "^2.2.2"
+    "vite-plugin-html-pages": "^2.3.0"
   },
   "overrides": {
     "vite": "$vite"
