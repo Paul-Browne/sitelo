@@ -8,6 +8,7 @@ export const DOC_NAV = [
   { href: '/docs/typescript', label: 'TypeScript' },
   { href: '/docs/configuration', label: 'Configuration' },
   { href: '/docs/cli', label: 'CLI' },
+  { href: '/docs/build-with-ai', label: 'Build with AI' },
 ]
 
 export const EXAMPLE_NAV = [

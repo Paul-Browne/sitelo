@@ -51,6 +51,7 @@ export default () =>
         li(a({ href: '/docs/routing' }, 'Routing'), ' — file-based routes and ', code('generateStaticParams')),
         li(a({ href: '/docs/data' }, 'Data loading'), ' — ', code('data()'), ' and ', code('fetchWithCache')),
         li(a({ href: '/docs/configuration' }, 'Configuration'), ' — ', code('sitelo.config.js'), ' and Vite options'),
+        li(a({ href: '/docs/build-with-ai' }, 'Build with AI'), ' — ', code('llms.txt'), ', project rules, and agent tips'),
       ),
     ],
   })

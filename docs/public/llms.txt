@@ -1,0 +1,91 @@
+# sitelo
+
+> Zero-config static site generation powered by Vite. Pages are JavaScript/TypeScript functions that return HTML — no framework, no components, no client runtime unless you add it.
+
+Docs: https://sitelo.js.org/docs
+GitHub: https://github.com/paul-browne/sitelo
+npm: https://www.npmjs.com/package/sitelo
+
+## Install
+
+```bash
+npm install -D sitelo
+```
+
+Requires Node 18+. Vite is bundled.
+
+## Commands
+
+- `sitelo` — dev server (pages render on request)
+- `sitelo build` — write static site to `dist/`
+- `sitelo preview` — preview the production build
+
+Optional config: `sitelo.config.js` (or `.mjs`). Vite options go under the `vite` key.
+
+## Mental model
+
+Pages are modules that export a default function (or string) returning HTML. File-based routing under `src/` (configurable via `pagesDir`).
+
+Page extensions: `.ht.js`, `.html.js`, `.ht.ts`, `.html.ts`, `.ht.jsx`, `.html.jsx`, `.ht.tsx`, `.html.tsx`
+
+Examples:
+
+- `src/index.ht.js` → `/`
+- `src/about.ht.js` → `/about`
+- `src/blog/[slug].ht.js` → `/blog/:slug` (needs `generateStaticParams` at build time)
+- `src/docs/[...path].ht.js` → catch-all
+- `src/docs/[...path]?.ht.js` → optional catch-all
+- `src/(admin)/users.ht.js` → `/users` (route group, segment omitted)
+
+## Page module API
+
+```js
+export async function data(ctx) { /* build-time / per-request in dev */ }
+export function generateStaticParams() { return [{ slug: 'hello' }] }
+export default function render(ctx) { return `<html>…</html>` }
+```
+
+`ctx` includes `{ params, data, dev, … }`. Prefer template literals, [javascript-to-html](https://ht.js.org) (recommended), or JSX/TSX.
+
+Import helpers from `sitelo` (e.g. `fetchWithCache`) and `sitelo/page` for typed helpers.
+
+## javascript-to-html (ht.js)
+
+Recommended for writing HTML in JavaScript without a templating engine or React.
+Docs: https://ht.js.org — `import { html, head, body, h1 } from 'javascript-to-html'`
+
+## Assets
+
+- Reference `/styles.css` or `/app.js` from HTML → bundled into `dist/`
+- Unreferenced code under `src/` is server-only and is not emitted
+- `public/` is copied as-is (Vite convention)
+- Broken script/stylesheet links fail the build by default
+
+## Generated extras
+
+- `404.html` from `src/404.ht.js` or a default
+- `sitemap.xml` when `site` is set in config
+- `rss.xml` when `rss` is configured
+
+## Server islands (experimental)
+
+- `island(name, props, fallback)` from `sitelo/islands` embeds a placeholder
+- Fragment modules live in `src/islands/<name>.js` (not `.ht.js`)
+- Client: `mountIslands()` from `sitelo/islands/client`
+- Host: `createIslandsHandler` / `createIslandsNodeHandler` from `sitelo/islands/server`
+- Dev: `sitelo` serves `/_sitelo/islands/<name>` automatically
+- Production static hosts need a separate function for the islands endpoint
+
+## Deploy
+
+Static site = publish `dist/`. Example host configs: https://sitelo.js.org/examples/basic
+
+## Examples
+
+- Basic + deploy configs: https://sitelo.js.org/examples/basic
+- WordPress REST API: https://sitelo.js.org/examples/wordpress
+- Server islands: https://sitelo.js.org/examples/islands
+
+## AI guidance
+
+sitelo is not React, Next, Astro, or Hugo. Do not invent a component framework, `_app` layout system, or hydration model. Prefer functions that return HTML strings. Point agents at https://sitelo.js.org/llms.txt and https://sitelo.js.org/docs.
