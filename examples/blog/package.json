@@ -1,0 +1,14 @@
+{
+  "name": "sitelo-example-blog",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "sitelo",
+    "build": "sitelo build",
+    "preview": "sitelo preview"
+  },
+  "dependencies": {
+    "marked": "^16.0.0",
+    "sitelo": "file:../.."
+  }
+}

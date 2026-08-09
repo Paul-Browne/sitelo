@@ -1,0 +1,58 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+body {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+a {
+  color: inherit;
+}
+
+.posts {
+  padding: 0;
+  list-style: none;
+}
+
+.posts li {
+  margin: 0 0 1.5rem;
+}
+
+.posts a {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.posts p {
+  margin: 0.2rem 0 0;
+  opacity: 0.75;
+}
+
+time {
+  opacity: 0.6;
+  font-size: 0.9em;
+  margin-left: 0.5em;
+}
+
+article img {
+  max-width: 100%;
+  height: auto;
+}
+
+pre {
+  padding: 1rem;
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  background: rgb(0 0 0 / 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  pre {
+    background: rgb(255 255 255 / 0.08);
+  }
+}

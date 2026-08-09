@@ -45,7 +45,67 @@ for (const button of buttons) {
   })
 }
 
+for (const button of document.querySelectorAll('.code-copy')) {
+  button.addEventListener('click', async () => {
+    const source = button
+      .closest('.code-glow')
+      ?.querySelector('.code code')?.textContent
+    if (!source) return
+    try {
+      await navigator.clipboard.writeText(source)
+      button.textContent = 'Copied'
+      button.classList.add('is-copied')
+      window.setTimeout(() => {
+        button.textContent = 'Copy'
+        button.classList.remove('is-copied')
+      }, 1400)
+    } catch {
+      button.textContent = 'Failed'
+      window.setTimeout(() => {
+        button.textContent = 'Copy'
+      }, 1400)
+    }
+  })
+}
+
 startHeroTypewriter()
+initDocsSearch()
+
+/**
+ * Pagefind search — the index only exists in production builds
+ * (`pagefind --site docs/dist` runs after `sitelo build`), so probe for it
+ * and stay hidden in dev.
+ */
+async function initDocsSearch() {
+  const mount = document.querySelector('#docs-search')
+  if (!mount) return
+
+  try {
+    const probe = await fetch('/pagefind/pagefind-ui.js', { method: 'HEAD' })
+    if (!probe.ok) return
+  } catch {
+    return
+  }
+
+  const style = document.createElement('link')
+  style.rel = 'stylesheet'
+  style.href = '/pagefind/pagefind-ui.css'
+  document.head.appendChild(style)
+
+  await new Promise((resolve, reject) => {
+    const script = document.createElement('script')
+    script.src = '/pagefind/pagefind-ui.js'
+    script.onload = resolve
+    script.onerror = reject
+    document.body.appendChild(script)
+  })
+
+  new window.PagefindUI({
+    element: '#docs-search',
+    showSubResults: true,
+    showImages: false,
+  })
+}
 
 function startHeroTypewriter() {
   const el = document.querySelector('.hero-typed')

@@ -19,6 +19,12 @@ export default () =>
           ' — minimal project plus static deploy configs for Netlify, Vercel, Cloudflare Pages, and AWS Amplify.',
         ),
         li(
+          a({ href: '/examples/blog' }, 'Markdown blog'),
+          ' — a folder of ',
+          code('.md'),
+          ' files rendered to static pages, with an RSS feed and zero client JS.',
+        ),
+        li(
           a({ href: '/examples/wordpress' }, 'WordPress'),
           ' — pull posts from the WordPress REST API with ',
           code('fetchWithCache'),
@@ -33,7 +39,6 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li('Headless CMS / Contentful'),
-        li('Markdown blog from the filesystem'),
       ),
     ],
   })

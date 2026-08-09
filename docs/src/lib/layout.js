@@ -9,6 +9,7 @@ import {
   header,
   html,
   img,
+  li,
   link,
   main,
   meta,
@@ -17,6 +18,7 @@ import {
   script,
   span,
   title,
+  ul,
 } from 'javascript-to-html'
 
 import { createRequire } from 'node:module'
@@ -125,6 +127,7 @@ function siteFooter() {
 function sideNav({ label, items, activeHref }) {
   return aside(
     { class: 'docs-sidebar', 'aria-label': label },
+    div({ id: 'docs-search' }),
     p({ class: 'docs-sidebar-label' }, label),
     nav(
       { class: 'docs-side-nav' },
@@ -141,8 +144,14 @@ function sideNav({ label, items, activeHref }) {
   )
 }
 
-function pageShell({ pageTitle, description, bodyClass = '', children }) {
+const SITE_URL = 'https://sitelo.js.org'
+
+function pageShell({ pageTitle, description, bodyClass = '', path, children }) {
   const content = Array.isArray(children) ? children : [children]
+  const pageDescription =
+    description ??
+    'sitelo — static site generation for Vite. Write functions that return HTML.'
+  const canonical = path != null ? `${SITE_URL}${path}` : undefined
 
   return html(
     { lang: 'en' },
@@ -154,17 +163,21 @@ function pageShell({ pageTitle, description, bodyClass = '', children }) {
       }),
       meta({
         name: 'description',
-        content:
-          description ??
-          'sitelo — static site generation for Vite. Write functions that return HTML.',
+        content: pageDescription,
       }),
       title(pageTitle),
       link({ rel: 'icon', href: '/logo.svg', type: 'image/svg+xml' }),
       link({ rel: 'apple-touch-icon', href: '/logo.png' }),
+      canonical ? link({ rel: 'canonical', href: canonical }) : '',
+      meta({ property: 'og:title', content: pageTitle }),
+      meta({ property: 'og:description', content: pageDescription }),
+      meta({ property: 'og:type', content: 'website' }),
+      canonical ? meta({ property: 'og:url', content: canonical }) : '',
       meta({
         property: 'og:image',
-        content: 'https://sitelo.js.org/logo.png',
+        content: `${SITE_URL}/logo.png`,
       }),
+      meta({ name: 'twitter:card', content: 'summary' }),
       link({ rel: 'preconnect', href: 'https://fonts.googleapis.com' }),
       link({
         rel: 'preconnect',
@@ -186,6 +199,62 @@ function pageShell({ pageTitle, description, bodyClass = '', children }) {
   )
 }
 
+/** Add ids to <h2> headings and collect them for a table of contents. */
+function withHeadingAnchors(content) {
+  const headings = []
+
+  const transformed = content.map((chunk) =>
+    String(chunk).replace(/<h2>(.*?)<\/h2>/g, (match, inner) => {
+      const text = inner.replace(/<[^>]*>/g, '')
+      const slug = text
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+      headings.push({ slug, text })
+      return `<h2 id="${slug}">${inner}</h2>`
+    }),
+  )
+
+  return { transformed, headings }
+}
+
+function tableOfContents(headings) {
+  if (headings.length < 3) return ''
+
+  return nav(
+    { class: 'docs-toc', 'aria-label': 'On this page' },
+    p({ class: 'docs-toc-label' }, 'On this page'),
+    ul(
+      ...headings.map(({ slug, text }) => li(a({ href: `#${slug}` }, text))),
+    ),
+  )
+}
+
+function pageNav(items, activeHref) {
+  const index = items.findIndex((item) => item.href === activeHref)
+  if (index === -1) return ''
+
+  const previous = index > 0 ? items[index - 1] : null
+  const next = index < items.length - 1 ? items[index + 1] : null
+  if (!previous && !next) return ''
+
+  const pageNavLink = (item, direction) =>
+    a(
+      { class: `docs-pagenav-link docs-pagenav-${direction}`, href: item.href },
+      span(
+        { class: 'docs-pagenav-direction' },
+        direction === 'prev' ? '← Previous' : 'Next →',
+      ),
+      span({ class: 'docs-pagenav-label' }, item.label),
+    )
+
+  return nav(
+    { class: 'docs-pagenav', 'aria-label': 'Adjacent pages' },
+    previous ? pageNavLink(previous, 'prev') : span(),
+    next ? pageNavLink(next, 'next') : span(),
+  )
+}
+
 function guideLayout({
   title: heading,
   description,
@@ -196,11 +265,13 @@ function guideLayout({
   children,
 }) {
   const content = Array.isArray(children) ? children : [children]
+  const { transformed, headings } = withHeadingAnchors(content)
 
   return pageShell({
     pageTitle: `${heading} · ${titleSuffix}`,
     description,
     bodyClass: 'page-docs',
+    path: activeHref,
     children: [
       header(
         { class: 'topbar' },
@@ -213,7 +284,13 @@ function guideLayout({
           items: sidebarItems,
           activeHref,
         }),
-        main({ class: 'docs-main' }, h1(heading), ...content),
+        main(
+          { class: 'docs-main', 'data-pagefind-body': '' },
+          h1(heading),
+          tableOfContents(headings),
+          ...transformed,
+          pageNav(sidebarItems, activeHref),
+        ),
       ),
       siteFooter(),
     ],
@@ -227,6 +304,7 @@ export function landingLayout({ children, pageTitle, description }) {
     pageTitle,
     description,
     bodyClass: 'page-landing',
+    path: '/',
     children: [
       header(
         { class: 'topbar' },
@@ -250,6 +328,7 @@ export function pageLayout({
     pageTitle: heading,
     description,
     bodyClass: 'page-content',
+    path: activeHref,
     children: [
       header(
         { class: 'topbar' },

@@ -1,4 +1,4 @@
-import { a, code as rawCode, div, pre } from 'javascript-to-html'
+import { a, button, code as rawCode, div, pre } from 'javascript-to-html'
 
 function escapeHtml(value) {
   return String(value)
@@ -34,6 +34,10 @@ export function codeBlock(label, source, language = 'javascript') {
     pre(
       { class: `code language-${language}`, 'data-label': label },
       code({ class: `language-${language}` }, source),
+    ),
+    button(
+      { class: 'code-copy', type: 'button', 'aria-label': 'Copy code' },
+      'Copy',
     ),
   )
 }

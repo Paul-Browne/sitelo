@@ -427,6 +427,44 @@ code {
   font-size: 0.7rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  transition: opacity 140ms ease;
+}
+
+/* copy button swaps in for the label on hover/focus */
+.code-copy {
+  appearance: none;
+  position: absolute;
+  top: 0.35rem;
+  right: 0.55rem;
+  border: none;
+  border-radius: 0.35rem;
+  padding: 0.25rem 0.55rem;
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 140ms ease, background 140ms ease, color 140ms ease;
+}
+
+.code-glow:hover .code-copy,
+.code-copy:focus-visible,
+.code-copy.is-copied {
+  opacity: 1;
+}
+
+.code-glow:hover .code::before,
+.code-glow:has(.code-copy:focus-visible) .code::before,
+.code-glow:has(.code-copy.is-copied) .code::before {
+  opacity: 0;
+}
+
+.code-copy:hover,
+.code-copy.is-copied {
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 .code code {
@@ -929,6 +967,23 @@ code {
   overflow: auto;
 }
 
+/* Pagefind search (production builds only) */
+#docs-search {
+  --pagefind-ui-scale: 0.8;
+  --pagefind-ui-primary: var(--accent);
+  --pagefind-ui-text: var(--ink);
+  --pagefind-ui-background: var(--paper-elevated);
+  --pagefind-ui-border: color-mix(in srgb, var(--ink) 14%, transparent);
+  --pagefind-ui-tag: var(--paper-elevated);
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: 0.55rem;
+  --pagefind-ui-font: var(--font-body);
+}
+
+#docs-search:not(:empty) {
+  margin-bottom: 1.25rem;
+}
+
 .docs-sidebar-label {
   margin: 0 0 0.75rem;
   color: var(--ink-faint);
@@ -984,6 +1039,85 @@ code {
   font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: -0.02em;
+  scroll-margin-top: 4.5rem;
+}
+
+/* On this page — table of contents */
+.docs-toc {
+  margin: 0 0 1.75rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, var(--paper-elevated) 55%, transparent);
+  font-size: 0.92rem;
+}
+
+.docs-toc-label {
+  margin: 0 0 0.5rem;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.docs-toc ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.1rem;
+}
+
+.docs-toc a {
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.docs-toc a:hover {
+  color: var(--accent);
+}
+
+/* Previous / next page links */
+.docs-pagenav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.docs-pagenav-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  max-width: 48%;
+  text-decoration: none;
+}
+
+.docs-pagenav-next {
+  text-align: right;
+  margin-left: auto;
+}
+
+.docs-pagenav-direction {
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.docs-pagenav-label {
+  color: var(--ink-soft);
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.docs-pagenav-link:hover .docs-pagenav-label {
+  color: var(--accent);
 }
 
 .docs-main > h3 {

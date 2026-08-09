@@ -1,0 +1,39 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+body {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+a {
+  color: inherit;
+}
+
+ul {
+  padding-left: 1.2rem;
+}
+
+li {
+  margin: 0.4rem 0;
+}
+
+time {
+  opacity: 0.6;
+  font-size: 0.9em;
+  margin-left: 0.5em;
+}
+
+article img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+.content :is(img, iframe, video) {
+  max-width: 100%;
+}

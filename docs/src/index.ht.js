@@ -120,7 +120,7 @@ function headerHero() {
       ),
       p(
         { class: 'hero-lede' },
-        'Zero configuration. Lightening fast builds. Deploy anywhere. — one install.',
+        'Zero configuration. Lightning-fast builds. Deploy anywhere — one install.',
       ),
       div(
         { class: 'hero-actions' },

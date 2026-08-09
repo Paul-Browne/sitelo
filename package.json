@@ -74,7 +74,7 @@
   "scripts": {
     "test": "node --test test/**/*.test.js",
     "docs:dev": "node ./bin/sitelo.js --root docs",
-    "docs:build": "node ./bin/sitelo.js build --root docs",
+    "docs:build": "node ./bin/sitelo.js build --root docs && pagefind --site docs/dist",
     "docs:preview": "node ./bin/sitelo.js preview --root docs"
   },
   "dependencies": {
@@ -90,6 +90,7 @@
   "devDependencies": {
     "@types/node": "^20.17.0",
     "javascript-to-html": "^1.1.4",
+    "pagefind": "^1.5.2",
     "prismjs": "^1.30.0"
   }
 }
