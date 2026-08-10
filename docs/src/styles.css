@@ -559,13 +559,18 @@ code {
   padding: 1px;
   border-radius: 1rem;
   background: var(--line);
-  color: inherit;
+  color: var(--ink);
   text-decoration: none;
   transition: transform 180ms ease, background 200ms ease;
 }
 
-a.feature-card:hover {
-  color: inherit;
+a.feature-card,
+a.feature-card:visited,
+a.feature-card:hover,
+a.feature-card:active,
+a.feature-card:focus {
+  color: var(--ink);
+  text-decoration: none;
 }
 
 /* blurred halo behind the card on hover */
@@ -692,9 +697,12 @@ a.feature-card:hover {
   position: relative;
   z-index: 1;
   margin: 0 0 0.35rem;
+  color: var(--ink);
   font-family: var(--font-display);
   font-size: 1.1rem;
   font-weight: 700;
+  text-decoration: none;
+  transition: color 160ms ease;
 }
 
 .feature-list p {
@@ -703,6 +711,11 @@ a.feature-card:hover {
   margin: 0;
   color: var(--ink-soft);
   font-size: 0.98rem;
+  text-decoration: none;
+}
+
+a.feature-card:hover h3 {
+  color: var(--accent);
 }
 
 .section-note {
