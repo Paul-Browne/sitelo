@@ -61,22 +61,48 @@ const icons = {
 }
 
 const features = [
-  ['routing', 'File-based routing', 'src/about.ht.js → /about'],
-  ['code', 'JSX & TSX', 'Write pages as .jsx / .tsx with the same routing and build'],
-  ['brackets', 'Dynamic routes', '[slug], [...path], optional catch-alls'],
-  ['data', 'Data loading', 'data() at build time, with fetch caching'],
-  ['pipeline', 'Asset pipeline', 'Referenced JS/TS/CSS is bundled; the rest stays server-only'],
+  ['routing', 'File-based routing', 'src/about.ht.js → /about', '/docs/routing'],
+  ['code', 'JSX & TSX', 'Write pages as .jsx / .tsx with the same routing and build', '/docs/pages'],
+  ['brackets', 'Dynamic routes', '[slug], [...path], optional catch-alls', '/docs/routing'],
+  ['data', 'Data loading', 'data() at build time, with fetch caching', '/docs/data'],
+  [
+    'pipeline',
+    'Asset pipeline',
+    'Referenced JS/TS/CSS is bundled; the rest stays server-only',
+    '/docs/assets',
+  ],
   [
     'feather',
     'Zero JavaScript, by default',
     'Only the scripts you link are bundled — everything else stays off the page for a faster site',
+    '/docs/assets',
   ],
-  ['terminal', 'Dev server', 'Real renders on request — including dynamic routes'],
-  ['sliders', 'Dev toolbar', 'Route, source file, params, and island count while you develop'],
-  ['layers', 'Server islands', 'Static pages with regions rendered on the server at request time'],
-  ['sparkles', 'AI-ready', 'llms.txt, project rules, and tips so agents write sitelo — not React'],
-  ['deploy', 'One-click deploy', 'Netlify, Vercel, Cloudflare Pages, and AWS Amplify configs included'],
-  ['gift', 'Extras', '404.html, sitemap.xml, and RSS when you ask'],
+  ['terminal', 'Dev server', 'Real renders on request — including dynamic routes', '/docs/cli'],
+  [
+    'sliders',
+    'Dev toolbar',
+    'Route, source file, params, and island count while you develop',
+    '/docs/cli',
+  ],
+  [
+    'layers',
+    'Server islands',
+    'Static pages with regions rendered on the server at request time',
+    '/docs/islands',
+  ],
+  [
+    'sparkles',
+    'AI-ready',
+    'llms.txt, project rules, and tips so agents write sitelo — not React',
+    '/docs/build-with-ai',
+  ],
+  [
+    'deploy',
+    'One-click deploy',
+    'Netlify, Vercel, Cloudflare Pages, and AWS Amplify configs included',
+    '/docs/deployment',
+  ],
+  ['gift', 'Extras', '404.html, sitemap.xml, and RSS when you ask', '/docs/configuration'],
 ]
 
 export default () =>
@@ -153,17 +179,19 @@ function mainSections() {
       'What you get',
       ul(
         { class: 'feature-list' },
-        ...features.map(([icon, name, detail]) =>
-          li(
-            { class: 'feature-card' },
-            div(
-              { class: 'feature-card-body' },
-              span({ class: 'feature-chip' }, icons[icon]),
-              h3(name),
-              p(detail),
-            ),
-          ),
-        ),
+        ...features.map(([icon, name, detail, href]) => {
+          const body = div(
+            { class: 'feature-card-body' },
+            span({ class: 'feature-chip' }, icons[icon]),
+            h3(name),
+            p(detail),
+          )
+          return li(
+            href
+              ? a({ class: 'feature-card', href }, body)
+              : div({ class: 'feature-card' }, body),
+          )
+        }),
       ),
     ),
     sectionBlock(

@@ -553,11 +553,19 @@ code {
 /* glow shell — same spinning conic-gradient border as .code-glow */
 .feature-card {
   --glow-angle: 0deg;
+  display: block;
   position: relative;
+  height: 100%;
   padding: 1px;
   border-radius: 1rem;
   background: var(--line);
+  color: inherit;
+  text-decoration: none;
   transition: transform 180ms ease, background 200ms ease;
+}
+
+a.feature-card:hover {
+  color: inherit;
 }
 
 /* blurred halo behind the card on hover */
