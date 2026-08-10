@@ -62,7 +62,12 @@ const icons = {
 
 const features = [
   ['routing', 'File-based routing', 'src/about.ht.js → /about', '/docs/routing'],
-  ['code', 'JSX & TSX', 'Write pages as .jsx / .tsx with the same routing and build', '/docs/pages'],
+  [
+    'code',
+    'JSX & TSX',
+    'Write pages as .jsx / .tsx with the same routing and build',
+    '/docs/pages#5-jsx-tsx',
+  ],
   ['brackets', 'Dynamic routes', '[slug], [...path], optional catch-alls', '/docs/routing'],
   ['data', 'Data loading', 'data() at build time, with fetch caching', '/docs/data'],
   [
@@ -75,14 +80,14 @@ const features = [
     'feather',
     'Zero JavaScript, by default',
     'Only the scripts you link are bundled — everything else stays off the page for a faster site',
-    '/docs/assets',
+    '/docs/assets#zero-js-by-default',
   ],
   ['terminal', 'Dev server', 'Real renders on request — including dynamic routes', '/docs/cli'],
   [
     'sliders',
     'Dev toolbar',
     'Route, source file, params, and island count while you develop',
-    '/docs/cli',
+    '/docs/configuration#dev-toolbar',
   ],
   [
     'layers',
