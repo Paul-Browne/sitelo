@@ -9,7 +9,8 @@
 
 Write JavaScript (or TypeScript, or JSX) functions that return HTML.
 Get a complete static site with file-based routing, dynamic pages, data
-loading, an asset pipeline, sitemap, RSS, and a live dev server.
+loading, an asset pipeline, sitemap, RSS, Pagefind search, and a live
+dev server.
 
 ⭐ If this project helps you, please consider starring it.
 
@@ -67,7 +68,7 @@ That's the whole mental model. Everything else is convenience on top.
 - **Real dev server** — pages render on request (dynamic routes included, no `generateStaticParams` needed in dev) with full reload and readable error frames
 - **Server islands (experimental)** — static pages with regions rendered on the server at request time
 - **Parallel static generation** — renders large sites concurrently
-- **`404.html`, `sitemap.xml`, RSS** — generated for you
+- **`404.html`, `sitemap.xml`, RSS, Pagefind** — generated for you
 
 ---
 
@@ -619,6 +620,24 @@ export default {
 
 Produces `dist/rss.xml` with an item for every page under `routePrefix`.
 
+### Pagefind search
+
+Enable [Pagefind](https://pagefind.app) and `sitelo build` indexes your
+site into `dist/pagefind/` (and syncs a copy to `public/pagefind/` so the
+next `sitelo` / `sitelo preview` can serve search without rebuilding):
+
+```js
+// sitelo.config.js
+export default {
+  pagefind: true,
+  // or: pagefind: { syncPublic: false, glob: '**/*.html' }
+}
+```
+
+Mark the main content of each page with `data-pagefind-body` so nav/footer
+aren't indexed. Mount the UI yourself (Pagefind ships `pagefind-ui.js` /
+`pagefind-ui.css` under `/pagefind/`). Gitignore `public/pagefind/`.
+
 ---
 
 ## Plugin options
@@ -647,6 +666,7 @@ export default {
 | `cleanUrls` | `true` | `/about/index.html` (`/about`) instead of `/about.html` |
 | `site` | — | Base URL; enables `sitemap.xml` |
 | `rss` | — | RSS config (`site`, `title`, `description`, `routePrefix`) |
+| `pagefind` | — | `true` or options object; indexes after `sitelo build` (CLI only) |
 | `missingAssets` | `'error'` | `'error'` or `'warn'` for broken asset references |
 | `mapOutputPath` | — | `(page) => string` to customize output filenames |
 | `generatedTypesDir` | `'.sitelo/types'` | Where generated page helper `.d.ts` files are written |

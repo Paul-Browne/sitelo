@@ -95,6 +95,45 @@ test('sitelo.config.js vite options are applied', async (t) => {
   assert.equal(fs.existsSync(path.join(distDir, 'index.html')), false);
 });
 
+test('sitelo build with pagefind: true indexes and syncs to public/', async (t) => {
+  const configPath = path.join(fixtureDir, 'sitelo.config.js');
+  const originalConfig = fs.readFileSync(configPath, 'utf8');
+  const publicPagefind = path.join(fixtureDir, 'public', 'pagefind');
+
+  const cleanup = () => {
+    fs.writeFileSync(configPath, originalConfig);
+    fs.rmSync(distDir, { recursive: true, force: true });
+    fs.rmSync(publicPagefind, { recursive: true, force: true });
+    fs.rmSync(path.join(fixtureDir, '.sitelo'), {
+      recursive: true,
+      force: true,
+    });
+  };
+
+  cleanup();
+  t.after(cleanup);
+
+  fs.writeFileSync(
+    configPath,
+    `export default {
+  site: 'https://example.com',
+  pagefind: true,
+}
+`,
+  );
+
+  await runBuild(fixtureDir);
+
+  assert.ok(
+    fs.existsSync(path.join(distDir, 'pagefind', 'pagefind-ui.js')),
+    'expected dist/pagefind/pagefind-ui.js',
+  );
+  assert.ok(
+    fs.existsSync(path.join(publicPagefind, 'pagefind-ui.js')),
+    'expected public/pagefind/pagefind-ui.js sync for dev',
+  );
+});
+
 test('sitelo errors when sitelo.config.js and vite.config both register the plugin', async () => {
   const viteConfigPath = path.join(fixtureDir, 'vite.config.mjs');
 

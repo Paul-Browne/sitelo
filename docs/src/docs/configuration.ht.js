@@ -48,10 +48,20 @@ export default {
   },
 }`
 
+const pagefindSnippet = `// sitelo.config.js
+export default {
+  pagefind: true,
+  // or:
+  // pagefind: {
+  //   syncPublic: true, // default — copy dist/pagefind → public/pagefind
+  //   glob: '**/*.html',
+  // },
+}`
+
 export default () =>
   docsLayout({
     title: 'Configuration',
-    description: 'sitelo.config.js plugin options, Vite settings, sitemap, and RSS.',
+    description: 'sitelo.config.js plugin options, Vite settings, sitemap, RSS, and Pagefind.',
     activeHref: '/docs/configuration',
     children: [
       p(
@@ -70,6 +80,15 @@ export default () =>
         li(code('cleanUrls'), ' — default ', code('true'), ' (', code('/about/index.html'), ')'),
         li(code('site'), ' — base URL; enables ', code('sitemap.xml')),
         li(code('rss'), ' — RSS feed config'),
+        li(
+          code('pagefind'),
+          ' — ',
+          code('true'),
+          ' or options object; indexes the site with ',
+          a({ href: 'https://pagefind.app', rel: 'noopener' }, 'Pagefind'),
+          ' after ',
+          code('sitelo build'),
+        ),
         li(code('missingAssets'), ' — ', code("'error'"), ' or ', code("'warn'")),
         li(code('generatedTypesDir'), ' — default ', code("'.sitelo/types'")),
         li(code('renderConcurrency'), ' / ', code('renderBatchSize'), ' — build parallelism'),
@@ -135,6 +154,40 @@ export default {
         code('dist/rss.xml'),
         ' with an item for every page under ',
         code('routePrefix'),
+        '.',
+      ),
+      h2('Pagefind search'),
+      p(
+        'Set ',
+        code('pagefind: true'),
+        ' and ',
+        code('sitelo build'),
+        ' indexes your HTML into ',
+        code('dist/pagefind/'),
+        '. By default the bundle is also synced to ',
+        code('public/pagefind/'),
+        ' so the next ',
+        code('sitelo'),
+        ' (dev) or ',
+        code('sitelo preview'),
+        ' can serve ',
+        code('/pagefind/'),
+        ' without rebuilding. Gitignore ',
+        code('public/pagefind/'),
+        '.',
+      ),
+      codeBlock('sitelo.config.js', pagefindSnippet, 'javascript'),
+      p(
+        'Mark searchable content with ',
+        code('data-pagefind-body'),
+        ' on your main element. Mount the UI yourself — Pagefind ships ',
+        code('pagefind-ui.js'),
+        ' and ',
+        code('pagefind-ui.css'),
+        ' under ',
+        code('/pagefind/'),
+        '. See ',
+        a({ href: 'https://pagefind.app', rel: 'noopener' }, 'pagefind.app'),
         '.',
       ),
       h3('404'),

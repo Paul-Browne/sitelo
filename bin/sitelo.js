@@ -9,6 +9,10 @@ import htmlPages from '../src/index.js';
 import { renderIsland } from '../src/islands-server.js';
 import { isValidIslandName } from '../src/islands.js';
 import {
+  normalizePagefindOptions,
+  runPagefind,
+} from '../src/pagefind.js';
+import {
   build,
   createLogger,
   createServer,
@@ -220,10 +224,14 @@ function findSiteloConfigFile(root) {
 
 function splitSiteloConfig(options) {
   if (!options) {
-    return { pluginOptions: undefined, viteOptions: undefined };
+    return {
+      pluginOptions: undefined,
+      viteOptions: undefined,
+      pagefind: undefined,
+    };
   }
 
-  const { vite, ...pluginOptions } = options;
+  const { vite, pagefind, ...pluginOptions } = options;
 
   if (vite != null && (typeof vite !== 'object' || Array.isArray(vite))) {
     throw new Error('[sitelo] sitelo.config.js "vite" must be an object');
@@ -233,6 +241,7 @@ function splitSiteloConfig(options) {
     pluginOptions:
       Object.keys(pluginOptions).length > 0 ? pluginOptions : undefined,
     viteOptions: vite ?? undefined,
+    pagefind,
   };
 }
 
@@ -242,6 +251,7 @@ async function loadSiteloConfig(root) {
     return {
       pluginOptions: undefined,
       viteOptions: undefined,
+      pagefind: undefined,
       configFile: undefined,
     };
   }
@@ -263,6 +273,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
   const {
     pluginOptions,
     viteOptions,
+    pagefind,
     configFile: siteloConfigFile,
   } = await loadSiteloConfig(root);
 
@@ -282,7 +293,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
   }
 
   if (hasPluginInUserConfig) {
-    return { plugins: [], viteOptions, pluginOptions };
+    return { plugins: [], viteOptions, pluginOptions, pagefind };
   }
 
   return {
@@ -294,6 +305,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
     ],
     viteOptions,
     pluginOptions,
+    pagefind,
   };
 }
 
@@ -466,7 +478,7 @@ async function runDev(cli) {
 
 async function runBuild(cli) {
   const mode = cli.mode ?? 'production';
-  const { plugins, viteOptions } = await resolveSiteloConfig({
+  const { plugins, viteOptions, pagefind } = await resolveSiteloConfig({
     root: cli.root,
     configFile: cli.config,
     command: 'build',
@@ -474,9 +486,25 @@ async function runBuild(cli) {
     debug: cli.debug,
   });
 
-  await build(
-    mergeConfig(buildInlineConfig(cli, 'build', viteOptions), { plugins }),
-  );
+  const inline = buildInlineConfig(cli, 'build', viteOptions);
+  await build(mergeConfig(inline, { plugins }));
+
+  const pagefindOptions = normalizePagefindOptions(pagefind);
+  if (!pagefindOptions) return;
+
+  const outDir =
+    cli.outDir ?? viteOptions?.build?.outDir ?? inline.build?.outDir ?? 'dist';
+  const publicDir =
+    viteOptions?.publicDir === false
+      ? false
+      : (viteOptions?.publicDir ?? 'public');
+
+  await runPagefind({
+    root: cli.root,
+    outDir,
+    publicDir,
+    options: pagefindOptions,
+  });
 }
 
 async function runPreview(cli) {
