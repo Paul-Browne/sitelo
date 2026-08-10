@@ -72,9 +72,10 @@ startHeroTypewriter()
 initDocsSearch()
 
 /**
- * Pagefind search — the index only exists in production builds
- * (`pagefind --site docs/dist` runs after `sitelo build`), so probe for it
- * and stay hidden in dev.
+ * Pagefind search — indexes live under `/pagefind/`.
+ * Production: written into `docs/dist` by `docs:build`.
+ * Dev: the same bundle is synced to `docs/public/pagefind` so Vite can
+ * serve it (re-run `npm run docs:build` or `docs:index` after content changes).
  */
 async function initDocsSearch() {
   const mount = document.querySelector('#docs-search')

@@ -74,8 +74,9 @@
   "scripts": {
     "test": "node --test test/**/*.test.js",
     "docs:dev": "node ./bin/sitelo.js --root docs",
-    "docs:build": "node ./bin/sitelo.js build --root docs && pagefind --site docs/dist",
-    "docs:preview": "node ./bin/sitelo.js preview --root docs"
+    "docs:build": "node ./bin/sitelo.js build --root docs && pagefind --site docs/dist && node scripts/sync-docs-pagefind.js",
+    "docs:preview": "node ./bin/sitelo.js preview --root docs",
+    "docs:index": "npm run docs:build"
   },
   "dependencies": {
     "vite": "^8.1.4",
