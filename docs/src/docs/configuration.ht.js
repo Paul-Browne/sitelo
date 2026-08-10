@@ -51,12 +51,64 @@ export default {
 const pagefindSnippet = `// sitelo.config.js
 export default {
   pagefind: true,
-  // or:
-  // pagefind: {
-  //   syncPublic: true, // default — copy dist/pagefind → public/pagefind
-  //   glob: '**/*.html',
-  // },
 }`
+
+const pagefindPageSnippet = `// src/index.ht.js
+export default () => \`
+  <html lang="en">
+    <head>
+      <title>My site</title>
+      <link rel="stylesheet" href="/styles.css">
+      <script type="module" src="/main.js"></script>
+    </head>
+    <body>
+      <header>
+        <a href="/">Home</a>
+        <div id="search"></div>
+      </header>
+      <main data-pagefind-body>
+        <h1>Hello</h1>
+        <p>Only this region is indexed.</p>
+      </main>
+    </body>
+  </html>
+\``
+
+const pagefindMainSnippet = `// src/main.js
+async function initSearch() {
+  const mount = document.querySelector('#search')
+  if (!mount) return
+
+  // Index only exists after \`sitelo build\` (synced to public/pagefind by default)
+  try {
+    const probe = await fetch('/pagefind/pagefind-ui.js', { method: 'HEAD' })
+    if (!probe.ok) return
+  } catch {
+    return
+  }
+
+  const style = document.createElement('link')
+  style.rel = 'stylesheet'
+  style.href = '/pagefind/pagefind-ui.css'
+  document.head.appendChild(style)
+
+  await new Promise((resolve, reject) => {
+    const script = document.createElement('script')
+    script.src = '/pagefind/pagefind-ui.js'
+    script.onload = resolve
+    script.onerror = reject
+    document.body.appendChild(script)
+  })
+
+  new window.PagefindUI({
+    element: '#search',
+    showImages: false,
+  })
+}
+
+initSearch()`
+
+const pagefindGitignoreSnippet = `public/pagefind/`
 
 export default () =>
   docsLayout({
@@ -158,13 +210,21 @@ export default {
       ),
       h2('Pagefind search'),
       p(
+        'Opt-in static search powered by ',
+        a({ href: 'https://pagefind.app', rel: 'noopener' }, 'Pagefind'),
+        '. Enable it, mark the content to index, mount the UI, then ',
+        code('sitelo build'),
+        '.',
+      ),
+      h3('1. Enable indexing'),
+      p(
         'Set ',
         code('pagefind: true'),
-        ' and ',
+        '. After ',
         code('sitelo build'),
-        ' indexes your HTML into ',
+        ' you get ',
         code('dist/pagefind/'),
-        '. By default the bundle is also synced to ',
+        ', and by default a copy in ',
         code('public/pagefind/'),
         ' so the next ',
         code('sitelo'),
@@ -172,21 +232,41 @@ export default {
         code('sitelo preview'),
         ' can serve ',
         code('/pagefind/'),
-        ' without rebuilding. Gitignore ',
-        code('public/pagefind/'),
-        '.',
+        ' without rebuilding.',
       ),
       codeBlock('sitelo.config.js', pagefindSnippet, 'javascript'),
+      h3('2. Mark content and add a mount point'),
       p(
-        'Mark searchable content with ',
+        'Put ',
         code('data-pagefind-body'),
-        ' on your main element. Mount the UI yourself — Pagefind ships ',
-        code('pagefind-ui.js'),
+        ' on the main content so nav/footer aren’t indexed. Leave an empty element for the search UI:',
+      ),
+      codeBlock('src/index.ht.js', pagefindPageSnippet, 'javascript'),
+      h3('3. Mount the Pagefind UI'),
+      p(
+        'Load ',
+        code('/pagefind/pagefind-ui.js'),
         ' and ',
         code('pagefind-ui.css'),
-        ' under ',
-        code('/pagefind/'),
-        '. See ',
+        ' from your client script (only after a build has produced the index):',
+      ),
+      codeBlock('src/main.js', pagefindMainSnippet, 'javascript'),
+      h3('4. Build and ignore the synced bundle'),
+      codeBlock(
+        'shell',
+        `sitelo build
+# then: sitelo preview — or sitelo (dev) using public/pagefind`,
+        'bash',
+      ),
+      codeBlock('.gitignore', pagefindGitignoreSnippet, 'bash'),
+      p(
+        'Advanced options (',
+        code('syncPublic'),
+        ', ',
+        code('glob'),
+        ', language, selectors, …) go on an object: ',
+        code('pagefind: { syncPublic: false, glob: \'**/*.html\' }'),
+        '. Full UI options: ',
         a({ href: 'https://pagefind.app', rel: 'noopener' }, 'pagefind.app'),
         '.',
       ),

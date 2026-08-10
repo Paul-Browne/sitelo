@@ -630,13 +630,36 @@ next `sitelo` / `sitelo preview` can serve search without rebuilding):
 // sitelo.config.js
 export default {
   pagefind: true,
-  // or: pagefind: { syncPublic: false, glob: '**/*.html' }
 }
 ```
 
-Mark the main content of each page with `data-pagefind-body` so nav/footer
-aren't indexed. Mount the UI yourself (Pagefind ships `pagefind-ui.js` /
-`pagefind-ui.css` under `/pagefind/`). Gitignore `public/pagefind/`.
+Mark content with `data-pagefind-body`, add a mount point, and load the UI:
+
+```html
+<main data-pagefind-body>…</main>
+<div id="search"></div>
+```
+
+```js
+// src/main.js — after sitelo build has produced /pagefind/
+const style = document.createElement('link')
+style.rel = 'stylesheet'
+style.href = '/pagefind/pagefind-ui.css'
+document.head.appendChild(style)
+
+await new Promise((resolve, reject) => {
+  const script = document.createElement('script')
+  script.src = '/pagefind/pagefind-ui.js'
+  script.onload = resolve
+  script.onerror = reject
+  document.body.appendChild(script)
+})
+
+new PagefindUI({ element: '#search', showImages: false })
+```
+
+Gitignore `public/pagefind/`. Full walkthrough:
+[sitelo.js.org/docs/configuration#pagefind-search](https://sitelo.js.org/docs/configuration#pagefind-search).
 
 ---
 
