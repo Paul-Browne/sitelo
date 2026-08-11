@@ -11,7 +11,8 @@ const structureSnippet = `my-site/
     blog/
       index.ht.js        # /blog — full archive
       [slug].ht.js       # /blog/:slug — every post
-    styles.css`
+    css/
+      styles.css`
 
 const configSnippet = `export default {
   site: 'https://example.com',
@@ -111,7 +112,7 @@ export default ({ data }) => \`
   <html lang="en">
     <head>
       <title>My site</title>
-      <link rel="stylesheet" href="/styles.css">
+      <link rel="stylesheet" href="/css/styles.css">
     </head>
     <body>
       <h1>Latest from the blog</h1>
@@ -167,7 +168,7 @@ export default function Home({ data }) {
     <html lang="en">
       <head>
         <title>My site</title>
-        <link rel="stylesheet" href="/styles.css" />
+        <link rel="stylesheet" href="/css/styles.css" />
       </head>
       <body>
         <h1>Latest from the blog</h1>
@@ -196,7 +197,7 @@ export default ({ data }) => \`
   <html lang="en">
     <head>
       <title>Blog</title>
-      <link rel="stylesheet" href="/styles.css">
+      <link rel="stylesheet" href="/css/styles.css">
     </head>
     <body>
       <h1>Blog (\${data.posts.length})</h1>
@@ -256,7 +257,7 @@ export default function BlogIndex({ data }) {
     <html lang="en">
       <head>
         <title>Blog</title>
-        <link rel="stylesheet" href="/styles.css" />
+        <link rel="stylesheet" href="/css/styles.css" />
       </head>
       <body>
         <h1>Blog ({data.posts.length})</h1>
@@ -305,7 +306,7 @@ export default ({ data }) => {
     <html lang="en">
       <head>
         <title>\${post.title.rendered}</title>
-        <link rel="stylesheet" href="/styles.css">
+        <link rel="stylesheet" href="/css/styles.css">
       </head>
       <body>
         <article>
@@ -402,7 +403,7 @@ export default function BlogPost({ data }) {
     <html lang="en">
       <head>
         <title>{post.title.rendered}</title>
-        <link rel="stylesheet" href="/styles.css" />
+        <link rel="stylesheet" href="/css/styles.css" />
       </head>
       <body>
         <article>

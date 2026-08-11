@@ -30,7 +30,7 @@ export default ({ data }) => {
     <html lang="en">
       <head>
         <title>${post.title.rendered}</title>
-        <link rel="stylesheet" href="/styles.css">
+        <link rel="stylesheet" href="/css/styles.css">
       </head>
       <body>
         <article>

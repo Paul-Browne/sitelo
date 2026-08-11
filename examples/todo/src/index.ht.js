@@ -4,7 +4,7 @@ export default () => `
       <title>Todos — sitelo</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="description" content="A tiny todo app: static HTML from sitelo, interactivity via inline dynamic imports.">
-      <link rel="stylesheet" href="/styles.css">
+      <link rel="stylesheet" href="/css/styles.css">
     </head>
     <body onload="import('/js/todo.js').then((m) => m.hydrate())">
       <main>

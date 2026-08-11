@@ -11,7 +11,8 @@ const structureSnippet = `my-site/
   package.json
   src/
     index.ht.js
-    styles.css`
+    css/
+      styles.css`
 
 const netlifyTomlSnippet = `[build]
   command = "npm run build"
@@ -50,7 +51,7 @@ const pageTemplate = `export default () => \`
   <html lang="en">
     <head>
       <title>sitelo — basic example</title>
-      <link rel="stylesheet" href="/styles.css">
+      <link rel="stylesheet" href="/css/styles.css">
     </head>
     <body>
       <h1>Hello from sitelo</h1>
@@ -74,7 +75,7 @@ const pageJsx = `export default function Home() {
     <html lang="en">
       <head>
         <title>sitelo — basic example</title>
-        <link rel="stylesheet" href="/styles.css" />
+        <link rel="stylesheet" href="/css/styles.css" />
       </head>
       <body>
         <h1>Hello from sitelo</h1>

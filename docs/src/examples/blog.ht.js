@@ -13,7 +13,8 @@ const structureSnippet = `my-blog/
     index.ht.js          # / — post list
     blog/
       [slug].ht.js       # /blog/:slug — one page per post
-    styles.css`
+    css/
+      styles.css`
 
 const configSnippet = `export default {
   site: 'https://example.com',
@@ -104,7 +105,7 @@ export default ({ data }) => {
       <head>
         <title>\${post.title} — My Blog</title>
         <meta name="description" content="\${post.description}">
-        <link rel="stylesheet" href="/styles.css">
+        <link rel="stylesheet" href="/css/styles.css">
       </head>
       <body>
         <article>
@@ -175,7 +176,7 @@ export default function Post({ data }) {
       <head>
         <title>{post.title} — My Blog</title>
         <meta name="description" content={post.description} />
-        <link rel="stylesheet" href="/styles.css" />
+        <link rel="stylesheet" href="/css/styles.css" />
       </head>
       <body>
         <article>
@@ -199,7 +200,7 @@ export default ({ data }) => \`
   <html lang="en">
     <head>
       <title>My Blog</title>
-      <link rel="stylesheet" href="/styles.css">
+      <link rel="stylesheet" href="/css/styles.css">
       <link rel="alternate" type="application/rss+xml" title="My Blog" href="/rss.xml">
     </head>
     <body>
@@ -268,7 +269,7 @@ export default function Home({ data }) {
     <html lang="en">
       <head>
         <title>My Blog</title>
-        <link rel="stylesheet" href="/styles.css" />
+        <link rel="stylesheet" href="/css/styles.css" />
         <link
           rel="alternate"
           type="application/rss+xml"

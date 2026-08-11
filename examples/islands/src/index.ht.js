@@ -4,7 +4,7 @@ export default () => `
   <html lang="en">
     <head>
       <title>Server islands demo</title>
-      <link rel="stylesheet" href="/styles.css">
+      <link rel="stylesheet" href="/css/styles.css">
     </head>
     <body>
       <h1>Static page, live island</h1>
@@ -14,7 +14,7 @@ export default () => `
         { label: 'Right now' },
         '<p>Loading server time…</p>',
       )}
-      <script type="module" src="/islands.js"></script>
+      <script type="module" src="/js/islands.js"></script>
     </body>
   </html>
 `

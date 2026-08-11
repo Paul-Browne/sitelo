@@ -10,7 +10,7 @@ export default ({ data }) => `
   <html lang="en">
     <head>
       <title>Blog</title>
-      <link rel="stylesheet" href="/styles.css">
+      <link rel="stylesheet" href="/css/styles.css">
     </head>
     <body>
       <h1>Blog (${data.posts.length})</h1>

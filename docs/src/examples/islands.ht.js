@@ -8,10 +8,12 @@ const structureSnippet = `my-site/
   package.json
   src/
     index.ht.js          # page with an island placeholder
-    islands.js           # client loader (bundled into dist/)
+    js/
+      islands.js         # client loader (bundled into dist/)
     islands/
       time.js            # server-only fragment module
-    styles.css`
+    css/
+      styles.css`
 
 const configSnippet = `export default {
   site: 'https://example.com',
@@ -42,7 +44,7 @@ export default () => \`
   <html lang="en">
     <head>
       <title>Server islands demo</title>
-      <link rel="stylesheet" href="/styles.css">
+      <link rel="stylesheet" href="/css/styles.css">
     </head>
     <body>
       <h1>Static page, live island</h1>
@@ -52,7 +54,7 @@ export default () => \`
         { label: 'Right now' },
         '<p>Loading server time…</p>',
       )}
-      <script type="module" src="/islands.js"></script>
+      <script type="module" src="/js/islands.js"></script>
     </body>
   </html>
 \``
@@ -85,7 +87,7 @@ export default function Home() {
     <html lang="en">
       <head>
         <title>Server islands demo</title>
-        <link rel="stylesheet" href="/styles.css" />
+        <link rel="stylesheet" href="/css/styles.css" />
       </head>
       <body>
         <h1>Static page, live island</h1>
@@ -95,7 +97,7 @@ export default function Home() {
           { label: 'Right now' },
           '<p>Loading server time…</p>',
         )}
-        <script type="module" src="/islands.js" />
+        <script type="module" src="/js/islands.js" />
       </body>
     </html>
   )
@@ -270,8 +272,8 @@ export default () =>
         jsx: pageJsx,
       }),
       h2('3. Client loader'),
-      codeBlock('src/islands.js', loaderSnippet, 'javascript'),
-      codeBlock('src/styles.css', stylesSnippet, 'css'),
+      codeBlock('src/js/islands.js', loaderSnippet, 'javascript'),
+      codeBlock('src/css/styles.css', stylesSnippet, 'css'),
       h2('4. Node host'),
       p(
         'After ',

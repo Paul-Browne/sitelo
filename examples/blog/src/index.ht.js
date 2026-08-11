@@ -9,7 +9,7 @@ export default ({ data }) => `
     <head>
       <title>My Blog</title>
       <meta name="description" content="A markdown blog built with sitelo">
-      <link rel="stylesheet" href="/styles.css">
+      <link rel="stylesheet" href="/css/styles.css">
       <link rel="alternate" type="application/rss+xml" title="My Blog" href="/rss.xml">
     </head>
     <body>

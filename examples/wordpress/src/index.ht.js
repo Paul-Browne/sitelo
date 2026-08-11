@@ -9,7 +9,7 @@ export default ({ data }) => `
   <html lang="en">
     <head>
       <title>My site</title>
-      <link rel="stylesheet" href="/styles.css">
+      <link rel="stylesheet" href="/css/styles.css">
     </head>
     <body>
       <h1>Latest from the blog</h1>

@@ -1,3 +1,5 @@
+import { button, input, label, li, span } from 'javascript-to-html'
+
 const STORAGE_KEY = 'sitelo-todo-example'
 
 /** @typedef {{ id: string, title: string, done: boolean }} Todo */
@@ -23,60 +25,57 @@ function createId() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
 }
 
-const IMPORT_CHANGE =
-  "import('/js/todo.js').then((m) => m.handleChange(this))"
-const IMPORT_REMOVE =
-  "import('/js/todo.js').then((m) => m.handleRemove(this))"
-
-function els() {
-  return {
-    list: document.querySelector('#todo-list'),
-    empty: document.querySelector('#todo-empty'),
-    count: document.querySelector('#todo-count'),
-  }
-}
+const IMPORT_CHANGE = "import('/js/todo.js').then((m) => m.handleChange(this))"
+const IMPORT_REMOVE = "import('/js/todo.js').then((m) => m.handleRemove(this))"
 
 function render() {
-  const { list, empty, count } = els()
+  const list = document.querySelector('#todo-list')
+  const empty = document.querySelector('#todo-empty')
+  const count = document.querySelector('#todo-count')
   if (!list || !empty || !count) return
 
   const todos = loadTodos()
-  list.replaceChildren()
 
-  for (const todo of todos) {
-    const li = document.createElement('li')
-    li.className = todo.done ? 'todo is-done' : 'todo'
-    li.dataset.id = todo.id
+  list.innerHTML = todos
+    .map((todo) =>
+      li(
+        {
+          class: todo.done ? 'todo is-done' : 'todo',
+          'data-id': todo.id,
+        },
+        label(
+          input({
+            type: 'checkbox',
+            onchange: IMPORT_CHANGE,
+            'aria-label': `Mark "${todo.title}" complete`,
+          }),
+          span({ class: 'todo-title' }, todo.title),
+        ),
+        button(
+          {
+            type: 'button',
+            class: 'todo-remove',
+            onclick: IMPORT_REMOVE,
+            'aria-label': `Remove "${todo.title}"`,
+          },
+          'Remove',
+        ),
+      ),
+    )
+    .join('')
 
-    const label = document.createElement('label')
-    const checkbox = document.createElement('input')
-    checkbox.type = 'checkbox'
-    checkbox.checked = todo.done
-    checkbox.setAttribute('onchange', IMPORT_CHANGE)
-    checkbox.setAttribute('aria-label', `Mark “${todo.title}” complete`)
-
-    const title = document.createElement('span')
-    title.className = 'todo-title'
-    title.textContent = todo.title
-
-    label.append(checkbox, title)
-
-    const remove = document.createElement('button')
-    remove.type = 'button'
-    remove.className = 'todo-remove'
-    remove.textContent = 'Remove'
-    remove.setAttribute('onclick', IMPORT_REMOVE)
-    remove.setAttribute('aria-label', `Remove “${todo.title}”`)
-
-    li.append(label, remove)
-    list.append(li)
+  // Set checked as a DOM property so it reflects current state
+  for (const cb of list.querySelectorAll('input[type="checkbox"]')) {
+    const item = cb.closest('[data-id]')
+    const todo = todos.find((t) => t.id === item?.dataset.id)
+    if (todo) cb.checked = todo.done
   }
 
   count.textContent = String(todos.filter((t) => !t.done).length)
   empty.hidden = todos.length > 0
 }
 
-/** Load todos from localStorage into the list (call from body onload). */
+/** Load todos from localStorage into the list (called from body onload). */
 export function hydrate() {
   render()
 }

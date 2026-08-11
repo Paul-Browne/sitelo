@@ -19,7 +19,7 @@ export default ({ data }) => {
       <head>
         <title>${post.title} — My Blog</title>
         <meta name="description" content="${post.description}">
-        <link rel="stylesheet" href="/styles.css">
+        <link rel="stylesheet" href="/css/styles.css">
       </head>
       <body>
         <article>
