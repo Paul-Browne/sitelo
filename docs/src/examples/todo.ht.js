@@ -86,6 +86,7 @@ const pageJsx = `export default function Todos() {
       </head>
       <body
         {...{
+          // React maps onLoad → synthetic event; spread lets us output raw onload=""
           onload: "import('/js/todo.js').then((m) => m.hydrate())",
         }}
       >
@@ -95,6 +96,7 @@ const pageJsx = `export default function Todos() {
             id="todo-form"
             autoComplete="off"
             {...{
+              // same reason — raw onsubmit="" not React's onSubmit
               onsubmit:
                 "event.preventDefault(); import('/js/todo.js').then((m) => m.handleSubmit(this))",
             }}
