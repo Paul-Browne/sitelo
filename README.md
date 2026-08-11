@@ -258,8 +258,14 @@ export default function Home() {
 
 JSX pages require `react` and `react-dom` in your project (they are
 optional peer dependencies — string-based pages don't need them).
-Since output is static, event-handler props like `onClick` won't do
-anything in the browser; the dev server warns you if it finds any.
+
+This is build-time rendering only. React is designed for the browser —
+mounting, hydration, events — and sitelo does not ship a React runtime
+with your pages. It renders JSX to a static HTML string, writes the
+file, and stops. Event-handler props like `onClick` won't do anything
+in the browser (the dev server warns if it finds any); hooks and
+`window`/`document` are not available as a client app would expect.
+For interactivity, add a normal client script or a server island.
 
 ### 5. javascript-to-html
 

@@ -66,7 +66,7 @@ const features = [
     'code',
     'JSX & TSX',
     'Write pages as .jsx / .tsx with the same routing and build',
-    '/docs/pages#5-jsx-tsx',
+    '/docs/pages#jsx-limitations',
   ],
   ['brackets', 'Dynamic routes', '[slug], [...path], optional catch-alls', '/docs/routing'],
   ['data', 'Data loading', 'data() at build time, with fetch caching', '/docs/data'],
