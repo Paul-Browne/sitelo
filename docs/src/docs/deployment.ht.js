@@ -2,8 +2,7 @@ import { a, h2, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
-const netlifySnippet = `# netlify.toml
-[build]
+const netlifySnippet = `[build]
   command = "npm run build"
   publish = "dist"`
 
@@ -15,12 +14,12 @@ const vercelSnippet = `{
   "installCommand": "npm install"
 }`
 
-const wranglerSnippet = `# wrangler.toml — Cloudflare Pages
+const wranglerSnippet = `# Cloudflare Pages
 name = "my-site"
 compatibility_date = "2025-01-01"
 pages_build_output_dir = "dist"`
 
-const amplifySnippet = `# amplify.yml — AWS Amplify Hosting
+const amplifySnippet = `# AWS Amplify Hosting
 version: 1
 frontend:
   phases:
@@ -38,7 +37,7 @@ frontend:
     paths:
       - node_modules/**/*`
 
-const ghPagesSnippet = `# .github/workflows/deploy.yml — GitHub Pages
+const ghPagesSnippet = `# GitHub Pages
 name: Deploy
 on:
   push:

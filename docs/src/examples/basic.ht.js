@@ -13,8 +13,7 @@ const structureSnippet = `my-site/
     index.ht.js
     styles.css`
 
-const netlifyTomlSnippet = `# netlify.toml
-[build]
+const netlifyTomlSnippet = `[build]
   command = "npm run build"
   publish = "dist"`
 
@@ -26,13 +25,11 @@ const vercelJsonSnippet = `{
   "installCommand": "npm install"
 }`
 
-const wranglerTomlSnippet = `# wrangler.toml
-name = "sitelo-basic"
+const wranglerTomlSnippet = `name = "sitelo-basic"
 compatibility_date = "2025-01-01"
 pages_build_output_dir = "dist"`
 
-const amplifyYmlSnippet = `# amplify.yml
-version: 1
+const amplifyYmlSnippet = `version: 1
 frontend:
   phases:
     preBuild:
@@ -49,8 +46,7 @@ frontend:
     paths:
       - node_modules/**/*`
 
-const pageTemplate = `// src/index.ht.js
-export default () => \`
+const pageTemplate = `export default () => \`
   <html lang="en">
     <head>
       <title>sitelo — basic example</title>
@@ -62,8 +58,7 @@ export default () => \`
   </html>
 \``
 
-const pageHt = `// src/index.ht.js
-import { html, head, title, link, body, h1 } from 'javascript-to-html'
+const pageHt = `import { html, head, title, link, body, h1 } from 'javascript-to-html'
 
 export default () =>
   html({ lang: 'en' },
@@ -74,8 +69,7 @@ export default () =>
     body(h1('Hello from sitelo')),
   )`
 
-const pageJsx = `// src/index.ht.jsx
-export default function Home() {
+const pageJsx = `export default function Home() {
   return (
     <html lang="en">
       <head>

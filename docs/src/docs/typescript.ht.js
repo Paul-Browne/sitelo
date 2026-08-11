@@ -2,8 +2,7 @@ import { h2, p } from 'javascript-to-html'
 import { code, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
-const typedTemplate = `// src/blog/[slug].ht.ts
-import { definePageModule } from 'sitelo/page'
+const typedTemplate = `import { definePageModule } from 'sitelo/page'
 
 export default definePageModule({
   generateStaticParams: () => [{ slug: 'hello' }],
@@ -11,8 +10,7 @@ export default definePageModule({
   render: ({ data }) => \`<html><body><h1>\${data.title}</h1></body></html>\`,
 })`
 
-const typedHt = `// src/blog/[slug].ht.ts
-import { html, body, h1 } from 'javascript-to-html'
+const typedHt = `import { html, body, h1 } from 'javascript-to-html'
 import { definePageModule } from 'sitelo/page'
 
 export default definePageModule({
@@ -24,8 +22,7 @@ export default definePageModule({
     ),
 })`
 
-const typedJsx = `// src/blog/[slug].ht.tsx
-import { definePageModule } from 'sitelo/page'
+const typedJsx = `import { definePageModule } from 'sitelo/page'
 
 export default definePageModule({
   generateStaticParams: () => [{ slug: 'hello' }],

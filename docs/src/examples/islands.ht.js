@@ -13,13 +13,11 @@ const structureSnippet = `my-site/
       time.js            # server-only fragment module
     styles.css`
 
-const configSnippet = `// sitelo.config.js
-export default {
+const configSnippet = `export default {
   site: 'https://example.com',
 }`
 
-const islandSnippet = `// src/islands/time.js
-export default function time({ props, request }) {
+const islandSnippet = `export default function time({ props, request }) {
   const label = typeof props?.label === 'string' ? props.label : 'Server time'
   const now = new Date().toISOString()
   const ua = request?.headers?.get?.('user-agent') ?? 'unknown'
@@ -38,8 +36,7 @@ function escapeHtml(value) {
     .replaceAll('"', '&quot;')
 }`
 
-const pageTemplate = `// src/index.ht.js
-import { island } from 'sitelo/islands'
+const pageTemplate = `import { island } from 'sitelo/islands'
 
 export default () => \`
   <html lang="en">
@@ -60,8 +57,7 @@ export default () => \`
   </html>
 \``
 
-const pageHt = `// src/index.ht.js
-import { html, head, title, link, body, h1, p, script } from 'javascript-to-html'
+const pageHt = `import { html, head, title, link, body, h1, p, script } from 'javascript-to-html'
 import { island } from 'sitelo/islands'
 
 export default () =>
@@ -82,8 +78,7 @@ export default () =>
     ),
   )`
 
-const pageJsx = `// src/index.ht.jsx
-import { island } from 'sitelo/islands'
+const pageJsx = `import { island } from 'sitelo/islands'
 
 export default function Home() {
   return (
@@ -106,13 +101,11 @@ export default function Home() {
   )
 }`
 
-const loaderSnippet = `// src/islands.js
-import { mountIslands } from 'sitelo/islands/client'
+const loaderSnippet = `import { mountIslands } from 'sitelo/islands/client'
 
 mountIslands()`
 
-const stylesSnippet = `/* src/styles.css */
-body {
+const stylesSnippet = `body {
   font-family: system-ui, sans-serif;
   max-width: 36rem;
   margin: 2rem auto;
@@ -135,8 +128,7 @@ body {
   font-size: 0.9rem;
 }`
 
-const serverSnippet = `// server.js
-import fs from 'node:fs'
+const serverSnippet = `import fs from 'node:fs'
 import http from 'node:http'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'

@@ -14,8 +14,7 @@ const structureSnippet = `src/
     users.ht.js            → /users
   404.ht.js                → dist/404.html`
 
-const paramsTemplate = `// src/blog/[slug].ht.js
-export function generateStaticParams() {
+const paramsTemplate = `export function generateStaticParams() {
   return [
     { slug: 'hello-world' },
     { slug: 'my-first-post' },
@@ -26,8 +25,7 @@ export default ({ params }) => \`
   <html><body><h1>\${params.slug}</h1></body></html>
 \``
 
-const paramsHt = `// src/blog/[slug].ht.js
-import { html, body, h1 } from 'javascript-to-html'
+const paramsHt = `import { html, body, h1 } from 'javascript-to-html'
 
 export function generateStaticParams() {
   return [
@@ -41,8 +39,7 @@ export default ({ params }) =>
     body(h1(params.slug))
   )`
 
-const paramsJsx = `// src/blog/[slug].ht.jsx
-export function generateStaticParams() {
+const paramsJsx = `export function generateStaticParams() {
   return [
     { slug: 'hello-world' },
     { slug: 'my-first-post' },

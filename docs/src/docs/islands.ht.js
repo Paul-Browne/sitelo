@@ -2,14 +2,12 @@ import { a, h2, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
-const islandModuleSnippet = `// src/islands/comments.js
-export default async function comments({ props, request }) {
+const islandModuleSnippet = `export default async function comments({ props, request }) {
   const comments = await fetchComments(props.postId)
   return \`<ul>\${comments.map((c) => \`<li>\${c.text}</li>\`).join('')}</ul>\`
 }`
 
-const pageTemplate = `// src/blog/[slug].ht.js
-import { island } from 'sitelo/islands'
+const pageTemplate = `import { island } from 'sitelo/islands'
 
 export default ({ params }) => \`
   <html>
@@ -21,8 +19,7 @@ export default ({ params }) => \`
   </html>
 \``
 
-const pageHt = `// src/blog/[slug].ht.js
-import { html, body, article, script } from 'javascript-to-html'
+const pageHt = `import { html, body, article, script } from 'javascript-to-html'
 import { island } from 'sitelo/islands'
 
 export default ({ params }) =>
@@ -34,8 +31,7 @@ export default ({ params }) =>
     ),
   )`
 
-const pageJsx = `// src/blog/[slug].ht.jsx
-import { island } from 'sitelo/islands'
+const pageJsx = `import { island } from 'sitelo/islands'
 
 export default function Post({ params }) {
   return (
@@ -49,8 +45,7 @@ export default function Post({ params }) {
   )
 }`
 
-const loaderSnippet = `// src/islands.js
-import { mountIslands } from 'sitelo/islands/client'
+const loaderSnippet = `import { mountIslands } from 'sitelo/islands/client'
 
 mountIslands()`
 

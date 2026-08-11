@@ -13,16 +13,14 @@ const structureSnippet = `my-site/
       [slug].ht.js       # /blog/:slug — every post
     styles.css`
 
-const configSnippet = `// sitelo.config.js
-export default {
+const configSnippet = `export default {
   site: 'https://example.com',
   // thousands of pages? raise concurrency
   renderConcurrency: 16,
   renderBatchSize: 128,
 }`
 
-const wpLibSnippet = `// src/lib/wordpress.js
-import { fetchWithCache } from 'sitelo'
+const wpLibSnippet = `import { fetchWithCache } from 'sitelo'
 
 const WP_URL = process.env.WP_URL ?? 'https://your-wordpress-site.com'
 const PER_PAGE = 100 // WP max for /wp/v2/posts
@@ -102,8 +100,7 @@ export function featuredImage(post) {
   return post._embedded?.['wp:featuredmedia']?.[0]?.source_url
 }`
 
-const homeTemplate = `// src/index.ht.js
-import { getPosts, postPath } from './lib/wordpress.js'
+const homeTemplate = `import { getPosts, postPath } from './lib/wordpress.js'
 
 export async function data() {
   const posts = await getPosts({ perPage: 5 })
@@ -133,8 +130,7 @@ export default ({ data }) => \`
   </html>
 \``
 
-const homeHt = `// src/index.ht.js
-import { html, head, title, link, body, h1, ul, li, a, p } from 'javascript-to-html'
+const homeHt = `import { html, head, title, link, body, h1, ul, li, a, p } from 'javascript-to-html'
 import { getPosts, postPath } from './lib/wordpress.js'
 
 export async function data() {
@@ -159,8 +155,7 @@ export default ({ data }) =>
     ),
   )`
 
-const homeJsx = `// src/index.ht.jsx
-import { getPosts, postPath } from './lib/wordpress.js'
+const homeJsx = `import { getPosts, postPath } from './lib/wordpress.js'
 
 export async function data() {
   const posts = await getPosts({ perPage: 5 })
@@ -189,8 +184,7 @@ export default function Home({ data }) {
   )
 }`
 
-const blogIndexTemplate = `// src/blog/index.ht.js
-import { getAllPosts, postPath } from '../lib/wordpress.js'
+const blogIndexTemplate = `import { getAllPosts, postPath } from '../lib/wordpress.js'
 
 export async function data() {
   // Full archive — paginate through the whole WP site
@@ -221,8 +215,7 @@ export default ({ data }) => \`
   </html>
 \``
 
-const blogIndexHt = `// src/blog/index.ht.js
-import { html, head, title, link, body, h1, ul, li, a, time } from 'javascript-to-html'
+const blogIndexHt = `import { html, head, title, link, body, h1, ul, li, a, time } from 'javascript-to-html'
 import { getAllPosts, postPath } from '../lib/wordpress.js'
 
 export async function data() {
@@ -250,8 +243,7 @@ export default ({ data }) =>
     ),
   )`
 
-const blogIndexJsx = `// src/blog/index.ht.jsx
-import { getAllPosts, postPath } from '../lib/wordpress.js'
+const blogIndexJsx = `import { getAllPosts, postPath } from '../lib/wordpress.js'
 
 export async function data() {
   // Full archive — paginate through the whole WP site
@@ -281,8 +273,7 @@ export default function BlogIndex({ data }) {
   )
 }`
 
-const blogPostTemplate = `// src/blog/[slug].ht.js
-import {
+const blogPostTemplate = `import {
   getAllPosts,
   getPostBySlug,
   featuredImage,
@@ -331,8 +322,7 @@ export default ({ data }) => {
   \`
 }`
 
-const blogPostHt = `// src/blog/[slug].ht.js
-import {
+const blogPostHt = `import {
   html, head, title, link, body, article, p, a, h1, time, img, div,
 } from 'javascript-to-html'
 import {
@@ -380,8 +370,7 @@ export default ({ data }) => {
   )
 }`
 
-const blogPostJsx = `// src/blog/[slug].ht.jsx
-import {
+const blogPostJsx = `import {
   getAllPosts,
   getPostBySlug,
   featuredImage,
@@ -431,8 +420,7 @@ export default function BlogPost({ data }) {
   )
 }`
 
-const envSnippet = `# .env (optional)
-WP_URL=https://your-wordpress-site.com`
+const envSnippet = `WP_URL=https://your-wordpress-site.com`
 
 export default () =>
   examplesLayout({

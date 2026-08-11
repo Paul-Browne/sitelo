@@ -15,8 +15,7 @@ const layoutSnippet = `my-site/
   public/
     favicon.ico          # copied as-is`
 
-const pageTemplate = `// src/index.ht.js
-export default () => \`
+const pageTemplate = `export default () => \`
   <html lang="en">
     <head>
       <title>My site</title>
@@ -30,8 +29,7 @@ export default () => \`
   </html>
 \``
 
-const pageHt = `// src/index.ht.js
-import { html, head, title, link, script, body, h1, button } from 'javascript-to-html'
+const pageHt = `import { html, head, title, link, script, body, h1, button } from 'javascript-to-html'
 
 export default () =>
   html({ lang: 'en' },
@@ -46,8 +44,7 @@ export default () =>
     ),
   )`
 
-const pageJsx = `// src/index.ht.jsx
-export default function Home() {
+const pageJsx = `export default function Home() {
   return (
     <html lang="en">
       <head>
@@ -63,8 +60,7 @@ export default function Home() {
   )
 }`
 
-const jsSnippet = `// src/js/main.js
-import { createCounter } from './counter.ts'
+const jsSnippet = `import { createCounter } from './counter.ts'
 
 const button = document.querySelector('#count')
 const next = createCounter()
@@ -73,8 +69,7 @@ button.addEventListener('click', () => {
   button.textContent = String(next())
 })`
 
-const cssSnippet = `/* src/css/styles.css */
-@import './tokens.css';
+const cssSnippet = `@import './tokens.css';
 
 body {
   font-family: system-ui, sans-serif;
@@ -82,8 +77,7 @@ body {
   padding: 2rem;
 }`
 
-const warnSnippet = `// sitelo.config.js
-export default {
+const warnSnippet = `export default {
   missingAssets: 'warn',
 }`
 

@@ -2,8 +2,7 @@ import { a, h2, h3, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
-const configSnippet = `// sitelo.config.js
-export default {
+const configSnippet = `export default {
   site: 'https://example.com',
   rss: {
     site: 'https://example.com',
@@ -23,13 +22,13 @@ export default {
   },
 }`
 
-const viteOnlySnippet = `// vite.config.js — Vite options only; sitelo still injects the plugin
+const viteOnlySnippet = `// Vite options only; sitelo still injects the plugin
 export default {
   publicDir: 'static',
   server: { port: 8888 },
 }`
 
-const vitePluginSnippet = `// vite.config.js — register the plugin yourself
+const vitePluginSnippet = `// Register the plugin yourself
 import htmlPages from 'sitelo'
 
 export default {
@@ -38,8 +37,7 @@ export default {
   })],
 }`
 
-const rssSnippet = `// sitelo.config.js
-export default {
+const rssSnippet = `export default {
   rss: {
     site: 'https://example.com',
     title: 'My Blog',
@@ -48,13 +46,11 @@ export default {
   },
 }`
 
-const pagefindSnippet = `// sitelo.config.js
-export default {
+const pagefindSnippet = `export default {
   pagefind: true,
 }`
 
-const pagefindPageTemplate = `// src/index.ht.js
-export default () => \`
+const pagefindPageTemplate = `export default () => \`
   <html lang="en">
     <head>
       <title>My site</title>
@@ -74,8 +70,7 @@ export default () => \`
   </html>
 \``
 
-const pagefindPageHt = `// src/index.ht.js
-import {
+const pagefindPageHt = `import {
   html, head, title, link, script, body, header, a, div, main, h1, p,
 } from 'javascript-to-html'
 
@@ -98,8 +93,7 @@ export default () =>
     ),
   )`
 
-const pagefindPageJsx = `// src/index.ht.jsx
-export default function Home() {
+const pagefindPageJsx = `export default function Home() {
   return (
     <html lang="en">
       <head>
@@ -121,8 +115,7 @@ export default function Home() {
   )
 }`
 
-const pagefindMainSnippet = `// src/main.js
-async function initSearch() {
+const pagefindMainSnippet = `async function initSearch() {
   const mount = document.querySelector('#search')
   if (!mount) return
 

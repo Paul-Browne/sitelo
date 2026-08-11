@@ -15,8 +15,7 @@ const structureSnippet = `my-blog/
       [slug].ht.js       # /blog/:slug — one page per post
     styles.css`
 
-const configSnippet = `// sitelo.config.js
-export default {
+const configSnippet = `export default {
   site: 'https://example.com',
   rss: {
     site: 'https://example.com',
@@ -34,8 +33,7 @@ description: The obligatory first post.
 
 This blog is a folder of markdown files rendered to static HTML.`
 
-const libSnippet = `// src/lib/posts.js
-import { readdir, readFile } from 'node:fs/promises'
+const libSnippet = `import { readdir, readFile } from 'node:fs/promises'
 import { marked } from 'marked'
 
 // Posts live outside src/ so they're never treated as pages or assets.
@@ -85,8 +83,7 @@ export async function getPost(slug) {
   return posts.find((post) => post.slug === slug) ?? null
 }`
 
-const slugTemplate = `// src/blog/[slug].ht.js
-import { getPost, getPosts } from '../lib/posts.js'
+const slugTemplate = `import { getPost, getPosts } from '../lib/posts.js'
 
 export async function generateStaticParams() {
   const posts = await getPosts()
@@ -121,8 +118,7 @@ export default ({ data }) => {
   \`
 }`
 
-const slugHt = `// src/blog/[slug].ht.js
-import {
+const slugHt = `import {
   html, head, title, meta, link, body, article, p, a, h1, time,
 } from 'javascript-to-html'
 import { getPost, getPosts } from '../lib/posts.js'
@@ -158,8 +154,7 @@ export default ({ data }) => {
   )
 }`
 
-const slugJsx = `// src/blog/[slug].ht.jsx
-import { getPost, getPosts } from '../lib/posts.js'
+const slugJsx = `import { getPost, getPosts } from '../lib/posts.js'
 
 export async function generateStaticParams() {
   const posts = await getPosts()
@@ -194,8 +189,7 @@ export default function Post({ data }) {
   )
 }`
 
-const indexTemplate = `// src/index.ht.js
-import { getPosts } from './lib/posts.js'
+const indexTemplate = `import { getPosts } from './lib/posts.js'
 
 export async function data() {
   return { posts: await getPosts() }
@@ -227,8 +221,7 @@ export default ({ data }) => \`
   </html>
 \``
 
-const indexHt = `// src/index.ht.js
-import {
+const indexHt = `import {
   html, head, title, link, body, h1, ul, li, a, time, p,
 } from 'javascript-to-html'
 import { getPosts } from './lib/posts.js'
@@ -264,8 +257,7 @@ export default ({ data }) =>
     ),
   )`
 
-const indexJsx = `// src/index.ht.jsx
-import { getPosts } from './lib/posts.js'
+const indexJsx = `import { getPosts } from './lib/posts.js'
 
 export async function data() {
   return { posts: await getPosts() }

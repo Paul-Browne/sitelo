@@ -4,16 +4,14 @@ import { docsLayout } from '../lib/layout.js'
 
 const installSnippet = `npm install -D sitelo`
 
-const pageTemplate = `// src/index.ht.js
-export default () => \`
+const pageTemplate = `export default () => \`
   <html lang="en">
     <head><title>My website</title></head>
     <body><h1>Hello world</h1></body>
   </html>
 \``
 
-const pageHt = `// src/index.ht.js
-import { html, head, title, body, h1 } from 'javascript-to-html'
+const pageHt = `import { html, head, title, body, h1 } from 'javascript-to-html'
 
 export default () =>
   html({ lang: 'en' },
@@ -21,8 +19,7 @@ export default () =>
     body(h1('Hello world'))
   )`
 
-const pageJsx = `// src/index.ht.jsx
-export default function Home() {
+const pageJsx = `export default function Home() {
   return (
     <html lang="en">
       <head><title>My website</title></head>
