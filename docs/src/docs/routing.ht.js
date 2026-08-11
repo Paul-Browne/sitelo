@@ -1,5 +1,5 @@
 import { div, h2, p, table, tbody, td, th, thead, tr } from 'javascript-to-html'
-import { code, codeBlock } from '../lib/code.js'
+import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
 const structureSnippet = `src/
@@ -14,7 +14,7 @@ const structureSnippet = `src/
     users.ht.js            → /users
   404.ht.js                → dist/404.html`
 
-const paramsSnippet = `// src/blog/[slug].ht.js
+const paramsTemplate = `// src/blog/[slug].ht.js
 export function generateStaticParams() {
   return [
     { slug: 'hello-world' },
@@ -25,6 +25,39 @@ export function generateStaticParams() {
 export default ({ params }) => \`
   <html><body><h1>\${params.slug}</h1></body></html>
 \``
+
+const paramsHt = `// src/blog/[slug].ht.js
+import { html, body, h1 } from 'javascript-to-html'
+
+export function generateStaticParams() {
+  return [
+    { slug: 'hello-world' },
+    { slug: 'my-first-post' },
+  ]
+}
+
+export default ({ params }) =>
+  html(
+    body(h1(params.slug))
+  )`
+
+const paramsJsx = `// src/blog/[slug].ht.jsx
+export function generateStaticParams() {
+  return [
+    { slug: 'hello-world' },
+    { slug: 'my-first-post' },
+  ]
+}
+
+export default function Post({ params }) {
+  return (
+    <html>
+      <body>
+        <h1>{params.slug}</h1>
+      </body>
+    </html>
+  )
+}`
 
 function row(feature, file, url) {
   return tr(td(feature), td(file), td(url))
@@ -72,7 +105,12 @@ export default () =>
         code('sitelo'),
         ' (dev), dynamic routes still render on demand without listing every param.',
       ),
-      codeBlock('src/blog/[slug].ht.js', paramsSnippet, 'javascript'),
+      pageCodeTabs({
+        file: 'src/blog/[slug].ht.js',
+        template: paramsTemplate,
+        ht: paramsHt,
+        jsx: paramsJsx,
+      }),
       p(
         'Values can be strings, numbers, or booleans — they are stringified and URL-encoded. Catch-all params accept arrays (',
         code("{ path: ['a', 'b'] }"),

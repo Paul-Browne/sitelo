@@ -1,5 +1,5 @@
 import { a, h2, li, p, ul } from 'javascript-to-html'
-import { code, codeBlock } from '../lib/code.js'
+import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
 const layoutSnippet = `my-site/
@@ -15,7 +15,7 @@ const layoutSnippet = `my-site/
   public/
     favicon.ico          # copied as-is`
 
-const pageSnippet = `// src/index.ht.js
+const pageTemplate = `// src/index.ht.js
 export default () => \`
   <html lang="en">
     <head>
@@ -29,6 +29,39 @@ export default () => \`
     </body>
   </html>
 \``
+
+const pageHt = `// src/index.ht.js
+import { html, head, title, link, script, body, h1, button } from 'javascript-to-html'
+
+export default () =>
+  html({ lang: 'en' },
+    head(
+      title('My site'),
+      link({ rel: 'stylesheet', href: '/css/styles.css' }),
+      script({ type: 'module', src: '/js/main.js' }),
+    ),
+    body(
+      h1('Hello'),
+      button({ id: 'count' }, '0'),
+    ),
+  )`
+
+const pageJsx = `// src/index.ht.jsx
+export default function Home() {
+  return (
+    <html lang="en">
+      <head>
+        <title>My site</title>
+        <link rel="stylesheet" href="/css/styles.css" />
+        <script type="module" src="/js/main.js" />
+      </head>
+      <body>
+        <h1>Hello</h1>
+        <button id="count">0</button>
+      </body>
+    </html>
+  )
+}`
 
 const jsSnippet = `// src/js/main.js
 import { createCounter } from './counter.ts'
@@ -89,7 +122,12 @@ export default () =>
         code('<link rel="stylesheet">'),
         ' is what tells sitelo to include that file in the build:',
       ),
-      codeBlock('src/index.ht.js', pageSnippet, 'javascript'),
+      pageCodeTabs({
+        file: 'src/index.ht.js',
+        template: pageTemplate,
+        ht: pageHt,
+        jsx: pageJsx,
+      }),
       codeBlock('src/js/main.js', jsSnippet, 'javascript'),
       codeBlock('src/css/styles.css', cssSnippet, 'css'),
       h2('What Vite compiles'),

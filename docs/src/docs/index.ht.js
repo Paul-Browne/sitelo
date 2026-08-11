@@ -1,10 +1,10 @@
 import { a, h2, li, p, ul } from 'javascript-to-html'
-import { code, codeBlock } from '../lib/code.js'
+import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
 const installSnippet = `npm install -D sitelo`
 
-const pageSnippet = `// src/index.ht.js
+const pageTemplate = `// src/index.ht.js
 export default () => \`
   <html lang="en">
     <head><title>My website</title></head>
@@ -12,7 +12,7 @@ export default () => \`
   </html>
 \``
 
-const pageHtSnippet = `// src/index.ht.js
+const pageHt = `// src/index.ht.js
 import { html, head, title, body, h1 } from 'javascript-to-html'
 
 export default () =>
@@ -20,6 +20,16 @@ export default () =>
     head(title('My website')),
     body(h1('Hello world'))
   )`
+
+const pageJsx = `// src/index.ht.jsx
+export default function Home() {
+  return (
+    <html lang="en">
+      <head><title>My website</title></head>
+      <body><h1>Hello world</h1></body>
+    </html>
+  )
+}`
 
 const runSnippet = `sitelo          # dev server
 sitelo build    # write dist/
@@ -40,22 +50,21 @@ export default () =>
       codeBlock('shell', installSnippet, 'bash'),
       p('Requires Node 18+. Vite is bundled — you do not install it separately.'),
       h2('Your first page'),
-      p('Create ', code('src/index.ht.js'), ':'),
-      codeBlock('src/index.ht.js', pageSnippet, 'javascript'),
       p(
-        'Or, recommended — use ',
+        'Create ',
+        code('src/index.ht.js'),
+        ' (or ',
+        code('.ht.jsx'),
+        '). ',
         a({ href: 'https://ht.js.org', rel: 'noopener' }, 'ht.js'),
-        ' (',
-        a(
-          {
-            href: 'https://www.npmjs.com/package/javascript-to-html',
-            rel: 'noopener',
-          },
-          'javascript-to-html',
-        ),
-        '):',
+        ' is recommended:',
       ),
-      codeBlock('src/index.ht.js', pageHtSnippet, 'javascript'),
+      pageCodeTabs({
+        file: 'src/index.ht.js',
+        template: pageTemplate,
+        ht: pageHt,
+        jsx: pageJsx,
+      }),
       h2('Run'),
       codeBlock('shell', runSnippet, 'bash'),
       p(

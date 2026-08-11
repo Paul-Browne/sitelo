@@ -1,8 +1,8 @@
 import { h2, h3, li, p, ul } from 'javascript-to-html'
-import { code, codeBlock } from '../lib/code.js'
+import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
-const dataSnippet = `export async function data({ params, dev }) {
+const dataTemplate = `export async function data({ params, dev }) {
   const res = await fetch(\`https://api.example.com/posts/\${params.slug}\`)
   return await res.json()
 }
@@ -13,6 +13,37 @@ export default ({ data }) => \`
     \${data.body}
   </body></html>
 \``
+
+const dataHt = `import { html, body, h1 } from 'javascript-to-html'
+
+export async function data({ params, dev }) {
+  const res = await fetch(\`https://api.example.com/posts/\${params.slug}\`)
+  return await res.json()
+}
+
+export default ({ data }) =>
+  html(
+    body(
+      h1(data.title),
+      data.body,
+    ),
+  )`
+
+const dataJsx = `export async function data({ params, dev }) {
+  const res = await fetch(\`https://api.example.com/posts/\${params.slug}\`)
+  return await res.json()
+}
+
+export default function Post({ data }) {
+  return (
+    <html>
+      <body>
+        <h1>{data.title}</h1>
+        <div dangerouslySetInnerHTML={{ __html: data.body }} />
+      </body>
+    </html>
+  )
+}`
 
 const cacheSnippet = `import { fetchWithCache } from 'sitelo'
 
@@ -38,7 +69,12 @@ export default () =>
         code('ctx.data'),
         ' in your render function. It runs at build time, and per-request in the dev server.',
       ),
-      codeBlock('src/blog/[slug].ht.js', dataSnippet, 'javascript'),
+      pageCodeTabs({
+        file: 'src/blog/[slug].ht.js',
+        template: dataTemplate,
+        ht: dataHt,
+        jsx: dataJsx,
+      }),
       h2('fetchWithCache'),
       p(
         'Building many pages against the same API? Import ',

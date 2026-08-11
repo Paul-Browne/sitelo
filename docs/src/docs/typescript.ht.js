@@ -1,14 +1,42 @@
 import { h2, p } from 'javascript-to-html'
-import { code, codeBlock } from '../lib/code.js'
+import { code, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
-const typedSnippet = `// src/blog/[slug].ht.ts
+const typedTemplate = `// src/blog/[slug].ht.ts
 import { definePageModule } from 'sitelo/page'
 
 export default definePageModule({
   generateStaticParams: () => [{ slug: 'hello' }],
   data: ({ params }) => ({ title: params.slug }),
   render: ({ data }) => \`<html><body><h1>\${data.title}</h1></body></html>\`,
+})`
+
+const typedHt = `// src/blog/[slug].ht.ts
+import { html, body, h1 } from 'javascript-to-html'
+import { definePageModule } from 'sitelo/page'
+
+export default definePageModule({
+  generateStaticParams: () => [{ slug: 'hello' }],
+  data: ({ params }) => ({ title: params.slug }),
+  render: ({ data }) =>
+    html(
+      body(h1(data.title))
+    ),
+})`
+
+const typedJsx = `// src/blog/[slug].ht.tsx
+import { definePageModule } from 'sitelo/page'
+
+export default definePageModule({
+  generateStaticParams: () => [{ slug: 'hello' }],
+  data: ({ params }) => ({ title: params.slug }),
+  render: ({ data }) => (
+    <html>
+      <body>
+        <h1>{data.title}</h1>
+      </body>
+    </html>
+  ),
 })`
 
 export default () =>
@@ -44,7 +72,12 @@ export default () =>
         code('{ path?: string[] }'),
         '.',
       ),
-      codeBlock('src/blog/[slug].ht.ts', typedSnippet, 'javascript'),
+      pageCodeTabs({
+        file: 'src/blog/[slug].ht.ts',
+        template: typedTemplate,
+        ht: typedHt,
+        jsx: typedJsx,
+      }),
       p(
         'Also exported: ',
         code('definePage'),

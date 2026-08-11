@@ -1,5 +1,5 @@
 import { a, h2, h3, li, p, ul } from 'javascript-to-html'
-import { code, codeBlock } from '../lib/code.js'
+import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { examplesLayout } from '../lib/layout.js'
 
 const structureSnippet = `my-site/
@@ -38,7 +38,7 @@ function escapeHtml(value) {
     .replaceAll('"', '&quot;')
 }`
 
-const pageSnippet = `// src/index.ht.js
+const pageTemplate = `// src/index.ht.js
 import { island } from 'sitelo/islands'
 
 export default () => \`
@@ -59,6 +59,52 @@ export default () => \`
     </body>
   </html>
 \``
+
+const pageHt = `// src/index.ht.js
+import { html, head, title, link, body, h1, p, script } from 'javascript-to-html'
+import { island } from 'sitelo/islands'
+
+export default () =>
+  html({ lang: 'en' },
+    head(
+      title('Server islands demo'),
+      link({ rel: 'stylesheet', href: '/styles.css' }),
+    ),
+    body(
+      h1('Static page, live island'),
+      p('This HTML was built once. The box below is filled at request time.'),
+      island(
+        'time',
+        { label: 'Right now' },
+        '<p>Loading server time…</p>',
+      ),
+      script({ type: 'module', src: '/islands.js' }),
+    ),
+  )`
+
+const pageJsx = `// src/index.ht.jsx
+import { island } from 'sitelo/islands'
+
+export default function Home() {
+  return (
+    <html lang="en">
+      <head>
+        <title>Server islands demo</title>
+        <link rel="stylesheet" href="/styles.css" />
+      </head>
+      <body>
+        <h1>Static page, live island</h1>
+        <p>This HTML was built once. The box below is filled at request time.</p>
+        {island(
+          'time',
+          { label: 'Right now' },
+          '<p>Loading server time…</p>',
+        )}
+        <script type="module" src="/islands.js" />
+      </body>
+    </html>
+  )
+}`
 
 const loaderSnippet = `// src/islands.js
 import { mountIslands } from 'sitelo/islands/client'
@@ -225,7 +271,12 @@ export default () =>
         code('island()'),
         ' embeds props in the placeholder. The build ships the fallback; the loader replaces it when the endpoint responds.',
       ),
-      codeBlock('src/index.ht.js', pageSnippet, 'javascript'),
+      pageCodeTabs({
+        file: 'src/index.ht.js',
+        template: pageTemplate,
+        ht: pageHt,
+        jsx: pageJsx,
+      }),
       h2('3. Client loader'),
       codeBlock('src/islands.js', loaderSnippet, 'javascript'),
       codeBlock('src/styles.css', stylesSnippet, 'css'),

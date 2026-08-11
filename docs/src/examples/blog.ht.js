@@ -1,5 +1,5 @@
 import { a, h2, li, p, ul } from 'javascript-to-html'
-import { code, codeBlock } from '../lib/code.js'
+import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { examplesLayout } from '../lib/layout.js'
 
 const structureSnippet = `my-blog/
@@ -85,7 +85,7 @@ export async function getPost(slug) {
   return posts.find((post) => post.slug === slug) ?? null
 }`
 
-const slugSnippet = `// src/blog/[slug].ht.js
+const slugTemplate = `// src/blog/[slug].ht.js
 import { getPost, getPosts } from '../lib/posts.js'
 
 export async function generateStaticParams() {
@@ -121,7 +121,80 @@ export default ({ data }) => {
   \`
 }`
 
-const indexSnippet = `// src/index.ht.js
+const slugHt = `// src/blog/[slug].ht.js
+import {
+  html, head, title, meta, link, body, article, p, a, h1, time,
+} from 'javascript-to-html'
+import { getPost, getPosts } from '../lib/posts.js'
+
+export async function generateStaticParams() {
+  const posts = await getPosts()
+  return posts.map((post) => ({ slug: post.slug }))
+}
+
+export async function data({ params }) {
+  const post = await getPost(params.slug)
+  if (!post) throw new Error(\`Post not found: \${params.slug}\`)
+  return { post }
+}
+
+export default ({ data }) => {
+  const { post } = data
+
+  return html({ lang: 'en' },
+    head(
+      title(\`\${post.title} — My Blog\`),
+      meta({ name: 'description', content: post.description }),
+      link({ rel: 'stylesheet', href: '/styles.css' }),
+    ),
+    body(
+      article(
+        p(a({ href: '/' }, '← All posts')),
+        h1(post.title),
+        time({ datetime: post.date }, post.date),
+        post.html,
+      ),
+    ),
+  )
+}`
+
+const slugJsx = `// src/blog/[slug].ht.jsx
+import { getPost, getPosts } from '../lib/posts.js'
+
+export async function generateStaticParams() {
+  const posts = await getPosts()
+  return posts.map((post) => ({ slug: post.slug }))
+}
+
+export async function data({ params }) {
+  const post = await getPost(params.slug)
+  if (!post) throw new Error(\`Post not found: \${params.slug}\`)
+  return { post }
+}
+
+export default function Post({ data }) {
+  const { post } = data
+
+  return (
+    <html lang="en">
+      <head>
+        <title>{post.title} — My Blog</title>
+        <meta name="description" content={post.description} />
+        <link rel="stylesheet" href="/styles.css" />
+      </head>
+      <body>
+        <article>
+          <p><a href="/">← All posts</a></p>
+          <h1>{post.title}</h1>
+          <time datetime={post.date}>{post.date}</time>
+          <div dangerouslySetInnerHTML={{ __html: post.html }} />
+        </article>
+      </body>
+    </html>
+  )
+}`
+
+const indexTemplate = `// src/index.ht.js
 import { getPosts } from './lib/posts.js'
 
 export async function data() {
@@ -153,6 +226,80 @@ export default ({ data }) => \`
     </body>
   </html>
 \``
+
+const indexHt = `// src/index.ht.js
+import {
+  html, head, title, link, body, h1, ul, li, a, time, p,
+} from 'javascript-to-html'
+import { getPosts } from './lib/posts.js'
+
+export async function data() {
+  return { posts: await getPosts() }
+}
+
+export default ({ data }) =>
+  html({ lang: 'en' },
+    head(
+      title('My Blog'),
+      link({ rel: 'stylesheet', href: '/styles.css' }),
+      link({
+        rel: 'alternate',
+        type: 'application/rss+xml',
+        title: 'My Blog',
+        href: '/rss.xml',
+      }),
+    ),
+    body(
+      h1('My Blog'),
+      ul({ class: 'posts' },
+        ...data.posts.map((post) =>
+          li(
+            a({ href: \`/blog/\${post.slug}\` }, post.title),
+            time({ datetime: post.date }, post.date),
+            p(post.description),
+          ),
+        ),
+      ),
+      p(a({ href: '/rss.xml' }, 'RSS feed')),
+    ),
+  )`
+
+const indexJsx = `// src/index.ht.jsx
+import { getPosts } from './lib/posts.js'
+
+export async function data() {
+  return { posts: await getPosts() }
+}
+
+export default function Home({ data }) {
+  return (
+    <html lang="en">
+      <head>
+        <title>My Blog</title>
+        <link rel="stylesheet" href="/styles.css" />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="My Blog"
+          href="/rss.xml"
+        />
+      </head>
+      <body>
+        <h1>My Blog</h1>
+        <ul className="posts">
+          {data.posts.map((post) => (
+            <li key={post.slug}>
+              <a href={\`/blog/\${post.slug}\`}>{post.title}</a>
+              <time dateTime={post.date}>{post.date}</time>
+              <p>{post.description}</p>
+            </li>
+          ))}
+        </ul>
+        <p><a href="/rss.xml">RSS feed</a></p>
+      </body>
+    </html>
+  )
+}`
 
 export default () =>
   examplesLayout({
@@ -207,7 +354,12 @@ export default () =>
       ),
       codeBlock('src/lib/posts.js', libSnippet, 'javascript'),
       h2('3. List posts on the home page'),
-      codeBlock('src/index.ht.js', indexSnippet, 'javascript'),
+      pageCodeTabs({
+        file: 'src/index.ht.js',
+        template: indexTemplate,
+        ht: indexHt,
+        jsx: indexJsx,
+      }),
       h2('4. One static page per post'),
       p(
         code('generateStaticParams'),
@@ -215,7 +367,12 @@ export default () =>
         code('data()'),
         ' loads the matching post for each page.',
       ),
-      codeBlock('src/blog/[slug].ht.js', slugSnippet, 'javascript'),
+      pageCodeTabs({
+        file: 'src/blog/[slug].ht.js',
+        template: slugTemplate,
+        ht: slugHt,
+        jsx: slugJsx,
+      }),
       h2('5. RSS for free'),
       p(
         'With the ',

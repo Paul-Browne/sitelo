@@ -1,5 +1,5 @@
 import { a, h2, li, p, ul } from 'javascript-to-html'
-import { code, codeBlock } from '../lib/code.js'
+import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
 const islandModuleSnippet = `// src/islands/comments.js
@@ -8,7 +8,7 @@ export default async function comments({ props, request }) {
   return \`<ul>\${comments.map((c) => \`<li>\${c.text}</li>\`).join('')}</ul>\`
 }`
 
-const pageSnippet = `// src/blog/[slug].ht.js
+const pageTemplate = `// src/blog/[slug].ht.js
 import { island } from 'sitelo/islands'
 
 export default ({ params }) => \`
@@ -20,6 +20,34 @@ export default ({ params }) => \`
     </body>
   </html>
 \``
+
+const pageHt = `// src/blog/[slug].ht.js
+import { html, body, article, script } from 'javascript-to-html'
+import { island } from 'sitelo/islands'
+
+export default ({ params }) =>
+  html(
+    body(
+      article('…static content…'),
+      island('comments', { postId: params.slug }, '<p>Loading comments…</p>'),
+      script({ type: 'module', src: '/islands.js' }),
+    ),
+  )`
+
+const pageJsx = `// src/blog/[slug].ht.jsx
+import { island } from 'sitelo/islands'
+
+export default function Post({ params }) {
+  return (
+    <html>
+      <body>
+        <article>…static content…</article>
+        {island('comments', { postId: params.slug }, '<p>Loading comments…</p>')}
+        <script type="module" src="/islands.js" />
+      </body>
+    </html>
+  )
+}`
 
 const loaderSnippet = `// src/islands.js
 import { mountIslands } from 'sitelo/islands/client'
@@ -76,7 +104,12 @@ export default () =>
         code('sitelo/islands'),
         '. The static build ships the fallback HTML; props are embedded in the placeholder, so keep them small and non-secret.',
       ),
-      codeBlock('src/blog/[slug].ht.js', pageSnippet, 'javascript'),
+      pageCodeTabs({
+        file: 'src/blog/[slug].ht.js',
+        template: pageTemplate,
+        ht: pageHt,
+        jsx: pageJsx,
+      }),
       h2('3. Add the client loader'),
       p(
         'A tiny script fetches each rendered fragment and swaps it in. It goes through the normal asset pipeline, so a plain ',

@@ -1,5 +1,5 @@
 import { a, h2, h3, li, p, ul } from 'javascript-to-html'
-import { code, codeBlock } from '../lib/code.js'
+import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { examplesLayout } from '../lib/layout.js'
 
 const structureSnippet = `my-site/
@@ -49,7 +49,7 @@ frontend:
     paths:
       - node_modules/**/*`
 
-const pageSnippet = `// src/index.ht.js
+const pageTemplate = `// src/index.ht.js
 export default () => \`
   <html lang="en">
     <head>
@@ -61,6 +61,33 @@ export default () => \`
     </body>
   </html>
 \``
+
+const pageHt = `// src/index.ht.js
+import { html, head, title, link, body, h1 } from 'javascript-to-html'
+
+export default () =>
+  html({ lang: 'en' },
+    head(
+      title('sitelo — basic example'),
+      link({ rel: 'stylesheet', href: '/styles.css' }),
+    ),
+    body(h1('Hello from sitelo')),
+  )`
+
+const pageJsx = `// src/index.ht.jsx
+export default function Home() {
+  return (
+    <html lang="en">
+      <head>
+        <title>sitelo — basic example</title>
+        <link rel="stylesheet" href="/styles.css" />
+      </head>
+      <body>
+        <h1>Hello from sitelo</h1>
+      </body>
+    </html>
+  )
+}`
 
 export default () =>
   examplesLayout({
@@ -100,7 +127,12 @@ export default () =>
       ),
       h2('Project layout'),
       codeBlock('project', structureSnippet, 'bash'),
-      codeBlock('src/index.ht.js', pageSnippet, 'javascript'),
+      pageCodeTabs({
+        file: 'src/index.ht.js',
+        template: pageTemplate,
+        ht: pageHt,
+        jsx: pageJsx,
+      }),
       h2('Build'),
       codeBlock(
         'shell',

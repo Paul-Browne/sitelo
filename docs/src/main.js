@@ -1,6 +1,7 @@
 import abb from './lib/abb.js'
 import Prism from 'prismjs'
 import 'prismjs/components/prism-javascript'
+import 'prismjs/components/prism-jsx'
 import 'prismjs/components/prism-bash'
 
 Prism.highlightAll()
@@ -66,6 +67,28 @@ for (const button of document.querySelectorAll('.code-copy')) {
       }, 1400)
     }
   })
+}
+
+for (const root of document.querySelectorAll('[data-code-tabs]')) {
+  const tabs = [...root.querySelectorAll('[data-tab]')]
+  const panels = [...root.querySelectorAll('[data-panel]')]
+
+  for (const tab of tabs) {
+    tab.addEventListener('click', () => {
+      const id = tab.getAttribute('data-tab')
+      for (const other of tabs) {
+        const active = other === tab
+        other.classList.toggle('is-active', active)
+        other.setAttribute('aria-selected', active ? 'true' : 'false')
+      }
+      for (const panel of panels) {
+        const active = panel.getAttribute('data-panel') === id
+        panel.classList.toggle('is-active', active)
+        if (active) panel.removeAttribute('hidden')
+        else panel.setAttribute('hidden', '')
+      }
+    })
+  }
 }
 
 startHeroTypewriter()

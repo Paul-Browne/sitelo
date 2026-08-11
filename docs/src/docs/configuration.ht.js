@@ -1,5 +1,5 @@
 import { a, h2, h3, li, p, ul } from 'javascript-to-html'
-import { code, codeBlock } from '../lib/code.js'
+import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
 const configSnippet = `// sitelo.config.js
@@ -53,7 +53,7 @@ export default {
   pagefind: true,
 }`
 
-const pagefindPageSnippet = `// src/index.ht.js
+const pagefindPageTemplate = `// src/index.ht.js
 export default () => \`
   <html lang="en">
     <head>
@@ -73,6 +73,53 @@ export default () => \`
     </body>
   </html>
 \``
+
+const pagefindPageHt = `// src/index.ht.js
+import {
+  html, head, title, link, script, body, header, a, div, main, h1, p,
+} from 'javascript-to-html'
+
+export default () =>
+  html({ lang: 'en' },
+    head(
+      title('My site'),
+      link({ rel: 'stylesheet', href: '/styles.css' }),
+      script({ type: 'module', src: '/main.js' }),
+    ),
+    body(
+      header(
+        a({ href: '/' }, 'Home'),
+        div({ id: 'search' }),
+      ),
+      main({ 'data-pagefind-body': '' },
+        h1('Hello'),
+        p('Only this region is indexed.'),
+      ),
+    ),
+  )`
+
+const pagefindPageJsx = `// src/index.ht.jsx
+export default function Home() {
+  return (
+    <html lang="en">
+      <head>
+        <title>My site</title>
+        <link rel="stylesheet" href="/styles.css" />
+        <script type="module" src="/main.js" />
+      </head>
+      <body>
+        <header>
+          <a href="/">Home</a>
+          <div id="search" />
+        </header>
+        <main data-pagefind-body="">
+          <h1>Hello</h1>
+          <p>Only this region is indexed.</p>
+        </main>
+      </body>
+    </html>
+  )
+}`
 
 const pagefindMainSnippet = `// src/main.js
 async function initSearch() {
@@ -241,7 +288,12 @@ export default {
         code('data-pagefind-body'),
         ' on the main content so nav/footer aren’t indexed. Leave an empty element for the search UI:',
       ),
-      codeBlock('src/index.ht.js', pagefindPageSnippet, 'javascript'),
+      pageCodeTabs({
+        file: 'src/index.ht.js',
+        template: pagefindPageTemplate,
+        ht: pagefindPageHt,
+        jsx: pagefindPageJsx,
+      }),
       h3('3. Mount the Pagefind UI'),
       p(
         'Load ',

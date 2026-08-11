@@ -1,44 +1,62 @@
 import { a, h2, h3, p } from 'javascript-to-html'
-import { code, codeBlock } from '../lib/code.js'
+import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
-const fnSnippet = `export default ({ params, data, dev }) => \`
+const fnTemplate = `export default ({ params, data, dev }) => \`
   <html>
     <body><h1>Hello</h1></body>
   </html>
 \``
 
+const fnHt = `import { html, body, h1 } from 'javascript-to-html'
+
+export default ({ params, data, dev }) =>
+  html(
+    body(h1('Hello'))
+  )`
+
+const fnJsx = `export default function Page({ params, data, dev }) {
+  return (
+    <html>
+      <body><h1>Hello</h1></body>
+    </html>
+  )
+}`
+
 const stringSnippet = `export default \`<html><body><h1>Static as it gets</h1></body></html>\``
 
-const structuredSnippet = `export default {
+const structuredTemplate = `export default {
   generateStaticParams: () => [{ slug: 'hello' }],
   data: ({ params }) => ({ title: params.slug }),
   render: ({ data }) => \`<html><body><h1>\${data.title}</h1></body></html>\`,
 }`
 
-const jsxSnippet = `// src/index.ht.tsx
-export default function Home() {
-  return (
-    <html lang="en">
-      <head><title>My site</title></head>
-      <body><h1>Hello from TSX</h1></body>
-    </html>
-  )
+const structuredHt = `import { html, body, h1 } from 'javascript-to-html'
+
+export default {
+  generateStaticParams: () => [{ slug: 'hello' }],
+  data: ({ params }) => ({ title: params.slug }),
+  render: ({ data }) =>
+    html(
+      body(h1(data.title))
+    ),
 }`
 
-const j2hSnippet = `import { html, head, title, body, h1 } from 'javascript-to-html'
-
-export default () =>
-  html({ lang: 'en' },
-    head(title('My website')),
-    body(h1('Hello world'))
-  )`
+const structuredJsx = `export default {
+  generateStaticParams: () => [{ slug: 'hello' }],
+  data: ({ params }) => ({ title: params.slug }),
+  render: ({ data }) => (
+    <html>
+      <body><h1>{data.title}</h1></body>
+    </html>
+  ),
+}`
 
 export default () =>
   docsLayout({
     title: 'Writing pages',
     description:
-      'How to author sitelo pages — strings, JSX, or javascript-to-html (recommended).',
+      'How to author sitelo pages — template literals, ht.js (recommended), or JSX.',
     activeHref: '/docs/pages',
     children: [
       p(
@@ -57,35 +75,23 @@ export default () =>
         code('<html>'),
         ', sitelo prepends ',
         code('<!DOCTYPE html>'),
-        ' automatically.',
+        ' automatically. Prefer ',
+        a({ href: 'https://ht.js.org', rel: 'noopener' }, 'ht.js'),
+        ' (',
+        code('javascript-to-html'),
+        ') for markup — tag functions that return strings, with no templating engine or React runtime.',
       ),
       h2('1. A function returning HTML'),
-      codeBlock('page.ht.js', fnSnippet, 'javascript'),
-      h2('2. A plain string'),
-      codeBlock('page.ht.js', stringSnippet, 'javascript'),
-      h2('3. A structured module'),
-      p('Keep ', code('render'), ', ', code('data'), ', and ', code('generateStaticParams'), ' together:'),
-      codeBlock('page.ht.js', structuredSnippet, 'javascript'),
-      h2('4. javascript-to-html (recommended)'),
+      pageCodeTabs({
+        file: 'page.ht.js',
+        template: fnTemplate,
+        ht: fnHt,
+        jsx: fnJsx,
+      }),
       p(
-        'The recommended way to write HTML in JavaScript: tag functions that return strings — no templating engine, no React runtime. Install ',
-        a(
-          {
-            href: 'https://ht.js.org',
-            rel: 'noopener',
-          },
-          'javascript-to-html',
-        ),
-        ' (',
-        a({ href: 'https://ht.js.org', rel: 'noopener' }, 'ht.js.org'),
-        '):',
-      ),
-      codeBlock('src/index.ht.js', j2hSnippet, 'javascript'),
-      h2('5. JSX / TSX'),
-      p(
-        'Name the file ',
+        'JSX files use ',
         code('*.ht.jsx'),
-        ' or ',
+        ' / ',
         code('*.ht.tsx'),
         '. Output is static HTML via ',
         code('react-dom/server'),
@@ -93,11 +99,20 @@ export default () =>
         code('react'),
         ' and ',
         code('react-dom'),
-        ' in your project. Event handlers like ',
+        '. Event handlers like ',
         code('onClick'),
         ' will not run in the browser.',
       ),
-      codeBlock('src/index.ht.tsx', jsxSnippet, 'javascript'),
+      h2('2. A plain string'),
+      codeBlock('page.ht.js', stringSnippet, 'javascript'),
+      h2('3. A structured module'),
+      p('Keep ', code('render'), ', ', code('data'), ', and ', code('generateStaticParams'), ' together:'),
+      pageCodeTabs({
+        file: 'page.ht.js',
+        template: structuredTemplate,
+        ht: structuredHt,
+        jsx: structuredJsx,
+      }),
       h2('Render context'),
       p('Every page function receives one argument:'),
       h3('params'),

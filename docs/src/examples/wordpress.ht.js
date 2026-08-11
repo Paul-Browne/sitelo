@@ -1,5 +1,5 @@
 import { a, h2, h3, li, p, ul } from 'javascript-to-html'
-import { code, codeBlock } from '../lib/code.js'
+import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { examplesLayout } from '../lib/layout.js'
 
 const structureSnippet = `my-site/
@@ -102,7 +102,7 @@ export function featuredImage(post) {
   return post._embedded?.['wp:featuredmedia']?.[0]?.source_url
 }`
 
-const homeSnippet = `// src/index.ht.js
+const homeTemplate = `// src/index.ht.js
 import { getPosts, postPath } from './lib/wordpress.js'
 
 export async function data() {
@@ -133,7 +133,63 @@ export default ({ data }) => \`
   </html>
 \``
 
-const blogIndexSnippet = `// src/blog/index.ht.js
+const homeHt = `// src/index.ht.js
+import { html, head, title, link, body, h1, ul, li, a, p } from 'javascript-to-html'
+import { getPosts, postPath } from './lib/wordpress.js'
+
+export async function data() {
+  const posts = await getPosts({ perPage: 5 })
+  return { posts }
+}
+
+export default ({ data }) =>
+  html({ lang: 'en' },
+    head(
+      title('My site'),
+      link({ rel: 'stylesheet', href: '/styles.css' }),
+    ),
+    body(
+      h1('Latest from the blog'),
+      ul(
+        ...data.posts.map((post) =>
+          li(a({ href: postPath(post) }, post.title.rendered)),
+        ),
+      ),
+      p(a({ href: '/blog' }, 'All posts')),
+    ),
+  )`
+
+const homeJsx = `// src/index.ht.jsx
+import { getPosts, postPath } from './lib/wordpress.js'
+
+export async function data() {
+  const posts = await getPosts({ perPage: 5 })
+  return { posts }
+}
+
+export default function Home({ data }) {
+  return (
+    <html lang="en">
+      <head>
+        <title>My site</title>
+        <link rel="stylesheet" href="/styles.css" />
+      </head>
+      <body>
+        <h1>Latest from the blog</h1>
+        <ul>
+          {data.posts.map((post) => (
+            <li key={post.slug}>
+              <a href={postPath(post)}>{post.title.rendered}</a>
+            </li>
+          ))}
+        </ul>
+        <p><a href="/blog">All posts</a></p>
+      </body>
+    </html>
+  )
+}`
+
+const blogIndexTemplate = `// src/blog/index.ht.js
 import { getAllPosts, postPath } from '../lib/wordpress.js'
 
 export async function data() {
@@ -165,7 +221,67 @@ export default ({ data }) => \`
   </html>
 \``
 
-const blogPostSnippet = `// src/blog/[slug].ht.js
+const blogIndexHt = `// src/blog/index.ht.js
+import { html, head, title, link, body, h1, ul, li, a, time } from 'javascript-to-html'
+import { getAllPosts, postPath } from '../lib/wordpress.js'
+
+export async function data() {
+  // Full archive — paginate through the whole WP site
+  const posts = await getAllPosts({ embed: false })
+  return { posts }
+}
+
+export default ({ data }) =>
+  html({ lang: 'en' },
+    head(
+      title('Blog'),
+      link({ rel: 'stylesheet', href: '/styles.css' }),
+    ),
+    body(
+      h1(\`Blog (\${data.posts.length})\`),
+      ul(
+        ...data.posts.map((post) =>
+          li(
+            a({ href: postPath(post) }, post.title.rendered),
+            time(post.date.slice(0, 10)),
+          ),
+        ),
+      ),
+    ),
+  )`
+
+const blogIndexJsx = `// src/blog/index.ht.jsx
+import { getAllPosts, postPath } from '../lib/wordpress.js'
+
+export async function data() {
+  // Full archive — paginate through the whole WP site
+  const posts = await getAllPosts({ embed: false })
+  return { posts }
+}
+
+export default function BlogIndex({ data }) {
+  return (
+    <html lang="en">
+      <head>
+        <title>Blog</title>
+        <link rel="stylesheet" href="/styles.css" />
+      </head>
+      <body>
+        <h1>Blog ({data.posts.length})</h1>
+        <ul>
+          {data.posts.map((post) => (
+            <li key={post.slug}>
+              <a href={postPath(post)}>{post.title.rendered}</a>
+              <time>{post.date.slice(0, 10)}</time>
+            </li>
+          ))}
+        </ul>
+      </body>
+    </html>
+  )
+}`
+
+const blogPostTemplate = `// src/blog/[slug].ht.js
 import {
   getAllPosts,
   getPostBySlug,
@@ -213,6 +329,106 @@ export default ({ data }) => {
       </body>
     </html>
   \`
+}`
+
+const blogPostHt = `// src/blog/[slug].ht.js
+import {
+  html, head, title, link, body, article, p, a, h1, time, img, div,
+} from 'javascript-to-html'
+import {
+  getAllPosts,
+  getPostBySlug,
+  featuredImage,
+} from '../lib/wordpress.js'
+
+export async function generateStaticParams() {
+  // Rip every published post (thousands are fine — 100 per request)
+  const posts = await getAllPosts({
+    embed: false, // slugs only; skip _embed for speed
+    onPage: (page, totalPages, count) => {
+      console.log(\`[wordpress] page \${page}/\${totalPages} (\${count} posts)\`)
+    },
+  })
+
+  return posts.map((post) => ({ slug: post.slug }))
+}
+
+export async function data({ params }) {
+  const post = await getPostBySlug(params.slug)
+  if (!post) throw new Error(\`Post not found: \${params.slug}\`)
+  return { post }
+}
+
+export default ({ data }) => {
+  const { post } = data
+  const image = featuredImage(post)
+
+  return html({ lang: 'en' },
+    head(
+      title(post.title.rendered),
+      link({ rel: 'stylesheet', href: '/styles.css' }),
+    ),
+    body(
+      article(
+        p(a({ href: '/blog' }, '← Blog')),
+        h1(post.title.rendered),
+        time(post.date.slice(0, 10)),
+        image ? img({ src: image, alt: '' }) : '',
+        div({ class: 'content' }, post.content.rendered),
+      ),
+    ),
+  )
+}`
+
+const blogPostJsx = `// src/blog/[slug].ht.jsx
+import {
+  getAllPosts,
+  getPostBySlug,
+  featuredImage,
+} from '../lib/wordpress.js'
+
+export async function generateStaticParams() {
+  // Rip every published post (thousands are fine — 100 per request)
+  const posts = await getAllPosts({
+    embed: false, // slugs only; skip _embed for speed
+    onPage: (page, totalPages, count) => {
+      console.log(\`[wordpress] page \${page}/\${totalPages} (\${count} posts)\`)
+    },
+  })
+
+  return posts.map((post) => ({ slug: post.slug }))
+}
+
+export async function data({ params }) {
+  const post = await getPostBySlug(params.slug)
+  if (!post) throw new Error(\`Post not found: \${params.slug}\`)
+  return { post }
+}
+
+export default function BlogPost({ data }) {
+  const { post } = data
+  const image = featuredImage(post)
+
+  return (
+    <html lang="en">
+      <head>
+        <title>{post.title.rendered}</title>
+        <link rel="stylesheet" href="/styles.css" />
+      </head>
+      <body>
+        <article>
+          <p><a href="/blog">← Blog</a></p>
+          <h1>{post.title.rendered}</h1>
+          <time>{post.date.slice(0, 10)}</time>
+          {image ? <img src={image} alt="" /> : null}
+          <div
+            className="content"
+            dangerouslySetInnerHTML={{ __html: post.content.rendered }}
+          />
+        </article>
+      </body>
+    </html>
+  )
 }`
 
 const envSnippet = `# .env (optional)
@@ -274,10 +490,20 @@ export default () =>
       ),
       codeBlock('src/lib/wordpress.js', wpLibSnippet, 'javascript'),
       h2('3. Home page'),
-      codeBlock('src/index.ht.js', homeSnippet, 'javascript'),
+      pageCodeTabs({
+        file: 'src/index.ht.js',
+        template: homeTemplate,
+        ht: homeHt,
+        jsx: homeJsx,
+      }),
       h2('4. Blog index'),
       p('Use ', code('getAllPosts()'), ' so the archive isn’t capped at 50–100 items.'),
-      codeBlock('src/blog/index.ht.js', blogIndexSnippet, 'javascript'),
+      pageCodeTabs({
+        file: 'src/blog/index.ht.js',
+        template: blogIndexTemplate,
+        ht: blogIndexHt,
+        jsx: blogIndexJsx,
+      }),
       h2('5. Rip every post into static pages'),
       p(
         code('generateStaticParams'),
@@ -289,7 +515,12 @@ export default () =>
         code('getPosts({ perPage: 100 })'),
         ' once and stop.',
       ),
-      codeBlock('src/blog/[slug].ht.js', blogPostSnippet, 'javascript'),
+      pageCodeTabs({
+        file: 'src/blog/[slug].ht.js',
+        template: blogPostTemplate,
+        ht: blogPostHt,
+        jsx: blogPostJsx,
+      }),
       h2('6. Build'),
       codeBlock(
         'shell',
