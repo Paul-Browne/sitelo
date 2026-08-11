@@ -19,6 +19,14 @@ export default () =>
           ' — minimal project plus static deploy configs for Netlify, Vercel, Cloudflare Pages, and AWS Amplify.',
         ),
         li(
+          a({ href: '/examples/todo' }, 'Todo app'),
+          ' — static HTML with inline ',
+          code("import('/js/todo.js')"),
+          ' handlers (add / toggle / delete, ',
+          code('localStorage'),
+          ').',
+        ),
+        li(
           a({ href: '/examples/blog' }, 'Markdown blog'),
           ' — a folder of ',
           code('.md'),
