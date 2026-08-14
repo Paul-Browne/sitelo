@@ -4,6 +4,8 @@ import { fetchWithCache } from 'sitelo'
 const WP_URL = process.env.WP_URL ?? 'https://speckyboy.com'
 /** Optional cap for quicker local builds, e.g. WP_LIMIT=50 */
 const WP_LIMIT = process.env.WP_LIMIT ? Number(process.env.WP_LIMIT) : null
+/** How many WP list pages to fetch at once after page 1. */
+const WP_CONCURRENCY = Number(process.env.WP_CONCURRENCY ?? 8)
 const PER_PAGE = 100 // WP max for /wp/v2/posts
 
 const WP_HEADERS = {
@@ -39,6 +41,27 @@ async function wpFetch(path, query = {}) {
   }
 }
 
+/** Run `fn` over `items` with at most `concurrency` in flight. */
+async function mapPool(items, concurrency, fn) {
+  const results = new Array(items.length)
+  let next = 0
+
+  async function worker() {
+    while (next < items.length) {
+      const i = next
+      next += 1
+      results[i] = await fn(items[i], i)
+    }
+  }
+
+  const workers = Array.from(
+    { length: Math.min(concurrency, items.length) },
+    () => worker(),
+  )
+  await Promise.all(workers)
+  return results
+}
+
 export async function getPosts({ page = 1, perPage = 20, embed = true } = {}) {
   const { data } = await wpFetch('/posts', {
     page,
@@ -53,6 +76,7 @@ export async function getAllPosts({
   perPage = PER_PAGE,
   embed = false,
   onPage,
+  concurrency = WP_CONCURRENCY,
 } = {}) {
   // When WP_LIMIT is set, don't over-fetch the first page.
   const pageSize =
@@ -64,28 +88,33 @@ export async function getAllPosts({
     _embed: embed ? '1' : undefined,
   })
 
-  let posts = [...first.data]
-  onPage?.(1, first.totalPages, posts.length)
-
-  if (WP_LIMIT != null && posts.length >= WP_LIMIT) {
-    return posts.slice(0, WP_LIMIT)
+  let lastPage = first.totalPages
+  if (WP_LIMIT != null) {
+    lastPage = Math.min(lastPage, Math.ceil(WP_LIMIT / pageSize))
   }
 
-  for (let page = 2; page <= first.totalPages; page += 1) {
+  onPage?.(1, lastPage, first.data.length)
+
+  if (lastPage <= 1 || (WP_LIMIT != null && first.data.length >= WP_LIMIT)) {
+    return WP_LIMIT != null ? first.data.slice(0, WP_LIMIT) : first.data
+  }
+
+  const pages = Array.from({ length: lastPage - 1 }, (_, i) => i + 2)
+  let gathered = first.data.length
+
+  const rest = await mapPool(pages, concurrency, async (page) => {
     const next = await wpFetch('/posts', {
       page,
       per_page: pageSize,
       _embed: embed ? '1' : undefined,
     })
-    posts.push(...next.data)
-    onPage?.(page, first.totalPages, posts.length)
+    gathered += next.data.length
+    onPage?.(page, lastPage, gathered)
+    return next.data
+  })
 
-    if (WP_LIMIT != null && posts.length >= WP_LIMIT) {
-      return posts.slice(0, WP_LIMIT)
-    }
-  }
-
-  return posts
+  const posts = [...first.data, ...rest.flat()]
+  return WP_LIMIT != null ? posts.slice(0, WP_LIMIT) : posts
 }
 
 export async function getPostBySlug(slug) {

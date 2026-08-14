@@ -42,10 +42,11 @@ WP_URL=https://your-wordpress-site.com npm run build
 
 ## Env
 
-| Variable   | Default                   | Purpose                                      |
-| ---------- | ------------------------- | -------------------------------------------- |
-| `WP_URL`   | `https://speckyboy.com`   | WordPress origin                             |
-| `WP_LIMIT` | _(none — rip everything)_ | Cap how many posts `getAllPosts()` returns   |
+| Variable         | Default                   | Purpose                                      |
+| ---------------- | ------------------------- | -------------------------------------------- |
+| `WP_URL`         | `https://speckyboy.com`   | WordPress origin                             |
+| `WP_LIMIT`       | _(none — rip everything)_ | Cap how many posts `getAllPosts()` returns   |
+| `WP_CONCURRENCY` | `8`                       | Parallel list-page fetches after page 1      |
 
 Full walkthrough: [sitelo.js.org/examples/wordpress](https://sitelo.js.org/examples/wordpress).
 
