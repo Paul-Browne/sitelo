@@ -1,7 +1,6 @@
 ---
 import {
   getAllPosts,
-  getPostBySlug,
   featuredImage,
   sourceSite,
 } from '../../lib/wordpress.js'
@@ -13,9 +12,10 @@ export async function getStaticPaths() {
     `[wordpress-astro] ripping posts… (${process.uptime().toFixed(1)}s since start)`,
   )
 
-  // Rip every published post (thousands are fine — 100 per request)
+  // Rip every published post (thousands are fine — 100 per request).
+  // embed: true + props so each page skips a per-slug API round-trip.
   const posts = await getAllPosts({
-    embed: false, // slugs only; skip _embed for speed
+    embed: true,
     onPage: (page, totalPages, count) => {
       console.log(
         `[wordpress-astro] page ${page}/${totalPages} (${count} posts)`,
@@ -31,13 +31,11 @@ export async function getStaticPaths() {
 
   return posts.map((post) => ({
     params: { slug: post.slug },
+    props: { post },
   }))
 }
 
-const { slug } = Astro.params
-const post = await getPostBySlug(slug)
-if (!post) throw new Error(`Post not found: ${slug}`)
-
+const { post } = Astro.props
 const source = sourceSite()
 const image = featuredImage(post)
 ---

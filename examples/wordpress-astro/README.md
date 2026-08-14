@@ -37,9 +37,12 @@ WP_URL=https://your-wordpress-site.com npm run build
 - `src/pages/index.astro` — home page listing recent Speckyboy posts
 - `src/pages/blog/index.astro` — full archive of every ripped post
 - `src/pages/blog/[slug].astro` — one static page per post via `getStaticPaths`
+  (passes each post as `props` so render skips per-slug API calls)
 - `src/lib/wordpress.js` — REST helpers that walk every page of `/posts`
   (WordPress caps `per_page` at 100) with parallel fetches + a small disk
   cache so rebuilds reuse responses
+- `astro.config.mjs` — `build.concurrency` renders page HTML in parallel
+  (default here: 32)
 
 ## Env
 
@@ -47,7 +50,21 @@ WP_URL=https://your-wordpress-site.com npm run build
 | ---------------- | ------------------------- | -------------------------------------------- |
 | `WP_URL`         | `https://speckyboy.com`   | WordPress origin                             |
 | `WP_LIMIT`       | _(none — rip everything)_ | Cap how many posts `getAllPosts()` returns   |
-| `WP_CONCURRENCY` | `25`                      | Parallel list-page fetches after page 1      |
+| `WP_CONCURRENCY` | `32`                      | Parallel list-page fetches after page 1      |
+
+### Faster cold cache
+
+First build downloads every post body. Helpers already trim Speckyboy
+payloads with `_fields` (drops Yoast etc. — ~3× smaller) and embed only
+`wp:featuredmedia`. To go faster still:
+
+```bash
+rm -rf node_modules/.cache          # force cold
+WP_CONCURRENCY=40 npm run build     # more parallel list pages
+```
+
+Or skip featured images for a leaner rip (`embed: false` in
+`getStaticPaths`) — content is still passed via `props` for render.
 
 Sitelo version of the same recipe: [`examples/wordpress`](../wordpress).
 
