@@ -6,6 +6,11 @@ import {
 } from '../lib/wordpress.js'
 
 export async function generateStaticParams() {
+  const ripStarted = performance.now()
+  console.log(
+    `[wordpress] ripping posts… (${process.uptime().toFixed(1)}s since start)`,
+  )
+
   // Rip every published post (thousands are fine — 100 per request)
   const posts = await getAllPosts({
     embed: false, // slugs only; skip _embed for speed
@@ -13,6 +18,12 @@ export async function generateStaticParams() {
       console.log(`[wordpress] page ${page}/${totalPages} (${count} posts)`)
     },
   })
+
+  const ripSeconds = ((performance.now() - ripStarted) / 1000).toFixed(1)
+  console.log(
+    `[wordpress] ripped ${posts.length} posts in ${ripSeconds}s` +
+      ` (${process.uptime().toFixed(1)}s since start)`,
+  )
 
   return posts.map((post) => ({ slug: post.slug }))
 }

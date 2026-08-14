@@ -1,4 +1,6 @@
-import { fetchWithCache } from 'sitelo'
+import { createHash } from 'node:crypto'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
 
 /** Real public WordPress site used by this example (~2k posts). */
 const WP_URL = process.env.WP_URL ?? 'https://speckyboy.com'
@@ -7,12 +9,61 @@ const WP_LIMIT = process.env.WP_LIMIT ? Number(process.env.WP_LIMIT) : null
 /** How many WP list pages to fetch at once after page 1. */
 const WP_CONCURRENCY = Number(process.env.WP_CONCURRENCY ?? 25)
 const PER_PAGE = 100 // WP max for /wp/v2/posts
+const CACHE_MAX_AGE_MS = 3600 * 1000
+const CACHE_DIR = join(
+  process.cwd(),
+  'node_modules/.cache/wordpress-astro/fetch',
+)
 
 const WP_HEADERS = {
   Accept: 'application/json',
   // Cloudflare (and similar) often block bare clients — identify ourselves.
   'User-Agent':
-    'sitelo-wordpress-example/1.0 (+https://sitelo.js.org; demo of Speckyboy)',
+    'wordpress-astro-example/1.0 (+https://sitelo.js.org; demo of Speckyboy)',
+}
+
+/** Simple disk cache so rebuilds reuse WP responses (sitelo's fetchWithCache analogue). */
+async function fetchWithCache(url, init) {
+  const key = createHash('sha256').update(String(url)).digest('hex')
+  const file = join(CACHE_DIR, `${key}.json`)
+
+  try {
+    const raw = await readFile(file, 'utf8')
+    const cached = JSON.parse(raw)
+    if (Date.now() - cached.savedAt < CACHE_MAX_AGE_MS) {
+      return {
+        ok: cached.ok,
+        status: cached.status,
+        headers: new Headers(cached.headers),
+        json: async () => cached.body,
+      }
+    }
+  } catch {
+    // miss
+  }
+
+  const res = await fetch(url, init)
+  const body = await res.json()
+  const headers = Object.fromEntries(res.headers.entries())
+
+  await mkdir(CACHE_DIR, { recursive: true })
+  await writeFile(
+    file,
+    JSON.stringify({
+      savedAt: Date.now(),
+      ok: res.ok,
+      status: res.status,
+      headers,
+      body,
+    }),
+  )
+
+  return {
+    ok: res.ok,
+    status: res.status,
+    headers: new Headers(headers),
+    json: async () => body,
+  }
 }
 
 async function wpFetch(path, query = {}) {
@@ -21,14 +72,7 @@ async function wpFetch(path, query = {}) {
     if (value != null) url.searchParams.set(key, String(value))
   }
 
-  const res = await fetchWithCache(
-    url,
-    { headers: WP_HEADERS },
-    {
-      maxAge: 3600,
-      cache: 'auto',
-    },
-  )
+  const res = await fetchWithCache(url, { headers: WP_HEADERS })
 
   if (!res.ok) {
     throw new Error(`WordPress ${res.status}: ${url}`)

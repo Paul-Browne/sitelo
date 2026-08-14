@@ -1,0 +1,42 @@
+---
+import { getAllPosts, postPath, sourceSite } from '../../lib/wordpress.js'
+import '../../styles/styles.css'
+
+// Full archive — paginate through the whole WP site (or WP_LIMIT)
+const posts = await getAllPosts({ embed: false })
+const source = sourceSite()
+const sourceHost = source.replace(/^https?:\/\//, '')
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Blog — Speckyboy → Astro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <header class="site-header">
+      <p><a href="/">← Home</a></p>
+      <h1>Blog ({posts.length})</h1>
+      <p class="lede">
+        Every published post from
+        <a href={source} rel="noopener">{sourceHost}</a>.
+      </p>
+    </header>
+    <main>
+      <ul class="post-list">
+        {
+          posts.map((post) => (
+            <li>
+              <a href={postPath(post)} set:html={post.title.rendered} />
+              <time datetime={post.date}>{post.date.slice(0, 10)}</time>
+            </li>
+          ))
+        }
+      </ul>
+    </main>
+    <footer class="site-footer">
+      Content © <a href={source} rel="noopener">Speckyboy</a>.
+    </footer>
+  </body>
+</html>

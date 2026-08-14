@@ -1,0 +1,49 @@
+---
+import { getPosts, postPath, sourceSite } from '../lib/wordpress.js'
+import '../styles/styles.css'
+
+const posts = await getPosts({ perPage: 8 })
+const source = sourceSite()
+const sourceHost = source.replace(/^https?:\/\//, '')
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Speckyboy → Astro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Static rebuild of Speckyboy posts via the WordPress REST API."
+    />
+  </head>
+  <body>
+    <header class="site-header">
+      <p class="eyebrow">Astro · WordPress example</p>
+      <h1>Speckyboy → static</h1>
+      <p class="lede">
+        Latest posts ripped from
+        <a href={source} rel="noopener">{sourceHost}</a>
+        via <code>/wp-json/wp/v2/posts</code>.
+      </p>
+    </header>
+    <main>
+      <h2>Latest</h2>
+      <ul class="post-list">
+        {
+          posts.map((post) => (
+            <li>
+              <a href={postPath(post)} set:html={post.title.rendered} />
+              <time datetime={post.date}>{post.date.slice(0, 10)}</time>
+            </li>
+          ))
+        }
+      </ul>
+      <p><a class="more" href="/blog">All posts →</a></p>
+    </main>
+    <footer class="site-footer">
+      Content © <a href={source} rel="noopener">Speckyboy</a>. Built with
+      <a href="https://astro.build">Astro</a>.
+    </footer>
+  </body>
+</html>

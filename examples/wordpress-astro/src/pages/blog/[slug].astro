@@ -1,0 +1,65 @@
+---
+import {
+  getAllPosts,
+  getPostBySlug,
+  featuredImage,
+  sourceSite,
+} from '../../lib/wordpress.js'
+import '../../styles/styles.css'
+
+export async function getStaticPaths() {
+  const ripStarted = performance.now()
+  console.log(
+    `[wordpress-astro] ripping posts… (${process.uptime().toFixed(1)}s since start)`,
+  )
+
+  // Rip every published post (thousands are fine — 100 per request)
+  const posts = await getAllPosts({
+    embed: false, // slugs only; skip _embed for speed
+    onPage: (page, totalPages, count) => {
+      console.log(
+        `[wordpress-astro] page ${page}/${totalPages} (${count} posts)`,
+      )
+    },
+  })
+
+  const ripSeconds = ((performance.now() - ripStarted) / 1000).toFixed(1)
+  console.log(
+    `[wordpress-astro] ripped ${posts.length} posts in ${ripSeconds}s` +
+      ` (${process.uptime().toFixed(1)}s since start)`,
+  )
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+  }))
+}
+
+const { slug } = Astro.params
+const post = await getPostBySlug(slug)
+if (!post) throw new Error(`Post not found: ${slug}`)
+
+const source = sourceSite()
+const image = featuredImage(post)
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title set:html={`${post.title.rendered} — Speckyboy → Astro`} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <article>
+      <p class="crumb"><a href="/blog">← Blog</a></p>
+      <h1 set:html={post.title.rendered} />
+      <time datetime={post.date}>{post.date.slice(0, 10)}</time>
+      {image ? <img class="hero" src={image} alt="" /> : null}
+      <div class="content" set:html={post.content.rendered} />
+    </article>
+    <footer class="site-footer">
+      Original:
+      <a href={post.link} rel="noopener">{post.link}</a>
+      · Content © <a href={source} rel="noopener">Speckyboy</a>
+    </footer>
+  </body>
+</html>

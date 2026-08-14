@@ -1,0 +1,5 @@
+# gitignore for local Astro example
+node_modules/
+dist/
+.astro/
+.cache/

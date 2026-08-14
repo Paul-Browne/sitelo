@@ -1,0 +1,146 @@
+:root {
+  --ink: #12141a;
+  --muted: #5a6170;
+  --line: #d8dde6;
+  --paper: #ffffff;
+  --wash: #f3f5f8;
+  --accent: #0f6e56;
+  font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--wash);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+  background: var(--paper);
+  min-height: 100vh;
+  border-inline: 1px solid var(--line);
+}
+
+a {
+  color: var(--accent);
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.88em;
+}
+
+.site-header {
+  margin: -2rem -1.25rem 2rem;
+  padding: 2rem 1.25rem 1.25rem;
+  background:
+    linear-gradient(180deg, #e8f3ee 0%, var(--paper) 100%);
+  border-bottom: 1px solid var(--line);
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.site-header h1,
+article h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.75rem, 4vw, 2.35rem);
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.lede {
+  margin: 0;
+  color: var(--muted);
+  max-width: 36rem;
+}
+
+h2 {
+  font-size: 1.05rem;
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.post-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.post-list li {
+  display: grid;
+  gap: 0.15rem 1rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+@media (min-width: 540px) {
+  .post-list li {
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+  }
+}
+
+.post-list a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.post-list a:hover {
+  color: var(--accent);
+}
+
+time {
+  color: var(--muted);
+  font-size: 0.9em;
+  font-variant-numeric: tabular-nums;
+}
+
+.more {
+  display: inline-block;
+  margin-top: 1.25rem;
+  font-weight: 600;
+}
+
+.crumb {
+  margin: 0 0 1rem;
+}
+
+article time {
+  display: block;
+  margin-bottom: 1.25rem;
+}
+
+.hero {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 0 1.5rem;
+}
+
+.content :is(img, iframe, video, figure) {
+  max-width: 100%;
+  height: auto;
+}
+
+.content a {
+  overflow-wrap: anywhere;
+}
+
+.site-footer {
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
