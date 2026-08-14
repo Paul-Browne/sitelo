@@ -1,6 +1,6 @@
 export default {
   site: 'https://example.com',
-  // thousands of pages? raise concurrency
+  // Speckyboy has ~2k posts — raise concurrency for a full rip
   renderConcurrency: 16,
   renderBatchSize: 128,
 }

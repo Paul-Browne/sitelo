@@ -2,6 +2,7 @@ import {
   getAllPosts,
   getPostBySlug,
   featuredImage,
+  sourceSite,
 } from '../lib/wordpress.js'
 
 export async function generateStaticParams() {
@@ -19,29 +20,35 @@ export async function generateStaticParams() {
 export async function data({ params }) {
   const post = await getPostBySlug(params.slug)
   if (!post) throw new Error(`Post not found: ${params.slug}`)
-  return { post }
+  return { post, source: sourceSite() }
 }
 
 export default ({ data }) => {
-  const { post } = data
+  const { post, source } = data
   const image = featuredImage(post)
 
   return `
     <html lang="en">
       <head>
-        <title>${post.title.rendered}</title>
+        <title>${post.title.rendered} — Speckyboy → sitelo</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="/css/styles.css">
       </head>
       <body>
         <article>
-          <p><a href="/blog">← Blog</a></p>
+          <p class="crumb"><a href="/blog">← Blog</a></p>
           <h1>${post.title.rendered}</h1>
-          <time>${post.date.slice(0, 10)}</time>
-          ${image ? `<img src="${image}" alt="">` : ''}
+          <time datetime="${post.date}">${post.date.slice(0, 10)}</time>
+          ${image ? `<img class="hero" src="${image}" alt="">` : ''}
           <div class="content">
             ${post.content.rendered}
           </div>
         </article>
+        <footer class="site-footer">
+          Original:
+          <a href="${post.link}" rel="noopener">${post.link}</a>
+          · Content © <a href="${source}" rel="noopener">Speckyboy</a>
+        </footer>
       </body>
     </html>
   `
