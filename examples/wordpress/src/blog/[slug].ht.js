@@ -11,9 +11,11 @@ export async function generateStaticParams() {
     `[wordpress] ripping posts… (${process.uptime().toFixed(1)}s since start)`,
   )
 
-  // Rip every published post (thousands are fine — 100 per request)
+  // Rip every published post (thousands are fine — 100 per request).
+  // embed: true so posts (incl. featured images) land in the in-memory
+  // cache and data() can skip ~2k per-slug API round-trips.
   const posts = await getAllPosts({
-    embed: false, // slugs only; skip _embed for speed
+    embed: true,
     onPage: (page, totalPages, count) => {
       console.log(`[wordpress] page ${page}/${totalPages} (${count} posts)`)
     },

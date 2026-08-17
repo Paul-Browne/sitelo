@@ -39,6 +39,9 @@ WP_URL=https://your-wordpress-site.com npm run build
 - `src/lib/wordpress.js` — REST helpers that walk every page of `/posts`
   (WordPress caps `per_page` at 100) using `fetchWithCache`, so rebuilds
   reuse cached responses instead of re-downloading everything
+- `sitelo.config.js` — `renderConcurrency` renders page HTML in parallel
+  (default here: 32). The list rip fills an in-memory cache so each
+  `/blog/[slug]` page doesn’t hit the API again during render.
 
 ## Env
 
@@ -46,7 +49,21 @@ WP_URL=https://your-wordpress-site.com npm run build
 | ---------------- | ------------------------- | -------------------------------------------- |
 | `WP_URL`         | `https://speckyboy.com`   | WordPress origin                             |
 | `WP_LIMIT`       | _(none — rip everything)_ | Cap how many posts `getAllPosts()` returns   |
-| `WP_CONCURRENCY` | `8`                       | Parallel list-page fetches after page 1      |
+| `WP_CONCURRENCY` | `32`                      | Parallel list-page fetches after page 1      |
+
+### Faster cold cache
+
+First build downloads every post body. Helpers already trim Speckyboy
+payloads with `_fields` (drops Yoast etc. — ~3× smaller) and embed only
+`wp:featuredmedia`. To go faster still:
+
+```bash
+rm -rf node_modules/.cache          # force cold
+WP_CONCURRENCY=40 npm run build     # more parallel list pages
+```
+
+Or skip featured images for a leaner rip (`embed: false` in
+`generateStaticParams`) — content is still cached for render.
 
 Full walkthrough: [sitelo.js.org/examples/wordpress](https://sitelo.js.org/examples/wordpress).
 

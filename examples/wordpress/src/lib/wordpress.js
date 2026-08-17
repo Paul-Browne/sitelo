@@ -5,14 +5,27 @@ const WP_URL = process.env.WP_URL ?? 'https://speckyboy.com'
 /** Optional cap for quicker local builds, e.g. WP_LIMIT=50 */
 const WP_LIMIT = process.env.WP_LIMIT ? Number(process.env.WP_LIMIT) : null
 /** How many WP list pages to fetch at once after page 1. */
-const WP_CONCURRENCY = Number(process.env.WP_CONCURRENCY ?? 25)
+const WP_CONCURRENCY = Number(process.env.WP_CONCURRENCY ?? 32)
 const PER_PAGE = 100 // WP max for /wp/v2/posts
+
+/** Drop Yoast / unused meta — Speckyboy full payloads are ~3× larger. */
+const POST_FIELDS = 'id,date,slug,link,title,content,_links,_embedded'
+const POST_FIELDS_NO_EMBED = 'id,date,slug,link,title,content'
 
 const WP_HEADERS = {
   Accept: 'application/json',
   // Cloudflare (and similar) often block bare clients — identify ourselves.
   'User-Agent':
     'sitelo-wordpress-example/1.0 (+https://sitelo.js.org; demo of Speckyboy)',
+}
+
+/** Filled by getAllPosts / getPosts so data() can skip per-slug API calls. */
+const postsBySlug = new Map()
+
+function rememberPosts(posts) {
+  for (const post of posts) {
+    postsBySlug.set(post.slug, post)
+  }
 }
 
 async function wpFetch(path, query = {}) {
@@ -66,8 +79,10 @@ export async function getPosts({ page = 1, perPage = 20, embed = true } = {}) {
   const { data } = await wpFetch('/posts', {
     page,
     per_page: perPage,
-    _embed: embed ? '1' : undefined,
+    _embed: embed ? 'wp:featuredmedia' : undefined,
+    _fields: embed ? POST_FIELDS : POST_FIELDS_NO_EMBED,
   })
+  rememberPosts(data)
   return data
 }
 
@@ -81,11 +96,14 @@ export async function getAllPosts({
   // When WP_LIMIT is set, don't over-fetch the first page.
   const pageSize =
     WP_LIMIT != null ? Math.min(perPage, WP_LIMIT) : perPage
+  const fields = embed ? POST_FIELDS : POST_FIELDS_NO_EMBED
+  const embedParam = embed ? 'wp:featuredmedia' : undefined
 
   const first = await wpFetch('/posts', {
     page: 1,
     per_page: pageSize,
-    _embed: embed ? '1' : undefined,
+    _embed: embedParam,
+    _fields: fields,
   })
 
   let lastPage = first.totalPages
@@ -96,7 +114,10 @@ export async function getAllPosts({
   onPage?.(1, lastPage, first.data.length)
 
   if (lastPage <= 1 || (WP_LIMIT != null && first.data.length >= WP_LIMIT)) {
-    return WP_LIMIT != null ? first.data.slice(0, WP_LIMIT) : first.data
+    const posts =
+      WP_LIMIT != null ? first.data.slice(0, WP_LIMIT) : first.data
+    rememberPosts(posts)
+    return posts
   }
 
   const pages = Array.from({ length: lastPage - 1 }, (_, i) => i + 2)
@@ -106,7 +127,8 @@ export async function getAllPosts({
     const next = await wpFetch('/posts', {
       page,
       per_page: pageSize,
-      _embed: embed ? '1' : undefined,
+      _embed: embedParam,
+      _fields: fields,
     })
     gathered += next.data.length
     onPage?.(page, lastPage, gathered)
@@ -114,15 +136,23 @@ export async function getAllPosts({
   })
 
   const posts = [...first.data, ...rest.flat()]
-  return WP_LIMIT != null ? posts.slice(0, WP_LIMIT) : posts
+  const limited = WP_LIMIT != null ? posts.slice(0, WP_LIMIT) : posts
+  rememberPosts(limited)
+  return limited
 }
 
 export async function getPostBySlug(slug) {
+  const cached = postsBySlug.get(slug)
+  if (cached) return cached
+
   const { data } = await wpFetch('/posts', {
     slug,
-    _embed: '1',
+    _embed: 'wp:featuredmedia',
+    _fields: POST_FIELDS,
   })
-  return data[0] ?? null
+  const post = data[0] ?? null
+  if (post) postsBySlug.set(slug, post)
+  return post
 }
 
 export function postPath(post) {
