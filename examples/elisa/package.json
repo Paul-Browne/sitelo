@@ -1,0 +1,13 @@
+{
+  "name": "sitelo-example-elisa",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "sitelo",
+    "build": "sitelo build",
+    "preview": "sitelo preview"
+  },
+  "dependencies": {
+    "sitelo": "file:../.."
+  }
+}
