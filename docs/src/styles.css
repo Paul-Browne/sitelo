@@ -78,6 +78,79 @@ code {
   gap: 1.35rem;
   width: 100%;
   font-size: 0.95rem;
+  position: relative;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.35rem;
+}
+
+.nav-menu {
+  display: none;
+  margin-left: auto;
+  position: relative;
+}
+
+.nav-menu-toggle {
+  list-style: none;
+  cursor: pointer;
+  color: var(--ink-soft);
+  font: inherit;
+  padding: 0.25rem 0;
+}
+
+.nav-menu-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.nav-menu-toggle::after {
+  content: '';
+  display: inline-block;
+  width: 1.1rem;
+  height: 0.7rem;
+  margin-left: 0.35rem;
+  vertical-align: -0.05rem;
+  background: linear-gradient(
+    currentColor 0 2px,
+    transparent 2px 5px,
+    currentColor 5px 7px,
+    transparent 7px 10px,
+    currentColor 10px 12px
+  );
+  background-size: 100% 12px;
+}
+
+.nav-menu[open] .nav-menu-toggle {
+  color: var(--ink);
+}
+
+.nav-menu-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.65rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 10.5rem;
+  padding: 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--paper-elevated) 94%, transparent);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+  z-index: 20;
+}
+
+.nav-menu-panel a {
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.5rem;
+}
+
+.nav-menu-panel a:hover,
+.nav-menu-panel a.is-active {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
 }
 
 .nav a {
@@ -264,6 +337,9 @@ code {
 /* glow shell around the install pill — shares the .code-glow hover gradients */
 .install-glow {
   --glow-angle: 0deg;
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
   position: relative;
   padding: 1px;
   border-radius: 999px;
@@ -275,6 +351,8 @@ code {
   display: inline-flex;
   align-items: center;
   gap: 0.65rem;
+  width: max-content;
+  max-width: 100%;
   padding: 0.55rem 0.55rem 0.55rem 1rem;
   border-radius: 999px;
   background: color-mix(in srgb, var(--code-bg) 88%, #123);
@@ -959,11 +1037,21 @@ a.feature-card:hover h3 {
 
   .hero-center {
     padding-top: 2rem;
-    align-items: stretch;
+    align-items: center;
   }
 
   .hero-actions {
     flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: auto;
+    max-width: 100%;
+  }
+
+  .install-glow,
+  .install {
+    width: fit-content;
+    max-width: 100%;
   }
 
   .topbar-inner {
@@ -989,22 +1077,20 @@ a.feature-card:hover h3 {
   }
 
   .nav {
-    flex-wrap: nowrap;
     gap: 0.65rem;
-    font-size: 0.82rem;
+    font-size: 0.9rem;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .nav-menu {
+    display: block;
   }
 
   .nav-logo {
     height: 1.1rem;
-  }
-
-  .install-glow {
-    width: 100%;
-  }
-
-  .install {
-    width: 100%;
-    justify-content: space-between;
   }
 
   .feature-list {

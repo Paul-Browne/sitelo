@@ -95,7 +95,7 @@ const features = [
   [
     'terminal',
     'Dev server + toolbar',
-    'Live renders on request, plus route, file, params, and island count while you develop',
+    'Live renders on request, plus file, params, island count, and a viewport toggle while you develop',
     '/docs/cli',
   ],
   [

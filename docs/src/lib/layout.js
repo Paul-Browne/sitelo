@@ -2,6 +2,7 @@ import {
   a,
   aside,
   body,
+  details,
   div,
   footer,
   h1,
@@ -17,6 +18,7 @@ import {
   p,
   script,
   span,
+  summary,
   title,
   ul,
 } from 'javascript-to-html'
@@ -49,18 +51,7 @@ function siteNav(activeHref = '/') {
   const onExamples = activeHref.startsWith('/examples')
   const onAbout = activeHref === '/about'
 
-  return nav(
-    { class: 'nav' },
-    a(
-      { class: 'nav-brand', href: '/' },
-      img({
-        class: 'nav-logo',
-        src: '/logo.svg',
-        alt: 'sitelo',
-        width: '120',
-        height: '34',
-      }),
-    ),
+  const links = [
     a({ class: onDocs ? 'is-active' : undefined, href: '/docs' }, 'Docs'),
     a(
       { class: onExamples ? 'is-active' : undefined, href: '/examples' },
@@ -80,6 +71,26 @@ function siteNav(activeHref = '/') {
         rel: 'noopener',
       },
       'npm',
+    ),
+  ]
+
+  return nav(
+    { class: 'nav' },
+    a(
+      { class: 'nav-brand', href: '/' },
+      img({
+        class: 'nav-logo',
+        src: '/logo.svg',
+        alt: 'sitelo',
+        width: '120',
+        height: '34',
+      }),
+    ),
+    div({ class: 'nav-links' }, ...links),
+    details(
+      { class: 'nav-menu' },
+      summary({ class: 'nav-menu-toggle', 'aria-label': 'Open menu' }, 'Menu'),
+      div({ class: 'nav-menu-panel' }, ...links),
     ),
   )
 }

@@ -586,8 +586,9 @@ never touches — they keep their fixed URL.
   (`sitelo build` still only emits the pages you list there.)
 - File changes inside your pages directory trigger an automatic
   **full-reload** in the browser.
-- A small **dev toolbar** on every page shows the route, source file,
-  params, and server-island count — plus Copy debug info / Docs.
+- A small **dev toolbar** on every page shows the source file, params,
+  and server-island count — plus a Desktop/Tablet/Mobile viewport preview
+  (real iframe so CSS media queries apply), Copy debug info, and Docs.
   Disable with `devToolbar: false` in `sitelo.config.js`. Production
   builds never include it.
 - Errors show a **source-mapped code frame** in the terminal pointing
