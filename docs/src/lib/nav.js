@@ -5,6 +5,7 @@ export const DOC_NAV = [
   { href: '/docs/data', label: 'Data loading' },
   { href: '/docs/islands', label: 'Server islands' },
   { href: '/docs/assets', label: 'Assets & styling' },
+  { href: '/docs/images', label: 'Image optimization' },
   { href: '/docs/typescript', label: 'TypeScript' },
   { href: '/docs/configuration', label: 'Configuration' },
   { href: '/docs/cli', label: 'CLI' },

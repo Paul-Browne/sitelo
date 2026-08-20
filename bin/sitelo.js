@@ -9,6 +9,11 @@ import htmlPages from '../src/index.js';
 import { renderIsland } from '../src/islands-server.js';
 import { isValidIslandName } from '../src/islands.js';
 import {
+  createDevImagePipeline,
+  normalizeImageOptions,
+  runImages,
+} from '../src/images.js';
+import {
   normalizePagefindOptions,
   runPagefind,
 } from '../src/pagefind.js';
@@ -228,10 +233,11 @@ function splitSiteloConfig(options) {
       pluginOptions: undefined,
       viteOptions: undefined,
       pagefind: undefined,
+      images: undefined,
     };
   }
 
-  const { vite, pagefind, ...pluginOptions } = options;
+  const { vite, pagefind, images, ...pluginOptions } = options;
 
   if (vite != null && (typeof vite !== 'object' || Array.isArray(vite))) {
     throw new Error('[sitelo] sitelo.config.js "vite" must be an object');
@@ -242,6 +248,7 @@ function splitSiteloConfig(options) {
       Object.keys(pluginOptions).length > 0 ? pluginOptions : undefined,
     viteOptions: vite ?? undefined,
     pagefind,
+    images,
   };
 }
 
@@ -252,6 +259,7 @@ async function loadSiteloConfig(root) {
       pluginOptions: undefined,
       viteOptions: undefined,
       pagefind: undefined,
+      images: undefined,
       configFile: undefined,
     };
   }
@@ -274,6 +282,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
     pluginOptions,
     viteOptions,
     pagefind,
+    images,
     configFile: siteloConfigFile,
   } = await loadSiteloConfig(root);
 
@@ -293,7 +302,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
   }
 
   if (hasPluginInUserConfig) {
-    return { plugins: [], viteOptions, pluginOptions, pagefind };
+    return { plugins: [], viteOptions, pluginOptions, pagefind, images };
   }
 
   return {
@@ -306,6 +315,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
     viteOptions,
     pluginOptions,
     pagefind,
+    images,
   };
 }
 
@@ -398,6 +408,51 @@ function islandsDevPlugin({ root, pagesDir = 'src' }) {
   };
 }
 
+/**
+ * Dev-only image optimization. Rewrites `<img>` tags in rendered pages the
+ * same way `sitelo build` does, and serves the generated variants from the
+ * shared cache so dev and production markup match.
+ */
+function imagesDevPlugin({ root, pagesDir = 'src', publicDir, base, options }) {
+  const pipeline = createDevImagePipeline({
+    root,
+    pagesDir,
+    publicDir,
+    base,
+    options,
+  });
+
+  return {
+    name: 'sitelo:images-dev',
+
+    configureServer(server) {
+      server.middlewares.use(pipeline.middleware);
+    },
+
+    transformIndexHtml: {
+      order: 'post',
+      async handler(html) {
+        try {
+          return await pipeline.transform(html);
+        } catch (error) {
+          console.warn(
+            `${LOG_PREFIX} images disabled for this request: ${
+              error instanceof Error ? error.message : error
+            }`,
+          );
+          return html;
+        }
+      },
+    },
+  };
+}
+
+function resolvePublicDir(viteOptions) {
+  return viteOptions?.publicDir === false
+    ? false
+    : (viteOptions?.publicDir ?? 'public');
+}
+
 function definedEntries(object) {
   return Object.fromEntries(
     Object.entries(object).filter(([, value]) => value !== undefined),
@@ -452,13 +507,16 @@ function buildInlineConfig(cli, command, viteFromSitelo = {}) {
 
 async function runDev(cli) {
   const mode = cli.mode ?? 'development';
-  const { plugins, viteOptions, pluginOptions } = await resolveSiteloConfig({
-    root: cli.root,
-    configFile: cli.config,
-    command: 'serve',
-    mode,
-    debug: cli.debug,
-  });
+  const { plugins, viteOptions, pluginOptions, images } =
+    await resolveSiteloConfig({
+      root: cli.root,
+      configFile: cli.config,
+      command: 'serve',
+      mode,
+      debug: cli.debug,
+    });
+
+  const imageOptions = normalizeImageOptions(images);
 
   const server = await createServer(
     mergeConfig(buildInlineConfig(cli, 'dev', viteOptions), {
@@ -467,6 +525,17 @@ async function runDev(cli) {
           root: cli.root,
           pagesDir: pluginOptions?.pagesDir,
         }),
+        ...(imageOptions?.dev
+          ? [
+              imagesDevPlugin({
+                root: cli.root,
+                pagesDir: pluginOptions?.pagesDir,
+                publicDir: resolvePublicDir(viteOptions),
+                base: cli.base ?? viteOptions?.base,
+                options: imageOptions,
+              }),
+            ]
+          : []),
         ...plugins,
       ],
     }),
@@ -478,7 +547,7 @@ async function runDev(cli) {
 
 async function runBuild(cli) {
   const mode = cli.mode ?? 'production';
-  const { plugins, viteOptions, pagefind } = await resolveSiteloConfig({
+  const { plugins, viteOptions, pagefind, images } = await resolveSiteloConfig({
     root: cli.root,
     configFile: cli.config,
     command: 'build',
@@ -489,15 +558,23 @@ async function runBuild(cli) {
   const inline = buildInlineConfig(cli, 'build', viteOptions);
   await build(mergeConfig(inline, { plugins }));
 
-  const pagefindOptions = normalizePagefindOptions(pagefind);
-  if (!pagefindOptions) return;
-
   const outDir =
     cli.outDir ?? viteOptions?.build?.outDir ?? inline.build?.outDir ?? 'dist';
-  const publicDir =
-    viteOptions?.publicDir === false
-      ? false
-      : (viteOptions?.publicDir ?? 'public');
+  const publicDir = resolvePublicDir(viteOptions);
+
+  // Images first: pagefind should index the final HTML.
+  const imageOptions = normalizeImageOptions(images);
+  if (imageOptions) {
+    await runImages({
+      root: cli.root,
+      outDir,
+      base: cli.base ?? viteOptions?.base ?? '/',
+      options: imageOptions,
+    });
+  }
+
+  const pagefindOptions = normalizePagefindOptions(pagefind);
+  if (!pagefindOptions) return;
 
   await runPagefind({
     root: cli.root,

@@ -65,6 +65,7 @@ That's the whole mental model. Everything else is convenience on top.
 - **Typed pages** — per-route param types inferred from the filename
 - **Smart asset pipeline** — JS/TS/CSS referenced by your HTML is bundled and minified; server-only code never leaks into `dist`
 - **Asset validation** — broken `<script src>` / stylesheet links fail the build
+- **Image optimization** — `<img>` tags get resized, converted, and turned into a `srcset`, in dev and in the build
 - **Real dev server** — pages render on request (dynamic routes included, no `generateStaticParams` needed in dev) with full reload and readable error frames
 - **Server islands (experimental)** — static pages with regions rendered on the server at request time
 - **Parallel static generation** — renders large sites concurrently
@@ -478,6 +479,101 @@ export default {
 
 ---
 
+## Image optimization
+
+Point `<img>` at a big source image and let sitelo do the rest:
+
+```js
+// sitelo.config.js
+export default {
+  images: true,
+}
+```
+
+```js
+// src/index.ht.js
+export default () => `<img src="/images/hero.png" alt="Sunrise">`
+```
+
+A 3000×2000 PNG becomes a resized, modern-format ladder, and the tag is
+rewritten in place:
+
+```html
+<img src="/assets/img/hero.a1b2c3d4-1200.webp"
+     alt="Sunrise"
+     sizes="(max-width: 1200px) 100vw, 1200px"
+     width="1200" height="800"
+     loading="lazy" decoding="async"
+     srcset="/assets/img/hero.9f8e7d6c-400.webp 400w,
+             /assets/img/hero.5b4a3c2d-800.webp 800w,
+             /assets/img/hero.a1b2c3d4-1200.webp 1200w">
+```
+
+Encoding is done by [sharp](https://sharp.pixelplumbing.com), which ships
+with sitelo — nothing else to install.
+
+### What it does
+
+- **Resizes** to each configured width, and **never upscales**. A 600px
+  source with `widths: [400, 800, 1200]` emits 400 and 600, nothing more.
+- **Converts** to modern formats. One format gives you a plain
+  `<img srcset>`; two or more wrap it in `<picture>` with a `<source>` per
+  format and a fallback in the original format.
+- **Adds `width`/`height`** so the page doesn't shift while images load,
+  plus `loading="lazy"` and `decoding="async"`.
+- **Works in dev too.** `sitelo dev` rewrites pages the same way and serves
+  variants from the cache, so what you see is what you ship.
+- **Caches by content hash** in `node_modules/.sitelo/images`. Rebuilds and
+  dev share it, so nothing is encoded twice.
+
+Images in both `src/` and `public/` are covered — the rewrite runs over the
+built HTML, so it doesn't matter where the file came from.
+
+### Options
+
+```js
+// sitelo.config.js
+export default {
+  images: {
+    widths: [400, 800, 1200],
+    formats: ['avif', 'webp'],
+    quality: { avif: 55, webp: 78, jpeg: 82 },
+    exclude: ['**/og/**'],
+  },
+}
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `widths` | `[400, 800, 1200]` | Ladder of widths; the largest is also the cap |
+| `formats` | `['webp']` | `avif`, `webp`, `jpeg`, `png`. 2+ formats → `<picture>` |
+| `quality` | `{ avif: 55, webp: 78, jpeg: 82 }` | Per-format encoder quality |
+| `sizes` | derived | `sizes` attribute; a `sizes` on the tag always wins |
+| `dimensions` | `true` | Add `width`/`height` (completes whichever you left off) |
+| `lazy` | `true` | Add `loading="lazy"` and `decoding="async"` |
+| `exclude` | `[]` | Glob(s) or RegExp(s) of image URLs to leave alone |
+| `assetsDir` | `'assets/img'` | Where variants are written inside `dist/` |
+| `cacheDir` | `'node_modules/.sitelo/images'` | Shared dev/build encode cache |
+| `remote` | `false` | Download and optimize `https://` images at build time |
+| `prune` | `false` | Delete originals nothing references after rewriting |
+| `dev` | `true` | Set `false` to serve untouched originals in dev |
+| `concurrency` | CPUs − 1 (max 8) | Parallel encodes |
+
+### Opting out
+
+Tags that already carry a `srcset`, sit inside a `<picture>`, point at an
+SVG, an animated GIF, or a remote URL (unless `remote: true`) are left
+exactly as they are. For anything else, mark it:
+
+```html
+<img src="/images/exact.png" alt="Pixel art" data-no-optimize>
+```
+
+Social-card and favicon images live in `<meta>` and `<link>`, which this
+never touches — they keep their fixed URL.
+
+---
+
 ## Dev server
 
 `sitelo dev` gives you the real site, not an approximation:
@@ -696,6 +792,7 @@ export default {
 | `site` | — | Base URL; enables `sitemap.xml` |
 | `rss` | — | RSS config (`site`, `title`, `description`, `routePrefix`) |
 | `pagefind` | — | `true` or options object; indexes after `sitelo build` (CLI only) |
+| `images` | — | `true` or options object; optimizes images in dev and after `sitelo build` (CLI only) |
 | `missingAssets` | `'error'` | `'error'` or `'warn'` for broken asset references |
 | `mapOutputPath` | — | `(page) => string` to customize output filenames |
 | `generatedTypesDir` | `'.sitelo/types'` | Where generated page helper `.d.ts` files are written |
