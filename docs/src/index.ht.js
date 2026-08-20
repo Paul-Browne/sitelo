@@ -28,9 +28,6 @@ const icons = {
   code: featureIcon(
     '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
   ),
-  brackets: featureIcon(
-    '<path d="M9 4H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h2"/><path d="M15 4h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-2"/>',
-  ),
   data: featureIcon(
     '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5"/><path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/>',
   ),
@@ -58,23 +55,36 @@ const icons = {
   gift: featureIcon(
     '<polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>',
   ),
+  image: featureIcon(
+    '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>',
+  ),
 }
 
 const features = [
-  ['routing', 'File-based routing', 'src/about.ht.js → /about', '/docs/routing'],
+  [
+    'routing',
+    'Routing',
+    'src/about.ht.js → /about, plus [slug] and catch-alls',
+    '/docs/routing',
+  ],
   [
     'code',
     'JSX & TSX',
     'Write pages as .jsx / .tsx with the same routing and build',
     '/docs/pages#jsx-limitations',
   ],
-  ['brackets', 'Dynamic routes', '[slug], [...path], optional catch-alls', '/docs/routing'],
   ['data', 'Data loading', 'data() at build time, with fetch caching', '/docs/data'],
   [
     'pipeline',
     'Asset pipeline',
     'Referenced JS/TS/CSS is bundled; the rest stays server-only',
     '/docs/assets',
+  ],
+  [
+    'image',
+    'Image optimization',
+    'Resize, formats, and srcset from a plain <img> — in dev and in the build',
+    '/docs/images',
   ],
   [
     'feather',
