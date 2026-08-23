@@ -83,7 +83,7 @@ const features = [
   [
     'image',
     'Image optimization',
-    'Resize, formats, and srcset from a plain <img> — in dev and in the build',
+    'Resize, formats, and srcset from a plain &lt;img&gt; — in dev and in the build',
     '/docs/images',
   ],
   [

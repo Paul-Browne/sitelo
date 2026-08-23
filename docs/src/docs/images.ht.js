@@ -91,7 +91,7 @@ export default () =>
         a({ href: 'https://sharp.pixelplumbing.com', rel: 'noopener' }, 'sharp'),
         ', which ships with sitelo — there is nothing else to install.',
       ),
-      h2('Write a plain <img>'),
+      h2('Write a plain &lt;img&gt;'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: pageTemplate,
