@@ -838,6 +838,67 @@ function formatBytes(bytes) {
 }
 
 /**
+ * Throttled progress lines for long remote image passes.
+ * @param {{
+ *   total: number
+ *   log: (message: string) => void
+ *   stats: () => { sources: number, variants: number }
+ *   every?: number
+ *   intervalMs?: number
+ * }}
+ */
+function createImageProgressLogger({
+  total,
+  log,
+  stats,
+  every = 50,
+  intervalMs = 5000,
+}) {
+  let done = 0
+  let lastLoggedAt = 0
+  let stopped = false
+
+  const write = () => {
+    const { sources, variants } = stats()
+    const detail =
+      sources > 0
+        ? `, ${sources} source${sources === 1 ? '' : 's'} → ${variants} variant${variants === 1 ? '' : 's'}`
+        : ''
+
+    log(`[sitelo] images: ${done}/${total} pages${detail}…`)
+    lastLoggedAt = Date.now()
+  }
+
+  const maybeWrite = () => {
+    if (stopped) return
+    const now = Date.now()
+    const milestone = done % every === 0 || done === total
+    if (done === 1 || milestone || now - lastLoggedAt >= intervalMs) write()
+  }
+
+  // Pages can take minutes when they reference many remotes — tick on a timer
+  // so stats keep updating even while a single page is in flight.
+  const timer = setInterval(() => {
+    if (stopped) return
+    const { sources } = stats()
+    if (done === 0 && sources === 0) return
+    if (Date.now() - lastLoggedAt >= intervalMs) write()
+  }, intervalMs)
+  timer.unref?.()
+
+  return {
+    pageDone() {
+      done += 1
+      maybeWrite()
+    },
+    stop() {
+      stopped = true
+      clearInterval(timer)
+    },
+  }
+}
+
+/**
  * Remove source images that nothing references any more. Only runs with
  * `images.prune`, and only for files no remaining HTML or CSS points at.
  * @param {{ distDir: string, options: ImageOptions, log: (message: string) => void }} args
@@ -941,22 +1002,44 @@ export async function runImages({
 
   let rewrittenTags = 0
 
+  if (options.remote) {
+    log(
+      `[sitelo] images: optimizing remote images in ${htmlFiles.length} HTML file${htmlFiles.length === 1 ? '' : 's'}…`,
+    )
+  }
+
+  const progressEvery = Math.max(1, Math.min(50, Math.floor(htmlFiles.length / 20)))
+  const logProgress = options.remote
+    ? createImageProgressLogger({
+        total: htmlFiles.length,
+        log,
+        stats: () => processor.stats,
+        every: progressEvery,
+      })
+    : null
+
   await mapWithConcurrency(htmlFiles, options.concurrency, async (file) => {
-    const html = await fs.readFile(file, 'utf8')
-    const result = await rewriteHtmlImages({
-      html,
-      options,
-      resolve,
-      generate: processor.generate,
-      onWarn: (message) =>
-        warn(`[sitelo] images (${path.relative(distDir, file)}): ${message}`),
-    })
+    try {
+      const html = await fs.readFile(file, 'utf8')
+      const result = await rewriteHtmlImages({
+        html,
+        options,
+        resolve,
+        generate: processor.generate,
+        onWarn: (message) =>
+          warn(`[sitelo] images (${path.relative(distDir, file)}): ${message}`),
+      })
 
-    if (result.rewritten === 0) return
+      if (result.rewritten === 0) return
 
-    rewrittenTags += result.rewritten
-    await fs.writeFile(file, result.html)
+      rewrittenTags += result.rewritten
+      await fs.writeFile(file, result.html)
+    } finally {
+      logProgress?.pageDone()
+    }
   })
+
+  logProgress?.stop()
 
   const { stats } = processor
 
