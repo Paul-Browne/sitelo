@@ -557,7 +557,7 @@ export default {
 | `remote` | `false` | Download and optimize `https://` images at build time |
 | `prune` | `false` | Delete originals nothing references after rewriting |
 | `dev` | `true` | Set `false` to serve untouched originals in dev |
-| `concurrency` | CPUs − 1 (max 8) | Parallel encodes |
+| `concurrency` | CPUs − 1 (max 8); **1** when `remote: true` | Parallel encodes |
 
 ### Opting out
 

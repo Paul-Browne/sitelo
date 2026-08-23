@@ -38,6 +38,13 @@ test('normalizeImageOptions: true → defaults', () => {
   assert.equal(options.prune, false)
   assert.equal(options.dev, true)
   assert.equal(options.assetsDir, 'assets/img')
+  assert.ok(options.concurrency >= 1)
+})
+
+test('normalizeImageOptions: remote defaults to low concurrency', () => {
+  const options = normalizeImageOptions({ remote: true })
+  assert.equal(options.remote, true)
+  assert.equal(options.concurrency, 1)
 })
 
 test('normalizeImageOptions: object merges and sorts', () => {
@@ -91,6 +98,34 @@ test('parseAttributes: quoted, unquoted, and boolean attributes', () => {
   assert.equal(attributes.get('alt'), 'A "quote"')
   assert.equal(attributes.get('width'), '200')
   assert.equal(attributes.get('data-no-optimize'), null)
+})
+
+test('parseAttributes: decodes HTML entities in attribute values', () => {
+  const attributes = parseAttributes(
+    '<img src="https://cdn.example/img.jpeg?w=500&amp;fm=jpg&amp;env=master" alt="A &amp; B">',
+  )
+
+  assert.equal(
+    attributes.get('src'),
+    'https://cdn.example/img.jpeg?w=500&fm=jpg&env=master',
+  )
+  assert.equal(attributes.get('alt'), 'A & B')
+})
+
+test('rewriteHtmlImages: resolves entity-encoded remote query strings', async () => {
+  const seen = []
+  const { rewritten } = await rewriteHtmlImages({
+    html: '<img src="https://cdn.example/a.jpeg?w=500&amp;fm=jpg" alt="">',
+    options: normalizeImageOptions({ remote: true }),
+    resolve: async (url) => {
+      seen.push(url)
+      return '/abs/a.jpeg'
+    },
+    generate: stubGenerate(),
+  })
+
+  assert.equal(rewritten, 1)
+  assert.deepEqual(seen, ['https://cdn.example/a.jpeg?w=500&fm=jpg'])
 })
 
 function stubGenerate(formats = ['webp']) {

@@ -1,6 +1,6 @@
 import {
   getHandsetGroups,
-  getHydratedGroup,
+  getHandsetGroup,
   variantPayload,
   pickDefaultVariant,
   formatPrice,
@@ -21,7 +21,7 @@ export async function generateStaticParams() {
 }
 
 export async function data({ params }) {
-  const group = await getHydratedGroup(params.slug)
+  const group = await getHandsetGroup(params.slug)
   if (!group) throw new Error(`Product not found: ${params.slug}`)
   const variants = group.variants.map(variantPayload)
   const selected = pickDefaultVariant(variants)

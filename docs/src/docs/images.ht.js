@@ -165,7 +165,7 @@ export default () =>
         li(code('remote'), ' — default ', code('false'), '; optimize ', code('https://'), ' images at build time'),
         li(code('prune'), ' — default ', code('false'), '; delete originals nothing references any more'),
         li(code('dev'), ' — default ', code('true'), '; set ', code('false'), ' to serve untouched originals in dev'),
-        li(code('concurrency'), ' — parallel encodes, default CPUs − 1 (max 8)'),
+        li(code('concurrency'), ' — parallel encodes, default CPUs − 1 (max 8); 1 when remote is on'),
       ),
       h3('Two formats give you <picture>'),
       p(

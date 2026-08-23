@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import fs from 'node:fs';
+import fsp from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -556,14 +557,26 @@ async function runBuild(cli) {
   });
 
   const inline = buildInlineConfig(cli, 'build', viteOptions);
-  await build(mergeConfig(inline, { plugins }));
-
   const outDir =
     cli.outDir ?? viteOptions?.build?.outDir ?? inline.build?.outDir ?? 'dist';
+  const imageOptions = normalizeImageOptions(images);
+
+  // Prior post-build image output lives under outDir. Drop it before Vite empties
+  // outDir so prepare-out-dir does not hit ENOTEMPTY on dist/assets (or similar).
+  if (imageOptions) {
+    await fsp
+      .rm(path.join(cli.root, outDir, imageOptions.assetsDir), {
+        recursive: true,
+        force: true,
+      })
+      .catch(() => {});
+  }
+
+  await build(mergeConfig(inline, { plugins }));
+
   const publicDir = resolvePublicDir(viteOptions);
 
   // Images first: pagefind should index the final HTML.
-  const imageOptions = normalizeImageOptions(images);
   if (imageOptions) {
     await runImages({
       root: cli.root,

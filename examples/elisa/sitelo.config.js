@@ -1,6 +1,11 @@
 export default {
   site: 'https://example.com',
-  // Hundreds of HANDSET groups + ~170 category pages
+  // One /devices rip, then pure local grouping — safe to parallelize pages
   renderConcurrency: 32,
   renderBatchSize: 128,
+  images: {
+    remote: true,
+    // Thousands of remote Elisa assets — keep sharp serial on macOS
+    concurrency: 1,
+  },
 }

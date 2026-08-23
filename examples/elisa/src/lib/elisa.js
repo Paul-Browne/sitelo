@@ -6,7 +6,7 @@ const ELISA_URL = process.env.ELISA_URL ?? 'https://elisa.fi/kauppa'
 const ELISA_LIMIT = process.env.ELISA_LIMIT
   ? Number(process.env.ELISA_LIMIT)
   : null
-const ELISA_CONCURRENCY = Number(process.env.ELISA_CONCURRENCY ?? 16)
+const ELISA_RETRIES = Number(process.env.ELISA_RETRIES ?? 6)
 
 const ELISA_HEADERS = {
   Accept: 'application/json',
@@ -25,9 +25,24 @@ let groupsBySlug = null
  *   name: string,
  *   uids: string[],
  *   variants: object[],
- *   hydrated: boolean,
  * }} HandsetGroup
  */
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+function retryDelayMs(res, attempt) {
+  const retryAfter = res.headers.get('retry-after')
+  if (retryAfter) {
+    const asNumber = Number(retryAfter)
+    if (Number.isFinite(asNumber)) return Math.max(0, asNumber * 1000)
+    const asDate = Date.parse(retryAfter)
+    if (Number.isFinite(asDate)) return Math.max(0, asDate - Date.now())
+  }
+  const base = Math.min(30_000, 1000 * 2 ** attempt)
+  return base + Math.floor(Math.random() * 250)
+}
 
 async function elisaFetch(path, query = {}) {
   const base = ELISA_URL.endsWith('/') ? ELISA_URL : `${ELISA_URL}/`
@@ -36,41 +51,32 @@ async function elisaFetch(path, query = {}) {
     if (value != null) url.searchParams.set(key, String(value))
   }
 
-  const res = await fetchWithCache(
-    url,
-    { headers: ELISA_HEADERS },
-    {
-      maxAge: 3600,
-      cache: 'auto',
-    },
-  )
+  let lastError = null
 
-  if (!res.ok) {
-    throw new Error(`Elisa ${res.status}: ${url}`)
+  for (let attempt = 0; attempt <= ELISA_RETRIES; attempt += 1) {
+    const res = await fetchWithCache(
+      url,
+      { headers: ELISA_HEADERS },
+      {
+        maxAge: 3600,
+        cache: 'auto',
+      },
+    )
+
+    if (res.ok) return res.json()
+
+    const retryable = res.status === 429 || res.status === 503
+    lastError = new Error(`Elisa ${res.status}: ${url}`)
+    if (!retryable || attempt === ELISA_RETRIES) break
+
+    const wait = retryDelayMs(res, attempt)
+    console.warn(
+      `[elisa] ${res.status} on ${url.pathname}${url.search} — retry ${attempt + 1}/${ELISA_RETRIES} in ${(wait / 1000).toFixed(1)}s`,
+    )
+    await sleep(wait)
   }
 
-  return res.json()
-}
-
-/** Run `fn` over `items` with at most `concurrency` in flight. */
-async function mapPool(items, concurrency, fn) {
-  const results = new Array(items.length)
-  let next = 0
-
-  async function worker() {
-    while (next < items.length) {
-      const i = next
-      next += 1
-      results[i] = await fn(items[i], i)
-    }
-  }
-
-  const workers = Array.from(
-    { length: Math.min(concurrency, items.length) },
-    () => worker(),
-  )
-  await Promise.all(workers)
-  return results
+  throw lastError
 }
 
 function asList(payload) {
@@ -188,7 +194,6 @@ function buildGroups(devices) {
         name: device.mainProductName || device.name || slug,
         uids: [],
         variants: [],
-        hydrated: false,
       }
       map.set(slug, group)
     }
@@ -215,31 +220,8 @@ export async function getHandsetGroup(slug) {
 }
 
 export async function getDeviceByUid(uid) {
-  const payload = await elisaFetch('/rest/products', { uid })
-  const list = asList(payload)
-  return list[0] ?? (payload && payload.uid ? payload : null)
-}
-
-export async function hydrateGroup(group) {
-  if (!group || group.hydrated) return group
-  const details = await mapPool(
-    group.uids,
-    ELISA_CONCURRENCY,
-    async (uid) => (await getDeviceByUid(uid)) ?? group.variants.find((v) => v.uid === uid),
-  )
-  group.variants = details.filter(Boolean)
-  group.hydrated = true
-  group.name =
-    group.variants[0]?.mainProductName ||
-    group.variants[0]?.name ||
-    group.name
-  return group
-}
-
-export async function getHydratedGroup(slug) {
-  const group = await getHandsetGroup(slug)
-  if (!group) return null
-  return hydrateGroup(group)
+  const devices = await getDevices()
+  return devices.find((device) => device.uid === uid) ?? null
 }
 
 export async function getDevicesForCategory(ids) {

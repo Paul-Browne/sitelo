@@ -35,6 +35,13 @@ const DEFAULT_ASSETS_DIR = 'assets/img'
 const DEFAULT_CACHE_DIR = 'node_modules/.sitelo/images'
 const DEV_URL_PREFIX = '/_sitelo/images'
 
+/** Passed to every sharp() call — buffers avoid libvips mmap SIGBUS on macOS. */
+const SHARP_INPUT = {
+  failOn: 'error',
+  sequentialRead: true,
+  limitInputPixels: 268_402_689,
+}
+
 /**
  * @typedef {object} ImageOptions
  * @property {number[]} widths
@@ -137,8 +144,10 @@ export function normalizeImageOptions(images) {
     remote: options.remote === true,
     prune: options.prune === true,
     dev: options.dev !== false,
+    // Remote encodes hammer libvips; serialise to avoid SIGBUS on macOS.
     concurrency:
-      options.concurrency ?? Math.max(1, Math.min(8, (os.cpus()?.length ?? 4) - 1)),
+      options.concurrency ??
+      (options.remote === true ? 1 : Math.max(1, Math.min(8, (os.cpus()?.length ?? 4) - 1))),
   }
 }
 
@@ -230,6 +239,75 @@ function isHttpUrl(url) {
   return /^https?:\/\//i.test(url)
 }
 
+/** Fast reject of HTML error pages / empty downloads before sharp touches them. */
+function looksLikeRaster(buffer) {
+  if (!Buffer.isBuffer(buffer) || buffer.length < 12) return false
+  // JPEG
+  if (buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) return true
+  // PNG
+  if (
+    buffer[0] === 0x89 &&
+    buffer[1] === 0x50 &&
+    buffer[2] === 0x4e &&
+    buffer[3] === 0x47
+  ) {
+    return true
+  }
+  // GIF
+  if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46) return true
+  // WebP (RIFF....WEBP)
+  if (
+    buffer[0] === 0x52 &&
+    buffer[1] === 0x49 &&
+    buffer[2] === 0x46 &&
+    buffer[3] === 0x46 &&
+    buffer[8] === 0x57 &&
+    buffer[9] === 0x45
+  ) {
+    return true
+  }
+  // AVIF / HEIF (....ftyp)
+  if (
+    buffer[4] === 0x66 &&
+    buffer[5] === 0x74 &&
+    buffer[6] === 0x79 &&
+    buffer[7] === 0x70
+  ) {
+    return true
+  }
+  return false
+}
+
+/**
+ * Header checks miss truncated downloads; those can SIGBUS when libvips mmaps them.
+ * @param {Buffer} buffer
+ */
+function looksLikeCompleteRaster(buffer) {
+  if (!looksLikeRaster(buffer)) return false
+
+  // JPEG must end with the EOI marker.
+  if (buffer[0] === 0xff && buffer[1] === 0xd8) {
+    return (
+      buffer.length >= 4 &&
+      buffer[buffer.length - 2] === 0xff &&
+      buffer[buffer.length - 1] === 0xd9
+    )
+  }
+
+  // PNG must contain an IEND chunk.
+  if (buffer[0] === 0x89 && buffer[1] === 0x50) {
+    return buffer.includes(Buffer.from('IEND'))
+  }
+
+  return true
+}
+
+async function writeFileAtomic(filePath, data) {
+  const tmpPath = `${filePath}.${process.pid}.${Date.now()}.tmp`
+  await fs.writeFile(tmpPath, data)
+  await fs.rename(tmpPath, filePath)
+}
+
 function joinUrl(...parts) {
   return `/${parts.map((part) => String(part).replace(/^\/+|\/+$/g, '')).filter(Boolean).join('/')}`
 }
@@ -273,11 +351,20 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
   /** @type {Map<string, Promise<null | object>>} */
   const inFlight = new Map()
   const stats = { sources: 0, variants: 0, originalBytes: 0, variantBytes: 0 }
-  const limit = createLimiter(options.concurrency)
+  const sourceLimit = createLimiter(options.concurrency)
+  const encodeLimit = createLimiter(options.concurrency)
 
-  function encode(sourcePath, width, format) {
-    return limit(() => {
-      const pipeline = sharp(sourcePath).resize({ width, withoutEnlargement: true })
+  // Cap libvips' own thread pool — high parallel sharp() calls can SIGBUS on macOS.
+  if (typeof sharp.concurrency === 'function') {
+    sharp.concurrency(options.remote ? 1 : Math.min(options.concurrency, 4))
+  }
+
+  function encode(sourceBuffer, width, format) {
+    return encodeLimit(() => {
+      const pipeline = sharp(sourceBuffer, SHARP_INPUT).resize({
+        width,
+        withoutEnlargement: true,
+      })
 
       if (format === 'png') {
         return pipeline.png({ compressionLevel: 9, palette: true }).toBuffer()
@@ -287,7 +374,7 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
     })
   }
 
-  async function buildVariant({ sourcePath, sourceHash, name, width, format }) {
+  async function buildVariant({ sourceBuffer, sourceHash, name, width, format }) {
     const extension = EXTENSION_BY_FORMAT[format]
     const key = hash(`${sourceHash}:${width}:${format}:${options.quality[format]}`)
     const fileName = `${name}.${key}-${width}.${extension}`
@@ -298,14 +385,14 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
     try {
       buffer = await fs.readFile(cachePath)
     } catch {
-      buffer = await encode(sourcePath, width, format)
+      buffer = await encode(sourceBuffer, width, format)
       await fs.mkdir(path.dirname(cachePath), { recursive: true })
-      await fs.writeFile(cachePath, buffer)
+      await writeFileAtomic(cachePath, buffer)
     }
 
     if (outputPath !== cachePath) {
       await fs.mkdir(path.dirname(outputPath), { recursive: true })
-      await fs.writeFile(outputPath, buffer)
+      await writeFileAtomic(outputPath, buffer)
     }
 
     stats.variants += 1
@@ -333,9 +420,17 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
     const existing = inFlight.get(sourcePath)
     if (existing) return existing
 
-    const promise = (async () => {
+    const promise = sourceLimit(async () => {
       const source = await fs.readFile(sourcePath)
-      const metadata = await sharp(source).metadata()
+
+      if (!looksLikeCompleteRaster(source)) {
+        if (sourcePath.includes(`${path.sep}remote${path.sep}`)) {
+          await fs.unlink(sourcePath).catch(() => {})
+        }
+        throw new Error('not a decodable raster image')
+      }
+
+      const metadata = await sharp(source, SHARP_INPUT).metadata()
 
       // Vectors scale on their own; animations would lose their frames.
       if (!metadata.width || !metadata.height) return null
@@ -359,7 +454,7 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
       const jobs = []
       for (const format of formats) {
         for (const width of widths) {
-          jobs.push({ sourcePath, sourceHash, name, width, format })
+          jobs.push({ sourceBuffer: source, sourceHash, name, width, format })
         }
       }
 
@@ -385,7 +480,12 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
         width: largestWidth,
         height: Math.round((metadata.height / metadata.width) * largestWidth),
       }
-    })()
+    }).catch(async (error) => {
+      if (sourcePath.includes(`${path.sep}remote${path.sep}`)) {
+        await fs.unlink(sourcePath).catch(() => {})
+      }
+      throw error
+    })
 
     inFlight.set(sourcePath, promise)
     return promise
@@ -398,6 +498,25 @@ const ATTRIBUTE_PATTERN =
   /([a-zA-Z_:][-a-zA-Z0-9_:.]*)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g
 
 /**
+ * Decode the HTML entities browsers resolve in attribute values.
+ * Needed so `src="…?a=1&amp;b=2"` fetches as `…?a=1&b=2`.
+ * @param {string} value
+ */
+export function decodeHtmlEntities(value) {
+  return String(value)
+    .replace(/&quot;/gi, '"')
+    .replace(/&#0*39;/g, "'")
+    .replace(/&apos;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) =>
+      String.fromCodePoint(Number.parseInt(hex, 16)),
+    )
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(Number(dec)))
+    .replace(/&amp;/gi, '&')
+}
+
+/**
  * Parse the attributes of a single tag into an ordered map.
  * @param {string} tag
  */
@@ -408,7 +527,8 @@ export function parseAttributes(tag) {
 
   for (const match of body.matchAll(ATTRIBUTE_PATTERN)) {
     const [, name, doubleQuoted, singleQuoted, unquoted] = match
-    const value = doubleQuoted ?? singleQuoted ?? unquoted ?? null
+    const raw = doubleQuoted ?? singleQuoted ?? unquoted ?? null
+    const value = raw == null ? null : decodeHtmlEntities(raw)
     if (!attributes.has(name.toLowerCase())) {
       attributes.set(name.toLowerCase(), value)
     }
@@ -425,7 +545,9 @@ function serializeAttributes(attributes) {
       parts.push(name)
       continue
     }
-    parts.push(`${name}="${String(value).replace(/"/g, '&quot;')}"`)
+    parts.push(
+      `${name}="${String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"`,
+    )
   }
 
   return parts.length > 0 ? ` ${parts.join(' ')}` : ''
@@ -651,7 +773,15 @@ async function fetchRemoteImage({ url, cacheDir, onWarn }) {
   const name = path.basename(pathname, extension).replace(/[^a-zA-Z0-9._-]+/g, '-') || 'image'
   const cachePath = path.join(remoteDir, `${name}-${hash(url)}${extension}`)
 
-  if (fsSync.existsSync(cachePath)) return cachePath
+  if (fsSync.existsSync(cachePath)) {
+    try {
+      const cached = await fs.readFile(cachePath)
+      if (looksLikeCompleteRaster(cached)) return cachePath
+    } catch {
+      /* fall through and re-fetch */
+    }
+    await fs.unlink(cachePath).catch(() => {})
+  }
 
   try {
     const response = await fetch(url)
@@ -659,8 +789,13 @@ async function fetchRemoteImage({ url, cacheDir, onWarn }) {
       throw new Error(`HTTP ${response.status}`)
     }
     const buffer = Buffer.from(await response.arrayBuffer())
+    if (!looksLikeCompleteRaster(buffer)) {
+      throw new Error(
+        `response is not a complete raster image (${response.headers.get('content-type') ?? 'unknown type'})`,
+      )
+    }
     await fs.mkdir(remoteDir, { recursive: true })
-    await fs.writeFile(cachePath, buffer)
+    await writeFileAtomic(cachePath, buffer)
     return cachePath
   } catch (error) {
     onWarn?.(`could not fetch ${url}: ${error instanceof Error ? error.message : error}`)
