@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "sitelo",
     "build": "sitelo build",
+    "preview": "sitelo preview",
     "start": "node server.js"
   },
   "dependencies": {

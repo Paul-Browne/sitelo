@@ -146,3 +146,4 @@ docs/dist/
 docs/public/pagefind/
 examples/**/dist/
 examples/**/node_modules/
+test/fixtures/**/dist/

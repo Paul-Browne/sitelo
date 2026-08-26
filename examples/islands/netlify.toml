@@ -1,0 +1,10 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Map the client’s /_sitelo/islands/* URL onto the serverless function.
+# The function’s createIslandsHandler endpoint must match the rewritten path.
+[[redirects]]
+  from = "/_sitelo/islands/*"
+  to = "/.netlify/functions/islands/:splat"
+  status = 200

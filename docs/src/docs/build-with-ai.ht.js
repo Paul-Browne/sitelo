@@ -127,7 +127,7 @@ export default () =>
           code('generateStaticParams'),
           ', ',
           code('fetchWithCache'),
-          ', and experimental ',
+          ', and ',
           a({ href: '/docs/islands' }, 'server islands'),
           '.',
         ),

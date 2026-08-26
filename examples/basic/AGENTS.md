@@ -13,7 +13,7 @@ This project uses [sitelo](https://sitelo.js.org) — a Vite-powered static site
 - Commands: `sitelo` (dev), `sitelo build`, `sitelo preview`.
 - For current APIs, read https://sitelo.js.org/llms.txt and https://sitelo.js.org/docs — do not invent APIs from other frameworks.
 - Prefer [javascript-to-html](https://ht.js.org) (`ht.js`) for markup: tag functions that return HTML strings. Docs: https://ht.js.org
-- Server islands (experimental): `island()` + `src/islands/<name>.js` + `mountIslands()`; production needs a host for `/_sitelo/islands`.
+- Server islands: `island()` + `src/islands/<name>.js` + `mountIslands()`; `sitelo` / `sitelo preview` serve `/_sitelo/islands`; production needs a host (see `examples/islands` for Node / Netlify / Vercel).
 
 ## Prefer
 

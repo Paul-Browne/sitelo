@@ -5,7 +5,13 @@ import { examplesLayout } from '../lib/layout.js'
 const structureSnippet = `my-site/
   sitelo.config.js
   server.js              # Node host: static dist + islands
+  netlify.toml           # Netlify rewrite → function
+  vercel.json            # Vercel rewrite → api route
   package.json
+  netlify/functions/
+    islands.mjs          # Netlify islands handler
+  api/islands/
+    [...path].js         # Vercel islands handler
   src/
     index.ht.js          # page with an island placeholder
     js/
@@ -134,16 +140,14 @@ const serverSnippet = `import fs from 'node:fs'
 import http from 'node:http'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { createIslandsNodeHandler } from 'sitelo/islands/server'
+import { createIslandsFromDirectory, createIslandsNodeHandler } from 'sitelo/islands/server'
 
 const root = path.dirname(fileURLToPath(import.meta.url))
 const dist = path.join(root, 'dist')
 const port = Number(process.env.PORT) || 3000
 
 const handleIslands = createIslandsNodeHandler({
-  islands: {
-    time: () => import('./src/islands/time.js'),
-  },
+  islands: createIslandsFromDirectory(path.join(root, 'src/islands')),
 })
 
 const MIME = {
@@ -304,40 +308,58 @@ node server.js`,
         code('http://localhost:3000'),
         '. You should see the fallback briefly, then the server time. Hit refresh — the timestamp changes. In ',
         code('sitelo'),
-        ' (dev) you don’t need ',
+        ' (dev) and ',
+        code('sitelo preview'),
+        ' you don’t need ',
         code('server.js'),
         ': the CLI already serves ',
         code('/_sitelo/islands'),
         '.',
       ),
       h2('Deploy'),
-      p(
-        'For static hosts (Netlify, Vercel, Cloudflare Pages, AWS Amplify), copy the configs from the ',
-        a({ href: '/examples/basic' }, 'basic site example'),
-        ' — they only assume ',
-        code('npm run build'),
-        ' → ',
-        code('dist/'),
-        '. Static hosts alone do not run islands; placeholders keep their fallback until you add a serverless/edge function with ',
-        code('createIslandsHandler'),
-        '.',
+      p('This example ships host stubs next to the Node server:'),
+      ul(
+        { class: 'docs-list' },
+        li(
+          code('Node'),
+          ' — ',
+          code('npm run build && npm start'),
+          ' (set ',
+          code('PORT'),
+          ' on the platform). Uses ',
+          code('createIslandsFromDirectory'),
+          '.',
+        ),
+        li(
+          code('Netlify'),
+          ' — ',
+          code('netlify.toml'),
+          ' rewrites ',
+          code('/_sitelo/islands/*'),
+          ' to ',
+          code('netlify/functions/islands.mjs'),
+          '.',
+        ),
+        li(
+          code('Vercel'),
+          ' — ',
+          code('vercel.json'),
+          ' rewrites to ',
+          code('api/islands/[...path].js'),
+          '.',
+        ),
+        li(
+          'Static-only hosts (GitHub Pages, plain S3) — placeholders keep their fallback until you add a function.',
+        ),
       ),
-      h3('Node host'),
       p(
-        'Run the same two steps on any Node host (VPS, Docker, Fly, Railway, …): build, then ',
-        code('node server.js'),
-        ' with ',
-        code('PORT'),
-        ' set by the platform.',
-      ),
-      p(
-        'For serverless or edge, use ',
+        'For serverless or edge elsewhere, use ',
         code('createIslandsHandler'),
         ' (web ',
         code('Request'),
         ' → ',
         code('Response'),
-        ') instead of the Node adapter — see the ',
+        ') — see the ',
         a({ href: '/docs/islands' }, 'Server islands docs'),
         '. Point ',
         code("mountIslands({ endpoint })"),

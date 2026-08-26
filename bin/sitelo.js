@@ -7,7 +7,7 @@ import process from 'node:process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import htmlPages from '../src/index.js';
-import { renderIsland } from '../src/islands-server.js';
+import { renderIsland, createIslandsFromDirectory, createIslandsNodeHandler } from '../src/islands-server.js';
 import { isValidIslandName } from '../src/islands.js';
 import {
   createDevImagePipeline,
@@ -321,8 +321,12 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
 }
 
 /**
- * Dev-only endpoint for server islands: renders src/<pagesDir>/islands/<name>.js
- * modules on request at /_sitelo/islands/<name>?props=<json>.
+ * Islands endpoint at `/_sitelo/islands/<name>?props=<json>`.
+ *
+ * - **dev** (`configureServer`): loads modules through Vite’s SSR runner so
+ *   `.ts` islands and HMR work.
+ * - **preview** (`configurePreviewServer`): loads `*.js` / `*.mjs` / `*.cjs`
+ *   from disk via `createIslandsFromDirectory`, matching a Node host.
  *
  * Production deployments mount their own handler via `sitelo/islands/server`.
  */
@@ -404,6 +408,15 @@ function islandsDevPlugin({ root, pagesDir = 'src' }) {
           res.statusCode = 500;
           res.end('Island render failed');
         }
+      });
+    },
+
+    configurePreviewServer(server) {
+      const islandsDir = path.join(root, pagesDir, 'islands');
+      const islands = createIslandsFromDirectory(islandsDir);
+      const handleIslands = createIslandsNodeHandler({ islands });
+      server.middlewares.use((req, res, next) => {
+        handleIslands(req, res, next).catch(next);
       });
     },
   };
@@ -599,7 +612,7 @@ async function runBuild(cli) {
 
 async function runPreview(cli) {
   const mode = cli.mode ?? 'production';
-  const { plugins, viteOptions } = await resolveSiteloConfig({
+  const { plugins, viteOptions, pluginOptions } = await resolveSiteloConfig({
     root: cli.root,
     configFile: cli.config,
     command: 'serve',
@@ -608,7 +621,15 @@ async function runPreview(cli) {
   });
 
   const previewServer = await preview(
-    mergeConfig(buildInlineConfig(cli, 'preview', viteOptions), { plugins }),
+    mergeConfig(buildInlineConfig(cli, 'preview', viteOptions), {
+      plugins: [
+        islandsDevPlugin({
+          root: cli.root,
+          pagesDir: pluginOptions?.pagesDir,
+        }),
+        ...plugins,
+      ],
+    }),
   );
 
   previewServer.printUrls();

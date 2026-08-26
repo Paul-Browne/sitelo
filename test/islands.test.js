@@ -1,14 +1,22 @@
 import assert from 'node:assert/strict';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 
 import { island, isValidIslandName } from '../src/islands.js';
 import {
+  createIslandsFromDirectory,
   createIslandsHandler,
   createIslandsNodeHandler,
   parseIslandProps,
   renderIsland,
 } from '../src/islands-server.js';
 
+const fixtureDir = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  'fixtures',
+  'basic',
+);
 test('island() emits a placeholder with escaped props', () => {
   const html = island(
     'comments',
@@ -85,6 +93,20 @@ test('parseIslandProps parses JSON objects and rejects garbage', () => {
   assert.deepEqual(parseIslandProps(null), {});
   assert.deepEqual(parseIslandProps('[1,2]'), {});
   assert.throws(() => parseIslandProps('{oops'), /Invalid island props/);
+});
+
+test('createIslandsFromDirectory maps native modules by name', async () => {
+  const islandsDir = path.join(fixtureDir, 'src', 'islands');
+  const islands = createIslandsFromDirectory(islandsDir);
+
+  assert.ok(islands.greeting);
+  assert.equal(typeof islands.greeting, 'function');
+
+  const html = await renderIsland(islands.greeting, {
+    name: 'greeting',
+    props: { who: 'dir' },
+  });
+  assert.equal(html, '<p data-island-test>Hello dir from an island</p>');
 });
 
 test('createIslandsHandler renders islands and handles errors', async () => {
