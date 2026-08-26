@@ -6,6 +6,9 @@ export default {
   images: {
     remote: true,
     // Thousands of remote Elisa assets — keep sharp serial on macOS
-    concurrency: 1,
+    concurrency: 2,
+    widths: [400, 800, 1200],
+    prune: true,
+    formats: ['avif', 'webp']
   },
 }

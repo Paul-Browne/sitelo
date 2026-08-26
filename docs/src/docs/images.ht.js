@@ -155,7 +155,7 @@ export default () =>
         { class: 'docs-list' },
         li(code('widths'), ' — default ', code('[400, 800, 1200]'), '; the largest is also the cap'),
         li(code('formats'), ' — default ', code("['webp']"), '; ', code('avif'), ', ', code('webp'), ', ', code('jpeg'), ', ', code('png')),
-        li(code('quality'), ' — per-format encoder quality'),
+        li(code('quality'), ' — default ', code('{ avif: 55, webp: 78, jpeg: 82 }'), '; per-format encoder quality (png uses compression, not quality)'),
         li(code('sizes'), ' — the ', code('sizes'), ' attribute; a ', code('sizes'), ' on the tag always wins'),
         li(code('dimensions'), ' — default ', code('true'), '; adds ', code('width'), ' / ', code('height')),
         li(code('lazy'), ' — default ', code('true'), '; adds ', code('loading'), ' and ', code('decoding')),

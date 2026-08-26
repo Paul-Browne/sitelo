@@ -123,10 +123,21 @@ export function labelFromSegment(segment) {
     .join(' ')
 }
 
+/**
+ * Normalize CDN image URLs: absolute https, strip query params like `?w=500`
+ * so sitelo can fetch the full source and emit the full width ladder.
+ */
 export function absUrl(src) {
   if (!src) return ''
-  if (src.startsWith('//')) return `https:${src}`
-  return src
+  const absolute = src.startsWith('//') ? `https:${src}` : src
+  try {
+    const url = new URL(absolute)
+    url.search = ''
+    url.hash = ''
+    return url.href
+  } catch {
+    return absolute.split(/[?#]/)[0]
+  }
 }
 
 export function formatPrice(value) {

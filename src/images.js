@@ -784,23 +784,76 @@ async function fetchRemoteImage({ url, cacheDir, onWarn }) {
   }
 
   try {
-    const response = await fetch(url)
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`)
-    }
-    const buffer = Buffer.from(await response.arrayBuffer())
-    if (!looksLikeCompleteRaster(buffer)) {
-      throw new Error(
-        `response is not a complete raster image (${response.headers.get('content-type') ?? 'unknown type'})`,
-      )
-    }
+    const buffer = await downloadRemoteRaster(url)
     await fs.mkdir(remoteDir, { recursive: true })
     await writeFileAtomic(cachePath, buffer)
     return cachePath
   } catch (error) {
-    onWarn?.(`could not fetch ${url}: ${error instanceof Error ? error.message : error}`)
+    onWarn?.(`could not fetch ${url}: ${formatFetchError(error)}`)
     return null
   }
+}
+
+const REMOTE_FETCH_RETRIES = 3
+const REMOTE_FETCH_TIMEOUT_MS = 20_000
+
+function formatFetchError(error) {
+  if (!(error instanceof Error)) return String(error)
+  const cause = error.cause
+  if (cause instanceof Error) {
+    const code = 'code' in cause ? cause.code : undefined
+    return code ? `${error.message} (${code})` : `${error.message} (${cause.message})`
+  }
+  return error.message
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+/**
+ * Fetch a remote raster with retries — CDNs often drop connections under load.
+ * @param {string} url
+ * @returns {Promise<Buffer>}
+ */
+async function downloadRemoteRaster(url) {
+  let lastError = null
+
+  for (let attempt = 0; attempt <= REMOTE_FETCH_RETRIES; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Accept: 'image/*,*/*;q=0.8',
+          'User-Agent': 'sitelo-images/1.0',
+        },
+        signal: AbortSignal.timeout(REMOTE_FETCH_TIMEOUT_MS),
+      })
+
+      if (response.ok) {
+        const buffer = Buffer.from(await response.arrayBuffer())
+        if (!looksLikeCompleteRaster(buffer)) {
+          throw new Error(
+            `response is not a complete raster image (${response.headers.get('content-type') ?? 'unknown type'})`,
+          )
+        }
+        return buffer
+      }
+
+      const retryable = response.status === 429 || response.status === 503
+      lastError = new Error(`HTTP ${response.status}`)
+      if (!retryable || attempt === REMOTE_FETCH_RETRIES) throw lastError
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error))
+      // Non-retryable content errors
+      if (lastError.message.startsWith('response is not a complete')) throw lastError
+      if (attempt === REMOTE_FETCH_RETRIES) throw lastError
+    }
+
+    const wait = Math.min(8_000, 400 * 2 ** attempt) + Math.floor(Math.random() * 200)
+    await sleep(wait)
+  }
+
+  throw lastError ?? new Error('fetch failed')
 }
 
 /**
