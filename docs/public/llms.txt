@@ -69,14 +69,14 @@ Docs: https://ht.js.org — `import { html, head, body, h1 } from 'javascript-to
 - `rss.xml` when `rss` is configured
 - Pagefind search index (`dist/pagefind/`) when `pagefind: true` (or an options object) is set; by default also synced to `public/pagefind/` for `sitelo` / `sitelo preview`. Mark content with `data-pagefind-body`.
 
-## Server islands (experimental)
+## Server islands
 
 - `island(name, props, fallback)` from `sitelo/islands` embeds a placeholder
 - Fragment modules live in `src/islands/<name>.js` (not `.ht.js`)
 - Client: `mountIslands()` from `sitelo/islands/client`
-- Host: `createIslandsHandler` / `createIslandsNodeHandler` from `sitelo/islands/server`
-- Dev: `sitelo` serves `/_sitelo/islands/<name>` automatically
-- Production static hosts need a separate function for the islands endpoint
+- Host: `createIslandsHandler` / `createIslandsNodeHandler` / `createIslandsFromDirectory` from `sitelo/islands/server`
+- Dev + preview: `sitelo` / `sitelo preview` serve `/_sitelo/islands/<name>` automatically
+- Production: Node host, or Netlify/Vercel stubs in https://sitelo.js.org/examples/islands
 
 ## Deploy
 

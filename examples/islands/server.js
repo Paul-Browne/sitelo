@@ -2,16 +2,17 @@ import fs from 'node:fs'
 import http from 'node:http'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { createIslandsNodeHandler } from 'sitelo/islands/server'
+import {
+  createIslandsFromDirectory,
+  createIslandsNodeHandler,
+} from 'sitelo/islands/server'
 
 const root = path.dirname(fileURLToPath(import.meta.url))
 const dist = path.join(root, 'dist')
 const port = Number(process.env.PORT) || 3000
 
 const handleIslands = createIslandsNodeHandler({
-  islands: {
-    time: () => import('./src/islands/time.js'),
-  },
+  islands: createIslandsFromDirectory(path.join(root, 'src/islands')),
 })
 
 const MIME = {

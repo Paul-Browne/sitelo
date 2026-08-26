@@ -67,7 +67,7 @@ That's the whole mental model. Everything else is convenience on top.
 - **Asset validation** — broken `<script src>` / stylesheet links fail the build
 - **Image optimization** — `<img>` tags get resized, converted, and turned into a `srcset`, in dev and in the build
 - **Real dev server** — pages render on request (dynamic routes included, no `generateStaticParams` needed in dev) with full reload and readable error frames
-- **Server islands (experimental)** — static pages with regions rendered on the server at request time
+- **Server islands** — static pages with regions rendered on the server at request time
 - **Parallel static generation** — renders large sites concurrently
 - **`404.html`, `sitemap.xml`, RSS, Pagefind** — generated for you
 
@@ -608,7 +608,7 @@ Watching for file changes...
 
 ---
 
-## Server islands (experimental)
+## Server islands
 
 Keep the page static, but render marked regions **on the server at
 request time** — fresh comments on a cached blog post, a stock badge on
@@ -651,20 +651,27 @@ import { mountIslands } from 'sitelo/islands/client'
 mountIslands()
 ```
 
-In **dev** this already works — `sitelo dev` serves islands at
-`/_sitelo/islands/<name>` using the modules in `src/islands/`.
+In **dev** and **preview** this already works — `sitelo` / `sitelo preview`
+serve islands at `/_sitelo/islands/<name>` using the modules in
+`src/islands/` (preview loads native `.js` / `.mjs`; TypeScript islands
+work in `sitelo` via Vite).
 
 In **production** the static host serves the page; you mount a tiny
 handler wherever you run server code and it renders the same modules:
 
 ```js
 // e.g. a Node server, or a serverless/edge function
-import { createIslandsHandler } from 'sitelo/islands/server'
+import {
+  createIslandsFromDirectory,
+  createIslandsHandler,
+} from 'sitelo/islands/server'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const root = path.dirname(fileURLToPath(import.meta.url))
 
 const handleIslands = createIslandsHandler({
-  islands: {
-    comments: () => import('./src/islands/comments.js'),
-  },
+  islands: createIslandsFromDirectory(path.join(root, 'src/islands')),
 })
 
 // Web Request → Response | null (null = not an island request)
@@ -672,7 +679,8 @@ export default { fetch: (request) => handleIslands(request) }
 ```
 
 Plain Node http/express? Use `createIslandsNodeHandler(options)` —
-same options, `(req, res, next)` signature.
+same options, `(req, res, next)` signature. For Netlify / Vercel rewrite
+stubs, see [`examples/islands`](./examples/islands).
 
 Notes:
 

@@ -1,6 +1,13 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+
 import { isValidIslandName } from './islands.js';
 
 export const DEFAULT_ISLANDS_ENDPOINT = '/_sitelo/islands';
+
+/** Extensions native `import()` can load without a bundler. */
+const NATIVE_ISLAND_EXTENSIONS = new Set(['.js', '.mjs', '.cjs']);
 
 function pickRenderFunction(value) {
   if (typeof value === 'function') return value;
@@ -82,6 +89,37 @@ export function parseIslandProps(raw) {
   } catch {
     throw new Error('[sitelo] Invalid island props: expected a JSON object.');
   }
+}
+
+/**
+ * Build an islands map from every native-loadable module in a directory
+ * (`*.js` / `*.mjs` / `*.cjs`). TypeScript islands stay supported in
+ * `sitelo` (dev) via Vite; for preview and Node hosts, ship `.js` or
+ * compile first.
+ *
+ * @param {string} islandsDir absolute path to `src/islands`
+ * @returns {Record<string, () => Promise<unknown>>}
+ */
+export function createIslandsFromDirectory(islandsDir) {
+  /** @type {Record<string, () => Promise<unknown>>} */
+  const islands = {};
+
+  if (!fs.existsSync(islandsDir)) return islands;
+
+  for (const entry of fs.readdirSync(islandsDir, { withFileTypes: true })) {
+    if (!entry.isFile()) continue;
+
+    const extension = path.extname(entry.name).toLowerCase();
+    if (!NATIVE_ISLAND_EXTENSIONS.has(extension)) continue;
+
+    const name = path.basename(entry.name, extension);
+    if (!isValidIslandName(name) || islands[name]) continue;
+
+    const fileUrl = pathToFileURL(path.join(islandsDir, entry.name)).href;
+    islands[name] = () => import(fileUrl);
+  }
+
+  return islands;
 }
 
 /**

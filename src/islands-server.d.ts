@@ -46,6 +46,10 @@ export interface CreateIslandsHandlerOptions {
   cacheControl?: string;
 }
 
+export declare function createIslandsFromDirectory(
+  islandsDir: string,
+): Record<string, () => Promise<IslandModule>>;
+
 /**
  * Fetch-style handler: returns a Response for island requests, `null`
  * for anything outside the endpoint.
