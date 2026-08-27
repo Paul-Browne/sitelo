@@ -1,15 +1,9 @@
 import { a, h2, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
+import { cliSnippets } from '../lib/snippets/cli.js'
 
-const commandsSnippet = `sitelo              # same as sitelo dev
-sitelo dev          # development server
-sitelo build        # production build
-sitelo preview      # preview the production build`
-
-const flagsSnippet = `sitelo --port 8888
-sitelo build --outDir public --emptyOutDir
-sitelo --root docs`
+const s = cliSnippets('en')
 
 export default () =>
   docsLayout({
@@ -23,7 +17,7 @@ export default () =>
         ' CLI wraps the bundled Vite and auto-injects the HTML pages plugin.',
       ),
       h2('Commands'),
-      codeBlock('shell', commandsSnippet, 'bash'),
+      codeBlock('shell', s.commands, 'bash'),
       ul(
         { class: 'docs-list' },
         li(code('dev'), ' — real SSR renders on request, including dynamic routes, plus a small dev toolbar'),
@@ -40,7 +34,7 @@ export default () =>
         '.',
       ),
       h2('Useful flags'),
-      codeBlock('shell', flagsSnippet, 'bash'),
+      codeBlock('shell', s.flags, 'bash'),
       ul(
         { class: 'docs-list' },
         li(code('--port'), ' / ', code('--host'), ' / ', code('--open'), ' — server'),

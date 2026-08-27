@@ -1,60 +1,12 @@
 import { div, h2, p, table, tbody, td, th, thead, tr } from 'javascript-to-html'
 import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
-
-const structureSnippet = `src/
-  index.ht.js              → /
-  about.ht.js              → /about
-  blog/
-    index.ht.js            → /blog
-    [slug].ht.js           → /blog/:slug
-  docs/
-    [...path]?.ht.js       → /docs, /docs/a, /docs/a/b, ...
-  (admin)/
-    users.ht.js            → /users
-  404.ht.js                → dist/404.html`
-
-const paramsTemplate = `export function generateStaticParams() {
-  return [
-    { slug: 'hello-world' },
-    { slug: 'my-first-post' },
-  ]
-}
-
-export default ({ params }) => \`
-  <html><body><h1>\${params.slug}</h1></body></html>
-\``
-
-const paramsHt = `import { html, body, h1 } from 'javascript-to-html'
-
-export function generateStaticParams() {
-  return [
-    { slug: 'hello-world' },
-    { slug: 'my-first-post' },
-  ]
-}
-
-export default ({ params }) =>
-  html(
-    body(h1(params.slug))
-  )`
-
-const paramsJsx = `export function generateStaticParams() {
-  return [
-    { slug: 'hello-world' },
-    { slug: 'my-first-post' },
-  ]
-}
-
-export default function Post({ params }) {
-  return (
-    <html>
-      <body>
-        <h1>{params.slug}</h1>
-      </body>
-    </html>
-  )
-}`
+import {
+  paramsHt,
+  paramsJsx,
+  paramsTemplate,
+  structure,
+} from '../lib/snippets/routing.js'
 
 function row(feature, file, url) {
   return tr(td(feature), td(file), td(url))
@@ -67,7 +19,7 @@ export default () =>
     activeHref: '/docs/routing',
     children: [
       p('Routes come straight from the filesystem under ', code('src/'), '.'),
-      codeBlock('project', structureSnippet, 'bash'),
+      codeBlock('project', structure, 'bash'),
       h2('Route table'),
       div(
         { class: 'docs-table-scroll' },

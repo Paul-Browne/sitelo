@@ -1,90 +1,9 @@
 import { a, h2, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
+import { islandsSnippets } from '../lib/snippets/islands.js'
 
-const islandModuleSnippet = `export default async function comments({ props, request }) {
-  const comments = await fetchComments(props.postId)
-  return \`<ul>\${comments.map((c) => \`<li>\${c.text}</li>\`).join('')}</ul>\`
-}`
-
-const pageTemplate = `import { island } from 'sitelo/islands'
-
-export default ({ params }) => \`
-  <html>
-    <body>
-      <article>…static content…</article>
-      \${island('comments', { postId: params.slug }, '<p>Loading comments…</p>')}
-      <script type="module" src="/islands.js"></script>
-    </body>
-  </html>
-\``
-
-const strategySnippet = `// Load as soon as the page does — the default.
-island('cart', { id }, '<p>…</p>')
-
-// Wait for an idle callback.
-island('recommendations', { id }, '<p>…</p>', { when: 'idle' })
-
-// Wait until it scrolls into view.
-island('comments', { postId }, '<p>Loading comments…</p>', {
-  when: 'visible',
-  rootMargin: '400px',   // start loading 400px early
-})`
-
-const mountOptionsSnippet = `mountIslands({
-  timeout: 5000,        // per-island; 0 disables. Default 10000
-  rootMargin: '300px',  // default for \`when: 'visible'\` islands
-})`
-
-const forgedSnippet = `GET /_sitelo/islands/profile?props={"userId":"someone-else"}`
-
-const secretSnippet = `SITELO_ISLANDS_SECRET=$(openssl rand -hex 32) sitelo build`
-
-const configureSnippet = `import { configureIslands } from 'sitelo/islands'
-
-configureIslands({ secret: process.env.MY_SECRET })`
-
-const pageHt = `import { html, body, article, script } from 'javascript-to-html'
-import { island } from 'sitelo/islands'
-
-export default ({ params }) =>
-  html(
-    body(
-      article('…static content…'),
-      island('comments', { postId: params.slug }, '<p>Loading comments…</p>'),
-      script({ type: 'module', src: '/islands.js' }),
-    ),
-  )`
-
-const pageJsx = `import { island } from 'sitelo/islands'
-
-export default function Post({ params }) {
-  return (
-    <html>
-      <body>
-        <article>…static content…</article>
-        {island('comments', { postId: params.slug }, '<p>Loading comments…</p>')}
-        <script type="module" src="/islands.js" />
-      </body>
-    </html>
-  )
-}`
-
-const loaderSnippet = `import { mountIslands } from 'sitelo/islands/client'
-
-mountIslands()`
-
-const serverSnippet = `// e.g. a Node server, or a serverless/edge function
-import { createIslandsHandler } from 'sitelo/islands/server'
-
-const handleIslands = createIslandsHandler({
-  islands: {
-    comments: () => import('./src/islands/comments.js'),
-  },
-})
-
-// Web Request → Response | null (null = not an island request)
-export default { fetch: (request) => handleIslands(request) }`
+const s = islandsSnippets('en')
 
 export default () =>
   docsLayout({
@@ -108,7 +27,7 @@ export default () =>
         code('.ht.js'),
         ', because islands are fragments, not pages). Same idea as everywhere else in sitelo: a function that returns HTML.',
       ),
-      codeBlock('src/islands/comments.js', islandModuleSnippet, 'javascript'),
+      codeBlock('src/islands/comments.js', s.islandModule, 'javascript'),
       p(
         'It receives ',
         code('{ name, props, request }'),
@@ -126,9 +45,9 @@ export default () =>
       ),
       pageCodeTabs({
         file: 'src/blog/[slug].ht.js',
-        template: pageTemplate,
-        ht: pageHt,
-        jsx: pageJsx,
+        template: s.pageTemplate,
+        ht: s.pageHt,
+        jsx: s.pageJsx,
       }),
       h2('3. Add the client loader'),
       p(
@@ -136,7 +55,7 @@ export default () =>
         code('src/islands.js'),
         ' entry is all you need:',
       ),
-      codeBlock('src/islands.js', loaderSnippet, 'javascript'),
+      codeBlock('src/islands.js', s.loader, 'javascript'),
       p(
         'In ',
         code('sitelo'),
@@ -158,7 +77,7 @@ export default () =>
         a({ href: '/examples/islands' }, 'Server islands example'),
         '.',
       ),
-      codeBlock('islands-function.js', serverSnippet, 'javascript'),
+      codeBlock('islands-function.js', s.server, 'javascript'),
       p(
         'On plain Node http or express, use ',
         code('createIslandsNodeHandler(options)'),
@@ -231,7 +150,7 @@ export default () =>
         code('when'),
         ' to defer the ones that are not immediately visible.',
       ),
-      codeBlock('islands-when', strategySnippet, 'js'),
+      codeBlock('islands-when', s.strategy, 'js'),
       ul(
         { class: 'docs-list' },
         li(code("'load'"), ' (default) — immediately, alongside every other island'),
@@ -246,7 +165,7 @@ export default () =>
         code("'200px'"),
         '. Islands also time out rather than spinning forever:',
       ),
-      codeBlock('islands-mount-options', mountOptionsSnippet, 'js'),
+      codeBlock('islands-mount-options', s.mountOptions, 'js'),
       p(
         code('mountIslands()'),
         ' resolves once the immediate islands have settled — deferred ones load later on their own and are deliberately not awaited. A failed or timed-out island keeps its fallback HTML.',
@@ -255,7 +174,7 @@ export default () =>
       p(
         'Island props are client-supplied. They are embedded in the page, sent back on the request, and anyone can edit them first:',
       ),
-      codeBlock('islands-forged', forgedSnippet, 'http'),
+      codeBlock('islands-forged', s.forged, 'http'),
       p(
         'Treat the props your island receives exactly like a query parameter — validate them, and never use them to look up data the viewer is not already entitled to see.',
       ),
@@ -264,7 +183,7 @@ export default () =>
         code('403'),
         ':',
       ),
-      codeBlock('islands-secret', secretSnippet, 'bash'),
+      codeBlock('islands-secret', s.secret, 'bash'),
       p(
         'The same variable is read by ',
         code('sitelo'),
@@ -274,7 +193,7 @@ export default () =>
         code('createIslandsHandler'),
         ', so dev, preview and production agree. Give your production host the same secret. Prefer to set it in code?',
       ),
-      codeBlock('islands-configure', configureSnippet, 'js'),
+      codeBlock('islands-configure', s.configure, 'js'),
       p(
         'Signatures are HMAC-SHA256 over the island name and its props, so a signature issued for one island cannot be replayed against another. Signing proves the props came from your build — it does not hide them, so they must still be non-secret. Without a secret, props are accepted as-is and validating them is entirely your island module\u2019s job.',
       ),

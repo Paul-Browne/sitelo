@@ -1,32 +1,32 @@
 import { h2, p } from 'javascript-to-html'
-import { code, pageCodeTabs } from '../lib/code.js'
-import { docsLayout } from '../lib/layout.js'
+import { code, docsLayout, pageCodeTabs } from '../../lib/es.js'
 import {
   typedHt,
   typedJsx,
   typedTemplate,
-} from '../lib/snippets/typescript.js'
+} from '../../lib/snippets/typescript.js'
 
 export default () =>
   docsLayout({
     title: 'TypeScript',
-    description: 'Typed pages and inferred route params with sitelo/page helpers.',
-    activeHref: '/docs/typescript',
+    description:
+      'Páginas tipadas y parámetros de ruta inferidos con los ayudantes de sitelo/page.',
+    activeHref: '/es/docs/typescript',
     children: [
       p(
-        'Pages can be ',
+        'Las páginas pueden ser ',
         code('.ht.ts'),
         ' / ',
         code('.ht.tsx'),
-        ' with zero configuration.',
+        ' sin ninguna configuración.',
       ),
       h2('definePageModule'),
       p(
-        'Helpers from ',
+        'Los ayudantes de ',
         code('sitelo/page'),
-        ' give full type inference. At build time the import is swapped for a per-route generated module whose ',
+        ' dan inferencia de tipos completa. En tiempo de compilación, el import se sustituye por un módulo generado para cada ruta cuyos ',
         code('PageParams'),
-        ' come from the filename: ',
+        ' salen del nombre del archivo: ',
         code('[slug]'),
         ' → ',
         code('{ slug: string }'),
@@ -47,7 +47,7 @@ export default () =>
         jsx: typedJsx,
       }),
       p(
-        'Also exported: ',
+        'También se exportan: ',
         code('definePage'),
         ', ',
         code('defineData'),
@@ -55,11 +55,11 @@ export default () =>
         code('defineStaticParams'),
         '.',
       ),
-      h2('Generated types'),
+      h2('Tipos generados'),
       p(
-        'Declarations are written to ',
+        'Las declaraciones se escriben en ',
         code('.sitelo/types/'),
-        ' whenever the dev server or a build runs. Add that folder to ',
+        ' cada vez que arranca el servidor de desarrollo o se ejecuta una compilación. Añade esa carpeta a tu ',
         code('.gitignore'),
         '.',
       ),

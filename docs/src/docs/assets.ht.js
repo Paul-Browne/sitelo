@@ -1,85 +1,9 @@
 import { a, h2, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
+import { assetsSnippets } from '../lib/snippets/assets.js'
 
-const layoutSnippet = `my-site/
-  src/
-    index.ht.js          # page — returns HTML
-    css/
-      styles.css         # linked from HTML → bundled
-    js/
-      main.js            # linked from HTML → bundled
-      counter.ts         # imported by main.js → bundled too
-    lib/
-      posts.js           # only used in data() → never ships
-  public/
-    favicon.ico          # copied as-is`
-
-const pageTemplate = `export default () => \`
-  <html lang="en">
-    <head>
-      <title>My site</title>
-      <link rel="stylesheet" href="/css/styles.css">
-      <script type="module" src="/js/main.js"></script>
-    </head>
-    <body>
-      <h1>Hello</h1>
-      <button id="count">0</button>
-    </body>
-  </html>
-\``
-
-const pageHt = `import { html, head, title, link, script, body, h1, button } from 'javascript-to-html'
-
-export default () =>
-  html({ lang: 'en' },
-    head(
-      title('My site'),
-      link({ rel: 'stylesheet', href: '/css/styles.css' }),
-      script({ type: 'module', src: '/js/main.js' }),
-    ),
-    body(
-      h1('Hello'),
-      button({ id: 'count' }, '0'),
-    ),
-  )`
-
-const pageJsx = `export default function Home() {
-  return (
-    <html lang="en">
-      <head>
-        <title>My site</title>
-        <link rel="stylesheet" href="/css/styles.css" />
-        <script type="module" src="/js/main.js" />
-      </head>
-      <body>
-        <h1>Hello</h1>
-        <button id="count">0</button>
-      </body>
-    </html>
-  )
-}`
-
-const jsSnippet = `import { createCounter } from './counter.ts'
-
-const button = document.querySelector('#count')
-const next = createCounter()
-
-button.addEventListener('click', () => {
-  button.textContent = String(next())
-})`
-
-const cssSnippet = `@import './tokens.css';
-
-body {
-  font-family: system-ui, sans-serif;
-  margin: 0;
-  padding: 2rem;
-}`
-
-const warnSnippet = `export default {
-  missingAssets: 'warn',
-}`
+const s = assetsSnippets('en')
 
 export default () =>
   docsLayout({
@@ -107,7 +31,7 @@ export default () =>
         code('css/'),
         ' are conventions, not requirements — sitelo cares about what your HTML references, not the folder names.',
       ),
-      codeBlock('project', layoutSnippet, 'bash'),
+      codeBlock('project', s.layout, 'bash'),
       h2('Link assets from HTML'),
       p(
         'Reference files with root-relative paths. A ',
@@ -118,12 +42,12 @@ export default () =>
       ),
       pageCodeTabs({
         file: 'src/index.ht.js',
-        template: pageTemplate,
-        ht: pageHt,
-        jsx: pageJsx,
+        template: s.pageTemplate,
+        ht: s.pageHt,
+        jsx: s.pageJsx,
       }),
-      codeBlock('src/js/main.js', jsSnippet, 'javascript'),
-      codeBlock('src/css/styles.css', cssSnippet, 'css'),
+      codeBlock('src/js/main.js', s.js, 'javascript'),
+      codeBlock('src/css/styles.css', s.css, 'css'),
       h2('What Vite compiles'),
       ul(
         { class: 'docs-list' },
@@ -198,6 +122,6 @@ export default () =>
         code('public/'),
         ' fails the build. Prefer a warning?',
       ),
-      codeBlock('sitelo.config.js', warnSnippet, 'javascript'),
+      codeBlock('sitelo.config.js', s.warn, 'javascript'),
     ],
   })

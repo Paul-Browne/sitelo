@@ -1,35 +1,9 @@
 import { a, h2, h3, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
+import { buildWithAiSnippets } from '../lib/snippets/build-with-ai.js'
 
-const agentsSnippet = `# sitelo
-
-This project uses [sitelo](https://sitelo.js.org) — a Vite-powered static site generator.
-
-## Rules
-
-- Pages are modules under \`src/\` with extensions like \`.ht.js\` / \`.ht.ts\` / \`.ht.jsx\` that **export a default function (or string) returning HTML**.
-- Do **not** introduce React, Next.js, Astro, or a component/hydration framework unless the user explicitly asks.
-- Routing is file-based: \`about.ht.js\` → \`/about\`, \`[slug].ht.js\` → dynamic (use \`generateStaticParams\` for \`sitelo build\`).
-- Load data with \`export async function data(ctx)\`. Use \`fetchWithCache\` from \`sitelo\` for cached HTTP.
-- Only JS/CSS referenced from HTML is bundled into \`dist/\`. Keep server-only code unreferenced so it never ships.
-- Config lives in \`sitelo.config.js\`. Put Vite options under \`vite\`.
-- Commands: \`sitelo\` (dev), \`sitelo build\`, \`sitelo preview\`.
-- For current APIs, read https://sitelo.js.org/llms.txt and https://sitelo.js.org/docs — do not invent APIs from other frameworks.
-- Prefer [javascript-to-html](https://ht.js.org) (\`ht.js\`) for markup: tag functions that return HTML strings. Docs: https://ht.js.org
-`
-
-const cursorRuleSnippet = `---
-description: sitelo static site conventions
-alwaysApply: true
----
-
-# sitelo
-
-Pages are \`.ht.js\` (etc.) modules that return HTML strings — not React/Next/Astro components.
-Prefer javascript-to-html (https://ht.js.org) for markup. Use file-based routing, \`data()\`, and \`sitelo build\`.
-Prefer https://sitelo.js.org/llms.txt for sitelo APIs.
-`
+const s = buildWithAiSnippets('en')
 
 export default () =>
   docsLayout({
@@ -77,14 +51,14 @@ export default () =>
         code('AGENTS.md'),
         ' you can copy:',
       ),
-      codeBlock('AGENTS.md', agentsSnippet, 'markdown'),
+      codeBlock('AGENTS.md', s.agents, 'markdown'),
       h3('Cursor'),
       p(
         'Create ',
         code('.cursor/rules/sitelo.mdc'),
         ' in your project (or paste the same text into Cursor’s project rules UI):',
       ),
-      codeBlock('.cursor/rules/sitelo.mdc', cursorRuleSnippet, 'markdown'),
+      codeBlock('.cursor/rules/sitelo.mdc', s.cursorRule, 'markdown'),
       h2('Tips for AI-assisted sitelo work'),
       ul(
         { class: 'docs-list' },

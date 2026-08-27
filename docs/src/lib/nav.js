@@ -1,19 +1,45 @@
-export const DOC_NAV = [
-  { href: '/docs', label: 'Getting started' },
-  { href: '/docs/pages', label: 'Writing pages' },
-  { href: '/docs/routing', label: 'Routing' },
-  { href: '/docs/data', label: 'Data loading' },
-  { href: '/docs/islands', label: 'Server islands' },
-  { href: '/docs/assets', label: 'Assets & styling' },
-  { href: '/docs/images', label: 'Image optimization' },
-  { href: '/docs/typescript', label: 'TypeScript' },
-  { href: '/docs/configuration', label: 'Configuration' },
-  { href: '/docs/cli', label: 'CLI' },
-  { href: '/docs/deployment', label: 'Deployment' },
-  { href: '/docs/build-with-ai', label: 'Build with AI' },
-]
+import { DEFAULT_LOCALE, localePath } from './i18n.js'
 
-export const EXAMPLE_NAV = [
+/**
+ * Sidebar entries per locale. `href` is the English path; `docNav()` and
+ * `exampleNav()` prefix it for the requested locale.
+ */
+const DOC_LABELS = {
+  en: [
+    { href: '/docs', label: 'Getting started' },
+    { href: '/docs/pages', label: 'Writing pages' },
+    { href: '/docs/routing', label: 'Routing' },
+    { href: '/docs/data', label: 'Data loading' },
+    { href: '/docs/islands', label: 'Server islands' },
+    { href: '/docs/assets', label: 'Assets & styling' },
+    { href: '/docs/images', label: 'Image optimization' },
+    { href: '/docs/typescript', label: 'TypeScript' },
+    { href: '/docs/configuration', label: 'Configuration' },
+    { href: '/docs/cli', label: 'CLI' },
+    { href: '/docs/deployment', label: 'Deployment' },
+    { href: '/docs/build-with-ai', label: 'Build with AI' },
+  ],
+  es: [
+    { href: '/docs', label: 'Primeros pasos' },
+    { href: '/docs/pages', label: 'Escribir páginas' },
+    { href: '/docs/routing', label: 'Rutas' },
+    { href: '/docs/data', label: 'Carga de datos' },
+    { href: '/docs/islands', label: 'Islas de servidor' },
+    { href: '/docs/assets', label: 'Recursos y estilos' },
+    { href: '/docs/images', label: 'Optimización de imágenes' },
+    { href: '/docs/typescript', label: 'TypeScript' },
+    { href: '/docs/configuration', label: 'Configuración' },
+    { href: '/docs/cli', label: 'CLI' },
+    { href: '/docs/deployment', label: 'Despliegue' },
+    { href: '/docs/build-with-ai', label: 'Crear con IA' },
+  ],
+}
+
+/**
+ * Examples are English-only, so there is no `es` variant — Spanish pages link
+ * to these same URLs.
+ */
+const EXAMPLE_LABELS = [
   { href: '/examples', label: 'Overview' },
   { href: '/examples/basic', label: 'Basic site' },
   { href: '/examples/todo', label: 'Todo app' },
@@ -21,3 +47,15 @@ export const EXAMPLE_NAV = [
   { href: '/examples/wordpress', label: 'WordPress' },
   { href: '/examples/islands', label: 'Server islands' },
 ]
+
+export function docNav(lang = DEFAULT_LOCALE) {
+  const items = DOC_LABELS[lang] ?? DOC_LABELS[DEFAULT_LOCALE]
+  return items.map(({ href, label }) => ({ href: localePath(href, lang), label }))
+}
+
+export function exampleNav() {
+  return EXAMPLE_LABELS
+}
+
+export const DOC_NAV = docNav(DEFAULT_LOCALE)
+export const EXAMPLE_NAV = exampleNav()

@@ -1,5 +1,7 @@
 import { a, button, code as rawCode, div, pre, span } from 'javascript-to-html'
 
+import { DEFAULT_LOCALE, strings } from './i18n.js'
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll('&', '&amp;')
@@ -28,34 +30,6 @@ export function code(...args) {
   )
 }
 
-export function codeBlock(label, source, language = 'javascript') {
-  return div(
-    { class: 'code-glow' },
-    pre(
-      { class: `code language-${language}`, 'data-label': label },
-      code({ class: `language-${language}` }, source),
-    ),
-    button(
-      { class: 'code-copy', type: 'button', 'aria-label': 'Copy code' },
-      'Copy',
-    ),
-  )
-}
-
-function codePanel(label, source, language = 'javascript') {
-  return div(
-    { class: 'code-tabs-body' },
-    pre(
-      { class: `code language-${language}`, 'data-label': label },
-      code({ class: `language-${language}` }, source),
-    ),
-    button(
-      { class: 'code-copy', type: 'button', 'aria-label': 'Copy code' },
-      'Copy',
-    ),
-  )
-}
-
 function jsxFileLabel(file) {
   return file
     .replace(/\.ht\.ts$/, '.ht.tsx')
@@ -67,85 +41,125 @@ function jsxFileLabel(file) {
 let codeTabsSeq = 0
 
 /**
- * Three-way page markup tabs: template literal | ht.js (recommended) | JSX.
- * @param {{
- *   file?: string
- *   template: string
- *   ht: string
- *   jsx: string
- *   defaultTab?: 'template' | 'ht' | 'jsx'
- * }} options
+ * Code helpers bound to a locale. Only the controls are translated — the
+ * snippets themselves come from `lib/snippets/` and are shared across locales.
  */
-export function pageCodeTabs({
-  file = 'src/index.ht.js',
-  template,
-  ht,
-  jsx,
-  defaultTab = 'ht',
-}) {
-  const uid = `ct${++codeTabsSeq}`
-  const tabs = [
-    {
-      id: 'template',
-      label: 'Template literal',
-      block: codePanel(file, template, 'javascript'),
-    },
-    {
-      id: 'ht',
-      label: 'ht.js',
-      badge: 'recommended',
-      block: codePanel(file, ht, 'javascript'),
-    },
-    {
-      id: 'jsx',
-      label: 'JSX',
-      block: codePanel(jsxFileLabel(file), jsx, 'jsx'),
-    },
-  ]
+export function createCodeHelpers(lang = DEFAULT_LOCALE) {
+  const t = strings(lang)
 
-  return div(
-    { class: 'code-tabs code-glow', 'data-code-tabs': '' },
-    div(
-      { class: 'code-tabs-nav', role: 'tablist', 'aria-label': 'Markup style' },
-      ...tabs.map(({ id, label, badge }) =>
-        button(
-          {
-            class: `code-tabs-tab${id === defaultTab ? ' is-active' : ''}`,
-            type: 'button',
-            role: 'tab',
-            id: `${uid}-${id}`,
-            'aria-selected': id === defaultTab ? 'true' : 'false',
-            'aria-controls': `${uid}-panel-${id}`,
-            'data-tab': id,
-          },
-          label,
-          badge ? span({ class: 'code-tabs-badge' }, badge) : '',
+  const copyButton = (className) =>
+    button(
+      { class: className, type: 'button', 'aria-label': t.copyCode },
+      t.copy,
+    )
+
+  function codeBlock(label, source, language = 'javascript') {
+    return div(
+      { class: 'code-glow' },
+      pre(
+        { class: `code language-${language}`, 'data-label': label },
+        code({ class: `language-${language}` }, source),
+      ),
+      copyButton('code-copy'),
+    )
+  }
+
+  function codePanel(label, source, language = 'javascript') {
+    return div(
+      { class: 'code-tabs-body' },
+      pre(
+        { class: `code language-${language}`, 'data-label': label },
+        code({ class: `language-${language}` }, source),
+      ),
+      copyButton('code-copy'),
+    )
+  }
+
+  /**
+   * Three-way page markup tabs: template literal | ht.js (recommended) | JSX.
+   * @param {{
+   *   file?: string
+   *   template: string
+   *   ht: string
+   *   jsx: string
+   *   defaultTab?: 'template' | 'ht' | 'jsx'
+   * }} options
+   */
+  function pageCodeTabs({
+    file = 'src/index.ht.js',
+    template,
+    ht,
+    jsx,
+    defaultTab = 'ht',
+  }) {
+    const uid = `ct${++codeTabsSeq}`
+    const tabs = [
+      {
+        id: 'template',
+        label: t.templateLiteral,
+        block: codePanel(file, template, 'javascript'),
+      },
+      {
+        id: 'ht',
+        label: 'ht.js',
+        badge: t.recommended,
+        block: codePanel(file, ht, 'javascript'),
+      },
+      {
+        id: 'jsx',
+        label: 'JSX',
+        block: codePanel(jsxFileLabel(file), jsx, 'jsx'),
+      },
+    ]
+
+    return div(
+      { class: 'code-tabs code-glow', 'data-code-tabs': '' },
+      div(
+        { class: 'code-tabs-nav', role: 'tablist', 'aria-label': t.markupStyle },
+        ...tabs.map(({ id, label, badge }) =>
+          button(
+            {
+              class: `code-tabs-tab${id === defaultTab ? ' is-active' : ''}`,
+              type: 'button',
+              role: 'tab',
+              id: `${uid}-${id}`,
+              'aria-selected': id === defaultTab ? 'true' : 'false',
+              'aria-controls': `${uid}-panel-${id}`,
+              'data-tab': id,
+            },
+            label,
+            badge ? span({ class: 'code-tabs-badge' }, badge) : '',
+          ),
         ),
       ),
-    ),
-    div(
-      { class: 'code-tabs-panels' },
-      ...tabs.map(({ id, block }) =>
-        div(
-          {
-            class: `code-tabs-panel${id === defaultTab ? ' is-active' : ''}`,
-            role: 'tabpanel',
-            id: `${uid}-panel-${id}`,
-            'aria-labelledby': `${uid}-${id}`,
-            'data-panel': id,
-            hidden: id === defaultTab ? undefined : '',
-          },
-          block,
+      div(
+        { class: 'code-tabs-panels' },
+        ...tabs.map(({ id, block }) =>
+          div(
+            {
+              class: `code-tabs-panel${id === defaultTab ? ' is-active' : ''}`,
+              role: 'tabpanel',
+              id: `${uid}-panel-${id}`,
+              'aria-labelledby': `${uid}-${id}`,
+              'data-panel': id,
+              hidden: id === defaultTab ? undefined : '',
+            },
+            block,
+          ),
         ),
       ),
-    ),
-  )
-}
+    )
+  }
 
-export function inlineCode(text) {
-  return code(text)
+  return { code, codeBlock, pageCodeTabs, inlineCode: code, docLink }
 }
 
 export function docLink(href, label) {
   return a({ href }, label)
 }
+
+const en = createCodeHelpers(DEFAULT_LOCALE)
+
+export const codeBlock = en.codeBlock
+export const pageCodeTabs = en.pageCodeTabs
+export const inlineCode = en.inlineCode

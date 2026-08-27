@@ -8,6 +8,18 @@ Prism.highlightAll()
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+/**
+ * Copy-button feedback in the page's language — the server renders the resting
+ * label, this covers the states that only exist after a click.
+ */
+const COPY_LABELS = {
+  en: { copy: 'Copy', copied: 'Copied', failed: 'Failed' },
+  es: { copy: 'Copiar', copied: 'Copiado', failed: 'Error' },
+}
+
+const copyLabels =
+  COPY_LABELS[document.documentElement.lang] ?? COPY_LABELS.en
+
 abb({
   element: '#atmosphere',
   background: '#071410',
@@ -31,16 +43,16 @@ for (const button of buttons) {
     try {
       await navigator.clipboard.writeText(value)
       const previous = button.textContent
-      button.textContent = 'Copied'
+      button.textContent = copyLabels.copied
       button.classList.add('is-copied')
       window.setTimeout(() => {
         button.textContent = previous
         button.classList.remove('is-copied')
       }, 1400)
     } catch {
-      button.textContent = 'Failed'
+      button.textContent = copyLabels.failed
       window.setTimeout(() => {
-        button.textContent = 'Copy'
+        button.textContent = copyLabels.copy
       }, 1400)
     }
   })
@@ -54,16 +66,16 @@ for (const button of document.querySelectorAll('.code-copy')) {
     if (!source) return
     try {
       await navigator.clipboard.writeText(source)
-      button.textContent = 'Copied'
+      button.textContent = copyLabels.copied
       button.classList.add('is-copied')
       window.setTimeout(() => {
-        button.textContent = 'Copy'
+        button.textContent = copyLabels.copy
         button.classList.remove('is-copied')
       }, 1400)
     } catch {
-      button.textContent = 'Failed'
+      button.textContent = copyLabels.failed
       window.setTimeout(() => {
-        button.textContent = 'Copy'
+        button.textContent = copyLabels.copy
       }, 1400)
     }
   })

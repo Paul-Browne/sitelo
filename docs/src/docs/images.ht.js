@@ -1,72 +1,9 @@
 import { a, h2, h3, li, p, strong, ul } from 'javascript-to-html'
 import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
+import { imagesSnippets } from '../lib/snippets/images.js'
 
-const enableSnippet = `export default {
-  images: true,
-}`
-
-const installSharpSnippet = `npm install -D sharp`
-
-const pageTemplate = `export default () => \`
-  <html lang="en">
-    <body>
-      <img src="/images/hero.png" alt="Sunrise over the harbour">
-    </body>
-  </html>
-\``
-
-const pageHt = `import { html, body, img } from 'javascript-to-html'
-
-export default () =>
-  html({ lang: 'en' },
-    body(
-      img({ src: '/images/hero.png', alt: 'Sunrise over the harbour' }),
-    ),
-  )`
-
-const pageJsx = `export default function Home() {
-  return (
-    <html lang="en">
-      <body>
-        <img src="/images/hero.png" alt="Sunrise over the harbour" />
-      </body>
-    </html>
-  )
-}`
-
-const outputSnippet = `<img src="/assets/img/hero.a1b2c3d4-1200.webp"
-     alt="Sunrise over the harbour"
-     sizes="(max-width: 1200px) 100vw, 1200px"
-     width="1200" height="800"
-     loading="lazy" decoding="async"
-     srcset="/assets/img/hero.9f8e7d6c-400.webp 400w,
-             /assets/img/hero.5b4a3c2d-800.webp 800w,
-             /assets/img/hero.a1b2c3d4-1200.webp 1200w">`
-
-const optionsSnippet = `export default {
-  images: {
-    widths: [400, 800, 1200],
-    formats: ['avif', 'webp'],
-    quality: { avif: 55, webp: 78, jpeg: 82 },
-    exclude: ['**/og/**'],
-  },
-}`
-
-const pictureSnippet = `<picture>
-  <source type="image/avif" srcset="/assets/img/hero.*-400.avif 400w, ..." sizes="...">
-  <source type="image/webp" srcset="/assets/img/hero.*-400.webp 400w, ..." sizes="...">
-  <img src="/assets/img/hero.*-1200.png" alt="..." srcset="..." width="1200" height="800">
-</picture>`
-
-const optOutSnippet = `<img src="/images/exact.png" alt="Pixel art" data-no-optimize>`
-
-const remoteSnippet = `export default {
-  images: {
-    remote: true,
-    prune: true,
-  },
-}`
+const s = imagesSnippets('en')
 
 export default () =>
   docsLayout({
@@ -87,23 +24,23 @@ export default () =>
         '. Nothing to import, no component to learn.',
       ),
       h2('Enable it'),
-      codeBlock('sitelo.config.js', enableSnippet, 'javascript'),
+      codeBlock('sitelo.config.js', s.enable, 'javascript'),
       p(
         'Encoding is done by ',
         a({ href: 'https://sharp.pixelplumbing.com', rel: 'noopener' }, 'sharp'),
         ', an optional peer dependency — install it alongside sitelo when you turn images on:',
       ),
-      codeBlock('shell', installSharpSnippet, 'bash'),
+      codeBlock('shell', s.installSharp, 'bash'),
       p('Sites that skip image optimization never need to install it.'),
       h2('Write a plain &lt;img&gt;'),
       pageCodeTabs({
         file: 'src/index.ht.js',
-        template: pageTemplate,
-        ht: pageHt,
-        jsx: pageJsx,
+        template: s.pageTemplate,
+        ht: s.pageHt,
+        jsx: s.pageJsx,
       }),
       p('A 3000×2000 source comes out the other side like this:'),
-      codeBlock('dist/index.html', outputSnippet, 'html'),
+      codeBlock('dist/index.html', s.output, 'html'),
       h2('What you get'),
       ul(
         { class: 'docs-list' },
@@ -154,7 +91,7 @@ export default () =>
         ' alike.',
       ),
       h2('Options'),
-      codeBlock('sitelo.config.js', optionsSnippet, 'javascript'),
+      codeBlock('sitelo.config.js', s.options, 'javascript'),
       ul(
         { class: 'docs-list' },
         li(code('widths'), ' — default ', code('[400, 800, 1200]'), '; the largest is also the cap'),
@@ -175,7 +112,7 @@ export default () =>
       p(
         'AVIF is smaller but younger than WebP, so listing both lets the browser pick and keeps a fallback for old ones:',
       ),
-      codeBlock('dist/index.html', pictureSnippet, 'html'),
+      codeBlock('dist/index.html', s.picture, 'html'),
       h2('Opting out'),
       p(
         'Tags that already have a ',
@@ -184,7 +121,7 @@ export default () =>
         code('<picture>'),
         ', or point at an SVG, an animated GIF, or a remote URL are left untouched. For anything else, say so:',
       ),
-      codeBlock('src/index.ht.js', optOutSnippet, 'html'),
+      codeBlock('src/index.ht.js', s.optOut, 'html'),
       p(
         'Social-card and favicon images live in ',
         code('<meta>'),
@@ -198,7 +135,7 @@ export default () =>
         code('remote'),
         ' and those images are downloaded, optimized, and served from your own domain:',
       ),
-      codeBlock('sitelo.config.js', remoteSnippet, 'javascript'),
+      codeBlock('sitelo.config.js', s.remote, 'javascript'),
       p(
         'A fetch that fails leaves the tag exactly as it was, with a warning — a flaky origin never fails your build. ',
         code('prune'),

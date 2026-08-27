@@ -1,36 +1,9 @@
 import { a, h2, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
+import { gettingStartedSnippets } from '../lib/snippets/getting-started.js'
 
-const installSnippet = `npm install -D sitelo`
-
-const pageTemplate = `export default () => \`
-  <html lang="en">
-    <head><title>My website</title></head>
-    <body><h1>Hello world</h1></body>
-  </html>
-\``
-
-const pageHt = `import { html, head, title, body, h1 } from 'javascript-to-html'
-
-export default () =>
-  html({ lang: 'en' },
-    head(title('My website')),
-    body(h1('Hello world'))
-  )`
-
-const pageJsx = `export default function Home() {
-  return (
-    <html lang="en">
-      <head><title>My website</title></head>
-      <body><h1>Hello world</h1></body>
-    </html>
-  )
-}`
-
-const runSnippet = `sitelo          # dev server
-sitelo build    # write dist/
-sitelo preview  # preview the build`
+const s = gettingStartedSnippets('en')
 
 export default () =>
   docsLayout({
@@ -44,7 +17,7 @@ export default () =>
         '.',
       ),
       h2('Install'),
-      codeBlock('shell', installSnippet, 'bash'),
+      codeBlock('shell', s.install, 'bash'),
       p('Requires Node 20.19+ (or 22.12+). Vite is bundled — you do not install it separately.'),
       h2('Your first page'),
       p(
@@ -58,12 +31,12 @@ export default () =>
       ),
       pageCodeTabs({
         file: 'src/index.ht.js',
-        template: pageTemplate,
-        ht: pageHt,
-        jsx: pageJsx,
+        template: s.pageTemplate,
+        ht: s.pageHt,
+        jsx: s.pageJsx,
       }),
       h2('Run'),
-      codeBlock('shell', runSnippet, 'bash'),
+      codeBlock('shell', s.run, 'bash'),
       p(
         'That emits ',
         code('dist/index.html'),
