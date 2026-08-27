@@ -153,16 +153,27 @@ export function normalizeImageOptions(images) {
 
 /**
  * Lazily load sharp with an actionable error when it is not installed.
+ *
+ * sharp is an optional peer dependency — only sites that enable `images`
+ * pay for its platform binaries.
  */
 async function loadSharp() {
   try {
     const mod = await import('sharp')
     return mod.default ?? mod
   } catch (error) {
+    const code = error?.code
+    const missing =
+      code === 'ERR_MODULE_NOT_FOUND' || code === 'MODULE_NOT_FOUND'
+
     throw new Error(
-      '"images" could not load sharp, which ships with sitelo.\n' +
-        'This usually means the platform binary is missing — try reinstalling: npm install sharp\n' +
-        `(original error: ${error instanceof Error ? error.message : error})`,
+      missing
+        ? '"images" requires sharp, which is an optional peer dependency.\n' +
+          'Install it to enable image optimization: npm install -D sharp\n' +
+          '(or set `images: false` in sitelo.config.js)'
+        : '"images" found sharp but could not load it.\n' +
+          'This usually means the platform binary is missing — try reinstalling: npm install -D sharp\n' +
+          `(original error: ${error instanceof Error ? error.message : error})`,
     )
   }
 }

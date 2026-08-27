@@ -119,9 +119,9 @@ function siteFooter() {
       badge({
         variant: 'badge-node',
         href: 'https://nodejs.org/docs/latest/api/',
-        label: 'Requires Node 18 or newer',
+        label: 'Requires Node 20.19 or newer',
         name: 'node',
-        value: '18+',
+        value: '20.19+',
       }),
       badge({
         variant: 'badge-vite',

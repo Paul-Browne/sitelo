@@ -1,0 +1,65 @@
+name: Test
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Floor and current releases of the range in `engines.node`
+        # (^20.19.0 || >=22.12.0), which tracks bundled Vite 8.
+        node-version: ['20.19', '22.12', '24']
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm test
+
+  # sharp and pagefind are optional peers: a plain `npm i sitelo` must not
+  # pull them in, and the build must still work without them.
+  without-optional-peers:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci --omit=dev
+
+      - name: Assert optional peers are absent
+        run: |
+          for pkg in sharp pagefind; do
+            if [ -d "node_modules/$pkg" ]; then
+              echo "::error::$pkg was installed without being asked for"
+              exit 1
+            fi
+          done
+          echo "sharp and pagefind correctly absent"
+
+      - name: Build a site with images and pagefind disabled
+        run: node ./bin/sitelo.js build --root examples/basic
