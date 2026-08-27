@@ -3,6 +3,7 @@ import fs from 'node:fs/promises'
 import fsSync from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
+import { installCommand } from './package-manager.js'
 
 const RASTER_EXTENSIONS = new Set([
   '.png',
@@ -169,10 +170,10 @@ async function loadSharp() {
     throw new Error(
       missing
         ? '"images" requires sharp, which is an optional peer dependency.\n' +
-          'Install it to enable image optimization: npm install -D sharp\n' +
+          `Install it to enable image optimization: ${installCommand('sharp')}\n` +
           '(or set `images: false` in sitelo.config.js)'
         : '"images" found sharp but could not load it.\n' +
-          'This usually means the platform binary is missing — try reinstalling: npm install -D sharp\n' +
+          `This usually means the platform binary is missing — try reinstalling: ${installCommand('sharp')}\n` +
           `(original error: ${error instanceof Error ? error.message : error})`,
     )
   }
