@@ -29,11 +29,46 @@ export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 fail() { echo "::error::[$MANAGER] $*"; exit 1; }
 info() { echo "  [$MANAGER] $*"; }
 
+# Run a command, capturing output. On failure, print what it said before
+# giving up -- a swallowed failure under `set -e` exits silently and
+# leaves nothing to diagnose.
+run_logged() {
+  local label="$1" dir="$2"; shift 2
+  local log="$WORK/$(echo "$label" | tr ' /' '__').log"
+
+  if ! ( cd "$dir" && "$@" ) >"$log" 2>&1; then
+    echo "::group::[$MANAGER] $label failed"
+    echo "\$ $*"
+    cat "$log"
+    echo "::endgroup::"
+    fail "$label failed (see log above)"
+  fi
+}
+
 # --- pack -----------------------------------------------------------------
 #
 # Pack from a copy carrying a throwaway version. Yarn Classic caches by
 # package name + version, so re-packing at an unchanged version makes it
 # silently reinstall a previously cached tarball.
+# --- preflight -------------------------------------------------------------
+case "$MANAGER" in
+  npm)        MANAGER_BIN=(npm) ;;
+  pnpm)       MANAGER_BIN=(pnpm) ;;
+  yarn)       MANAGER_BIN=(yarn) ;;
+  yarn-berry) MANAGER_BIN=(corepack yarn) ;;
+  *)          fail "unknown package manager: $MANAGER" ;;
+esac
+
+command -v "${MANAGER_BIN[0]}" >/dev/null 2>&1 \
+  || fail "${MANAGER_BIN[0]} is not on PATH"
+
+if [ "$MANAGER" = "yarn-berry" ]; then
+  info "ambient yarn $(yarn --version 2>&1 | tail -1); Berry is set per-project below"
+else
+  info "using $("${MANAGER_BIN[@]}" --version 2>&1 | tail -1)"
+fi
+info "node $(node --version)"
+
 PACK_SRC="$WORK/pack-src"
 mkdir -p "$PACK_SRC"
 git -C "$REPO_ROOT" ls-files -z | while IFS= read -r -d '' f; do
@@ -75,7 +110,19 @@ setup_manager() {
   local dir="$1"
   case "$MANAGER" in
     yarn-berry)
-      ( cd "$dir" && corepack yarn set version stable >/dev/null 2>&1 )
+      run_logged "yarn set version stable" "$dir" corepack yarn set version stable
+
+      local version linker
+      version="$( cd "$dir" && corepack yarn --version 2>&1 | tail -1 )"
+      case "$version" in
+        1.*|"") fail "expected Yarn Berry, got '$version' -- this leg must not silently fall back to Classic" ;;
+      esac
+
+      linker="$( cd "$dir" && corepack yarn config get nodeLinker 2>&1 | tail -1 )"
+      [ "$linker" = "pnp" ] \
+        || fail "expected the Plug'n'Play linker, got '$linker' -- strict resolution is the whole point of this leg"
+
+      info "yarn $version, nodeLinker=$linker"
       ;;
   esac
 }
@@ -83,11 +130,10 @@ setup_manager() {
 add_deps() {
   local dir="$1"; shift
   case "$MANAGER" in
-    npm)        ( cd "$dir" && npm install "$@" --no-audit --no-fund >/dev/null 2>&1 ) ;;
-    pnpm)       ( cd "$dir" && pnpm add "$@" >/dev/null 2>&1 ) ;;
-    yarn)       ( cd "$dir" && yarn add "$@" >/dev/null 2>&1 ) ;;
-    yarn-berry) ( cd "$dir" && corepack yarn add "$@" >/dev/null 2>&1 ) ;;
-    *) fail "unknown package manager" ;;
+    npm)        run_logged "install" "$dir" npm install "$@" --no-audit --no-fund ;;
+    pnpm)       run_logged "install" "$dir" pnpm add "$@" ;;
+    yarn)       run_logged "install" "$dir" yarn add "$@" ;;
+    yarn-berry) run_logged "install" "$dir" corepack yarn add "$@" ;;
   esac
 }
 

@@ -42,6 +42,10 @@ jobs:
   optional-peers:
     runs-on: ubuntu-latest
 
+    env:
+      # Corepack refuses to fetch a manager non-interactively without this.
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
+
     strategy:
       fail-fast: false
       matrix:
@@ -55,12 +59,17 @@ jobs:
           node-version: 24
           cache: npm
 
-      - name: Enable corepack
-        run: corepack enable
-
+      # Installed globally rather than through corepack: corepack adds
+      # signature and download-prompt failure modes this job does not need.
       - name: Install pnpm
         if: matrix.manager == 'pnpm'
-        run: corepack prepare pnpm@latest --activate
+        run: npm install -g pnpm@10
+
+      # Yarn genuinely needs corepack -- the Berry leg switches the version
+      # per project with `yarn set version stable`.
+      - name: Enable corepack
+        if: startsWith(matrix.manager, 'yarn')
+        run: corepack enable
 
       - name: ${{ matrix.manager }}
         run: ./.github/scripts/test-package-manager.sh ${{ matrix.manager }}
