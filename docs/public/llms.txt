@@ -12,7 +12,14 @@ npm: https://www.npmjs.com/package/sitelo
 npm install -D sitelo
 ```
 
-Requires Node 18+. Vite is bundled.
+Requires Node 20.19+ or 22.12+. Vite is bundled.
+
+Optional peers (install only when you enable the feature):
+
+```bash
+npm install -D sharp      # images: true
+npm install -D pagefind   # pagefind: true
+```
 
 ## Commands
 
@@ -67,7 +74,8 @@ Docs: https://ht.js.org — `import { html, head, body, h1 } from 'javascript-to
 - `404.html` from `src/404.ht.js` or a default
 - `sitemap.xml` when `site` is set in config
 - `rss.xml` when `rss` is configured
-- Pagefind search index (`dist/pagefind/`) when `pagefind: true` (or an options object) is set; by default also synced to `public/pagefind/` for `sitelo` / `sitelo preview`. Mark content with `data-pagefind-body`.
+- Pagefind search index (`dist/pagefind/`) when `pagefind: true` (or an options object) is set; requires `npm install -D pagefind`. By default also synced to `public/pagefind/` for `sitelo` / `sitelo preview`. Mark content with `data-pagefind-body`.
+- Image optimization when `images: true` (or an options object) is set; requires `npm install -D sharp`. See https://sitelo.js.org/docs/images
 
 ## Server islands
 

@@ -6,6 +6,8 @@ const enableSnippet = `export default {
   images: true,
 }`
 
+const installSharpSnippet = `npm install -D sharp`
+
 const pageTemplate = `export default () => \`
   <html lang="en">
     <body>
@@ -89,8 +91,10 @@ export default () =>
       p(
         'Encoding is done by ',
         a({ href: 'https://sharp.pixelplumbing.com', rel: 'noopener' }, 'sharp'),
-        ', which ships with sitelo — there is nothing else to install.',
+        ', an optional peer dependency — install it alongside sitelo when you turn images on:',
       ),
+      codeBlock('shell', installSharpSnippet, 'bash'),
+      p('Sites that skip image optimization never need to install it.'),
       h2('Write a plain &lt;img&gt;'),
       pageCodeTabs({
         file: 'src/index.ht.js',
