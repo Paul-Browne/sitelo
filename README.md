@@ -574,10 +574,13 @@ Encoding is done by [sharp](https://sharp.pixelplumbing.com), an optional
 peer dependency — install it alongside sitelo when you enable `images`:
 
 ```bash
-npm install -D sharp
+npm install -D sharp     # or: pnpm add -D sharp / yarn add -D sharp
 ```
 
-It stays out of the install for sites that don't optimize images.
+It stays out of the install for sites that don't optimize images. npm,
+pnpm, Yarn (Classic and Berry, including Plug'n'Play) and Bun all work —
+sitelo declares sharp as an optional peer dependency, so your copy is the
+one it resolves.
 
 ### What it does
 
@@ -884,7 +887,7 @@ Produces `dist/rss.xml` with an item for every page under `routePrefix`.
 it when you enable search:
 
 ```bash
-npm install -D pagefind
+npm install -D pagefind  # or: pnpm add -D pagefind / yarn add -D pagefind
 ```
 
 Then `sitelo build` indexes your site into `dist/pagefind/` (and syncs a

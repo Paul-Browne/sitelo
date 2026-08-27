@@ -1,5 +1,6 @@
 import { cp, rm } from 'node:fs/promises'
 import path from 'node:path'
+import { installCommand } from './package-manager.js'
 
 /**
  * Normalize sitelo.config.js `pagefind` option.
@@ -55,7 +56,7 @@ async function loadPagefind() {
     throw new Error(
       missing
         ? '"pagefind" requires the pagefind package, which is an optional peer dependency.\n' +
-          'Install it to enable search indexing: npm install -D pagefind\n' +
+          `Install it to enable search indexing: ${installCommand('pagefind')}\n` +
           '(or remove `pagefind` from sitelo.config.js)'
         : 'found pagefind but could not load it.\n' +
           `(original error: ${error instanceof Error ? error.message : error})`,
