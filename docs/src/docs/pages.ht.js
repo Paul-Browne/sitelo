@@ -1,56 +1,9 @@
 import { a, h2, h3, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
+import { pagesSnippets } from '../lib/snippets/pages.js'
 
-const fnTemplate = `export default ({ params, data, dev }) => \`
-  <html>
-    <body><h1>Hello</h1></body>
-  </html>
-\``
-
-const fnHt = `import { html, body, h1 } from 'javascript-to-html'
-
-export default ({ params, data, dev }) =>
-  html(
-    body(h1('Hello'))
-  )`
-
-const fnJsx = `export default function Page({ params, data, dev }) {
-  return (
-    <html>
-      <body><h1>Hello</h1></body>
-    </html>
-  )
-}`
-
-const stringSnippet = `export default \`<html><body><h1>Static as it gets</h1></body></html>\``
-
-const structuredTemplate = `export default {
-  generateStaticParams: () => [{ slug: 'hello' }],
-  data: ({ params }) => ({ title: params.slug }),
-  render: ({ data }) => \`<html><body><h1>\${data.title}</h1></body></html>\`,
-}`
-
-const structuredHt = `import { html, body, h1 } from 'javascript-to-html'
-
-export default {
-  generateStaticParams: () => [{ slug: 'hello' }],
-  data: ({ params }) => ({ title: params.slug }),
-  render: ({ data }) =>
-    html(
-      body(h1(data.title))
-    ),
-}`
-
-const structuredJsx = `export default {
-  generateStaticParams: () => [{ slug: 'hello' }],
-  data: ({ params }) => ({ title: params.slug }),
-  render: ({ data }) => (
-    <html>
-      <body><h1>{data.title}</h1></body>
-    </html>
-  ),
-}`
+const s = pagesSnippets('en')
 
 export default () =>
   docsLayout({
@@ -84,9 +37,9 @@ export default () =>
       h2('1. A function returning HTML'),
       pageCodeTabs({
         file: 'page.ht.js',
-        template: fnTemplate,
-        ht: fnHt,
-        jsx: fnJsx,
+        template: s.fnTemplate,
+        ht: s.fnHt,
+        jsx: s.fnJsx,
       }),
       p(
         'JSX files use ',
@@ -102,14 +55,14 @@ export default () =>
         ' below — sitelo turns JSX into static HTML at build time; it is not a React app in the browser.',
       ),
       h2('2. A plain string'),
-      codeBlock('page.ht.js', stringSnippet, 'javascript'),
+      codeBlock('page.ht.js', s.string, 'javascript'),
       h2('3. A structured module'),
       p('Keep ', code('render'), ', ', code('data'), ', and ', code('generateStaticParams'), ' together:'),
       pageCodeTabs({
         file: 'page.ht.js',
-        template: structuredTemplate,
-        ht: structuredHt,
-        jsx: structuredJsx,
+        template: s.structuredTemplate,
+        ht: s.structuredHt,
+        jsx: s.structuredJsx,
       }),
       h2('JSX limitations'),
       p(

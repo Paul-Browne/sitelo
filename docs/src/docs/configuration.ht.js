@@ -15,175 +15,9 @@ import {
 } from 'javascript-to-html'
 import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
+import { configurationSnippets } from '../lib/snippets/configuration.js'
 
-const configSnippet = `export default {
-  site: 'https://example.com',
-  rss: {
-    site: 'https://example.com',
-    title: 'My Blog',
-    description: 'Latest posts',
-    routePrefix: '/blog',
-  },
-  vite: {
-    publicDir: 'static',
-    build: {
-      emptyOutDir: true,
-      outDir: 'public',
-    },
-    server: {
-      port: 8888,
-    },
-  },
-}`
-
-const viteOnlySnippet = `// Vite options only; sitelo still injects the plugin
-export default {
-  publicDir: 'static',
-  server: { port: 8888 },
-}`
-
-const vitePluginSnippet = `// Register the plugin yourself
-import htmlPages from 'sitelo'
-
-export default {
-  plugins: [htmlPages({
-    site: 'https://example.com',
-  })],
-}`
-
-const rssSnippet = `export default {
-  rss: {
-    site: 'https://example.com',
-    title: 'My Blog',
-    description: 'Latest posts',
-    routePrefix: '/blog',
-  },
-}`
-
-const linkCheckSnippet = `export default {
-  linkCheck: true,   // 'warn' (default), 'error', or an options object
-}`
-
-const linkCheckOptionsSnippet = `export default {
-  linkCheck: {
-    mode: 'error',                    // fail the build on a dead link
-    checkFragments: true,             // also verify #fragment targets
-    exclude: ['/api/**', /^\\/legacy\\//],
-  },
-}`
-
-const linkCheckOutput = `[sitelo] 3 broken internal links
-
-  index.html
-    ../escape           -> escapes the output directory
-    /abuot              -> no such page
-    /blog/missing-post  -> no such page`
-
-const pagefindSnippet = `export default {
-  pagefind: true,
-}`
-
-const installPagefindSnippet = `npm install -D pagefind`
-
-const pagefindPageTemplate = `export default () => \`
-  <html lang="en">
-    <head>
-      <title>My site</title>
-      <link rel="stylesheet" href="/styles.css">
-      <script type="module" src="/main.js"></script>
-    </head>
-    <body>
-      <header>
-        <a href="/">Home</a>
-        <div id="search"></div>
-      </header>
-      <main data-pagefind-body>
-        <h1>Hello</h1>
-        <p>Only this region is indexed.</p>
-      </main>
-    </body>
-  </html>
-\``
-
-const pagefindPageHt = `import {
-  html, head, title, link, script, body, header, a, div, main, h1, p,
-} from 'javascript-to-html'
-
-export default () =>
-  html({ lang: 'en' },
-    head(
-      title('My site'),
-      link({ rel: 'stylesheet', href: '/styles.css' }),
-      script({ type: 'module', src: '/main.js' }),
-    ),
-    body(
-      header(
-        a({ href: '/' }, 'Home'),
-        div({ id: 'search' }),
-      ),
-      main({ 'data-pagefind-body': '' },
-        h1('Hello'),
-        p('Only this region is indexed.'),
-      ),
-    ),
-  )`
-
-const pagefindPageJsx = `export default function Home() {
-  return (
-    <html lang="en">
-      <head>
-        <title>My site</title>
-        <link rel="stylesheet" href="/styles.css" />
-        <script type="module" src="/main.js" />
-      </head>
-      <body>
-        <header>
-          <a href="/">Home</a>
-          <div id="search" />
-        </header>
-        <main data-pagefind-body="">
-          <h1>Hello</h1>
-          <p>Only this region is indexed.</p>
-        </main>
-      </body>
-    </html>
-  )
-}`
-
-const pagefindMainSnippet = `async function initSearch() {
-  const mount = document.querySelector('#search')
-  if (!mount) return
-
-  // Index only exists after \`sitelo build\` (synced to public/pagefind by default)
-  try {
-    const probe = await fetch('/pagefind/pagefind-ui.js', { method: 'HEAD' })
-    if (!probe.ok) return
-  } catch {
-    return
-  }
-
-  const style = document.createElement('link')
-  style.rel = 'stylesheet'
-  style.href = '/pagefind/pagefind-ui.css'
-  document.head.appendChild(style)
-
-  await new Promise((resolve, reject) => {
-    const script = document.createElement('script')
-    script.src = '/pagefind/pagefind-ui.js'
-    script.onload = resolve
-    script.onerror = reject
-    document.body.appendChild(script)
-  })
-
-  new window.PagefindUI({
-    element: '#search',
-    showImages: false,
-  })
-}
-
-initSearch()`
-
-const pagefindGitignoreSnippet = `public/pagefind/`
+const s = configurationSnippets('en')
 
 export default () =>
   docsLayout({
@@ -198,7 +32,7 @@ export default () =>
         code('vite.config.js'),
         ' is required.',
       ),
-      codeBlock('sitelo.config.js', configSnippet, 'javascript'),
+      codeBlock('sitelo.config.js', s.config, 'javascript'),
       h2('Plugin options'),
       ul(
         { class: 'docs-list' },
@@ -284,14 +118,7 @@ export default () =>
         code('sitelo build'),
         ' output.',
       ),
-      codeBlock(
-        'sitelo.config.js',
-        `// sitelo.config.js
-export default {
-  devToolbar: false, // hide for everyone on this project
-}`,
-        'javascript',
-      ),
+      codeBlock('sitelo.config.js', s.devToolbarOff, 'javascript'),
       h2('Vite options'),
       p(
         'Anything under ',
@@ -302,8 +129,8 @@ export default {
       ),
       h2('Existing vite.config.js'),
       p('Still supported — either Vite-only options, or full plugin control:'),
-      codeBlock('vite.config.js', viteOnlySnippet, 'javascript'),
-      codeBlock('vite.config.js', vitePluginSnippet, 'javascript'),
+      codeBlock('vite.config.js', s.viteOnly, 'javascript'),
+      codeBlock('vite.config.js', s.vitePlugin, 'javascript'),
       p(
         'If the plugin is already in your Vite config, put plugin options there — not also as plugin options in ',
         code('sitelo.config.js'),
@@ -312,7 +139,7 @@ export default {
       h2('Sitemap & RSS'),
       p('Set ', code('site'), ' to emit ', code('dist/sitemap.xml'), '.'),
       p('RSS:'),
-      codeBlock('sitelo.config.js', rssSnippet, 'javascript'),
+      codeBlock('sitelo.config.js', s.rss, 'javascript'),
       p(
         'Produces ',
         code('dist/rss.xml'),
@@ -332,13 +159,13 @@ export default {
         code('<a href>'),
         ' links that point at a page which does not exist.',
       ),
-      codeBlock('sitelo.config.js', linkCheckSnippet, 'javascript'),
+      codeBlock('sitelo.config.js', s.linkCheck, 'javascript'),
       p(
         'After ',
         code('sitelo build'),
         ', every internal link in the output is resolved and anything with no page behind it is reported, grouped by the page it appears on:',
       ),
-      codeBlock('output', linkCheckOutput, 'text'),
+      codeBlock('output', s.linkCheckOutput, 'text'),
       h3('How links are resolved'),
       p(
         'The check runs against the emitted site, not the route table — so it accounts for ',
@@ -409,7 +236,7 @@ export default {
           ),
         ),
       ),
-      codeBlock('sitelo.config.js', linkCheckOptionsSnippet, 'javascript'),
+      codeBlock('sitelo.config.js', s.linkCheckOptions, 'javascript'),
       p(
         code('checkFragments'),
         ' is off by default because ids added by client-side JavaScript are not in the built HTML, and would be reported as missing. Both ',
@@ -438,7 +265,7 @@ export default {
         code('sitelo build'),
         '.',
       ),
-      codeBlock('shell', installPagefindSnippet, 'bash'),
+      codeBlock('shell', s.installPagefind, 'bash'),
       h3('1. Enable indexing'),
       p(
         'Set ',
@@ -457,7 +284,7 @@ export default {
         code('/pagefind/'),
         ' without rebuilding.',
       ),
-      codeBlock('sitelo.config.js', pagefindSnippet, 'javascript'),
+      codeBlock('sitelo.config.js', s.pagefind, 'javascript'),
       h3('2. Mark content and add a mount point'),
       p(
         'Put ',
@@ -466,9 +293,9 @@ export default {
       ),
       pageCodeTabs({
         file: 'src/index.ht.js',
-        template: pagefindPageTemplate,
-        ht: pagefindPageHt,
-        jsx: pagefindPageJsx,
+        template: s.pagefindPageTemplate,
+        ht: s.pagefindPageHt,
+        jsx: s.pagefindPageJsx,
       }),
       h3('3. Mount the Pagefind UI'),
       p(
@@ -478,15 +305,10 @@ export default {
         code('pagefind-ui.css'),
         ' from your client script (only after a build has produced the index):',
       ),
-      codeBlock('src/main.js', pagefindMainSnippet, 'javascript'),
+      codeBlock('src/main.js', s.pagefindMain, 'javascript'),
       h3('4. Build and ignore the synced bundle'),
-      codeBlock(
-        'shell',
-        `sitelo build
-# then: sitelo preview — or sitelo (dev) using public/pagefind`,
-        'bash',
-      ),
-      codeBlock('.gitignore', pagefindGitignoreSnippet, 'bash'),
+      codeBlock('shell', s.pagefindBuild, 'bash'),
+      codeBlock('.gitignore', s.pagefindGitignore, 'bash'),
       p(
         'Advanced options (',
         code('syncPublic'),

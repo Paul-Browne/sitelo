@@ -1,60 +1,9 @@
 import { h2, h3, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
+import { dataSnippets } from '../lib/snippets/data.js'
 
-const dataTemplate = `export async function data({ params, dev }) {
-  const res = await fetch(\`https://api.example.com/posts/\${params.slug}\`)
-  return await res.json()
-}
-
-export default ({ data }) => \`
-  <html><body>
-    <h1>\${data.title}</h1>
-    \${data.body}
-  </body></html>
-\``
-
-const dataHt = `import { html, body, h1 } from 'javascript-to-html'
-
-export async function data({ params, dev }) {
-  const res = await fetch(\`https://api.example.com/posts/\${params.slug}\`)
-  return await res.json()
-}
-
-export default ({ data }) =>
-  html(
-    body(
-      h1(data.title),
-      data.body,
-    ),
-  )`
-
-const dataJsx = `export async function data({ params, dev }) {
-  const res = await fetch(\`https://api.example.com/posts/\${params.slug}\`)
-  return await res.json()
-}
-
-export default function Post({ data }) {
-  return (
-    <html>
-      <body>
-        <h1>{data.title}</h1>
-        <div dangerouslySetInnerHTML={{ __html: data.body }} />
-      </body>
-    </html>
-  )
-}`
-
-const cacheSnippet = `import { fetchWithCache } from 'sitelo'
-
-export async function data({ params }) {
-  const res = await fetchWithCache(
-    \`https://api.example.com/posts/\${params.slug}\`,
-    { /* standard fetch options */ },
-    { maxAge: 3600 }
-  )
-  return { post: await res.json() }
-}`
+const s = dataSnippets('en')
 
 export default () =>
   docsLayout({
@@ -71,9 +20,9 @@ export default () =>
       ),
       pageCodeTabs({
         file: 'src/blog/[slug].ht.js',
-        template: dataTemplate,
-        ht: dataHt,
-        jsx: dataJsx,
+        template: s.dataTemplate,
+        ht: s.dataHt,
+        jsx: s.dataJsx,
       }),
       h2('fetchWithCache'),
       p(
@@ -81,7 +30,7 @@ export default () =>
         code('fetchWithCache'),
         ' from sitelo:',
       ),
-      codeBlock('src/blog/[slug].ht.js', cacheSnippet, 'javascript'),
+      codeBlock('src/blog/[slug].ht.js', s.cache, 'javascript'),
       h3('Options'),
       ul(
         { class: 'docs-list' },

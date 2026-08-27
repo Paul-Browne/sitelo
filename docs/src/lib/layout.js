@@ -25,13 +25,25 @@ import {
 
 import { createRequire } from 'node:module'
 
-import { DOC_NAV, EXAMPLE_NAV } from './nav.js'
+import {
+  DEFAULT_LOCALE,
+  LOCALES,
+  LOCALE_NAMES,
+  LOCALE_TAGS,
+  basePath,
+  isTranslated,
+  localePath,
+  strings,
+} from './i18n.js'
+import { docNav, exampleNav } from './nav.js'
 
 const require = createRequire(import.meta.url)
 const viteVersion = require('vite/package.json').version
 const siteloVersion = require('../../../package.json').version
 
 const viteBolt = `<svg class="badge-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 11-13h-8z"/></svg>`
+
+const SITE_URL = 'https://sitelo.js.org'
 
 function badge({ variant, href, label, name, value, icon, external = true }) {
   return a(
@@ -46,18 +58,62 @@ function badge({ variant, href, label, name, value, icon, external = true }) {
   )
 }
 
-function siteNav(activeHref = '/') {
-  const onDocs = activeHref.startsWith('/docs')
-  const onExamples = activeHref.startsWith('/examples')
-  const onAbout = activeHref === '/about'
+/**
+ * EN / ES switcher pointing at the same page in the other locale.
+ *
+ * Rendered only for paths that exist in both locales — `/examples` is
+ * English-only, so a switcher there would link to a missing page.
+ */
+function languageSwitch(activeHref, lang) {
+  if (activeHref == null || !isTranslated(activeHref)) return ''
+
+  const t = strings(lang)
+
+  return nav(
+    { class: 'lang-switch', 'aria-label': t.languageLabel },
+    ...LOCALES.map((locale) => {
+      const current = locale === lang
+      return a(
+        {
+          href: localePath(activeHref, locale),
+          hreflang: LOCALE_TAGS[locale],
+          lang: LOCALE_TAGS[locale],
+          'aria-label': LOCALE_NAMES[locale],
+          // Spread rather than pass `undefined`: an `aria-current="undefined"`
+          // is an invalid token, and browsers fall back to treating it as
+          // "true" — which would mark every language as the current one.
+          ...(current ? { class: 'is-active', 'aria-current': 'true' } : {}),
+        },
+        LOCALE_TAGS[locale].toUpperCase(),
+      )
+    }),
+  )
+}
+
+function siteNav(activeHref = '/', lang = DEFAULT_LOCALE) {
+  const t = strings(lang)
+  const base = basePath(activeHref)
+
+  const onDocs = base.startsWith('/docs')
+  const onExamples = base.startsWith('/examples')
+  const onAbout = base === '/about'
 
   const links = [
-    a({ class: onDocs ? 'is-active' : undefined, href: '/docs' }, 'Docs'),
+    a(
+      { class: onDocs ? 'is-active' : undefined, href: localePath('/docs', lang) },
+      t.navDocs,
+    ),
     a(
       { class: onExamples ? 'is-active' : undefined, href: '/examples' },
-      'Examples',
+      t.navExamples,
     ),
-    a({ class: onAbout ? 'is-active' : undefined, href: '/about' }, 'About'),
+    a(
+      {
+        class: onAbout ? 'is-active' : undefined,
+        href: localePath('/about', lang),
+      },
+      t.navAbout,
+    ),
     a(
       {
         href: 'https://github.com/paul-browne/sitelo',
@@ -74,10 +130,12 @@ function siteNav(activeHref = '/') {
     ),
   ]
 
+  const switcher = languageSwitch(activeHref, lang)
+
   return nav(
     { class: 'nav' },
     a(
-      { class: 'nav-brand', href: '/' },
+      { class: 'nav-brand', href: localePath('/', lang) },
       img({
         class: 'nav-logo',
         src: '/logo.svg',
@@ -86,16 +144,18 @@ function siteNav(activeHref = '/') {
         height: '34',
       }),
     ),
-    div({ class: 'nav-links' }, ...links),
+    div({ class: 'nav-links' }, ...links, switcher),
     details(
       { class: 'nav-menu' },
-      summary({ class: 'nav-menu-toggle', 'aria-label': 'Open menu' }, 'Menu'),
-      div({ class: 'nav-menu-panel' }, ...links),
+      summary({ class: 'nav-menu-toggle', 'aria-label': t.openMenu }, t.menu),
+      div({ class: 'nav-menu-panel' }, ...links, switcher),
     ),
   )
 }
 
-function siteFooter() {
+function siteFooter(lang = DEFAULT_LOCALE) {
+  const t = strings(lang)
+
   return footer(
     { class: 'footer' },
     p(`© Paul Browne ${new Date().getFullYear()}`),
@@ -104,14 +164,14 @@ function siteFooter() {
       badge({
         variant: 'badge-sitelo',
         href: 'https://github.com/paul-browne/sitelo',
-        label: `sitelo ${siteloVersion} on GitHub`,
+        label: t.githubLabel(siteloVersion),
         name: 'sitelo',
         value: `v${siteloVersion}`,
       }),
       badge({
         variant: 'badge-license',
         href: '/license.txt',
-        label: 'MIT license',
+        label: t.licenseLabel,
         name: 'license',
         value: 'MIT',
         external: false,
@@ -119,14 +179,14 @@ function siteFooter() {
       badge({
         variant: 'badge-node',
         href: 'https://nodejs.org/docs/latest/api/',
-        label: 'Requires Node 20.19 or newer',
+        label: t.nodeLabel,
         name: 'node',
         value: '20.19+',
       }),
       badge({
         variant: 'badge-vite',
         href: 'https://vite.dev',
-        label: `Powered by Vite ${viteVersion}`,
+        label: t.viteLabel(viteVersion),
         name: 'vite',
         value: `v${viteVersion}`,
         icon: viteBolt,
@@ -155,17 +215,41 @@ function sideNav({ label, items, activeHref }) {
   )
 }
 
-const SITE_URL = 'https://sitelo.js.org'
+/** `hreflang` alternates so search engines pair the two language versions. */
+function alternateLinks(path) {
+  if (path == null || !isTranslated(path)) return []
 
-function pageShell({ pageTitle, description, bodyClass = '', path, children }) {
+  return [
+    ...LOCALES.map((locale) =>
+      link({
+        rel: 'alternate',
+        hreflang: LOCALE_TAGS[locale],
+        href: `${SITE_URL}${localePath(path, locale)}`,
+      }),
+    ),
+    link({
+      rel: 'alternate',
+      hreflang: 'x-default',
+      href: `${SITE_URL}${basePath(path)}`,
+    }),
+  ]
+}
+
+function pageShell({
+  pageTitle,
+  description,
+  bodyClass = '',
+  path,
+  lang = DEFAULT_LOCALE,
+  children,
+}) {
+  const t = strings(lang)
   const content = Array.isArray(children) ? children : [children]
-  const pageDescription =
-    description ??
-    'sitelo — static site generation for Vite. Write functions that return HTML.'
+  const pageDescription = description ?? t.defaultDescription
   const canonical = path != null ? `${SITE_URL}${path}` : undefined
 
   return html(
-    { lang: 'en' },
+    { lang: LOCALE_TAGS[lang] },
     head(
       meta({ charset: 'utf-8' }),
       meta({
@@ -182,9 +266,11 @@ function pageShell({ pageTitle, description, bodyClass = '', path, children }) {
       link({ rel: 'manifest', href: '/manifest.webmanifest' }),
       meta({ name: 'theme-color', content: '#071410' }),
       canonical ? link({ rel: 'canonical', href: canonical }) : '',
+      ...alternateLinks(path),
       meta({ property: 'og:title', content: pageTitle }),
       meta({ property: 'og:description', content: pageDescription }),
       meta({ property: 'og:type', content: 'website' }),
+      meta({ property: 'og:locale', content: lang === 'es' ? 'es_ES' : 'en_US' }),
       canonical ? meta({ property: 'og:url', content: canonical }) : '',
       meta({
         property: 'og:image',
@@ -212,7 +298,13 @@ function pageShell({ pageTitle, description, bodyClass = '', path, children }) {
   )
 }
 
-/** Add ids to <h2> headings and collect them for a table of contents. */
+/**
+ * Add ids to <h2> headings and collect them for a table of contents.
+ *
+ * Accents are folded to ASCII first, so a Spanish heading like
+ * "Optimización de imágenes" slugs to `optimizacion-de-imagenes` rather than
+ * losing every accented letter to a dash.
+ */
 function withHeadingAnchors(content) {
   const headings = []
 
@@ -220,6 +312,8 @@ function withHeadingAnchors(content) {
     String(chunk).replace(/<h2>(.*?)<\/h2>/g, (match, inner) => {
       const text = inner.replace(/<[^>]*>/g, '')
       const slug = text
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '')
@@ -231,19 +325,19 @@ function withHeadingAnchors(content) {
   return { transformed, headings }
 }
 
-function tableOfContents(headings) {
+function tableOfContents(headings, lang) {
   if (headings.length < 3) return ''
 
+  const t = strings(lang)
+
   return nav(
-    { class: 'docs-toc', 'aria-label': 'On this page' },
-    p({ class: 'docs-toc-label' }, 'On this page'),
-    ul(
-      ...headings.map(({ slug, text }) => li(a({ href: `#${slug}` }, text))),
-    ),
+    { class: 'docs-toc', 'aria-label': t.tocLabel },
+    p({ class: 'docs-toc-label' }, t.tocLabel),
+    ul(...headings.map(({ slug, text }) => li(a({ href: `#${slug}` }, text)))),
   )
 }
 
-function pageNav(items, activeHref) {
+function pageNav(items, activeHref, lang) {
   const index = items.findIndex((item) => item.href === activeHref)
   if (index === -1) return ''
 
@@ -251,18 +345,20 @@ function pageNav(items, activeHref) {
   const next = index < items.length - 1 ? items[index + 1] : null
   if (!previous && !next) return ''
 
+  const t = strings(lang)
+
   const pageNavLink = (item, direction) =>
     a(
       { class: `docs-pagenav-link docs-pagenav-${direction}`, href: item.href },
       span(
         { class: 'docs-pagenav-direction' },
-        direction === 'prev' ? '← Previous' : 'Next →',
+        direction === 'prev' ? t.previous : t.next,
       ),
       span({ class: 'docs-pagenav-label' }, item.label),
     )
 
   return nav(
-    { class: 'docs-pagenav', 'aria-label': 'Adjacent pages' },
+    { class: 'docs-pagenav', 'aria-label': t.pagenavLabel },
     previous ? pageNavLink(previous, 'prev') : span(),
     next ? pageNavLink(next, 'next') : span(),
   )
@@ -275,6 +371,7 @@ function guideLayout({
   sidebarLabel,
   sidebarItems,
   titleSuffix,
+  lang,
   children,
 }) {
   const content = Array.isArray(children) ? children : [children]
@@ -285,10 +382,11 @@ function guideLayout({
     description,
     bodyClass: 'page-docs',
     path: activeHref,
+    lang,
     children: [
       header(
         { class: 'topbar' },
-        div({ class: 'topbar-inner' }, siteNav(activeHref)),
+        div({ class: 'topbar-inner' }, siteNav(activeHref, lang)),
       ),
       div(
         { class: 'docs-shell' },
@@ -300,73 +398,87 @@ function guideLayout({
         main(
           { class: 'docs-main', 'data-pagefind-body': '' },
           h1(heading),
-          tableOfContents(headings),
+          tableOfContents(headings, lang),
           ...transformed,
-          pageNav(sidebarItems, activeHref),
+          pageNav(sidebarItems, activeHref, lang),
         ),
       ),
-      siteFooter(),
+      siteFooter(lang),
     ],
   })
 }
 
-export function landingLayout({ children, pageTitle, description }) {
-  const content = Array.isArray(children) ? children : [children]
+/** Layouts bound to a locale. */
+export function createLayouts(lang = DEFAULT_LOCALE) {
+  const t = strings(lang)
 
-  return pageShell({
-    pageTitle,
-    description,
-    bodyClass: 'page-landing',
-    path: '/',
-    children: [
-      header(
-        { class: 'topbar' },
-        div({ class: 'topbar-inner' }, siteNav('/')),
-      ),
-      ...content,
-      siteFooter(),
-    ],
-  })
+  function landingLayout({ children, pageTitle, description }) {
+    const content = Array.isArray(children) ? children : [children]
+    const activeHref = localePath('/', lang)
+
+    return pageShell({
+      pageTitle,
+      description,
+      bodyClass: 'page-landing',
+      path: activeHref,
+      lang,
+      children: [
+        header(
+          { class: 'topbar' },
+          div({ class: 'topbar-inner' }, siteNav(activeHref, lang)),
+        ),
+        ...content,
+        siteFooter(lang),
+      ],
+    })
+  }
+
+  function pageLayout({ title: heading, description, activeHref, children }) {
+    const content = Array.isArray(children) ? children : [children]
+
+    return pageShell({
+      pageTitle: heading,
+      description,
+      bodyClass: 'page-content',
+      path: activeHref,
+      lang,
+      children: [
+        header(
+          { class: 'topbar' },
+          div({ class: 'topbar-inner' }, siteNav(activeHref, lang)),
+        ),
+        main({ class: 'content-main' }, h1(heading), ...content),
+        siteFooter(lang),
+      ],
+    })
+  }
+
+  function docsLayout(args) {
+    return guideLayout({
+      ...args,
+      lang,
+      sidebarLabel: t.sidebarDocs,
+      sidebarItems: docNav(lang),
+      titleSuffix: t.titleSuffixDocs,
+    })
+  }
+
+  function examplesLayout(args) {
+    return guideLayout({
+      ...args,
+      lang,
+      sidebarLabel: t.sidebarExamples,
+      sidebarItems: exampleNav(),
+      titleSuffix: t.titleSuffixExamples,
+    })
+  }
+
+  return { landingLayout, pageLayout, docsLayout, examplesLayout }
 }
 
-export function pageLayout({
-  title: heading,
-  description,
-  activeHref,
-  children,
-}) {
-  const content = Array.isArray(children) ? children : [children]
+const en = createLayouts(DEFAULT_LOCALE)
 
-  return pageShell({
-    pageTitle: heading,
-    description,
-    bodyClass: 'page-content',
-    path: activeHref,
-    children: [
-      header(
-        { class: 'topbar' },
-        div({ class: 'topbar-inner' }, siteNav(activeHref)),
-      ),
-      main({ class: 'content-main' }, h1(heading), ...content),
-      siteFooter(),
-    ],
-  })
-}
-
-export function docsLayout(args) {
-  return guideLayout({
-    ...args,
-    sidebarLabel: 'Documentation',
-    sidebarItems: DOC_NAV,
-    titleSuffix: 'sitelo docs',
-  })
-}
-
-export function examplesLayout(args) {
-  return guideLayout({
-    ...args,
-    sidebarLabel: 'Examples',
-    sidebarItems: EXAMPLE_NAV,
-    titleSuffix: 'sitelo examples',
-  })
-}
+export const landingLayout = en.landingLayout
+export const pageLayout = en.pageLayout
+export const docsLayout = en.docsLayout
+export const examplesLayout = en.examplesLayout

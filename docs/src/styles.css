@@ -163,6 +163,42 @@ code {
   color: var(--ink);
 }
 
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+  padding: 0.1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+}
+
+.lang-switch a {
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+
+.lang-switch a.is-active {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
+.nav-menu-panel .lang-switch {
+  margin: 0.25rem 0.7rem 0.2rem;
+  align-self: flex-start;
+}
+
+.nav-menu-panel .lang-switch a {
+  padding: 0.1rem 0.4rem;
+}
+
+.nav-menu-panel .lang-switch a:hover {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
 .nav-brand {
   margin-right: auto;
   display: inline-flex;
