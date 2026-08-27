@@ -1,4 +1,18 @@
-import { a, h2, h3, li, p, ul } from 'javascript-to-html'
+import {
+  a,
+  div,
+  h2,
+  h3,
+  li,
+  p,
+  table,
+  tbody,
+  td,
+  th,
+  thead,
+  tr,
+  ul,
+} from 'javascript-to-html'
 import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 
@@ -45,6 +59,25 @@ const rssSnippet = `export default {
     routePrefix: '/blog',
   },
 }`
+
+const linkCheckSnippet = `export default {
+  linkCheck: true,   // 'warn' (default), 'error', or an options object
+}`
+
+const linkCheckOptionsSnippet = `export default {
+  linkCheck: {
+    mode: 'error',                    // fail the build on a dead link
+    checkFragments: true,             // also verify #fragment targets
+    exclude: ['/api/**', /^\\/legacy\\//],
+  },
+}`
+
+const linkCheckOutput = `[sitelo] 3 broken internal links
+
+  index.html
+    ../escape           -> escapes the output directory
+    /abuot              -> no such page
+    /blog/missing-post  -> no such page`
 
 const pagefindSnippet = `export default {
   pagefind: true,
@@ -201,17 +234,9 @@ export default () =>
         li(code('missingAssets'), ' — ', code("'error'"), ' or ', code("'warn'")),
         li(
           code('linkCheck'),
-          ' — ',
-          code('true'),
-          ', ',
-          code("'warn'"),
-          ', ',
-          code("'error'"),
-          ', or ',
-          code('{ mode, exclude, checkFragments }'),
-          '; resolves every internal ',
-          code('<a href>'),
-          ' against the emitted site and reports the dead ones',
+          ' — dead internal links (see ',
+          a({ href: '#link-checking' }, 'Link checking'),
+          ')',
         ),
         li(code('generatedTypesDir'), ' — default ', code("'.sitelo/types'")),
         li(code('renderConcurrency'), ' / ', code('renderBatchSize'), ' — build parallelism'),
@@ -294,6 +319,116 @@ export default {
         ' with an item for every page under ',
         code('routePrefix'),
         '.',
+      ),
+      h2('Link checking'),
+      p(
+        'Broken ',
+        code('<script src>'),
+        ' and stylesheet hrefs already fail the build (see ',
+        code('missingAssets'),
+        '). ',
+        code('linkCheck'),
+        ' covers the other half: internal ',
+        code('<a href>'),
+        ' links that point at a page which does not exist.',
+      ),
+      codeBlock('sitelo.config.js', linkCheckSnippet, 'javascript'),
+      p(
+        'After ',
+        code('sitelo build'),
+        ', every internal link in the output is resolved and anything with no page behind it is reported, grouped by the page it appears on:',
+      ),
+      codeBlock('output', linkCheckOutput, 'text'),
+      h3('How links are resolved'),
+      p(
+        'The check runs against the emitted site, not the route table — so it accounts for ',
+        code('cleanUrls'),
+        ', route groups, ',
+        code('mapOutputPath'),
+        ', files copied from ',
+        code('public/'),
+        ', and pages produced by dynamic routes. It also runs after image optimization and Pagefind, so it sees exactly what ships. A link is valid when a real file answers it, tried in the order a static host would:',
+      ),
+      ul(
+        { class: 'docs-list' },
+        li(code('/about'), ' → ', code('about'), ', then ', code('about/index.html'), ', then ', code('about.html')),
+        li(code('/blog/'), ' → ', code('blog/index.html'), ' (a trailing slash only ever means a directory index)'),
+        li(code('/'), ' → ', code('index.html')),
+      ),
+      p(
+        'Relative links (',
+        code('../about'),
+        ') resolve against the page holding them, and one that climbs out of the output directory is reported. Query strings are ignored for resolution — ',
+        code('/about?utm=x'),
+        ' checks ',
+        code('/about'),
+        '.',
+      ),
+      p(
+        'External links are never fetched. ',
+        code('https://'),
+        ', protocol-relative ',
+        code('//cdn.example.com'),
+        ', ',
+        code('mailto:'),
+        ', ',
+        code('tel:'),
+        ' and other schemes are skipped entirely.',
+      ),
+      h3('Options'),
+      div(
+        { class: 'docs-table-scroll' },
+        table(
+          { class: 'docs-table docs-table--wrap-last' },
+          thead(tr(th('Option'), th('Default'), th('Description'))),
+          tbody(
+            tr(
+              td(code('mode')),
+              td(code("'warn'")),
+              td(
+                code("'warn'"),
+                ' logs and continues; ',
+                code("'error'"),
+                ' fails the build — useful in CI',
+              ),
+            ),
+            tr(
+              td(code('exclude')),
+              td(code('[]')),
+              td('Globs or regular expressions of hrefs to skip'),
+            ),
+            tr(
+              td(code('checkFragments')),
+              td(code('false')),
+              td(
+                'Also verify that ',
+                code('#fragment'),
+                ' targets exist in the linked page',
+              ),
+            ),
+          ),
+        ),
+      ),
+      codeBlock('sitelo.config.js', linkCheckOptionsSnippet, 'javascript'),
+      p(
+        code('checkFragments'),
+        ' is off by default because ids added by client-side JavaScript are not in the built HTML, and would be reported as missing. Both ',
+        code('id'),
+        ' and legacy anchor ',
+        code('name'),
+        ' attributes count as fragment targets.',
+      ),
+      h3('Sites served from a base'),
+      p(
+        'If your site is deployed under a ',
+        code('base'),
+        ' (a GitHub Pages project site, say), a root-relative link that does not carry that base is reported. ',
+        code('/about'),
+        ' on a site served from ',
+        code('/repo/'),
+        ' sends the browser to the host root, not into your site — resolving it against the output anyway would hide exactly the mistake worth catching. Use ',
+        code('exclude'),
+        ' when it is deliberate.',
       ),
       h2('Pagefind search'),
       p(
