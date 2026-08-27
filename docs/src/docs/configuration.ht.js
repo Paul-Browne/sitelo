@@ -50,6 +50,8 @@ const pagefindSnippet = `export default {
   pagefind: true,
 }`
 
+const installPagefindSnippet = `npm install -D pagefind`
+
 const pagefindPageTemplate = `export default () => \`
   <html lang="en">
     <head>
@@ -180,6 +182,9 @@ export default () =>
           a({ href: 'https://pagefind.app', rel: 'noopener' }, 'Pagefind'),
           ' after ',
           code('sitelo build'),
+          ' (requires ',
+          code('npm install -D pagefind'),
+          ')',
         ),
         li(
           code('images'),
@@ -189,6 +194,9 @@ export default () =>
           a({ href: '/docs/images' }, 'optimizes images'),
           ' in dev and after ',
           code('sitelo build'),
+          ' (requires ',
+          code('npm install -D sharp'),
+          ')',
         ),
         li(code('missingAssets'), ' — ', code("'error'"), ' or ', code("'warn'")),
         li(code('generatedTypesDir'), ' — default ', code("'.sitelo/types'")),
@@ -267,10 +275,11 @@ export default {
       p(
         'Opt-in static search powered by ',
         a({ href: 'https://pagefind.app', rel: 'noopener' }, 'Pagefind'),
-        '. Enable it, mark the content to index, mount the UI, then ',
+        ', an optional peer dependency. Install it when you want search, then enable indexing, mark the content, mount the UI, and run ',
         code('sitelo build'),
         '.',
       ),
+      codeBlock('shell', installPagefindSnippet, 'bash'),
       h3('1. Enable indexing'),
       p(
         'Set ',

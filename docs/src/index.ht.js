@@ -83,7 +83,7 @@ const features = [
   [
     'image',
     'Image optimization',
-    'Resize, formats, and srcset from a plain &lt;img&gt; — in dev and in the build',
+    'Resize, formats, and srcset — opt in with images: true (install sharp)',
     '/docs/images',
   ],
   [
@@ -101,7 +101,7 @@ const features = [
   [
     'search',
     'Pagefind search',
-    'Opt-in static search — sitelo build indexes your site into dist/pagefind/',
+    'Opt-in static search — install pagefind, then sitelo build indexes into dist/pagefind/',
     '/docs/configuration#pagefind-search',
   ],
   [
