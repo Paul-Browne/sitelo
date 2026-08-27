@@ -47,14 +47,14 @@ export function normalizeBuildReportOptions(buildReport) {
 
   if (typeof buildReport !== 'object' || Array.isArray(buildReport)) {
     throw new Error(
-      '[sitelo] "buildReport" must be a boolean or an options object',
+      '"buildReport" must be a boolean or an options object',
     )
   }
 
   const { top = DEFAULT_TOP } = buildReport
 
   if (!Number.isInteger(top) || top < 0) {
-    throw new Error('[sitelo] "buildReport.top" must be a non-negative integer')
+    throw new Error('"buildReport.top" must be a non-negative integer')
   }
 
   return { top }

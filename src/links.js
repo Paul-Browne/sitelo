@@ -31,7 +31,7 @@ export function normalizeLinkCheckOptions(linkCheck) {
 
   if (typeof raw !== 'object' || Array.isArray(raw)) {
     throw new Error(
-      '[sitelo] "linkCheck" must be a boolean, \'warn\', \'error\', or an options object',
+      '"linkCheck" must be a boolean, \'warn\', \'error\', or an options object',
     )
   }
 
@@ -39,7 +39,7 @@ export function normalizeLinkCheckOptions(linkCheck) {
 
   if (mode !== 'warn' && mode !== 'error') {
     throw new Error(
-      `[sitelo] "linkCheck.mode" must be 'warn' or 'error', got ${JSON.stringify(mode)}`,
+      `"linkCheck.mode" must be 'warn' or 'error', got ${JSON.stringify(mode)}`,
     )
   }
 
@@ -48,7 +48,7 @@ export function normalizeLinkCheckOptions(linkCheck) {
       if (entry instanceof RegExp) return entry
       if (typeof entry === 'string') return globToRegExp(entry)
       throw new Error(
-        '[sitelo] "linkCheck.exclude" entries must be strings or regular expressions',
+        '"linkCheck.exclude" entries must be strings or regular expressions',
       )
     },
   )

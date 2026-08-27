@@ -36,10 +36,16 @@ jobs:
 
       - run: npm test
 
-  # sharp and pagefind are optional peers: a plain `npm i sitelo` must not
-  # pull them in, and the build must still work without them.
-  without-optional-peers:
+  # sharp and pagefind are optional peers, and that declaration is
+  # load-bearing: drop it and only Yarn Berry's Plug'n'Play linker breaks,
+  # while npm and pnpm keep working. So exercise every manager for real.
+  optional-peers:
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        manager: [npm, pnpm, yarn, yarn-berry]
 
     steps:
       - uses: actions/checkout@v7
@@ -49,17 +55,12 @@ jobs:
           node-version: 24
           cache: npm
 
-      - run: npm ci --omit=dev
+      - name: Enable corepack
+        run: corepack enable
 
-      - name: Assert optional peers are absent
-        run: |
-          for pkg in sharp pagefind; do
-            if [ -d "node_modules/$pkg" ]; then
-              echo "::error::$pkg was installed without being asked for"
-              exit 1
-            fi
-          done
-          echo "sharp and pagefind correctly absent"
+      - name: Install pnpm
+        if: matrix.manager == 'pnpm'
+        run: corepack prepare pnpm@latest --activate
 
-      - name: Build a site with images and pagefind disabled
-        run: node ./bin/sitelo.js build --root examples/basic
+      - name: ${{ matrix.manager }}
+        run: ./.github/scripts/test-package-manager.sh ${{ matrix.manager }}
