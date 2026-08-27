@@ -27,6 +27,10 @@ import {
   runBuildReport,
 } from '../src/report.js';
 import {
+  normalizeLinkCheckOptions,
+  runLinkCheck,
+} from '../src/links.js';
+import {
   build,
   createLogger,
   createServer,
@@ -244,10 +248,12 @@ function splitSiteloConfig(options) {
       pagefind: undefined,
       images: undefined,
       buildReport: undefined,
+      linkCheck: undefined,
     };
   }
 
-  const { vite, pagefind, images, buildReport, ...pluginOptions } = options;
+  const { vite, pagefind, images, buildReport, linkCheck, ...pluginOptions } =
+    options;
 
   if (vite != null && (typeof vite !== 'object' || Array.isArray(vite))) {
     throw new Error('[sitelo] sitelo.config.js "vite" must be an object');
@@ -260,6 +266,7 @@ function splitSiteloConfig(options) {
     pagefind,
     images,
     buildReport,
+    linkCheck,
   };
 }
 
@@ -272,6 +279,7 @@ async function loadSiteloConfig(root) {
       pagefind: undefined,
       images: undefined,
       buildReport: undefined,
+      linkCheck: undefined,
       configFile: undefined,
     };
   }
@@ -296,6 +304,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
     pagefind,
     images,
     buildReport,
+    linkCheck,
     configFile: siteloConfigFile,
   } = await loadSiteloConfig(root);
 
@@ -322,6 +331,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
       pagefind,
       images,
       buildReport,
+      linkCheck,
     };
   }
 
@@ -337,6 +347,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
     pagefind,
     images,
     buildReport,
+    linkCheck,
   };
 }
 
@@ -596,7 +607,7 @@ async function runDev(cli) {
 
 async function runBuild(cli) {
   const mode = cli.mode ?? 'production';
-  const { plugins, viteOptions, pagefind, images, buildReport } =
+  const { plugins, viteOptions, pagefind, images, buildReport, linkCheck } =
     await resolveSiteloConfig({
       root: cli.root,
       configFile: cli.config,
@@ -611,6 +622,7 @@ async function runBuild(cli) {
   const imageOptions = normalizeImageOptions(images);
   const reportOptions =
     cli.logLevel === 'silent' ? null : normalizeBuildReportOptions(buildReport);
+  const linkCheckOptions = normalizeLinkCheckOptions(linkCheck);
 
   /** @type {Record<string, number>} */
   const timings = {};
@@ -657,6 +669,19 @@ async function runBuild(cli) {
       options: pagefindOptions,
     });
     timings.pagefind = since(pagefindStartedAt);
+  }
+
+  // After every phase that can add or rewrite pages, so the check sees
+  // exactly what ships.
+  if (linkCheckOptions) {
+    const linksStartedAt = performance.now();
+    await runLinkCheck({
+      root: cli.root,
+      outDir,
+      base: cli.base ?? viteOptions?.base ?? '/',
+      options: linkCheckOptions,
+    });
+    timings.links = since(linksStartedAt);
   }
 
   if (!reportOptions) return;
