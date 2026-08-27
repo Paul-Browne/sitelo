@@ -8,7 +8,11 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import htmlPages from '../src/index.js';
 import { renderIsland, createIslandsFromDirectory, createIslandsNodeHandler } from '../src/islands-server.js';
-import { isValidIslandName } from '../src/islands.js';
+import {
+  getIslandsSecret,
+  isValidIslandName,
+  verifyIslandProps,
+} from '../src/islands.js';
 import {
   createDevImagePipeline,
   normalizeImageOptions,
@@ -394,6 +398,21 @@ function islandsDevPlugin({ root, pagesDir = 'src' }) {
           const params = new URLSearchParams(query);
           let props = {};
           const rawProps = params.get('props');
+
+          // Match production: with a secret configured, only props this
+          // site signed are rendered.
+          const secret = getIslandsSecret();
+
+          if (secret && rawProps) {
+            if (
+              !verifyIslandProps(name, rawProps, params.get('sig'), secret)
+            ) {
+              res.statusCode = 403;
+              res.end('Invalid island props signature');
+              return;
+            }
+          }
+
           if (rawProps) {
             try {
               props = JSON.parse(rawProps);

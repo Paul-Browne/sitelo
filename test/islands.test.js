@@ -199,3 +199,42 @@ test('createIslandsNodeHandler adapts node req/res', async () => {
   );
   assert.equal(nextCalled, true);
 });
+
+test('island() emits loading strategies', () => {
+  // `load` is the default and needs no attribute.
+  assert.doesNotMatch(island('comments'), /data-sitelo-when/);
+  assert.doesNotMatch(island('comments', {}, '', { when: 'load' }), /data-sitelo-when/);
+
+  assert.match(
+    island('comments', {}, '', { when: 'idle' }),
+    /data-sitelo-when="idle"/,
+  );
+  assert.match(
+    island('comments', {}, '', { when: 'visible' }),
+    /data-sitelo-when="visible"/,
+  );
+});
+
+test('island() emits rootMargin only for visible islands', () => {
+  assert.match(
+    island('comments', {}, '', { when: 'visible', rootMargin: '400px' }),
+    /data-sitelo-root-margin="400px"/,
+  );
+  // Meaningless without an observer, so it is dropped.
+  assert.doesNotMatch(
+    island('comments', {}, '', { when: 'idle', rootMargin: '400px' }),
+    /data-sitelo-root-margin/,
+  );
+});
+
+test('island() rejects unknown loading strategies', () => {
+  assert.throws(
+    () => island('comments', {}, '', { when: 'eventually' }),
+    /Invalid island loading strategy/,
+  );
+  assert.throws(
+    () => island('comments', {}, '', { when: 'visible', rootMargin: 400 }),
+    /rootMargin must be a string/,
+  );
+});
+
