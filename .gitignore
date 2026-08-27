@@ -147,3 +147,6 @@ docs/public/pagefind/
 examples/**/dist/
 examples/**/node_modules/
 test/fixtures/**/dist/
+
+# per-test-file fixture working copies
+test/.tmp/
