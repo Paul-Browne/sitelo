@@ -228,3 +228,50 @@ test('sitelo build report can be disabled', async (t) => {
   ]);
   assert.doesNotMatch(silent, /build report/);
 });
+
+test('config errors carry exactly one [sitelo] prefix', async (t) => {
+  const configPath = path.join(fixtureDir, 'sitelo.config.js');
+  const originalConfig = fs.readFileSync(configPath, 'utf8');
+
+  const cleanup = () => {
+    fs.writeFileSync(configPath, originalConfig);
+    fs.rmSync(distDir, { recursive: true, force: true });
+    fs.rmSync(path.join(fixtureDir, '.sitelo'), {
+      recursive: true,
+      force: true,
+    });
+  };
+
+  cleanup();
+  t.after(cleanup);
+
+  // bin/sitelo.js prefixes anything it reports, so modules on that path
+  // must not prefix their own thrown messages.
+  const cases = [
+    ['pagefind: "nonsense"', /"pagefind" must be true or an object/],
+    ['buildReport: { top: -1 }', /"buildReport.top" must be a non-negative integer/],
+    ['linkCheck: "loud"', /"linkCheck.mode" must be 'warn' or 'error'/],
+  ];
+
+  for (const [option, expected] of cases) {
+    fs.writeFileSync(configPath, `export default { ${option} }\n`);
+
+    const failure = await runBuild(fixtureDir).then(
+      () => null,
+      (error) => error,
+    );
+
+    assert.ok(failure, `expected { ${option} } to fail the build`);
+
+    const output = `${failure.stdout ?? ''}${failure.stderr ?? ''}`;
+
+    assert.match(output, expected);
+    assert.doesNotMatch(
+      output,
+      /\[sitelo\] \[sitelo\]/,
+      `doubled prefix for { ${option} }`,
+    );
+    assert.match(output, new RegExp(`\\[sitelo\\] ${expected.source}`));
+  }
+});
+

@@ -104,7 +104,7 @@ export function verifyIslandProps(name, propsJson, signature, secret) {
 export function island(name, props = {}, fallback = '', options = {}) {
   if (!isValidIslandName(name)) {
     throw new Error(
-      `[sitelo] Invalid island name "${name}". Use letters, digits, "-" or "_" (must start with a letter or digit).`,
+      `Invalid island name "${name}". Use letters, digits, "-" or "_" (must start with a letter or digit).`,
     )
   }
 
@@ -112,13 +112,13 @@ export function island(name, props = {}, fallback = '', options = {}) {
 
   if (!LOADING_STRATEGIES.has(when)) {
     throw new Error(
-      `[sitelo] Invalid island loading strategy "${when}" for "${name}". Use 'load', 'idle', or 'visible'.`,
+      `Invalid island loading strategy "${when}" for "${name}". Use 'load', 'idle', or 'visible'.`,
     )
   }
 
   if (rootMargin != null && typeof rootMargin !== 'string') {
     throw new Error(
-      `[sitelo] Island "${name}" rootMargin must be a string, e.g. '400px'.`,
+      `Island "${name}" rootMargin must be a string, e.g. '400px'.`,
     )
   }
 

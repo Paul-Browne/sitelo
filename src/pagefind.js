@@ -24,7 +24,7 @@ export function normalizePagefindOptions(pagefind) {
   }
 
   if (typeof pagefind !== 'object' || Array.isArray(pagefind)) {
-    throw new Error('[sitelo] "pagefind" must be true or an object')
+    throw new Error('"pagefind" must be true or an object')
   }
 
   return {
@@ -97,12 +97,12 @@ export async function runPagefind({
 
   if (createErrors?.length) {
     throw new Error(
-      `[sitelo] pagefind failed to start:\n${createErrors.join('\n')}`,
+      `pagefind failed to start:\n${createErrors.join('\n')}`,
     )
   }
 
   if (!index) {
-    throw new Error('[sitelo] pagefind failed to create an index')
+    throw new Error('pagefind failed to create an index')
   }
 
   const { errors: dirErrors, page_count: pageCount } = await index.addDirectory({
@@ -112,7 +112,7 @@ export async function runPagefind({
 
   if (dirErrors?.length) {
     throw new Error(
-      `[sitelo] pagefind indexing failed:\n${dirErrors.join('\n')}`,
+      `pagefind indexing failed:\n${dirErrors.join('\n')}`,
     )
   }
 
@@ -120,7 +120,7 @@ export async function runPagefind({
 
   if (writeErrors?.length) {
     throw new Error(
-      `[sitelo] pagefind write failed:\n${writeErrors.join('\n')}`,
+      `pagefind write failed:\n${writeErrors.join('\n')}`,
     )
   }
 
