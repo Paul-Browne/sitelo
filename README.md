@@ -786,6 +786,46 @@ new PagefindUI({ element: '#search', showImages: false })
 Gitignore `public/pagefind/`. Full walkthrough:
 [sitelo.js.org/docs/configuration#pagefind-search](https://sitelo.js.org/docs/configuration#pagefind-search).
 
+### Build report
+
+`sitelo build` ends with a summary of what it actually produced:
+
+```
+[sitelo] build report
+
+  pages    22 files  254.0 kB
+  js        7 files  479.1 kB
+  css       4 files   85.0 kB
+  images    5 files  788.7 kB
+  other   101 files  702.2 kB
+  ───────────────────────────
+  total   139 files   2.31 MB
+
+  largest
+    logo.png                           753.6 kB
+    pagefind/pagefind-component-ui.js  175.5 kB
+    pagefind/pagefind-ui.js            120.0 kB
+
+  vite 161ms · images 35ms · pagefind 63ms · total 260ms
+```
+
+Vite's own table lists the modules it bundled; this covers the whole
+output directory — files copied from `public/`, post-build image
+variants, and generated extras included — so the totals are what you
+actually ship. The phase timings make the post-build work visible:
+a slow build is usually image encoding, not rendering.
+
+Turn it off, or show more (or fewer) of the largest files:
+
+```js
+// sitelo.config.js
+export default {
+  buildReport: false,          // or { top: 10 }
+}
+```
+
+`--logLevel silent` suppresses it as well.
+
 ---
 
 ## Plugin options
@@ -824,6 +864,7 @@ export default {
 | `devToolbarDocsUrl` | sitelo docs | Docs link in the toolbar |
 | `renderConcurrency` | `8` | Pages rendered in parallel |
 | `renderBatchSize` | `max(concurrency, 32)` | Pages per render batch |
+| `buildReport` | `true` | Post-build summary. `false` to disable, or `{ top }` for how many large files to list (CLI only) |
 | `debug` | `false` | Verbose logging of discovery, routing, and emission |
 
 ### Performance

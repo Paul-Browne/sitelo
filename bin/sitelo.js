@@ -19,6 +19,10 @@ import {
   runPagefind,
 } from '../src/pagefind.js';
 import {
+  normalizeBuildReportOptions,
+  runBuildReport,
+} from '../src/report.js';
+import {
   build,
   createLogger,
   createServer,
@@ -235,10 +239,11 @@ function splitSiteloConfig(options) {
       viteOptions: undefined,
       pagefind: undefined,
       images: undefined,
+      buildReport: undefined,
     };
   }
 
-  const { vite, pagefind, images, ...pluginOptions } = options;
+  const { vite, pagefind, images, buildReport, ...pluginOptions } = options;
 
   if (vite != null && (typeof vite !== 'object' || Array.isArray(vite))) {
     throw new Error('[sitelo] sitelo.config.js "vite" must be an object');
@@ -250,6 +255,7 @@ function splitSiteloConfig(options) {
     viteOptions: vite ?? undefined,
     pagefind,
     images,
+    buildReport,
   };
 }
 
@@ -261,6 +267,7 @@ async function loadSiteloConfig(root) {
       viteOptions: undefined,
       pagefind: undefined,
       images: undefined,
+      buildReport: undefined,
       configFile: undefined,
     };
   }
@@ -284,6 +291,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
     viteOptions,
     pagefind,
     images,
+    buildReport,
     configFile: siteloConfigFile,
   } = await loadSiteloConfig(root);
 
@@ -303,7 +311,14 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
   }
 
   if (hasPluginInUserConfig) {
-    return { plugins: [], viteOptions, pluginOptions, pagefind, images };
+    return {
+      plugins: [],
+      viteOptions,
+      pluginOptions,
+      pagefind,
+      images,
+      buildReport,
+    };
   }
 
   return {
@@ -317,6 +332,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
     pluginOptions,
     pagefind,
     images,
+    buildReport,
   };
 }
 
@@ -561,18 +577,26 @@ async function runDev(cli) {
 
 async function runBuild(cli) {
   const mode = cli.mode ?? 'production';
-  const { plugins, viteOptions, pagefind, images } = await resolveSiteloConfig({
-    root: cli.root,
-    configFile: cli.config,
-    command: 'build',
-    mode,
-    debug: cli.debug,
-  });
+  const { plugins, viteOptions, pagefind, images, buildReport } =
+    await resolveSiteloConfig({
+      root: cli.root,
+      configFile: cli.config,
+      command: 'build',
+      mode,
+      debug: cli.debug,
+    });
 
   const inline = buildInlineConfig(cli, 'build', viteOptions);
   const outDir =
     cli.outDir ?? viteOptions?.build?.outDir ?? inline.build?.outDir ?? 'dist';
   const imageOptions = normalizeImageOptions(images);
+  const reportOptions =
+    cli.logLevel === 'silent' ? null : normalizeBuildReportOptions(buildReport);
+
+  /** @type {Record<string, number>} */
+  const timings = {};
+  const startedAt = performance.now();
+  const since = (from) => performance.now() - from;
 
   // Prior post-build image output lives under outDir. Drop it before Vite empties
   // outDir so prepare-out-dir does not hit ENOTEMPTY on dist/assets (or similar).
@@ -585,28 +609,46 @@ async function runBuild(cli) {
       .catch(() => {});
   }
 
+  const buildStartedAt = performance.now();
   await build(mergeConfig(inline, { plugins }));
+  timings.vite = since(buildStartedAt);
 
   const publicDir = resolvePublicDir(viteOptions);
 
   // Images first: pagefind should index the final HTML.
   if (imageOptions) {
+    const imagesStartedAt = performance.now();
     await runImages({
       root: cli.root,
       outDir,
       base: cli.base ?? viteOptions?.base ?? '/',
       options: imageOptions,
     });
+    timings.images = since(imagesStartedAt);
   }
 
   const pagefindOptions = normalizePagefindOptions(pagefind);
-  if (!pagefindOptions) return;
 
-  await runPagefind({
+  if (pagefindOptions) {
+    const pagefindStartedAt = performance.now();
+    await runPagefind({
+      root: cli.root,
+      outDir,
+      publicDir,
+      options: pagefindOptions,
+    });
+    timings.pagefind = since(pagefindStartedAt);
+  }
+
+  if (!reportOptions) return;
+
+  timings.total = since(startedAt);
+
+  await runBuildReport({
     root: cli.root,
     outDir,
-    publicDir,
-    options: pagefindOptions,
+    options: reportOptions,
+    timings,
   });
 }
 
