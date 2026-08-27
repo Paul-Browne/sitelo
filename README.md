@@ -96,7 +96,8 @@ browser unless *you* add a script.
 npm install -D sitelo
 ```
 
-Requires **Node 18+**. Vite is bundled — you don't install it separately.
+Requires **Node 20.19+** (or 22.12+). Vite is bundled — you don't install
+it separately.
 
 Create pages in `src/` and run:
 
@@ -509,8 +510,14 @@ rewritten in place:
              /assets/img/hero.a1b2c3d4-1200.webp 1200w">
 ```
 
-Encoding is done by [sharp](https://sharp.pixelplumbing.com), which ships
-with sitelo — nothing else to install.
+Encoding is done by [sharp](https://sharp.pixelplumbing.com), an optional
+peer dependency — install it alongside sitelo when you enable `images`:
+
+```bash
+npm install -D sharp
+```
+
+It stays out of the install for sites that don't optimize images.
 
 ### What it does
 
@@ -733,9 +740,16 @@ Produces `dist/rss.xml` with an item for every page under `routePrefix`.
 
 ### Pagefind search
 
-Enable [Pagefind](https://pagefind.app) and `sitelo build` indexes your
-site into `dist/pagefind/` (and syncs a copy to `public/pagefind/` so the
-next `sitelo` / `sitelo preview` can serve search without rebuilding):
+[Pagefind](https://pagefind.app) is an optional peer dependency — install
+it when you enable search:
+
+```bash
+npm install -D pagefind
+```
+
+Then `sitelo build` indexes your site into `dist/pagefind/` (and syncs a
+copy to `public/pagefind/` so the next `sitelo` / `sitelo preview` can
+serve search without rebuilding):
 
 ```js
 // sitelo.config.js
@@ -800,8 +814,8 @@ export default {
 | `cleanUrls` | `true` | `/about/index.html` (`/about`) instead of `/about.html` |
 | `site` | — | Base URL; enables `sitemap.xml` |
 | `rss` | — | RSS config (`site`, `title`, `description`, `routePrefix`) |
-| `pagefind` | — | `true` or options object; indexes after `sitelo build` (CLI only) |
-| `images` | — | `true` or options object; optimizes images in dev and after `sitelo build` (CLI only) |
+| `pagefind` | — | `true` or options object; indexes after `sitelo build` (CLI only). Requires the `pagefind` peer dependency |
+| `images` | — | `true` or options object; optimizes images in dev and after `sitelo build` (CLI only). Requires the `sharp` peer dependency |
 | `missingAssets` | `'error'` | `'error'` or `'warn'` for broken asset references |
 | `mapOutputPath` | — | `(page) => string` to customize output filenames |
 | `generatedTypesDir` | `'.sitelo/types'` | Where generated page helper `.d.ts` files are written |

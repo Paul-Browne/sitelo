@@ -1,6 +1,6 @@
 {
   "name": "sitelo",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "author": "Paul Browne",
   "type": "module",
   "license": "MIT",
@@ -72,27 +72,39 @@
     "sitelo": "./bin/sitelo.js"
   },
   "scripts": {
-    "test": "node --test test/**/*.test.js",
+    "test": "node --test test/*.test.js",
     "docs:dev": "node ./bin/sitelo.js --root docs",
     "docs:build": "node ./bin/sitelo.js build --root docs",
     "docs:preview": "node ./bin/sitelo.js preview --root docs",
     "docs:index": "npm run docs:build"
   },
   "dependencies": {
-    "pagefind": "^1.5.2",
-    "sharp": "^0.35.3",
     "vite": "^8.2.2",
     "vite-plugin-html-pages": "^2.3.4"
+  },
+  "peerDependencies": {
+    "pagefind": "^1.5.2",
+    "sharp": "^0.35.3"
+  },
+  "peerDependenciesMeta": {
+    "pagefind": {
+      "optional": true
+    },
+    "sharp": {
+      "optional": true
+    }
   },
   "overrides": {
     "vite": "$vite"
   },
   "engines": {
-    "node": ">=18"
+    "node": "^20.19.0 || >=22.12.0"
   },
   "devDependencies": {
     "@types/node": "^20.17.0",
     "javascript-to-html": "^1.1.4",
-    "prismjs": "^1.30.0"
+    "pagefind": "^1.5.2",
+    "prismjs": "^1.30.0",
+    "sharp": "^0.35.3"
   }
 }

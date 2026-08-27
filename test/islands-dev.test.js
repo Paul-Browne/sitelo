@@ -6,9 +6,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 
+import { createFixture } from './helpers/fixture.js';
+
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const cliPath = path.join(rootDir, 'bin', 'sitelo.js');
-const fixtureDir = path.join(rootDir, 'test', 'fixtures', 'basic');
+const fixtureDir = createFixture('basic');
 
 function getFreePort() {
   return new Promise((resolve, reject) => {

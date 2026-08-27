@@ -39,6 +39,31 @@ export function normalizePagefindOptions(pagefind) {
 }
 
 /**
+ * Lazily load pagefind with an actionable error when it is not installed.
+ *
+ * pagefind is an optional peer dependency — only sites that enable
+ * `pagefind` need to install it.
+ */
+async function loadPagefind() {
+  try {
+    return await import('pagefind')
+  } catch (error) {
+    const code = error?.code
+    const missing =
+      code === 'ERR_MODULE_NOT_FOUND' || code === 'MODULE_NOT_FOUND'
+
+    throw new Error(
+      missing
+        ? '"pagefind" requires the pagefind package, which is an optional peer dependency.\n' +
+          'Install it to enable search indexing: npm install -D pagefind\n' +
+          '(or remove `pagefind` from sitelo.config.js)'
+        : 'found pagefind but could not load it.\n' +
+          `(original error: ${error instanceof Error ? error.message : error})`,
+    )
+  }
+}
+
+/**
  * Index `outDir` with Pagefind and optionally sync the bundle into `public/`.
  * @param {{
  *   root: string
@@ -55,7 +80,7 @@ export async function runPagefind({
   options,
   log = console.log,
 }) {
-  const { createIndex, close } = await import('pagefind')
+  const { createIndex, close } = await loadPagefind()
 
   const siteDir = path.resolve(root, outDir)
   const outputPath = path.join(siteDir, 'pagefind')

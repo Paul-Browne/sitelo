@@ -45,7 +45,7 @@ export default () =>
       ),
       h2('Install'),
       codeBlock('shell', installSnippet, 'bash'),
-      p('Requires Node 18+. Vite is bundled — you do not install it separately.'),
+      p('Requires Node 20.19+ (or 22.12+). Vite is bundled — you do not install it separately.'),
       h2('Your first page'),
       p(
         'Create ',
