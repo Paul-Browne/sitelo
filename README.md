@@ -67,7 +67,9 @@ That's the whole mental model. Everything else is convenience on top.
 - **Asset validation** — broken `<script src>` / stylesheet links fail the build
 - **Image optimization** — `<img>` tags get resized, converted, and turned into a `srcset`, in dev and in the build
 - **Real dev server** — pages render on request (dynamic routes included, no `generateStaticParams` needed in dev) with full reload and readable error frames
-- **Server islands** — static pages with regions rendered on the server at request time
+- **Server islands** — static pages with regions rendered on the server at
+  request time, loaded eagerly, on idle, or on scroll, with optional
+  signed props
 - **Parallel static generation** — renders large sites concurrently
 - **`404.html`, `sitemap.xml`, RSS, Pagefind** — generated for you
 
@@ -688,6 +690,86 @@ export default { fetch: (request) => handleIslands(request) }
 Plain Node http/express? Use `createIslandsNodeHandler(options)` —
 same options, `(req, res, next)` signature. For Netlify / Vercel rewrite
 stubs, see [`examples/islands`](./examples/islands).
+
+### Loading strategies
+
+By default every island fetches as soon as the page loads. A page with
+eight islands then makes eight simultaneous requests during first paint.
+Pass `when` to defer the ones that aren't immediately visible:
+
+```js
+// Load as soon as the page does — the default.
+island('cart', { id }, '<p>…</p>')
+
+// Wait for an idle callback: nice-to-have content that shouldn't
+// compete with first paint.
+island('recommendations', { id }, '<p>…</p>', { when: 'idle' })
+
+// Wait until it scrolls into view.
+island('comments', { postId }, '<p>Loading comments…</p>', {
+  when: 'visible',
+  rootMargin: '400px',   // start loading 400px early
+})
+```
+
+| `when` | Loads |
+|--------|-------|
+| `'load'` (default) | Immediately, in parallel with every other island |
+| `'idle'` | On `requestIdleCallback` (falls back to a timeout) |
+| `'visible'` | When it scrolls into view, via IntersectionObserver |
+
+`rootMargin` applies to `'visible'` only and defaults to `200px`. Set the
+default for a whole page through `mountIslands({ rootMargin })`.
+
+Islands also time out rather than spinning forever — 10s by default:
+
+```js
+mountIslands({ timeout: 5000 })   // or 0 to disable
+```
+
+`mountIslands()` resolves once the immediate islands have settled;
+deferred ones load later on their own and are deliberately not awaited.
+A failed or timed-out island keeps its fallback HTML and sets
+`data-sitelo-island-state="error"`.
+
+### Props are untrusted input
+
+**Island props are client-supplied.** They are embedded in the page, sent
+back on the request, and anyone can edit them before doing so:
+
+```
+GET /_sitelo/islands/profile?props={"userId":"someone-else"}
+```
+
+Treat the `props` your island receives exactly like a query parameter —
+validate them, and never use them to look up data the viewer isn't
+already entitled to see.
+
+When props select privileged data, sign them. Set a secret and sitelo
+signs each placeholder at build time and rejects anything else with a
+403:
+
+```bash
+SITELO_ISLANDS_SECRET=$(openssl rand -hex 32) sitelo build
+```
+
+The same variable is read by `sitelo`, `sitelo preview`, and
+`createIslandsHandler`, so dev, preview, and production all agree. Give
+your production host the same secret. Prefer to set it in code?
+
+```js
+import { configureIslands } from 'sitelo/islands'
+
+configureIslands({ secret: process.env.MY_SECRET })
+```
+
+Signatures are HMAC-SHA256 over the island name *and* its props, so a
+signature issued for one island can't be replayed against another.
+Signing proves the props came from your build — it does not hide them.
+They are still visible in the HTML, so they must still be non-secret.
+
+Without a secret, props are accepted as-is and validating them is
+entirely your island module's job.
 
 Notes:
 

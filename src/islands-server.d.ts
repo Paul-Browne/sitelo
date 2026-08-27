@@ -44,6 +44,17 @@ export interface CreateIslandsHandlerOptions {
   endpoint?: string;
   /** Cache-Control for successful responses. Default `no-store`. */
   cacheControl?: string;
+  /**
+   * Shared secret for props signing. Defaults to
+   * `SITELO_ISLANDS_SECRET`.
+   *
+   * Island props travel in the query string and are client-supplied.
+   * With a secret set, requests carrying props must present a matching
+   * `sig` or get a 403, so callers cannot invent their own props. With
+   * no secret, props are accepted as-is and island modules must
+   * validate them.
+   */
+  secret?: string;
 }
 
 export declare function createIslandsFromDirectory(

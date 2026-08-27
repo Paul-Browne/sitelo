@@ -19,6 +19,31 @@ export default ({ params }) => \`
   </html>
 \``
 
+const strategySnippet = `// Load as soon as the page does — the default.
+island('cart', { id }, '<p>…</p>')
+
+// Wait for an idle callback.
+island('recommendations', { id }, '<p>…</p>', { when: 'idle' })
+
+// Wait until it scrolls into view.
+island('comments', { postId }, '<p>Loading comments…</p>', {
+  when: 'visible',
+  rootMargin: '400px',   // start loading 400px early
+})`
+
+const mountOptionsSnippet = `mountIslands({
+  timeout: 5000,        // per-island; 0 disables. Default 10000
+  rootMargin: '300px',  // default for \`when: 'visible'\` islands
+})`
+
+const forgedSnippet = `GET /_sitelo/islands/profile?props={"userId":"someone-else"}`
+
+const secretSnippet = `SITELO_ISLANDS_SECRET=$(openssl rand -hex 32) sitelo build`
+
+const configureSnippet = `import { configureIslands } from 'sitelo/islands'
+
+configureIslands({ secret: process.env.MY_SECRET })`
+
 const pageHt = `import { html, body, article, script } from 'javascript-to-html'
 import { island } from 'sitelo/islands'
 
@@ -195,6 +220,63 @@ export default () =>
         li(
           'Props stay small and non-secret (GET query string) — intentional; fetch secrets inside the island on the server',
         ),
+        li(
+          'Props are client-supplied — validate them, or sign them with ',
+          code('SITELO_ISLANDS_SECRET'),
+        ),
+      ),
+      h2('Loading strategies'),
+      p(
+        'By default every island fetches as soon as the page loads, so a page with eight islands makes eight simultaneous requests during first paint. Pass ',
+        code('when'),
+        ' to defer the ones that are not immediately visible.',
+      ),
+      codeBlock('islands-when', strategySnippet, 'js'),
+      ul(
+        { class: 'docs-list' },
+        li(code("'load'"), ' (default) — immediately, alongside every other island'),
+        li(code("'idle'"), ' — on ', code('requestIdleCallback'), ' (falls back to a timeout)'),
+        li(code("'visible'"), ' — when it scrolls into view, via IntersectionObserver'),
+      ),
+      p(
+        code('rootMargin'),
+        ' applies to ',
+        code("'visible'"),
+        ' only and defaults to ',
+        code("'200px'"),
+        '. Islands also time out rather than spinning forever:',
+      ),
+      codeBlock('islands-mount-options', mountOptionsSnippet, 'js'),
+      p(
+        code('mountIslands()'),
+        ' resolves once the immediate islands have settled — deferred ones load later on their own and are deliberately not awaited. A failed or timed-out island keeps its fallback HTML.',
+      ),
+      h2('Props are untrusted input'),
+      p(
+        'Island props are client-supplied. They are embedded in the page, sent back on the request, and anyone can edit them first:',
+      ),
+      codeBlock('islands-forged', forgedSnippet, 'http'),
+      p(
+        'Treat the props your island receives exactly like a query parameter — validate them, and never use them to look up data the viewer is not already entitled to see.',
+      ),
+      p(
+        'When props select privileged data, sign them. Set a secret and sitelo signs each placeholder at build time, rejecting anything else with a ',
+        code('403'),
+        ':',
+      ),
+      codeBlock('islands-secret', secretSnippet, 'bash'),
+      p(
+        'The same variable is read by ',
+        code('sitelo'),
+        ', ',
+        code('sitelo preview'),
+        ', and ',
+        code('createIslandsHandler'),
+        ', so dev, preview and production agree. Give your production host the same secret. Prefer to set it in code?',
+      ),
+      codeBlock('islands-configure', configureSnippet, 'js'),
+      p(
+        'Signatures are HMAC-SHA256 over the island name and its props, so a signature issued for one island cannot be replayed against another. Signing proves the props came from your build — it does not hide them, so they must still be non-secret. Without a secret, props are accepted as-is and validating them is entirely your island module\u2019s job.',
       ),
       h2('Good to know'),
       ul(

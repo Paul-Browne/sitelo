@@ -2,7 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { isValidIslandName } from './islands.js';
+import {
+  getIslandsSecret,
+  isValidIslandName,
+  verifyIslandProps,
+} from './islands.js';
 
 export const DEFAULT_ISLANDS_ENDPOINT = '/_sitelo/islands';
 
@@ -135,11 +139,17 @@ export function createIslandsFromDirectory(islandsDir) {
  * @param {string} [options.endpoint] - Base path, default `/_sitelo/islands`.
  * @param {string} [options.cacheControl] - Cache-Control header value for
  *   successful responses (default `no-store`).
+ * @param {string} [options.secret] - Shared secret for props signing.
+ *   Defaults to `SITELO_ISLANDS_SECRET`. When set, requests carrying
+ *   props must present a matching `sig`, so callers cannot invent their
+ *   own props. When unset, props are accepted as-is and island modules
+ *   must validate them.
  */
 export function createIslandsHandler({
   islands,
   endpoint = DEFAULT_ISLANDS_ENDPOINT,
   cacheControl = 'no-store',
+  secret = getIslandsSecret(),
 }) {
   if (!islands || typeof islands !== 'object') {
     throw new Error('[sitelo] createIslandsHandler requires an islands map.');
@@ -164,9 +174,22 @@ export function createIslandsHandler({
       return new Response(`Unknown island: ${name}`, { status: 404 });
     }
 
+    const rawProps = url.searchParams.get('props');
+
+    // Props are client-supplied: they arrive in the query string and can
+    // be edited by anyone. With a secret configured, only props this site
+    // actually issued (and signed) are rendered.
+    if (secret && rawProps) {
+      const signature = url.searchParams.get('sig');
+
+      if (!verifyIslandProps(name, rawProps, signature, secret)) {
+        return new Response('Invalid island props signature', { status: 403 });
+      }
+    }
+
     let props;
     try {
-      props = parseIslandProps(url.searchParams.get('props'));
+      props = parseIslandProps(rawProps);
     } catch {
       return new Response('Invalid island props', { status: 400 });
     }
