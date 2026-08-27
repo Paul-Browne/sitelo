@@ -193,6 +193,16 @@ export default () =>
         li(code('missingAssets'), ' — ', code("'error'"), ' or ', code("'warn'")),
         li(code('generatedTypesDir'), ' — default ', code("'.sitelo/types'")),
         li(code('renderConcurrency'), ' / ', code('renderBatchSize'), ' — build parallelism'),
+        li(
+          code('buildReport'),
+          ' — default ',
+          code('true'),
+          '; post-build summary of pages, output size, largest files and phase timings. ',
+          code('false'),
+          ' to disable, or ',
+          code('{ top }'),
+          ' to change how many large files are listed',
+        ),
         li(code('debug'), ' — verbose logging'),
         li(
           code('devToolbar'),

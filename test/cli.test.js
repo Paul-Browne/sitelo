@@ -14,8 +14,8 @@ const cliPath = path.join(rootDir, 'bin', 'sitelo.js');
 const fixtureDir = createFixture('basic');
 const distDir = path.join(fixtureDir, 'dist');
 
-async function runBuild(cwd) {
-  await execFileAsync(process.execPath, [cliPath, 'build'], {
+async function runBuild(cwd, args = []) {
+  return execFileAsync(process.execPath, [cliPath, 'build', ...args], {
     cwd,
     env: process.env,
   });
@@ -163,4 +163,68 @@ export default defineConfig({
       force: true,
     });
   }
+});
+
+test('sitelo build prints a build report', async (t) => {
+  const configPath = path.join(fixtureDir, 'sitelo.config.js');
+  const originalConfig = fs.readFileSync(configPath, 'utf8');
+
+  const cleanup = () => {
+    fs.writeFileSync(configPath, originalConfig);
+    fs.rmSync(distDir, { recursive: true, force: true });
+    fs.rmSync(path.join(fixtureDir, '.sitelo'), {
+      recursive: true,
+      force: true,
+    });
+  };
+
+  cleanup();
+  t.after(cleanup);
+
+  const { stdout } = await runBuild(fixtureDir);
+
+  assert.match(stdout, /build report/);
+  assert.match(stdout, /pages\s+\d+ files?\s+[\d.]+ (B|kB|MB)/);
+  assert.match(stdout, /total\s+\d+ files?\s+[\d.]+ (B|kB|MB)/);
+  assert.match(stdout, /largest/);
+  // Phase timings: a build always has at least the vite phase and a total.
+  assert.match(stdout, /vite \d+(\.\d+)?m?s/);
+  assert.match(stdout, /total \d+(\.\d+)?m?s/);
+});
+
+test('sitelo build report can be disabled', async (t) => {
+  const configPath = path.join(fixtureDir, 'sitelo.config.js');
+  const originalConfig = fs.readFileSync(configPath, 'utf8');
+
+  const cleanup = () => {
+    fs.writeFileSync(configPath, originalConfig);
+    fs.rmSync(distDir, { recursive: true, force: true });
+    fs.rmSync(path.join(fixtureDir, '.sitelo'), {
+      recursive: true,
+      force: true,
+    });
+  };
+
+  cleanup();
+  t.after(cleanup);
+
+  fs.writeFileSync(
+    configPath,
+    `export default {
+  site: 'https://example.com',
+  buildReport: false,
+}
+`,
+  );
+
+  const { stdout: disabled } = await runBuild(fixtureDir);
+  assert.doesNotMatch(disabled, /build report/);
+
+  // --logLevel silent suppresses it too, even with the default config.
+  fs.writeFileSync(configPath, originalConfig);
+  const { stdout: silent } = await runBuild(fixtureDir, [
+    '--logLevel',
+    'silent',
+  ]);
+  assert.doesNotMatch(silent, /build report/);
 });
