@@ -7,11 +7,19 @@
 const T = {
   en: { sunrise: 'Sunrise over the harbour', pixelArt: 'Pixel art' },
   es: { sunrise: 'Amanecer sobre el puerto', pixelArt: 'Pixel art' },
+  fr: {
+    sunrise: 'Lever de soleil sur le port',
+    pixelArt: 'Pixel art',
+  },
+  de: {
+    sunrise: 'Sonnenaufgang über dem Hafen',
+    pixelArt: 'Pixel-Art',
+  },
 }
 
 export function imagesSnippets(lang = 'en') {
   const t = T[lang] ?? T.en
-  const htmlLang = lang === 'es' ? 'es' : 'en'
+  const htmlLang = T[lang] ? lang : 'en'
 
   return {
     enable: `export default {

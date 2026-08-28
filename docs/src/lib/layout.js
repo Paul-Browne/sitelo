@@ -30,6 +30,7 @@ import {
   LOCALES,
   LOCALE_NAMES,
   LOCALE_TAGS,
+  OG_LOCALES,
   basePath,
   isTranslated,
   localePath,
@@ -270,7 +271,7 @@ function pageShell({
       meta({ property: 'og:title', content: pageTitle }),
       meta({ property: 'og:description', content: pageDescription }),
       meta({ property: 'og:type', content: 'website' }),
-      meta({ property: 'og:locale', content: lang === 'es' ? 'es_ES' : 'en_US' }),
+      meta({ property: 'og:locale', content: OG_LOCALES[lang] }),
       canonical ? meta({ property: 'og:url', content: canonical }) : '',
       meta({
         property: 'og:image',
@@ -298,25 +299,47 @@ function pageShell({
   )
 }
 
+/** German spells out its umlauts when transliterating: ä → ae, ß → ss. */
+const DE_TRANSLITERATIONS = [
+  [/ä/g, 'ae'],
+  [/ö/g, 'oe'],
+  [/ü/g, 'ue'],
+  [/ß/g, 'ss'],
+]
+
 /**
- * Add ids to <h2> headings and collect them for a table of contents.
+ * Slugify a heading for use as an anchor id.
  *
- * Accents are folded to ASCII first, so a Spanish heading like
- * "Optimización de imágenes" slugs to `optimizacion-de-imagenes` rather than
- * losing every accented letter to a dash.
+ * Accents are folded to ASCII, so a Spanish heading like "Optimización de
+ * imágenes" slugs to `optimizacion-de-imagenes` rather than losing every
+ * accented letter to a dash. German folds its umlauts the way German
+ * actually spells them out, so "JSX-Einschränkungen" becomes
+ * `jsx-einschraenkungen`, not `jsx-einschrankungen`.
  */
-function withHeadingAnchors(content) {
+function slugify(text, lang) {
+  let value = text.toLowerCase()
+
+  if (lang === 'de') {
+    for (const [pattern, replacement] of DE_TRANSLITERATIONS) {
+      value = value.replace(pattern, replacement)
+    }
+  }
+
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+/** Add ids to <h2> headings and collect them for a table of contents. */
+function withHeadingAnchors(content, lang) {
   const headings = []
 
   const transformed = content.map((chunk) =>
     String(chunk).replace(/<h2>(.*?)<\/h2>/g, (match, inner) => {
       const text = inner.replace(/<[^>]*>/g, '')
-      const slug = text
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '')
+      const slug = slugify(text, lang)
       headings.push({ slug, text })
       return `<h2 id="${slug}">${inner}</h2>`
     }),
@@ -375,7 +398,7 @@ function guideLayout({
   children,
 }) {
   const content = Array.isArray(children) ? children : [children]
-  const { transformed, headings } = withHeadingAnchors(content)
+  const { transformed, headings } = withHeadingAnchors(content, lang)
 
   return pageShell({
     pageTitle: `${heading} · ${titleSuffix}`,

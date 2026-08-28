@@ -16,11 +16,25 @@ const T = {
     writeDist: 'escribe dist/',
     previewBuild: 'previsualiza la compilación',
   },
+  fr: {
+    myWebsite: 'Mon site web',
+    helloWorld: 'Bonjour le monde',
+    devServer: 'serveur de développement',
+    writeDist: 'écrit dist/',
+    previewBuild: 'prévisualise le build',
+  },
+  de: {
+    myWebsite: 'Meine Website',
+    helloWorld: 'Hallo Welt',
+    devServer: 'Entwicklungsserver',
+    writeDist: 'schreibt dist/',
+    previewBuild: 'Build ansehen',
+  },
 }
 
 export function gettingStartedSnippets(lang = 'en') {
   const t = T[lang] ?? T.en
-  const htmlLang = lang === 'es' ? 'es' : 'en'
+  const htmlLang = T[lang] ? lang : 'en'
 
   return {
     install: `npm install -D sitelo`,

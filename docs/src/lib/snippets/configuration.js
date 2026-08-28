@@ -43,11 +43,49 @@ const T = {
     thenPreview:
       'luego: sitelo preview — o sitelo (dev) usando public/pagefind',
   },
+  fr: {
+    myBlog: 'Mon blog',
+    latestPosts: 'Derniers articles',
+    viteOnly: 'Options Vite uniquement ; sitelo injecte toujours le plugin',
+    registerPlugin: 'Enregistrer le plugin soi-même',
+    linkCheckModes: "'warn' (par défaut), 'error', ou un objet d’options",
+    failBuild: 'fait échouer le build sur un lien mort',
+    verifyFragments: 'vérifie aussi les cibles #fragment',
+    hideToolbar: 'masquer pour tout le monde sur ce projet',
+    brokenLinks: 'liens internes cassés',
+    escapesOutDir: 'sort du répertoire de sortie',
+    noSuchPage: 'page inexistante',
+    mySite: 'Mon site',
+    home: 'Accueil',
+    hello: 'Bonjour',
+    onlyIndexed: 'Seule cette zone est indexée.',
+    indexAfterBuild: 'L’index n’existe qu’après `sitelo build` (synchronisé vers public/pagefind par défaut)',
+    thenPreview: 'ensuite : sitelo preview — ou sitelo (dev) avec public/pagefind',
+  },
+  de: {
+    myBlog: 'Mein Blog',
+    latestPosts: 'Neueste Beiträge',
+    viteOnly: 'Nur Vite-Optionen; sitelo bindet das Plugin trotzdem ein',
+    registerPlugin: 'Das Plugin selbst registrieren',
+    linkCheckModes: "'warn' (Standard), 'error', oder ein Optionsobjekt",
+    failBuild: 'lässt den Build bei einem toten Link fehlschlagen',
+    verifyFragments: 'prüft auch #fragment-Ziele',
+    hideToolbar: 'für alle in diesem Projekt ausblenden',
+    brokenLinks: 'defekte interne Links',
+    escapesOutDir: 'verlässt das Ausgabeverzeichnis',
+    noSuchPage: 'Seite existiert nicht',
+    mySite: 'Meine Website',
+    home: 'Startseite',
+    hello: 'Hallo',
+    onlyIndexed: 'Nur dieser Bereich wird indexiert.',
+    indexAfterBuild: 'Der Index existiert erst nach `sitelo build` (wird standardmäßig nach public/pagefind synchronisiert)',
+    thenPreview: 'danach: sitelo preview — oder sitelo (dev) mit public/pagefind',
+  },
 }
 
 export function configurationSnippets(lang = 'en') {
   const t = T[lang] ?? T.en
-  const htmlLang = lang === 'es' ? 'es' : 'en'
+  const htmlLang = T[lang] ? lang : 'en'
 
   return {
     config: `export default {

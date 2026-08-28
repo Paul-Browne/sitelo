@@ -20,11 +20,29 @@ const T = {
     mySite: 'Mi sitio',
     hello: 'Hola',
   },
+  fr: {
+    pageReturnsHtml: 'page — renvoie du HTML',
+    linkedBundled: 'lié depuis le HTML → inclus dans le bundle',
+    importedBundled: 'importé par main.js → également dans le bundle',
+    dataOnly: 'utilisé uniquement dans data() → jamais livré',
+    copiedAsIs: 'copié tel quel',
+    mySite: 'Mon site',
+    hello: 'Bonjour',
+  },
+  de: {
+    pageReturnsHtml: 'Seite — gibt HTML zurück',
+    linkedBundled: 'aus dem HTML verlinkt → gebündelt',
+    importedBundled: 'von main.js importiert → ebenfalls gebündelt',
+    dataOnly: 'nur in data() verwendet → wird nie ausgeliefert',
+    copiedAsIs: 'unverändert kopiert',
+    mySite: 'Meine Website',
+    hello: 'Hallo',
+  },
 }
 
 export function assetsSnippets(lang = 'en') {
   const t = T[lang] ?? T.en
-  const htmlLang = lang === 'es' ? 'es' : 'en'
+  const htmlLang = T[lang] ? lang : 'en'
 
   return {
     layout: `my-site/

@@ -7,6 +7,14 @@
 const T = {
   en: { hello: 'Hello', staticAsItGets: 'Static as it gets' },
   es: { hello: 'Hola', staticAsItGets: 'Más estático imposible' },
+  fr: {
+    hello: 'Bonjour',
+    staticAsItGets: 'Aussi statique que possible',
+  },
+  de: {
+    hello: 'Hallo',
+    staticAsItGets: 'Statischer geht es nicht',
+  },
 }
 
 export function pagesSnippets(lang = 'en') {

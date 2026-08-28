@@ -1,24 +1,39 @@
 /**
  * Locale registry for the docs site.
  *
- * English lives at the root (`/docs/routing`), Spanish under `/es`
- * (`/es/docs/routing`). Page files mirror that: `src/docs/routing.ht.js`
- * and `src/es/docs/routing.ht.js`.
+ * English lives at the root (`/docs/routing`), every other locale under its
+ * own prefix (`/es/docs/routing`, `/fr/...`, `/de/...`). Page files mirror
+ * that: `src/docs/routing.ht.js` and `src/<locale>/docs/routing.ht.js`.
  */
 
 export const DEFAULT_LOCALE = 'en'
-export const LOCALES = ['en', 'es']
+export const LOCALES = ['en', 'es', 'fr', 'de']
+
+/** Locales served from a URL prefix — everything but the default. */
+const PREFIXED = LOCALES.filter((locale) => locale !== DEFAULT_LOCALE)
 
 /** Display names for the language switcher, in each language's own words. */
 export const LOCALE_NAMES = {
   en: 'English',
   es: 'Español',
+  fr: 'Français',
+  de: 'Deutsch',
 }
 
 /** BCP 47 tags for `<html lang>` and `hreflang`. */
 export const LOCALE_TAGS = {
   en: 'en',
   es: 'es',
+  fr: 'fr',
+  de: 'de',
+}
+
+/** Open Graph locale identifiers. */
+export const OG_LOCALES = {
+  en: 'en_US',
+  es: 'es_ES',
+  fr: 'fr_FR',
+  de: 'de_DE',
 }
 
 /**
@@ -26,7 +41,7 @@ export const LOCALE_TAGS = {
  *
  * Keyed by the English path. The language switcher and the `hreflang`
  * alternates are emitted only for these — `/examples` is English-only, so
- * offering a Spanish URL for it would link to a 404.
+ * offering a translated URL for it would link to a 404.
  */
 export const TRANSLATED_PATHS = new Set([
   '/',
@@ -47,16 +62,26 @@ export const TRANSLATED_PATHS = new Set([
 
 /** Strip any locale prefix, returning the canonical English path. */
 export function basePath(path) {
-  if (path === '/es') return '/'
-  if (path.startsWith('/es/')) return path.slice(3)
+  for (const locale of PREFIXED) {
+    if (path === `/${locale}`) return '/'
+    if (path.startsWith(`/${locale}/`)) return path.slice(locale.length + 1)
+  }
   return path
 }
 
-/** Render a path in `lang`. `localePath('/docs', 'es')` → `/es/docs`. */
+/** Which locale a path is served under. */
+export function localeOf(path) {
+  for (const locale of PREFIXED) {
+    if (path === `/${locale}` || path.startsWith(`/${locale}/`)) return locale
+  }
+  return DEFAULT_LOCALE
+}
+
+/** Render a path in `lang`. `localePath('/docs', 'fr')` → `/fr/docs`. */
 export function localePath(path, lang) {
   const base = basePath(path)
   if (lang === DEFAULT_LOCALE) return base
-  return base === '/' ? '/es' : `/es${base}`
+  return base === '/' ? `/${lang}` : `/${lang}${base}`
 }
 
 /** Does this path have a counterpart in every locale? */
@@ -68,7 +93,7 @@ export function isTranslated(path) {
  * Chrome strings — nav, sidebar, code-block controls, footer.
  *
  * Page prose is not here: it lives in the page files themselves, one set per
- * locale under `src/` and `src/es/`.
+ * locale under `src/` and `src/<locale>/`.
  */
 const STRINGS = {
   en: {
@@ -128,6 +153,64 @@ const STRINGS = {
     viteLabel: (version) => `Con tecnología de Vite ${version}`,
     defaultDescription:
       'sitelo — generación de sitios estáticos para Vite. Escribe funciones que devuelven HTML.',
+  },
+  fr: {
+    navDocs: 'Docs',
+    navExamples: 'Exemples',
+    navAbout: 'À propos',
+    openMenu: 'Ouvrir le menu',
+    menu: 'Menu',
+    languageLabel: 'Langue',
+    sidebarDocs: 'Documentation',
+    sidebarExamples: 'Exemples',
+    titleSuffixDocs: 'docs sitelo',
+    titleSuffixExamples: 'exemples sitelo',
+    tocLabel: 'Sur cette page',
+    pagenavLabel: 'Pages adjacentes',
+    previous: '← Précédent',
+    next: 'Suivant →',
+    copy: 'Copier',
+    copyCode: 'Copier le code',
+    copied: 'Copié',
+    copyFailed: 'Échec',
+    markupStyle: 'Style de balisage',
+    templateLiteral: 'Littéral de gabarit',
+    recommended: 'recommandé',
+    licenseLabel: 'Licence MIT',
+    nodeLabel: 'Nécessite Node 20.19 ou plus récent',
+    githubLabel: (version) => `sitelo ${version} sur GitHub`,
+    viteLabel: (version) => `Propulsé par Vite ${version}`,
+    defaultDescription:
+      'sitelo — génération de sites statiques pour Vite. Écrivez des fonctions qui renvoient du HTML.',
+  },
+  de: {
+    navDocs: 'Docs',
+    navExamples: 'Beispiele',
+    navAbout: 'Über',
+    openMenu: 'Menü öffnen',
+    menu: 'Menü',
+    languageLabel: 'Sprache',
+    sidebarDocs: 'Dokumentation',
+    sidebarExamples: 'Beispiele',
+    titleSuffixDocs: 'sitelo-Doku',
+    titleSuffixExamples: 'sitelo-Beispiele',
+    tocLabel: 'Auf dieser Seite',
+    pagenavLabel: 'Benachbarte Seiten',
+    previous: '← Zurück',
+    next: 'Weiter →',
+    copy: 'Kopieren',
+    copyCode: 'Code kopieren',
+    copied: 'Kopiert',
+    copyFailed: 'Fehler',
+    markupStyle: 'Markup-Stil',
+    templateLiteral: 'Template-Literal',
+    recommended: 'empfohlen',
+    licenseLabel: 'MIT-Lizenz',
+    nodeLabel: 'Erfordert Node 20.19 oder neuer',
+    githubLabel: (version) => `sitelo ${version} auf GitHub`,
+    viteLabel: (version) => `Mit Vite ${version}`,
+    defaultDescription:
+      'sitelo — statische Website-Generierung für Vite. Schreibe Funktionen, die HTML zurückgeben.',
   },
 }
 

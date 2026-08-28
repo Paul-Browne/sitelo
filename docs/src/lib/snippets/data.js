@@ -4,6 +4,12 @@
 const T = {
   en: { standardFetchOptions: 'standard fetch options' },
   es: { standardFetchOptions: 'opciones estándar de fetch' },
+  fr: {
+    standardFetchOptions: 'options fetch standard',
+  },
+  de: {
+    standardFetchOptions: 'übliche fetch-Optionen',
+  },
 }
 
 export function dataSnippets(lang = 'en') {

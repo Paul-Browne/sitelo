@@ -15,6 +15,8 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
 const COPY_LABELS = {
   en: { copy: 'Copy', copied: 'Copied', failed: 'Failed' },
   es: { copy: 'Copiar', copied: 'Copiado', failed: 'Error' },
+  fr: { copy: 'Copier', copied: 'Copié', failed: 'Échec' },
+  de: { copy: 'Kopieren', copied: 'Kopiert', failed: 'Fehler' },
 }
 
 const copyLabels =

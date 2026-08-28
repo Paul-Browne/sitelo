@@ -15,6 +15,18 @@ const T = {
     prodBuild: 'compilación de producción',
     previewBuild: 'previsualiza la compilación de producción',
   },
+  fr: {
+    sameAsDev: 'identique à sitelo dev',
+    devServer: 'serveur de développement',
+    prodBuild: 'build de production',
+    previewBuild: 'prévisualise le build de production',
+  },
+  de: {
+    sameAsDev: 'wie sitelo dev',
+    devServer: 'Entwicklungsserver',
+    prodBuild: 'Produktions-Build',
+    previewBuild: 'Produktions-Build ansehen',
+  },
 }
 
 export function cliSnippets(lang = 'en') {

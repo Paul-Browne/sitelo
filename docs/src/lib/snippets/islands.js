@@ -27,6 +27,30 @@ const T = {
     notIslandRequest:
       'Web Request → Response | null (null = no es una petición de isla)',
   },
+  fr: {
+    staticContent: '…contenu statique…',
+    loadingComments: '<p>Chargement des commentaires…</p>',
+    loadWithPage: 'Charge dès que la page charge — le comportement par défaut.',
+    waitIdle: 'Attend un callback d’inactivité.',
+    waitVisible: 'Attend que l’élément entre dans le viewport.',
+    startEarly: 'commence à charger 400px en avance',
+    perIsland: 'par îlot ; 0 désactive. Par défaut 10000',
+    visibleDefault: "valeur par défaut pour les îlots `when: 'visible'`",
+    serverComment: 'p. ex. un serveur Node, ou une fonction serverless/edge',
+    notIslandRequest: 'Web Request → Response | null (null = pas une requête d’îlot)',
+  },
+  de: {
+    staticContent: '…statischer Inhalt…',
+    loadingComments: '<p>Kommentare werden geladen…</p>',
+    loadWithPage: 'Lädt, sobald die Seite lädt — der Standard.',
+    waitIdle: 'Wartet auf einen Idle-Callback.',
+    waitVisible: 'Wartet, bis das Element sichtbar wird.',
+    startEarly: 'beginnt 400px früher zu laden',
+    perIsland: 'pro Island; 0 deaktiviert. Standard 10000',
+    visibleDefault: "Standard für Islands mit `when: 'visible'`",
+    serverComment: 'z. B. ein Node-Server oder eine Serverless-/Edge-Funktion',
+    notIslandRequest: 'Web Request → Response | null (null = keine Island-Anfrage)',
+  },
 }
 
 export function islandsSnippets(lang = 'en') {
