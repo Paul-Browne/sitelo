@@ -119,6 +119,25 @@ const T = {
     indexAfterBuild: '索引只在 `sitelo build` 之后存在（默认同步到 public/pagefind）',
     thenPreview: '然后：sitelo preview — 或使用 public/pagefind 的 sitelo (dev)',
   },
+  pt: {
+    myBlog: 'O meu blogue',
+    latestPosts: 'Últimos artigos',
+    viteOnly: 'Apenas opções do Vite; o sitelo continua a injetar o plugin',
+    registerPlugin: 'Registar o plugin manualmente',
+    linkCheckModes: "'warn' (por omissão), 'error', ou um objeto de opções",
+    failBuild: 'falha a compilação perante uma ligação morta',
+    verifyFragments: 'verifica também os destinos #fragmento',
+    hideToolbar: 'ocultar para toda a gente neste projeto',
+    brokenLinks: 'ligações internas partidas',
+    escapesOutDir: 'sai do diretório de saída',
+    noSuchPage: 'não existe essa página',
+    mySite: 'O meu site',
+    home: 'Início',
+    hello: 'Olá',
+    onlyIndexed: 'Só esta região é indexada.',
+    indexAfterBuild: 'O índice só existe depois de `sitelo build` (sincronizado para public/pagefind por omissão)',
+    thenPreview: 'depois: sitelo preview — ou sitelo (dev) a usar public/pagefind',
+  },
 }
 
 export function configurationSnippets(lang = 'en') {

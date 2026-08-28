@@ -25,6 +25,11 @@ const T = {
     amplify: 'AWS Amplify 托管',
     ghPages: 'GitHub Pages',
   },
+  pt: {
+    cloudflare: 'Cloudflare Pages',
+    amplify: 'Alojamento AWS Amplify',
+    ghPages: 'GitHub Pages',
+  },
 }
 
 export function deploymentSnippets(lang = 'en') {

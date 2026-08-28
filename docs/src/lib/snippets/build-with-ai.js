@@ -180,6 +180,35 @@ alwaysApply: true
 sitelo 的 API 请参阅 https://sitelo.js.org/llms.txt
 `
 
+const AGENTS_PT = `# sitelo
+
+Este projeto usa o [sitelo](https://sitelo.js.org) — um gerador de sites estáticos assente no Vite.
+
+## Regras
+
+- As páginas são módulos dentro de \`src/\` com extensões como \`.ht.js\` / \`.ht.ts\` / \`.ht.jsx\` que **exportam por omissão uma função (ou string) que devolve HTML**.
+- **Não** introduzas React, Next.js, Astro nem qualquer framework de componentes/hidratação, a menos que o utilizador peça explicitamente.
+- O encaminhamento baseia-se em ficheiros: \`about.ht.js\` → \`/about\`, \`[slug].ht.js\` → dinâmica (usa \`generateStaticParams\` para \`sitelo build\`).
+- Carrega dados com \`export async function data(ctx)\`. Usa \`fetchWithCache\` do \`sitelo\` para HTTP com cache.
+- Só o JS/CSS referenciado a partir do HTML entra em \`dist/\`. Deixa o código de servidor sem referências para que nunca seja publicado.
+- A configuração vive em \`sitelo.config.js\`. Coloca as opções do Vite sob \`vite\`.
+- Comandos: \`sitelo\` (dev), \`sitelo build\`, \`sitelo preview\`.
+- Para as APIs atuais, lê https://sitelo.js.org/llms.txt e https://sitelo.js.org/docs — não inventes APIs de outras frameworks.
+- Prefere [javascript-to-html](https://ht.js.org) (\`ht.js\`) para a marcação: funções de etiqueta que devolvem strings HTML. Docs: https://ht.js.org
+`
+
+const CURSOR_PT = `---
+description: convenções de sites estáticos do sitelo
+alwaysApply: true
+---
+
+# sitelo
+
+As páginas são módulos \`.ht.js\` (etc.) que devolvem strings HTML — não componentes de React/Next/Astro.
+Prefere javascript-to-html (https://ht.js.org) para a marcação. Usa encaminhamento por ficheiros, \`data()\` e \`sitelo build\`.
+Consulta https://sitelo.js.org/llms.txt para as APIs do sitelo.
+`
+
 const BY_LOCALE = {
   en: { agents: AGENTS_EN, cursorRule: CURSOR_EN },
   es: { agents: AGENTS_ES, cursorRule: CURSOR_ES },
@@ -187,6 +216,7 @@ const BY_LOCALE = {
   de: { agents: AGENTS_DE, cursorRule: CURSOR_DE },
   ru: { agents: AGENTS_RU, cursorRule: CURSOR_RU },
   zh: { agents: AGENTS_ZH, cursorRule: CURSOR_ZH },
+  pt: { agents: AGENTS_PT, cursorRule: CURSOR_PT },
 }
 
 export function buildWithAiSnippets(lang = 'en') {

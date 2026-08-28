@@ -28,8 +28,8 @@ import { createRequire } from 'node:module'
 import {
   DEFAULT_LOCALE,
   LOCALES,
+  LOCALE_FLAGS,
   LOCALE_NAMES,
-  LOCALE_SHORT,
   LOCALE_TAGS,
   OG_LOCALES,
   basePath,
@@ -60,35 +60,57 @@ function badge({ variant, href, label, name, value, icon, external = true }) {
   )
 }
 
+/** One row in the language switcher: flag + the language's own name. */
+function languageOption(activeHref, locale, current) {
+  return a(
+    {
+      class: current ? 'lang-option is-active' : 'lang-option',
+      href: localePath(activeHref, locale),
+      hreflang: LOCALE_TAGS[locale],
+      lang: LOCALE_TAGS[locale],
+      ...(current ? { 'aria-current': 'true' } : {}),
+    },
+    span({ class: 'lang-flag', 'aria-hidden': 'true' }, LOCALE_FLAGS[locale]),
+    span({ class: 'lang-label' }, LOCALE_NAMES[locale]),
+  )
+}
+
 /**
- * EN / ES switcher pointing at the same page in the other locale.
+ * Language switcher, pointing at the same page in each locale.
  *
- * Rendered only for paths that exist in both locales — `/examples` is
- * English-only, so a switcher there would link to a missing page.
+ * Rendered only for paths that exist in every locale, so a page without a
+ * counterpart never offers a link to a missing translation.
+ *
+ * Two shapes: a `<details>` dropdown for the desktop bar, and a plain list for
+ * inside the mobile menu — which is itself a `<details>`, and nesting one
+ * dropdown in another to reach seven links is worse than just showing them.
  */
-function languageSwitch(activeHref, lang) {
+function languageSwitch(activeHref, lang, variant = 'dropdown') {
   if (activeHref == null || !isTranslated(activeHref)) return ''
 
   const t = strings(lang)
+  const options = LOCALES.map((locale) =>
+    languageOption(activeHref, locale, locale === lang),
+  )
 
-  return nav(
-    { class: 'lang-switch', 'aria-label': t.languageLabel },
-    ...LOCALES.map((locale) => {
-      const current = locale === lang
-      return a(
-        {
-          href: localePath(activeHref, locale),
-          hreflang: LOCALE_TAGS[locale],
-          lang: LOCALE_TAGS[locale],
-          'aria-label': LOCALE_NAMES[locale],
-          // Spread rather than pass `undefined`: an `aria-current="undefined"`
-          // is an invalid token, and browsers fall back to treating it as
-          // "true" — which would mark every language as the current one.
-          ...(current ? { class: 'is-active', 'aria-current': 'true' } : {}),
-        },
-        LOCALE_SHORT[locale],
-      )
-    }),
+  if (variant === 'list') {
+    return nav(
+      { class: 'lang-list', 'aria-label': t.languageLabel },
+      ...options,
+    )
+  }
+
+  return details(
+    { class: 'lang-switch' },
+    summary(
+      { class: 'lang-switch-toggle', 'aria-label': t.languageLabel },
+      span({ class: 'lang-flag', 'aria-hidden': 'true' }, LOCALE_FLAGS[lang]),
+      span({ class: 'lang-label' }, LOCALE_NAMES[lang]),
+    ),
+    nav(
+      { class: 'lang-switch-panel', 'aria-label': t.languageLabel },
+      ...options,
+    ),
   )
 }
 
@@ -135,8 +157,6 @@ function siteNav(activeHref = '/', lang = DEFAULT_LOCALE) {
     ),
   ]
 
-  const switcher = languageSwitch(activeHref, lang)
-
   return nav(
     { class: 'nav' },
     a(
@@ -149,11 +169,19 @@ function siteNav(activeHref = '/', lang = DEFAULT_LOCALE) {
         height: '34',
       }),
     ),
-    div({ class: 'nav-links' }, ...links, switcher),
+    div(
+      { class: 'nav-links' },
+      ...links,
+      languageSwitch(activeHref, lang),
+    ),
     details(
       { class: 'nav-menu' },
       summary({ class: 'nav-menu-toggle', 'aria-label': t.openMenu }, t.menu),
-      div({ class: 'nav-menu-panel' }, ...links, switcher),
+      div(
+        { class: 'nav-menu-panel' },
+        ...links,
+        languageSwitch(activeHref, lang, 'list'),
+      ),
     ),
   )
 }
@@ -317,7 +345,7 @@ const DE_TRANSLITERATIONS = [
  * Deliberately excludes the non-Latin scripts: NFD decomposition would turn
  * Russian "й" into "и" and "ё" into "е", quietly changing the word.
  */
-const FOLD_TO_ASCII = new Set(['en', 'es', 'fr', 'de'])
+const FOLD_TO_ASCII = new Set(['en', 'es', 'fr', 'de', 'pt'])
 
 /**
  * Slugify a heading for use as an anchor id.

@@ -39,6 +39,12 @@ const T = {
     prodBuild: '生产构建',
     previewBuild: '预览生产构建',
   },
+  pt: {
+    sameAsDev: 'o mesmo que sitelo dev',
+    devServer: 'servidor de desenvolvimento',
+    prodBuild: 'compilação de produção',
+    previewBuild: 'pré-visualiza a compilação de produção',
+  },
 }
 
 export function cliSnippets(lang = 'en') {

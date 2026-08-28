@@ -56,6 +56,15 @@ const T = {
     mySite: '我的网站',
     hello: '你好',
   },
+  pt: {
+    pageReturnsHtml: 'página — devolve HTML',
+    linkedBundled: 'ligado a partir do HTML → incluído no bundle',
+    importedBundled: 'importado por main.js → também no bundle',
+    dataOnly: 'só usado em data() → nunca é publicado',
+    copiedAsIs: 'copiado tal como está',
+    mySite: 'O meu site',
+    hello: 'Olá',
+  },
 }
 
 export function assetsSnippets(lang = 'en') {

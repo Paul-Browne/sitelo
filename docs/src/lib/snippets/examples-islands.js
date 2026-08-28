@@ -104,6 +104,25 @@ const T = {
     loadingTime: '<p>正在加载服务器时间…</p>',
     listening: '正在监听', notFound: '未找到',
   },
+  pt: {
+    nodeHost: 'host Node: dist estático + ilhas',
+    netlifyRewrite: 'rewrite do Netlify → função',
+    vercelRewrite: 'rewrite do Vercel → rota api',
+    netlifyHandler: 'handler de ilhas do Netlify',
+    vercelHandler: 'handler de ilhas do Vercel',
+    pagePlaceholder: 'página com um marcador de ilha',
+    clientLoader: 'carregador de cliente (incluído em dist/)',
+    serverOnlyFragment: 'módulo de fragmento só de servidor',
+    serverTime: 'Hora do servidor',
+    rightNow: 'Agora mesmo',
+    renderedOnRequest: 'Renderizado a pedido para',
+    demoTitle: 'Demonstração de ilhas de servidor',
+    staticLive: 'Página estática, ilha ao vivo',
+    builtOnce: 'Este HTML foi compilado uma só vez. A caixa abaixo é preenchida no momento do pedido.',
+    loadingTime: '<p>A carregar a hora do servidor…</p>',
+    listening: 'À escuta em',
+    notFound: 'Não encontrado',
+  },
 }
 
 export function islandsExampleSnippets(lang = 'en') {

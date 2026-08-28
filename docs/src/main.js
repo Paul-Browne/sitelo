@@ -19,10 +19,12 @@ const COPY_LABELS = {
   de: { copy: 'Kopieren', copied: 'Kopiert', failed: 'Fehler' },
   ru: { copy: 'Копировать', copied: 'Скопировано', failed: 'Ошибка' },
   zh: { copy: '复制', copied: '已复制', failed: '失败' },
+  pt: { copy: 'Copiar', copied: 'Copiado', failed: 'Erro' },
 }
 
+// `lang` may be a full tag (pt-PT, zh-Hans); the labels are keyed by subtag.
 const copyLabels =
-  COPY_LABELS[document.documentElement.lang] ?? COPY_LABELS.en
+  COPY_LABELS[document.documentElement.lang.split('-')[0]] ?? COPY_LABELS.en
 
 abb({
   element: '#atmosphere',
@@ -109,6 +111,30 @@ for (const root of document.querySelectorAll('[data-code-tabs]')) {
 
 startHeroTypewriter()
 initDocsSearch()
+closeMenusOnOutsideClick()
+
+/**
+ * The nav and language menus are plain <details>, which stay open until
+ * toggled again. Close them on an outside click or Escape, the way a
+ * dropdown is expected to behave.
+ */
+function closeMenusOnOutsideClick() {
+  const menus = () => document.querySelectorAll('details.nav-menu[open], details.lang-switch[open]')
+
+  document.addEventListener('click', (event) => {
+    for (const menu of menus()) {
+      if (!menu.contains(event.target)) menu.open = false
+    }
+  })
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return
+    for (const menu of menus()) {
+      menu.open = false
+      menu.querySelector('summary')?.focus()
+    }
+  })
+}
 
 /**
  * Pagefind search — indexes live under `/pagefind/`.

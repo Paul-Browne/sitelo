@@ -23,6 +23,10 @@ const T = {
     hello: '你好',
     staticAsItGets: '再静态不过了',
   },
+  pt: {
+    hello: 'Olá',
+    staticAsItGets: 'Mais estático que isto, impossível',
+  },
 }
 
 export function pagesSnippets(lang = 'en') {

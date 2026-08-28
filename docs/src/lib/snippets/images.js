@@ -23,6 +23,10 @@ const T = {
     sunrise: '港口上的日出',
     pixelArt: '像素画',
   },
+  pt: {
+    sunrise: 'Nascer do sol sobre o porto',
+    pixelArt: 'Pixel art',
+  },
 }
 
 export function imagesSnippets(lang = 'en') {

@@ -11,6 +11,10 @@ const T = {
   de: { exampleTitle: 'sitelo — Basis-Beispiel', hello: 'Hallo von sitelo' },
   ru: { exampleTitle: 'sitelo — базовый пример', hello: 'Привет от sitelo' },
   zh: { exampleTitle: 'sitelo —— 基础示例', hello: '你好，来自 sitelo' },
+  pt: {
+    exampleTitle: 'sitelo — exemplo básico',
+    hello: 'Olá do sitelo',
+  },
 }
 
 export function basicSnippets(lang = 'en') {

@@ -89,6 +89,20 @@ const DOC_LABELS = {
     { href: '/docs/deployment', label: '部署' },
     { href: '/docs/build-with-ai', label: '用 AI 开发' },
   ],
+  pt: [
+    { href: '/docs', label: 'Primeiros passos' },
+    { href: '/docs/pages', label: 'Escrever páginas' },
+    { href: '/docs/routing', label: 'Rotas' },
+    { href: '/docs/data', label: 'Carregamento de dados' },
+    { href: '/docs/islands', label: 'Ilhas de servidor' },
+    { href: '/docs/assets', label: 'Recursos e estilos' },
+    { href: '/docs/images', label: 'Otimização de imagens' },
+    { href: '/docs/typescript', label: 'TypeScript' },
+    { href: '/docs/configuration', label: 'Configuração' },
+    { href: '/docs/cli', label: 'CLI' },
+    { href: '/docs/deployment', label: 'Implementação' },
+    { href: '/docs/build-with-ai', label: 'Criar com IA' },
+  ],
 }
 
 /** Examples sidebar, per locale. */
@@ -140,6 +154,14 @@ const EXAMPLE_LABELS = {
     { href: '/examples/blog', label: 'Markdown 博客' },
     { href: '/examples/wordpress', label: 'WordPress' },
     { href: '/examples/islands', label: '服务端群岛' },
+  ],
+  pt: [
+    { href: '/examples', label: 'Visão geral' },
+    { href: '/examples/basic', label: 'Site básico' },
+    { href: '/examples/todo', label: 'App de tarefas' },
+    { href: '/examples/blog', label: 'Blogue em Markdown' },
+    { href: '/examples/wordpress', label: 'WordPress' },
+    { href: '/examples/islands', label: 'Ilhas de servidor' },
   ],
 }
 

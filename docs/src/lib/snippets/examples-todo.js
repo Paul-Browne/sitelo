@@ -86,6 +86,20 @@ const T = {
     jsxOnloadNote: 'React 会把 onLoad 变成合成事件；用展开语法才能输出原生的 onload=""',
     jsxOnsubmitNote: '同理 —— 输出原生的 onsubmit=""，而不是 React 的 onSubmit',
   },
+  pt: {
+    shellComment: 'estrutura estática + handlers import() em linha',
+    handlersComment: 'handlers exportados (carregados a pedido)',
+    todos: 'Tarefas',
+    whatNeedsDoing: 'O que há para fazer?',
+    add: 'Adicionar',
+    nothingYet: 'Ainda não há nada aqui.',
+    left: 'por fazer',
+    remove: 'Remover',
+    markComplete: 'Marcar',
+    complete: 'como concluída',
+    jsxOnloadNote: 'o React converte onLoad num evento sintético; o spread deixa-nos emitir um onload="" em bruto',
+    jsxOnsubmitNote: 'pela mesma razão — onsubmit="" em bruto, não o onSubmit do React',
+  },
 }
 
 export function todoSnippets(lang = 'en') {

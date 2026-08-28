@@ -86,6 +86,24 @@ const T = {
     postBody: '这个博客就是一个装满 markdown 文件的文件夹，它们被渲染成静态 HTML。',
     allPosts: '← 全部文章', rssFeed: 'RSS 订阅', notFound: '找不到文章',
   },
+  pt: {
+    postsComment: 'artigos: frontmatter + markdown',
+    libComment: 'lê content/, analisa o frontmatter, renderiza markdown',
+    indexComment: '/ — lista de artigos',
+    slugComment: '/blog/:slug — uma página por artigo',
+    feedItemComment: 'cada página /blog/* torna-se um item do feed',
+    outsideSrc: 'Os artigos vivem fora de src/, por isso nunca são tratados como páginas ou recursos.',
+    frontmatterDoc: 'Analisador mínimo de frontmatter — linhas `chave: valor` entre cercas ---.',
+    allPostsDoc: 'Todos os artigos, do mais recente ao mais antigo. Corre apenas no Node, na compilação ou em desenvolvimento.',
+    myBlog: 'O meu blogue',
+    latestPosts: 'Últimos artigos',
+    postTitle: 'Olá, mundo',
+    postDesc: 'O obrigatório primeiro artigo.',
+    postBody: 'Este blogue é uma pasta de ficheiros markdown renderizados para HTML estático.',
+    allPosts: '← Todos os artigos',
+    rssFeed: 'Feed RSS',
+    notFound: 'Artigo não encontrado',
+  },
 }
 
 export function blogSnippets(lang = 'en') {

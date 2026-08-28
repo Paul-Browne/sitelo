@@ -7,7 +7,7 @@
  */
 
 export const DEFAULT_LOCALE = 'en'
-export const LOCALES = ['en', 'es', 'fr', 'de', 'ru', 'zh']
+export const LOCALES = ['en', 'es', 'fr', 'de', 'ru', 'zh', 'pt']
 
 /** Locales served from a URL prefix — everything but the default. */
 const PREFIXED = LOCALES.filter((locale) => locale !== DEFAULT_LOCALE)
@@ -20,6 +20,7 @@ export const LOCALE_NAMES = {
   de: 'Deutsch',
   ru: 'Русский',
   zh: '简体中文',
+  pt: 'Português',
 }
 
 /**
@@ -36,16 +37,25 @@ export const LOCALE_TAGS = {
   de: 'de',
   ru: 'ru',
   zh: 'zh-Hans',
+  pt: 'pt-PT',
 }
 
-/** Two-letter labels for the language switcher. */
-export const LOCALE_SHORT = {
-  en: 'EN',
-  es: 'ES',
-  fr: 'FR',
-  de: 'DE',
-  ru: 'RU',
-  zh: '中文',
+/**
+ * Flags for the language switcher.
+ *
+ * Flags are countries, not languages, so several of these are a choice rather
+ * than a fact — English and Spanish especially. They are decorative here: the
+ * language name beside them carries the meaning, and the flag is hidden from
+ * assistive tech.
+ */
+export const LOCALE_FLAGS = {
+  en: '🇬🇧',
+  es: '🇪🇸',
+  fr: '🇫🇷',
+  de: '🇩🇪',
+  ru: '🇷🇺',
+  zh: '🇨🇳',
+  pt: '🇵🇹',
 }
 
 /** Open Graph locale identifiers. */
@@ -56,6 +66,7 @@ export const OG_LOCALES = {
   de: 'de_DE',
   ru: 'ru_RU',
   zh: 'zh_CN',
+  pt: 'pt_PT',
 }
 
 /**
@@ -297,6 +308,35 @@ const STRINGS = {
     viteLabel: (version) => `由 Vite ${version} 驱动`,
     defaultDescription:
       'sitelo — 面向 Vite 的静态站点生成。编写返回 HTML 的函数。',
+  },
+  pt: {
+    navDocs: 'Docs',
+    navExamples: 'Exemplos',
+    navAbout: 'Acerca',
+    openMenu: 'Abrir menu',
+    menu: 'Menu',
+    languageLabel: 'Idioma',
+    sidebarDocs: 'Documentação',
+    sidebarExamples: 'Exemplos',
+    titleSuffixDocs: 'documentação sitelo',
+    titleSuffixExamples: 'exemplos sitelo',
+    tocLabel: 'Nesta página',
+    pagenavLabel: 'Páginas adjacentes',
+    previous: '← Anterior',
+    next: 'Seguinte →',
+    copy: 'Copiar',
+    copyCode: 'Copiar código',
+    copied: 'Copiado',
+    copyFailed: 'Erro',
+    markupStyle: 'Estilo de marcação',
+    templateLiteral: 'Literal de template',
+    recommended: 'recomendado',
+    licenseLabel: 'Licença MIT',
+    nodeLabel: 'Requer Node 20.19 ou superior',
+    githubLabel: (version) => `sitelo ${version} no GitHub`,
+    viteLabel: (version) => `Com tecnologia Vite ${version}`,
+    defaultDescription:
+      'sitelo — geração de sites estáticos para Vite. Escreve funções que devolvem HTML.',
   },
 }
 

@@ -75,6 +75,18 @@ const T = {
     serverComment: '例如 Node 服务器，或 serverless/边缘函数',
     notIslandRequest: 'Web Request → Response | null（null = 不是群岛请求）',
   },
+  pt: {
+    staticContent: '…conteúdo estático…',
+    loadingComments: '<p>A carregar comentários…</p>',
+    loadWithPage: 'Carrega assim que a página carrega — o valor por omissão.',
+    waitIdle: 'Espera por um callback de inatividade.',
+    waitVisible: 'Espera até entrar no ecrã.',
+    startEarly: 'começa a carregar 400px antes',
+    perIsland: 'por ilha; 0 desativa. Por omissão 10000',
+    visibleDefault: "valor por omissão para ilhas com `when: 'visible'`",
+    serverComment: 'por exemplo um servidor Node, ou uma função serverless/edge',
+    notIslandRequest: 'Web Request → Response | null (null = não é um pedido de ilha)',
+  },
 }
 
 export function islandsSnippets(lang = 'en') {

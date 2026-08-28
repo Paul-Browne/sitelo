@@ -16,6 +16,9 @@ const T = {
   zh: {
     standardFetchOptions: '标准 fetch 选项',
   },
+  pt: {
+    standardFetchOptions: 'opções normais do fetch',
+  },
 }
 
 export function dataSnippets(lang = 'en') {
