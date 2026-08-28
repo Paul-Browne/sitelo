@@ -27,7 +27,7 @@ export default () =>
       p(
         'La codificación la hace ',
         a({ href: 'https://sharp.pixelplumbing.com', rel: 'noopener' }, 'sharp'),
-        ', una dependencia de pares opcional: instálala junto a sitelo cuando actives las imágenes:',
+        ', una dependencia peer opcional: instálala junto a sitelo cuando actives las imágenes:',
       ),
       codeBlock('shell', s.installSharp, 'bash'),
       p(

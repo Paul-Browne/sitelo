@@ -112,7 +112,7 @@ export default () =>
         ' · ',
         a({ href: '/zh/examples/todo' }, '待办应用'),
         ' · ',
-        a({ href: '/zh/examples/islands' }, '服务端群岛示例'),
+        a({ href: '/zh/examples/islands' }, '服务端区块示例'),
       ),
     ],
   })

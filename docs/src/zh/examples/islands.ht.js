@@ -6,13 +6,13 @@ const s = islandsExampleSnippets('zh')
 
 export default () =>
   examplesLayout({
-    title: '服务端群岛',
+    title: '服务端区块',
     description:
-      '发布一个静态的 sitelo 站点，并挂上一个在请求时渲染群岛的 Node 宿主。',
+      '发布一个静态的 sitelo 站点，并挂上一个在请求时渲染区块的 Node 宿主。',
     activeHref: '/zh/examples/islands',
     children: [
       p(
-        'sitelo 构建的是静态 HTML。服务端群岛负责填补那些必须保持新鲜的部分 —— 时钟、评论、库存，任何依赖请求的东西。这个范例先构建一个带时间群岛的页面，再运行一个小型 Node 服务器，同时提供 ',
+        'sitelo 构建的是静态 HTML。服务端区块负责填补那些必须保持新鲜的部分 —— 时钟、评论、库存，任何依赖请求的东西。这个范例先构建一个带时间区块的页面，再运行一个小型 Node 服务器，同时提供 ',
         code('dist/'),
         ' 和 ',
         code('/_sitelo/islands'),
@@ -26,10 +26,10 @@ export default () =>
       h2('你会得到什么'),
       ul(
         { class: 'docs-list' },
-        li('一个带群岛占位符和回退 HTML 的静态首页'),
+        li('一个带区块占位符和回退 HTML 的静态首页'),
         li(
           code('src/islands/'),
-          ' 下一个仅服务端的群岛模块，绝不会进入浏览器',
+          ' 下一个仅服务端的区块模块，绝不会进入浏览器',
         ),
         li(
           '一个客户端加载器，把来自 ',
@@ -46,7 +46,7 @@ export default () =>
       h2('项目结构'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. 群岛模块'),
+      h2('1. 区块模块'),
       p(
         '一个普通的 ',
         code('.js'),
@@ -57,7 +57,7 @@ export default () =>
         '，并返回一个 HTML 字符串。这个模块用到了请求时间和 user-agent，好让你看出它确实是按请求渲染的。',
       ),
       codeBlock('src/islands/time.js', s.island, 'javascript'),
-      h2('2. 把群岛放进页面'),
+      h2('2. 把区块放进页面'),
       p(
         code('island()'),
         ' 会把 props 嵌进占位元素。构建产物发布的是回退内容；端点响应之后，加载器会替换它。',
@@ -81,7 +81,7 @@ export default () =>
         code('sitelo/islands/server'),
         ' 的 ',
         code('createIslandsNodeHandler'),
-        ' 渲染群岛。群岛模块留在 ',
+        ' 渲染区块。区块模块留在 ',
         code('dist/'),
         ' 之外 —— 宿主从 ',
         code('src/'),
@@ -147,7 +147,7 @@ export default () =>
         ' → ',
         code('Response'),
         '）—— 参见',
-        a({ href: '/zh/docs/islands' }, '服务端群岛文档'),
+        a({ href: '/zh/docs/islands' }, '服务端区块文档'),
         '。如果该函数不同源，请把 ',
         code('mountIslands({ endpoint })'),
         ' 指向它的 URL。',
@@ -155,14 +155,14 @@ export default () =>
       h2('说明'),
       h3('只有静态托管时'),
       p(
-        'GitHub Pages、朴素的 S3 等托管没有服务器进程。没有群岛端点时，回退 HTML 就会一直留着 —— 页面照样能用，只是少了那个动态片段。',
+        'GitHub Pages、朴素的 S3 等托管没有服务器进程。没有区块端点时，回退 HTML 就会一直留着 —— 页面照样能用，只是少了那个动态片段。',
       ),
       h3('让 props 保持精简'),
       p(
-        'props 会随 HTML 属性和请求查询串一起传输。不要把机密或大块数据放进去 —— 那些应当在服务端、在群岛模块内部去获取。',
+        'props 会随 HTML 属性和请求查询串一起传输。不要把机密或大块数据放进去 —— 那些应当在服务端、在区块模块内部去获取。',
       ),
       p(
-        a({ href: '/zh/docs/islands' }, '服务端群岛文档'),
+        a({ href: '/zh/docs/islands' }, '服务端区块文档'),
         ' · ',
         a({ href: '/zh/examples/basic' }, '基础站点 / 部署'),
         ' · ',

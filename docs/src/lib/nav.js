@@ -80,7 +80,7 @@ const DOC_LABELS = {
     { href: '/docs/pages', label: '编写页面' },
     { href: '/docs/routing', label: '路由' },
     { href: '/docs/data', label: '数据加载' },
-    { href: '/docs/islands', label: '服务端群岛' },
+    { href: '/docs/islands', label: '服务端区块' },
     { href: '/docs/assets', label: '资源与样式' },
     { href: '/docs/images', label: '图片优化' },
     { href: '/docs/typescript', label: 'TypeScript' },
@@ -153,7 +153,7 @@ const EXAMPLE_LABELS = {
     { href: '/examples/todo', label: '待办应用' },
     { href: '/examples/blog', label: 'Markdown 博客' },
     { href: '/examples/wordpress', label: 'WordPress' },
-    { href: '/examples/islands', label: '服务端群岛' },
+    { href: '/examples/islands', label: '服务端区块' },
   ],
   pt: [
     { href: '/examples', label: 'Visão geral' },

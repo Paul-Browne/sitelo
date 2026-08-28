@@ -130,7 +130,7 @@ export default () =>
         ),
         li(
           'Plantillas de host en ',
-          a({ href: '/es/examples/islands' }, 'examples/islands'),
+          a({ href: '/es/examples/islands' }, 'ejemplo de islas de servidor'),
           ': ',
           code('server.js'),
           ' de Node, función de Netlify + rewrite, serverless de Vercel + rewrite',

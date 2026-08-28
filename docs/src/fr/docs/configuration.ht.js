@@ -294,7 +294,7 @@ export default () =>
       p(
         'Recherche statique optionnelle propulsée par ',
         a({ href: 'https://pagefind.app', rel: 'noopener' }, 'Pagefind'),
-        ', une dépendance de pair optionnelle. Installez-la quand vous voulez la recherche, puis activez l’indexation, marquez le contenu, montez l’interface et lancez ',
+        ', une dépendance peer optionnelle. Installez-la quand vous voulez la recherche, puis activez l’indexation, marquez le contenu, montez l’interface et lancez ',
         code('sitelo build'),
         '.',
       ),

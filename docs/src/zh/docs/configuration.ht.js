@@ -102,7 +102,7 @@ export default () =>
           code('true'),
           '；设为 ',
           code('false'),
-          ' 可隐藏仅开发时出现的工具栏（源文件、参数、群岛数量、视口切换）',
+          ' 可隐藏仅开发时出现的工具栏（源文件、参数、区块数量、视口切换）',
         ),
         li(
           code('devToolbarDocsUrl'),
@@ -115,7 +115,7 @@ export default () =>
       p(
         code('sitelo'),
         '（dev）运行期间，每个页面底部都有一条小工具栏，显示页面文件、参数，以及页面上有多少个',
-        a({ href: '/zh/docs/islands' }, '服务端群岛'),
+        a({ href: '/zh/docs/islands' }, '服务端区块'),
         '。用视口按钮在 ',
         code('Desktop'),
         ' / ',

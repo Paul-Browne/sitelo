@@ -118,7 +118,7 @@ export default () =>
         '点击、表单和其他客户端行为，请通过',
         a({ href: '/zh/docs/assets' }, '资源流水线'),
         '引入一个普通脚本，或使用',
-        a({ href: '/zh/docs/islands' }, '服务端群岛'),
+        a({ href: '/zh/docs/islands' }, '服务端区块'),
         '来获得请求时生成的 HTML。当你不需要 JSX 语法时，更适合用 ',
         a({ href: 'https://ht.js.org', rel: 'noopener' }, 'ht.js'),
         ' 或模板字符串 —— 无需安装 React，而且这个模型正好对应「构建时产出 HTML」。',

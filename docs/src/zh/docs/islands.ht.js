@@ -6,16 +6,16 @@ const s = islandsSnippets('zh')
 
 export default () =>
   docsLayout({
-    title: '服务端群岛',
+    title: '服务端区块',
     description: '保持页面静态，并在请求时于服务端渲染被标记的区域。',
     activeHref: '/zh/docs/islands',
     children: [
       p(
-        '有时候，一个原本静态的页面上会有某个区域需要每次请求都拿到最新数据 —— 缓存博客文章下方的评论、商品页上的库存标签。服务端群岛让页面保持静态，只在有人访问时把那一块放到服务端渲染。',
+        '有时候，一个原本静态的页面上会有某个区域需要每次请求都拿到最新数据 —— 缓存博客文章下方的评论、商品页上的库存标签。服务端区块让页面保持静态，只在有人访问时把那一块放到服务端渲染。',
       ),
-      h2('1. 写一个群岛'),
+      h2('1. 写一个区块'),
       p(
-        '群岛是放在 ',
+        '区块是放在 ',
         code('src/islands/'),
         ' 下的片段模块 —— 一个普通的 ',
         code('.js'),
@@ -23,13 +23,13 @@ export default () =>
         code('.ts'),
         ' 文件（不是 ',
         code('.ht.js'),
-        '，因为群岛是片段而非页面）。思路和 sitelo 其他地方一样：一个返回 HTML 的函数。',
+        '，因为区块是片段而非页面）。思路和 sitelo 其他地方一样：一个返回 HTML 的函数。',
       ),
       codeBlock('src/islands/comments.js', s.islandModule, 'javascript'),
       p(
         '它接收 ',
         code('{ name, props, request }'),
-        '，并且必须返回一个 HTML 字符串。群岛模块只在服务端运行 —— ',
+        '，并且必须返回一个 HTML 字符串。区块模块只在服务端运行 —— ',
         code('src/'),
         ' 下未被引用的代码永远不会进入浏览器。',
       ),
@@ -63,16 +63,16 @@ export default () =>
         code('src/islands/'),
         ' 在 ',
         code('/_sitelo/islands/<name>'),
-        ' 提供群岛。preview 加载原生 ',
+        ' 提供区块。preview 加载原生 ',
         code('.js'),
         ' / ',
         code('.mjs'),
-        ' 模块（与 Node 宿主一致）；TypeScript 群岛在开发时由 Vite 支持。',
+        ' 模块（与 Node 宿主一致）；TypeScript 区块在开发时由 Vite 支持。',
       ),
       h2('生产环境'),
       p(
-        '你的静态托管继续提供页面。在任何能运行服务端代码的地方挂一个小处理器 —— Node、serverless 或边缘函数 —— 它就会渲染同样的群岛模块。想要包含可运行 Node 宿主以及 Netlify、Vercel 模板的完整示例，请看',
-        a({ href: '/zh/examples/islands' }, '服务端群岛示例'),
+        '你的静态托管继续提供页面。在任何能运行服务端代码的地方挂一个小处理器 —— Node、serverless 或边缘函数 —— 它就会渲染同样的区块模块。想要包含可运行 Node 宿主以及 Netlify、Vercel 模板的完整示例，请看',
+        a({ href: '/zh/examples/islands' }, '服务端区块示例'),
         '。',
       ),
       codeBlock('islands-function.js', s.server, 'javascript'),
@@ -128,13 +128,13 @@ export default () =>
           '）',
         ),
         li(
-          a({ href: '/zh/examples/islands' }, 'examples/islands'),
+          a({ href: '/zh/examples/islands' }, '服务端区块示例'),
           ' 中的宿主模板：Node 的 ',
           code('server.js'),
           '、Netlify 函数 + rewrite、Vercel serverless + rewrite',
         ),
         li(
-          'props 保持精简且不含机密（GET 查询串）—— 这是有意为之；机密请在群岛内部、在服务端获取',
+          'props 保持精简且不含机密（GET 查询串）—— 这是有意为之；机密请在区块内部、在服务端获取',
         ),
         li(
           'props 来自客户端 —— 请校验它们，或用 ',
@@ -144,14 +144,14 @@ export default () =>
       ),
       h2('加载策略'),
       p(
-        '默认情况下每个群岛都会在页面加载时立刻取数据，所以有八个群岛的页面会在首屏绘制期间发出八个并发请求。用 ',
+        '默认情况下每个区块都会在页面加载时立刻取数据，所以有八个区块的页面会在首屏绘制期间发出八个并发请求。用 ',
         code('when'),
         ' 把那些不会立刻看到的推迟掉。',
       ),
       codeBlock('islands-when', s.strategy, 'js'),
       ul(
         { class: 'docs-list' },
-        li(code("'load'"), '（默认）—— 立即执行，与其他所有群岛一起'),
+        li(code("'load'"), '（默认）—— 立即执行，与其他所有区块一起'),
         li(
           code("'idle'"),
           ' —— 在 ',
@@ -166,20 +166,20 @@ export default () =>
         code("'visible'"),
         ' 生效，默认为 ',
         code("'200px'"),
-        '。群岛也会超时结束，而不会一直转圈：',
+        '。区块也会超时结束，而不会一直转圈：',
       ),
       codeBlock('islands-mount-options', s.mountOptions, 'js'),
       p(
         code('mountIslands()'),
-        ' 会在「立即加载」的群岛稳定后就完成 —— 被推迟的群岛稍后自行加载，并且刻意不被等待。失败或超时的群岛会保留它的回退 HTML。',
+        ' 会在「立即加载」的区块稳定后就完成 —— 被推迟的区块稍后自行加载，并且刻意不被等待。失败或超时的区块会保留它的回退 HTML。',
       ),
       h2('props 是不可信输入'),
       p(
-        '群岛的 props 来自客户端。它们被嵌进页面、随请求回传，任何人都可以先改动它们：',
+        '区块的 props 来自客户端。它们被嵌进页面、随请求回传，任何人都可以先改动它们：',
       ),
       codeBlock('islands-forged', s.forged, 'http'),
       p(
-        '请把群岛收到的 props 完全当作查询参数看待 —— 校验它们，并且绝不要用它们去取访问者本就无权查看的数据。',
+        '请把区块收到的 props 完全当作查询参数看待 —— 校验它们，并且绝不要用它们去取访问者本就无权查看的数据。',
       ),
       p(
         '当 props 会决定取用特权数据时，请对其签名。设置一个 secret，sitelo 就会在构建时为每个占位元素签名，并以 ',
@@ -197,12 +197,12 @@ export default () =>
       ),
       codeBlock('islands-configure', s.configure, 'js'),
       p(
-        '签名是对群岛名称及其 props 计算的 HMAC-SHA256，因此为某个群岛签发的签名无法重放到另一个群岛上。签名只能证明 props 来自你的构建 —— 它并不隐藏内容，所以 props 仍然不能包含机密。没有 secret 时，props 会被原样接受，校验完全由你的群岛模块负责。',
+        '签名是对区块名称及其 props 计算的 HMAC-SHA256，因此为某个区块签发的签名无法重放到另一个区块上。签名只能证明 props 来自你的构建 —— 它并不隐藏内容，所以 props 仍然不能包含机密。没有 secret 时，props 会被原样接受，校验完全由你的区块模块负责。',
       ),
       h2('值得知道的细节'),
       ul(
         { class: 'docs-list' },
-        li('没有部署群岛端点？那就只会保留回退 HTML —— 页面会优雅降级。'),
+        li('没有部署区块端点？那就只会保留回退 HTML —— 页面会优雅降级。'),
         li(
           '请求是 ',
           code('GET'),

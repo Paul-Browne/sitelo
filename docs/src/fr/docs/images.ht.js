@@ -27,7 +27,7 @@ export default () =>
       p(
         'L’encodage est assuré par ',
         a({ href: 'https://sharp.pixelplumbing.com', rel: 'noopener' }, 'sharp'),
-        ', une dépendance de pair optionnelle — installez-la aux côtés de sitelo quand vous activez les images :',
+        ', une dépendance peer optionnelle — installez-la aux côtés de sitelo quand vous activez les images :',
       ),
       codeBlock('shell', s.installSharp, 'bash'),
       p('Les sites qui n’optimisent pas les images n’ont jamais besoin de l’installer.'),

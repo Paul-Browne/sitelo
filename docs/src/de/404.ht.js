@@ -17,7 +17,7 @@ export default () =>
       p(
         a({ href: '/de' }, 'Startseite'),
         ' · ',
-        a({ href: '/de/docs' }, 'Docs'),
+        a({ href: '/de/docs' }, 'Dokumentation'),
         ' · ',
         a({ href: '/de/examples' }, 'Beispiele'),
       ),

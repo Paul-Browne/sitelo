@@ -165,7 +165,7 @@ const STRINGS = {
       'sitelo — static site generation for Vite. Write functions that return HTML.',
   },
   es: {
-    navDocs: 'Docs',
+    navDocs: 'Documentación',
     navExamples: 'Ejemplos',
     navAbout: 'Acerca de',
     openMenu: 'Abrir menú',
@@ -194,7 +194,7 @@ const STRINGS = {
       'sitelo — generación de sitios estáticos para Vite. Escribe funciones que devuelven HTML.',
   },
   fr: {
-    navDocs: 'Docs',
+    navDocs: 'Documentation',
     navExamples: 'Exemples',
     navAbout: 'À propos',
     openMenu: 'Ouvrir le menu',
@@ -223,7 +223,7 @@ const STRINGS = {
       'sitelo — génération de sites statiques pour Vite. Écrivez des fonctions qui renvoient du HTML.',
   },
   de: {
-    navDocs: 'Docs',
+    navDocs: 'Dokumentation',
     navExamples: 'Beispiele',
     navAbout: 'Über',
     openMenu: 'Menü öffnen',
@@ -252,7 +252,7 @@ const STRINGS = {
       'sitelo — statische Website-Generierung für Vite. Schreibe Funktionen, die HTML zurückgeben.',
   },
   ru: {
-    navDocs: 'Docs',
+    navDocs: 'Документация',
     navExamples: 'Примеры',
     navAbout: 'О проекте',
     openMenu: 'Открыть меню',

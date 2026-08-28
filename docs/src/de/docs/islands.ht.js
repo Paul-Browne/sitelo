@@ -131,7 +131,7 @@ export default () =>
         ),
         li(
           'Host-Vorlagen in ',
-          a({ href: '/de/examples/islands' }, 'examples/islands'),
+          a({ href: '/de/examples/islands' }, 'Server-Islands-Beispiel'),
           ': Node-',
           code('server.js'),
           ', Netlify-Funktion + Rewrite, Vercel-Serverless + Rewrite',

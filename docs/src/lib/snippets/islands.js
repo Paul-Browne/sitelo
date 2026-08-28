@@ -70,10 +70,10 @@ const T = {
     waitIdle: '等待空闲回调。',
     waitVisible: '等到滚动进入视口。',
     startEarly: '提前 400px 开始加载',
-    perIsland: '每个群岛；0 表示禁用。默认 10000',
-    visibleDefault: "`when: 'visible'` 群岛的默认值",
+    perIsland: '每个区块；0 表示禁用。默认 10000',
+    visibleDefault: "`when: 'visible'` 区块的默认值",
     serverComment: '例如 Node 服务器，或 serverless/边缘函数',
-    notIslandRequest: 'Web Request → Response | null（null = 不是群岛请求）',
+    notIslandRequest: 'Web Request → Response | null（null = 不是区块请求）',
   },
   pt: {
     staticContent: '…conteúdo estático…',

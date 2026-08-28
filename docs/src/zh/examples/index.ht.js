@@ -38,8 +38,8 @@ export default () =>
           ' 从 WordPress REST API 拉取文章，列出它们，并生成静态文章页。',
         ),
         li(
-          a({ href: '/zh/examples/islands' }, '服务端群岛'),
-          ' —— 静态页面外加一个在请求时渲染群岛的 Node 宿主。',
+          a({ href: '/zh/examples/islands' }, '服务端区块'),
+          ' —— 静态页面外加一个在请求时渲染区块的 Node 宿主。',
         ),
       ),
       h2('即将推出'),

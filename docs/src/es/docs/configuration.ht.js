@@ -304,7 +304,7 @@ export default () =>
       p(
         'Búsqueda estática opcional con ',
         a({ href: 'https://pagefind.app', rel: 'noopener' }, 'Pagefind'),
-        ', una dependencia de pares opcional. Instálala cuando quieras búsqueda, luego activa la indexación, marca el contenido, monta la interfaz y ejecuta ',
+        ', una dependencia peer opcional. Instálala cuando quieras búsqueda, luego activa la indexación, marca el contenido, monta la interfaz y ejecuta ',
         code('sitelo build'),
         '.',
       ),

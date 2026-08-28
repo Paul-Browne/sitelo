@@ -102,8 +102,8 @@ export default () =>
             ),
             comparisonRow(
               'Astro',
-              '组件 + 群岛，自研编译器',
-              '内容型站点，需要组件群岛和更大的生态',
+              '组件 + 区块，自研编译器',
+              '内容型站点，需要组件区块和更大的生态',
             ),
             comparisonRow(
               'Next.js',

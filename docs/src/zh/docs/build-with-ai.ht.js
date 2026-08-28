@@ -107,7 +107,7 @@ export default () =>
           '、',
           code('fetchWithCache'),
           ' 和',
-          a({ href: '/zh/docs/islands' }, '服务端群岛'),
+          a({ href: '/zh/docs/islands' }, '服务端区块'),
           '。',
         ),
         li(

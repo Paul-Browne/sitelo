@@ -130,7 +130,7 @@ export default () =>
         ),
         li(
           'Exemples d’hôtes dans ',
-          a({ href: '/fr/examples/islands' }, 'examples/islands'),
+          a({ href: '/fr/examples/islands' }, 'exemple d’îlots serveur'),
           ' : ',
           code('server.js'),
           ' pour Node, fonction Netlify + rewrite, serverless Vercel + rewrite',

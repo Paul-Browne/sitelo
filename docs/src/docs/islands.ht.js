@@ -131,7 +131,7 @@ export default () =>
         ),
         li(
           'Host stubs in ',
-          a({ href: '/examples/islands' }, 'examples/islands'),
+          a({ href: '/examples/islands' }, 'Server islands example'),
           ': Node ',
           code('server.js'),
           ', Netlify function + rewrite, Vercel serverless + rewrite',
