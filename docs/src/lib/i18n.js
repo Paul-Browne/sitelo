@@ -163,6 +163,11 @@ const STRINGS = {
     nodeLabel: 'Requires Node 20.19 or newer',
     githubLabel: (version) => `sitelo ${version} on GitHub`,
     viteLabel: (version) => `Powered by Vite ${version}`,
+    cookieLabel: 'Cookie consent',
+    cookieText:
+      'This site uses Google Analytics cookies to count visits. Nothing is stored unless you accept.',
+    cookieAccept: 'Accept',
+    cookieDecline: 'Decline',
     defaultDescription:
       'sitelo — static site generation for Vite. Write functions that return HTML.',
   },
@@ -194,6 +199,11 @@ const STRINGS = {
     nodeLabel: 'Requiere Node 20.19 o superior',
     githubLabel: (version) => `sitelo ${version} en GitHub`,
     viteLabel: (version) => `Con tecnología de Vite ${version}`,
+    cookieLabel: 'Consentimiento de cookies',
+    cookieText:
+      'Este sitio usa cookies de Google Analytics para contar visitas. No se guarda nada si no aceptas.',
+    cookieAccept: 'Aceptar',
+    cookieDecline: 'Rechazar',
     defaultDescription:
       'sitelo — generación de sitios estáticos para Vite. Escribe funciones que devuelven HTML.',
   },
@@ -225,6 +235,11 @@ const STRINGS = {
     nodeLabel: 'Nécessite Node 20.19 ou plus récent',
     githubLabel: (version) => `sitelo ${version} sur GitHub`,
     viteLabel: (version) => `Propulsé par Vite ${version}`,
+    cookieLabel: 'Consentement aux cookies',
+    cookieText:
+      'Ce site utilise des cookies Google Analytics pour compter les visites. Rien n’est enregistré sans votre accord.',
+    cookieAccept: 'Accepter',
+    cookieDecline: 'Refuser',
     defaultDescription:
       'sitelo — génération de sites statiques pour Vite. Écrivez des fonctions qui renvoient du HTML.',
   },
@@ -256,6 +271,11 @@ const STRINGS = {
     nodeLabel: 'Erfordert Node 20.19 oder neuer',
     githubLabel: (version) => `sitelo ${version} auf GitHub`,
     viteLabel: (version) => `Mit Vite ${version}`,
+    cookieLabel: 'Cookie-Zustimmung',
+    cookieText:
+      'Diese Website nutzt Google-Analytics-Cookies, um Besuche zu zählen. Ohne deine Zustimmung wird nichts gespeichert.',
+    cookieAccept: 'Akzeptieren',
+    cookieDecline: 'Ablehnen',
     defaultDescription:
       'sitelo — statische Website-Generierung für Vite. Schreibe Funktionen, die HTML zurückgeben.',
   },
@@ -287,6 +307,11 @@ const STRINGS = {
     nodeLabel: 'Требуется Node 20.19 или новее',
     githubLabel: (version) => `sitelo ${version} на GitHub`,
     viteLabel: (version) => `Работает на Vite ${version}`,
+    cookieLabel: 'Согласие на cookie',
+    cookieText:
+      'Этот сайт использует cookie Google Analytics для подсчёта посещений. Без вашего согласия ничего не сохраняется.',
+    cookieAccept: 'Принять',
+    cookieDecline: 'Отклонить',
     defaultDescription:
       'sitelo — генерация статических сайтов для Vite. Пишите функции, которые возвращают HTML.',
   },
@@ -318,6 +343,11 @@ const STRINGS = {
     nodeLabel: '需要 Node 20.19 或更高版本',
     githubLabel: (version) => `GitHub 上的 sitelo ${version}`,
     viteLabel: (version) => `由 Vite ${version} 驱动`,
+    cookieLabel: 'Cookie 同意',
+    cookieText:
+      '本站使用 Google Analytics cookie 统计访问量。未经同意不会存储任何内容。',
+    cookieAccept: '接受',
+    cookieDecline: '拒绝',
     defaultDescription:
       'sitelo — 面向 Vite 的静态站点生成。编写返回 HTML 的函数。',
   },
@@ -349,6 +379,11 @@ const STRINGS = {
     nodeLabel: 'Requer Node 20.19 ou superior',
     githubLabel: (version) => `sitelo ${version} no GitHub`,
     viteLabel: (version) => `Com tecnologia Vite ${version}`,
+    cookieLabel: 'Consentimento de cookies',
+    cookieText:
+      'Este site usa cookies do Google Analytics para contar visitas. Nada é guardado sem a tua autorização.',
+    cookieAccept: 'Aceitar',
+    cookieDecline: 'Recusar',
     defaultDescription:
       'sitelo — geração de sites estáticos para Vite. Escreve funções que devolvem HTML.',
   },

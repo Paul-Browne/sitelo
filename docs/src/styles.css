@@ -1724,3 +1724,99 @@ a.feature-card:hover h3 {
     gap: 0.35rem;
   }
 }
+
+/*
+ * Cookie consent.
+ *
+ * A card in the bottom-left corner rather than a bar across the foot or a
+ * modal over the page: it overlaps nothing at the reading width, and the page
+ * stays usable for a visitor who would rather just ignore it.
+ *
+ * Sits above the topbar but below the nav and language panels — an open menu
+ * is something the visitor is actively using, and on a short screen it can
+ * reach this far down.
+ */
+.cookie-banner {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 15;
+  width: min(24rem, calc(100% - 2rem));
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--paper-elevated) 94%, transparent);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-panel);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  opacity: 0;
+  transform: translateY(0.75rem);
+  transition: opacity 240ms ease, transform 240ms ease;
+  /*
+   * Only the shown banner takes clicks. A faded one is still laid out, and
+   * without this it would keep swallowing them in the corner it used to fill.
+   */
+  pointer-events: none;
+}
+
+.cookie-banner[hidden] {
+  display: none;
+}
+
+.cookie-banner.is-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.cookie-banner-text {
+  margin: 0;
+}
+
+.cookie-banner-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.cookie-btn {
+  padding: 0.45rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.cookie-btn:hover {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--ink) 32%, transparent);
+}
+
+.cookie-btn-accept {
+  border-color: transparent;
+  background: var(--ink);
+  color: var(--accent-ink);
+}
+
+.cookie-btn-accept:hover {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cookie-banner,
+  .cookie-btn {
+    transition: none;
+  }
+}
