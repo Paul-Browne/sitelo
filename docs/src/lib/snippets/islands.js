@@ -51,6 +51,30 @@ const T = {
     serverComment: 'z. B. ein Node-Server oder eine Serverless-/Edge-Funktion',
     notIslandRequest: 'Web Request → Response | null (null = keine Island-Anfrage)',
   },
+  ru: {
+    staticContent: '…статическое содержимое…',
+    loadingComments: '<p>Загрузка комментариев…</p>',
+    loadWithPage: 'Загружается сразу вместе со страницей — по умолчанию.',
+    waitIdle: 'Ждёт момента простоя.',
+    waitVisible: 'Ждёт появления в области просмотра.',
+    startEarly: 'начать загрузку на 400px раньше',
+    perIsland: 'на остров; 0 отключает. По умолчанию 10000',
+    visibleDefault: "по умолчанию для островов с `when: 'visible'`",
+    serverComment: 'например, сервер Node или serverless/edge-функция',
+    notIslandRequest: 'Web Request → Response | null (null = это не запрос острова)',
+  },
+  zh: {
+    staticContent: '…静态内容…',
+    loadingComments: '<p>正在加载评论…</p>',
+    loadWithPage: '页面一加载就取——默认行为。',
+    waitIdle: '等待空闲回调。',
+    waitVisible: '等到滚动进入视口。',
+    startEarly: '提前 400px 开始加载',
+    perIsland: '每个群岛；0 表示禁用。默认 10000',
+    visibleDefault: "`when: 'visible'` 群岛的默认值",
+    serverComment: '例如 Node 服务器，或 serverless/边缘函数',
+    notIslandRequest: 'Web Request → Response | null（null = 不是群岛请求）',
+  },
 }
 
 export function islandsSnippets(lang = 'en') {

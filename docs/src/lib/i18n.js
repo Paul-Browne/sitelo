@@ -7,7 +7,7 @@
  */
 
 export const DEFAULT_LOCALE = 'en'
-export const LOCALES = ['en', 'es', 'fr', 'de']
+export const LOCALES = ['en', 'es', 'fr', 'de', 'ru', 'zh']
 
 /** Locales served from a URL prefix — everything but the default. */
 const PREFIXED = LOCALES.filter((locale) => locale !== DEFAULT_LOCALE)
@@ -18,14 +18,34 @@ export const LOCALE_NAMES = {
   es: 'Español',
   fr: 'Français',
   de: 'Deutsch',
+  ru: 'Русский',
+  zh: '简体中文',
 }
 
-/** BCP 47 tags for `<html lang>` and `hreflang`. */
+/**
+ * BCP 47 tags for `<html lang>` and `hreflang`.
+ *
+ * Not always the same as the URL prefix — Simplified Chinese is served from
+ * `/zh` but tagged `zh-Hans`, which is what search engines and screen readers
+ * want to see.
+ */
 export const LOCALE_TAGS = {
   en: 'en',
   es: 'es',
   fr: 'fr',
   de: 'de',
+  ru: 'ru',
+  zh: 'zh-Hans',
+}
+
+/** Two-letter labels for the language switcher. */
+export const LOCALE_SHORT = {
+  en: 'EN',
+  es: 'ES',
+  fr: 'FR',
+  de: 'DE',
+  ru: 'RU',
+  zh: '中文',
 }
 
 /** Open Graph locale identifiers. */
@@ -34,6 +54,8 @@ export const OG_LOCALES = {
   es: 'es_ES',
   fr: 'fr_FR',
   de: 'de_DE',
+  ru: 'ru_RU',
+  zh: 'zh_CN',
 }
 
 /**
@@ -211,6 +233,64 @@ const STRINGS = {
     viteLabel: (version) => `Mit Vite ${version}`,
     defaultDescription:
       'sitelo — statische Website-Generierung für Vite. Schreibe Funktionen, die HTML zurückgeben.',
+  },
+  ru: {
+    navDocs: 'Docs',
+    navExamples: 'Примеры',
+    navAbout: 'О проекте',
+    openMenu: 'Открыть меню',
+    menu: 'Меню',
+    languageLabel: 'Язык',
+    sidebarDocs: 'Документация',
+    sidebarExamples: 'Примеры',
+    titleSuffixDocs: 'документация sitelo',
+    titleSuffixExamples: 'примеры sitelo',
+    tocLabel: 'На этой странице',
+    pagenavLabel: 'Соседние страницы',
+    previous: '← Назад',
+    next: 'Вперёд →',
+    copy: 'Копировать',
+    copyCode: 'Копировать код',
+    copied: 'Скопировано',
+    copyFailed: 'Ошибка',
+    markupStyle: 'Стиль разметки',
+    templateLiteral: 'Шаблонная строка',
+    recommended: 'рекомендуется',
+    licenseLabel: 'Лицензия MIT',
+    nodeLabel: 'Требуется Node 20.19 или новее',
+    githubLabel: (version) => `sitelo ${version} на GitHub`,
+    viteLabel: (version) => `Работает на Vite ${version}`,
+    defaultDescription:
+      'sitelo — генерация статических сайтов для Vite. Пишите функции, которые возвращают HTML.',
+  },
+  zh: {
+    navDocs: '文档',
+    navExamples: '示例',
+    navAbout: '关于',
+    openMenu: '打开菜单',
+    menu: '菜单',
+    languageLabel: '语言',
+    sidebarDocs: '文档',
+    sidebarExamples: '示例',
+    titleSuffixDocs: 'sitelo 文档',
+    titleSuffixExamples: 'sitelo 示例',
+    tocLabel: '本页内容',
+    pagenavLabel: '相邻页面',
+    previous: '← 上一页',
+    next: '下一页 →',
+    copy: '复制',
+    copyCode: '复制代码',
+    copied: '已复制',
+    copyFailed: '失败',
+    markupStyle: '标记风格',
+    templateLiteral: '模板字符串',
+    recommended: '推荐',
+    licenseLabel: 'MIT 许可证',
+    nodeLabel: '需要 Node 20.19 或更高版本',
+    githubLabel: (version) => `GitHub 上的 sitelo ${version}`,
+    viteLabel: (version) => `由 Vite ${version} 驱动`,
+    defaultDescription:
+      'sitelo — 面向 Vite 的静态站点生成。编写返回 HTML 的函数。',
   },
 }
 

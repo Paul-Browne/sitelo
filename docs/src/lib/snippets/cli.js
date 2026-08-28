@@ -27,6 +27,18 @@ const T = {
     prodBuild: 'Produktions-Build',
     previewBuild: 'Produktions-Build ansehen',
   },
+  ru: {
+    sameAsDev: 'то же, что sitelo dev',
+    devServer: 'сервер разработки',
+    prodBuild: 'продакшн-сборка',
+    previewBuild: 'просмотр продакшн-сборки',
+  },
+  zh: {
+    sameAsDev: '等同于 sitelo dev',
+    devServer: '开发服务器',
+    prodBuild: '生产构建',
+    previewBuild: '预览生产构建',
+  },
 }
 
 export function cliSnippets(lang = 'en') {

@@ -38,6 +38,24 @@ const T = {
     mySite: 'Meine Website',
     hello: 'Hallo',
   },
+  ru: {
+    pageReturnsHtml: 'страница — возвращает HTML',
+    linkedBundled: 'подключено из HTML → попадёт в бандл',
+    importedBundled: 'импортируется из main.js → тоже в бандле',
+    dataOnly: 'используется только в data() → никогда не публикуется',
+    copiedAsIs: 'копируется как есть',
+    mySite: 'Мой сайт',
+    hello: 'Привет',
+  },
+  zh: {
+    pageReturnsHtml: '页面 — 返回 HTML',
+    linkedBundled: '从 HTML 引用 → 打包',
+    importedBundled: '被 main.js 导入 → 一并打包',
+    dataOnly: '仅在 data() 中使用 → 永不发布',
+    copiedAsIs: '原样复制',
+    mySite: '我的网站',
+    hello: '你好',
+  },
 }
 
 export function assetsSnippets(lang = 'en') {

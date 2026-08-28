@@ -15,6 +15,14 @@ const T = {
     sunrise: 'Sonnenaufgang über dem Hafen',
     pixelArt: 'Pixel-Art',
   },
+  ru: {
+    sunrise: 'Рассвет над гаванью',
+    pixelArt: 'Пиксель-арт',
+  },
+  zh: {
+    sunrise: '港口上的日出',
+    pixelArt: '像素画',
+  },
 }
 
 export function imagesSnippets(lang = 'en') {

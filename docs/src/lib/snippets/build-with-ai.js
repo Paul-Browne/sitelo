@@ -122,11 +122,71 @@ Bevorzuge javascript-to-html (https://ht.js.org) für Markup. Nutze dateibasiert
 Konsultiere https://sitelo.js.org/llms.txt für die sitelo-APIs.
 `
 
+const AGENTS_RU = `# sitelo
+
+Этот проект использует [sitelo](https://sitelo.js.org) — генератор статических сайтов на базе Vite.
+
+## Правила
+
+- Страницы — это модули внутри \`src/\` с расширениями вроде \`.ht.js\` / \`.ht.ts\` / \`.ht.jsx\`, которые **экспортируют по умолчанию функцию (или строку), возвращающую HTML**.
+- **Не** добавляй React, Next.js, Astro или любой компонентный фреймворк с гидратацией, если пользователь не попросил об этом явно.
+- Маршрутизация строится на файлах: \`about.ht.js\` → \`/about\`, \`[slug].ht.js\` → динамическая (используй \`generateStaticParams\` для \`sitelo build\`).
+- Загружай данные через \`export async function data(ctx)\`. Для HTTP с кэшем используй \`fetchWithCache\` из \`sitelo\`.
+- В \`dist/\` попадает только тот JS/CSS, на который ссылается HTML. Оставляй серверный код без ссылок, чтобы он никогда не публиковался.
+- Конфигурация лежит в \`sitelo.config.js\`. Параметры Vite — под ключом \`vite\`.
+- Команды: \`sitelo\` (dev), \`sitelo build\`, \`sitelo preview\`.
+- Актуальные API смотри на https://sitelo.js.org/llms.txt и https://sitelo.js.org/docs — не выдумывай API из других фреймворков.
+- Для разметки предпочитай [javascript-to-html](https://ht.js.org) (\`ht.js\`): функции-теги, возвращающие строки HTML. Документация: https://ht.js.org
+`
+
+const AGENTS_ZH = `# sitelo
+
+本项目使用 [sitelo](https://sitelo.js.org) —— 一个由 Vite 驱动的静态站点生成器。
+
+## 规则
+
+- 页面是 \`src/\` 下的模块，扩展名形如 \`.ht.js\` / \`.ht.ts\` / \`.ht.jsx\`，并且**默认导出一个返回 HTML 的函数（或字符串）**。
+- 除非用户明确要求，**不要**引入 React、Next.js、Astro 或任何组件/水合框架。
+- 路由基于文件：\`about.ht.js\` → \`/about\`，\`[slug].ht.js\` → 动态路由（\`sitelo build\` 时使用 \`generateStaticParams\`）。
+- 用 \`export async function data(ctx)\` 加载数据。需要带缓存的 HTTP 时，使用 \`sitelo\` 提供的 \`fetchWithCache\`。
+- 只有被 HTML 引用的 JS/CSS 才会打包进 \`dist/\`。让服务端代码保持无引用，它就永远不会被发布。
+- 配置写在 \`sitelo.config.js\` 里。Vite 选项放在 \`vite\` 下。
+- 命令：\`sitelo\`（dev）、\`sitelo build\`、\`sitelo preview\`。
+- 当前 API 请阅读 https://sitelo.js.org/llms.txt 和 https://sitelo.js.org/docs —— 不要照搬其他框架的 API。
+- 标记优先使用 [javascript-to-html](https://ht.js.org)（\`ht.js\`）：返回 HTML 字符串的标签函数。文档：https://ht.js.org
+`
+
+const CURSOR_RU = `---
+description: соглашения статических сайтов sitelo
+alwaysApply: true
+---
+
+# sitelo
+
+Страницы — это модули \`.ht.js\` (и т. п.), возвращающие строки HTML, а не компоненты React/Next/Astro.
+Для разметки предпочитай javascript-to-html (https://ht.js.org). Используй файловую маршрутизацию, \`data()\` и \`sitelo build\`.
+Об API sitelo смотри https://sitelo.js.org/llms.txt
+`
+
+const CURSOR_ZH = `---
+description: sitelo 静态站点约定
+alwaysApply: true
+---
+
+# sitelo
+
+页面是返回 HTML 字符串的 \`.ht.js\`（等）模块，而不是 React/Next/Astro 组件。
+标记优先使用 javascript-to-html (https://ht.js.org)。使用基于文件的路由、\`data()\` 和 \`sitelo build\`。
+sitelo 的 API 请参阅 https://sitelo.js.org/llms.txt
+`
+
 const BY_LOCALE = {
   en: { agents: AGENTS_EN, cursorRule: CURSOR_EN },
   es: { agents: AGENTS_ES, cursorRule: CURSOR_ES },
   fr: { agents: AGENTS_FR, cursorRule: CURSOR_FR },
   de: { agents: AGENTS_DE, cursorRule: CURSOR_DE },
+  ru: { agents: AGENTS_RU, cursorRule: CURSOR_RU },
+  zh: { agents: AGENTS_ZH, cursorRule: CURSOR_ZH },
 }
 
 export function buildWithAiSnippets(lang = 'en') {

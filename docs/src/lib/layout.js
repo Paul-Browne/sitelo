@@ -29,6 +29,7 @@ import {
   DEFAULT_LOCALE,
   LOCALES,
   LOCALE_NAMES,
+  LOCALE_SHORT,
   LOCALE_TAGS,
   OG_LOCALES,
   basePath,
@@ -85,7 +86,7 @@ function languageSwitch(activeHref, lang) {
           // "true" — which would mark every language as the current one.
           ...(current ? { class: 'is-active', 'aria-current': 'true' } : {}),
         },
-        LOCALE_TAGS[locale].toUpperCase(),
+        LOCALE_SHORT[locale],
       )
     }),
   )
@@ -308,13 +309,23 @@ const DE_TRANSLITERATIONS = [
 ]
 
 /**
+ * Locales whose headings are folded to unaccented ASCII.
+ *
+ * Deliberately excludes the non-Latin scripts: NFD decomposition would turn
+ * Russian "й" into "и" and "ё" into "е", quietly changing the word.
+ */
+const FOLD_TO_ASCII = new Set(['en', 'es', 'fr', 'de'])
+
+/**
  * Slugify a heading for use as an anchor id.
  *
- * Accents are folded to ASCII, so a Spanish heading like "Optimización de
- * imágenes" slugs to `optimizacion-de-imagenes` rather than losing every
- * accented letter to a dash. German folds its umlauts the way German
- * actually spells them out, so "JSX-Einschränkungen" becomes
- * `jsx-einschraenkungen`, not `jsx-einschrankungen`.
+ * Latin-script locales fold to ASCII, so a Spanish heading like "Optimización
+ * de imágenes" slugs to `optimizacion-de-imagenes` rather than losing every
+ * accented letter to a dash. German first spells its umlauts out, giving
+ * `jsx-einschraenkungen` rather than `jsx-einschrankungen`.
+ *
+ * Russian and Chinese keep their own characters — HTML5 ids allow them, and
+ * stripping to ASCII would leave every heading with an empty or colliding id.
  */
 function slugify(text, lang) {
   let value = text.toLowerCase()
@@ -325,10 +336,12 @@ function slugify(text, lang) {
     }
   }
 
+  if (FOLD_TO_ASCII.has(lang)) {
+    value = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  }
+
   return value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/[^\p{L}\p{N}]+/gu, '-')
     .replace(/^-+|-+$/g, '')
 }
 

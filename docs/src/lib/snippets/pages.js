@@ -15,6 +15,14 @@ const T = {
     hello: 'Hallo',
     staticAsItGets: 'Statischer geht es nicht',
   },
+  ru: {
+    hello: 'Привет',
+    staticAsItGets: 'Статичнее некуда',
+  },
+  zh: {
+    hello: '你好',
+    staticAsItGets: '再静态不过了',
+  },
 }
 
 export function pagesSnippets(lang = 'en') {

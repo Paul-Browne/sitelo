@@ -179,6 +179,10 @@ code {
   font-weight: 600;
   letter-spacing: 0.04em;
   line-height: 1.5;
+  /* CJK labels are wider than the two-letter codes; without this they wrap
+     mid-word once the row is squeezed. */
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 
 .lang-switch a.is-active {
@@ -187,8 +191,9 @@ code {
 }
 
 .nav-menu-panel .lang-switch {
-  margin: 0.25rem 0.7rem 0.2rem;
-  align-self: flex-start;
+  margin: 0.25rem 0.35rem 0.2rem;
+  align-self: stretch;
+  justify-content: space-between;
 }
 
 .nav-menu-panel .lang-switch a {

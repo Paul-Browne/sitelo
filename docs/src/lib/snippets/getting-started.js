@@ -30,6 +30,20 @@ const T = {
     writeDist: 'schreibt dist/',
     previewBuild: 'Build ansehen',
   },
+  ru: {
+    myWebsite: 'Мой сайт',
+    helloWorld: 'Привет, мир',
+    devServer: 'сервер разработки',
+    writeDist: 'записывает dist/',
+    previewBuild: 'просмотр сборки',
+  },
+  zh: {
+    myWebsite: '我的网站',
+    helloWorld: '你好，世界',
+    devServer: '开发服务器',
+    writeDist: '写入 dist/',
+    previewBuild: '预览构建',
+  },
 }
 
 export function gettingStartedSnippets(lang = 'en') {

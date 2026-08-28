@@ -17,6 +17,8 @@ const COPY_LABELS = {
   es: { copy: 'Copiar', copied: 'Copiado', failed: 'Error' },
   fr: { copy: 'Copier', copied: 'Copié', failed: 'Échec' },
   de: { copy: 'Kopieren', copied: 'Kopiert', failed: 'Fehler' },
+  ru: { copy: 'Копировать', copied: 'Скопировано', failed: 'Ошибка' },
+  zh: { copy: '复制', copied: '已复制', failed: '失败' },
 }
 
 const copyLabels =

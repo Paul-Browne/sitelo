@@ -10,6 +10,12 @@ const T = {
   de: {
     standardFetchOptions: 'übliche fetch-Optionen',
   },
+  ru: {
+    standardFetchOptions: 'обычные параметры fetch',
+  },
+  zh: {
+    standardFetchOptions: '标准 fetch 选项',
+  },
 }
 
 export function dataSnippets(lang = 'en') {
