@@ -218,6 +218,22 @@ code {
   border-radius: 0.5rem;
 }
 
+/*
+ * Thirteen rows — five links, the theme switch and seven languages — have to
+ * fit a phone screen, so the mobile menu runs tighter than the desktop
+ * dropdowns it shares its row styles with. Rows still land near 34px, well
+ * clear of the 24px minimum touch target.
+ */
+.nav-menu-panel {
+  line-height: 1.35;
+}
+
+.nav-menu-panel a,
+.nav-menu-panel .lang-option {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
 .nav-menu-panel a:hover,
 .nav-menu-panel a.is-active {
   background: color-mix(in srgb, var(--ink) 8%, transparent);
@@ -376,10 +392,18 @@ code {
 .theme-toggle-row {
   width: 100%;
   justify-content: flex-start;
-  margin-top: 0.35rem;
-  padding: 0.55rem 0.7rem;
+  /*
+   * A band between two rules. Both dividers sit on this element, so the
+   * label's distance from each is just this padding — symmetric by
+   * construction. Spacing them apart with margins on the neighbouring
+   * elements is what made them unequal, since the panel's flex gap and the
+   * language list's own margin only ever stacked below.
+   */
+  margin: 0.35rem 0;
+  padding: 0.4rem 0.7rem;
   border: none;
   border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
   border-radius: 0;
   font-size: 0.9rem;
 }
@@ -393,9 +417,6 @@ code {
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
-  margin-top: 0.35rem;
-  padding-top: 0.35rem;
-  border-top: 1px solid var(--line);
 }
 
 .nav-brand {
