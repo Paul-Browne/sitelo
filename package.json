@@ -1,6 +1,6 @@
 {
   "name": "sitelo",
-  "version": "2.5.4",
+  "version": "2.5.5",
   "author": "Paul Browne",
   "type": "module",
   "license": "MIT",
@@ -102,7 +102,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.17.0",
-    "javascript-to-html": "^1.1.4",
+    "javascript-to-html": "^1.1.5",
     "pagefind": "^1.5.2",
     "prismjs": "^1.30.0",
     "sharp": "^0.35.3"

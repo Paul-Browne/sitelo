@@ -195,6 +195,15 @@ code {
   flex-direction: column;
   gap: 0.15rem;
   min-width: 10.5rem;
+  /*
+   * Five links plus seven languages outgrow a short phone screen, so cap the
+   * panel to the space below the topbar and let it scroll. `svh` rather than
+   * `dvh`: the smallest viewport height never overflows when mobile browser
+   * chrome is showing, and the panel cannot resize under a scrolling thumb.
+   */
+  max-height: calc(100svh - 4.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 0.45rem;
   border: 1px solid var(--line);
   border-radius: 0.75rem;

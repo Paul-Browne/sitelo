@@ -172,19 +172,22 @@ function siteNav(activeHref = '/', lang = DEFAULT_LOCALE) {
 
   const links = [
     a(
-      { class: onDocs ? 'is-active' : undefined, href: localePath('/docs', lang) },
+      {
+        ...(onDocs ? { class: 'is-active' } : {}),
+        href: localePath('/docs', lang),
+      },
       t.navDocs,
     ),
     a(
       {
-        class: onExamples ? 'is-active' : undefined,
+        ...(onExamples ? { class: 'is-active' } : {}),
         href: localePath('/examples', lang),
       },
       t.navExamples,
     ),
     a(
       {
-        class: onAbout ? 'is-active' : undefined,
+        ...(onAbout ? { class: 'is-active' } : {}),
         href: localePath('/about', lang),
       },
       t.navAbout,
@@ -229,8 +232,8 @@ function siteNav(activeHref = '/', lang = DEFAULT_LOCALE) {
       div(
         { class: 'nav-menu-panel' },
         ...links,
-        languageSwitch(activeHref, lang, 'list'),
         themeToggle(lang, 'list'),
+        languageSwitch(activeHref, lang, 'list'),
       ),
     ),
   )
@@ -289,7 +292,7 @@ function sideNav({ label, items, activeHref }) {
         a(
           {
             href: item.href,
-            class: item.href === activeHref ? 'is-active' : undefined,
+            ...(item.href === activeHref ? { class: 'is-active' } : {}),
           },
           item.label,
         ),
