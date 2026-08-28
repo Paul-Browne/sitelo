@@ -1,4 +1,15 @@
+/*
+ * Two palettes, one set of tokens.
+ *
+ * Dark is the site's own look and the fallback when JavaScript never runs, so
+ * it lives on bare `:root`. An inline script in <head> resolves the active
+ * theme before first paint — a stored choice if there is one, otherwise the
+ * OS preference — and stamps `data-theme` on <html>. Because the script always
+ * resolves to a concrete value, light needs only the one attribute block; no
+ * rule is duplicated across a `prefers-color-scheme` media query.
+ */
 :root {
+  color-scheme: dark;
   --ink: #e8f2ee;
   --ink-soft: #9bb5aa;
   --ink-faint: #6d857c;
@@ -9,12 +20,62 @@
   --accent-ink: #04150e;
   --code-bg: #050d0a;
   --code-fg: #c5ddd2;
+  /* Lifts the install pill off the flat code background. */
+  --install-tint: #123;
+  /* logo.svg is drawn in dark ink; flip it to sit on a dark page. */
+  --logo-invert: 1;
   --line: color-mix(in srgb, var(--ink) 12%, transparent);
+  --shadow-panel: 0 12px 32px rgba(0, 0, 0, 0.35);
+  /* Hot core and cool sweep of the spinning conic glow on cards and code. */
+  --glow-tint: white;
+  --glow-cool: #8fd4ff;
+  /* Prism tokens */
+  --tok-comment: #6d857c;
+  --tok-punctuation: #9bb5aa;
+  --tok-property: #7ee0b0;
+  --tok-string: #b8f5d4;
+  --tok-operator: #9ed4ff;
+  --tok-keyword: #3dff9a;
+  --tok-function: #8fd4ff;
+  --tok-regex: #f0c674;
   --font-display: 'Sora', system-ui, sans-serif;
   --font-body: 'Source Sans 3', 'Segoe UI', sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
   --measure: 40rem;
   --page: min(68rem, calc(100% - 2.5rem));
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --ink: #0c1f18;
+  --ink-soft: #3f5f53;
+  /* Deep enough for the small uppercase labels to clear 4.5:1 on paper. */
+  --ink-faint: #566e63;
+  /* Tinted, so the white raised surfaces above actually read as raised. */
+  --paper: #eef3f0;
+  --paper-elevated: #ffffff;
+  /* Neon green is unreadable on paper; the light accent is the same hue, deepened. */
+  --accent: #0a7a45;
+  --accent-deep: #04562f;
+  --accent-ink: #ffffff;
+  --code-bg: #eaf2ed;
+  --code-fg: #14261e;
+  /* On paper the navy tint reads as flat grey; tint with the accent instead. */
+  --install-tint: #0a7a45;
+  --logo-invert: 0;
+  --line: color-mix(in srgb, var(--ink) 14%, transparent);
+  --shadow-panel: 0 12px 32px rgba(7, 30, 22, 0.14);
+  /* Mixing towards white washes the glow out on paper — deepen it instead. */
+  --glow-tint: #063a22;
+  --glow-cool: #2f7fc7;
+  --tok-comment: #56705f;
+  --tok-punctuation: #47605a;
+  --tok-property: #0f6b45;
+  --tok-string: #0b5f6b;
+  --tok-operator: #1f5fa8;
+  --tok-keyword: #056f3c;
+  --tok-function: #1a5fb4;
+  --tok-regex: #8a5a06;
 }
 
 *,
@@ -138,7 +199,7 @@ code {
   border: 1px solid var(--line);
   border-radius: 0.75rem;
   background: color-mix(in srgb, var(--paper-elevated) 94%, transparent);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--shadow-panel);
   backdrop-filter: blur(12px);
   z-index: 20;
 }
@@ -220,7 +281,7 @@ code {
   border: 1px solid var(--line);
   border-radius: 0.75rem;
   background: color-mix(in srgb, var(--paper-elevated) 96%, transparent);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--shadow-panel);
   backdrop-filter: blur(12px);
   z-index: 30;
 }
@@ -249,6 +310,75 @@ code {
   line-height: 1;
 }
 
+/*
+ * Theme toggle — icon-only in the desktop bar, icon + label in the mobile menu.
+ *
+ * Which icon shows is driven purely by `data-theme` on <html>, so the button
+ * is correct on first paint and never has to be corrected by script. The icon
+ * shown is the theme you get by clicking, not the one you are in.
+ */
+.theme-toggle {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: none;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  transition: color 140ms ease, border-color 140ms ease;
+}
+
+.theme-toggle:hover {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--ink) 28%, transparent);
+}
+
+.theme-icon {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+}
+
+/* Dark theme offers the sun; light theme offers the moon. */
+.theme-icon-sun {
+  display: block;
+}
+
+.theme-icon-moon {
+  display: none;
+}
+
+:root[data-theme='light'] .theme-icon-sun {
+  display: none;
+}
+
+:root[data-theme='light'] .theme-icon-moon {
+  display: block;
+}
+
+/* Inside the mobile menu the button is a row, matching the links above it. */
+.theme-toggle-row {
+  width: 100%;
+  justify-content: flex-start;
+  margin-top: 0.35rem;
+  padding: 0.55rem 0.7rem;
+  border: none;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  font-size: 0.9rem;
+}
+
+.theme-toggle-row:hover {
+  border-color: var(--line);
+}
+
 /* Flat list inside the mobile menu — that panel is already a dropdown. */
 .lang-list {
   display: flex;
@@ -270,8 +400,7 @@ code {
   display: block;
   height: 1.35rem;
   width: auto;
-  /* logo is dark ink; invert for the dark docs theme */
-  filter: invert(1);
+  filter: invert(var(--logo-invert));
 }
 
 .hero-logo {
@@ -279,7 +408,7 @@ code {
   width: min(14rem, 72vw);
   height: auto;
   margin: 0 auto 1.5rem;
-  filter: invert(1);
+  filter: invert(var(--logo-invert));
   animation: rise 700ms ease both;
 }
 
@@ -451,7 +580,7 @@ code {
   max-width: 100%;
   padding: 0.55rem 0.55rem 0.55rem 1rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--code-bg) 88%, #123);
+  background: color-mix(in srgb, var(--code-bg) 88%, var(--install-tint));
   color: var(--code-fg);
   font-family: var(--font-mono);
   font-size: 0.88rem;
@@ -564,11 +693,11 @@ code {
   background: conic-gradient(
     from var(--glow-angle),
     transparent 0%,
-    color-mix(in srgb, var(--accent) 70%, white) 8%,
+    color-mix(in srgb, var(--accent) 70%, var(--glow-tint)) 8%,
     transparent 22%,
-    color-mix(in srgb, #8fd4ff 65%, transparent) 38%,
+    color-mix(in srgb, var(--glow-cool) 65%, transparent) 38%,
     transparent 52%,
-    color-mix(in srgb, var(--accent-deep) 90%, #3dff9a) 68%,
+    color-mix(in srgb, var(--accent-deep) 90%, var(--accent)) 68%,
     transparent 82%,
     color-mix(in srgb, var(--accent) 45%, transparent) 92%,
     transparent 100%
@@ -584,7 +713,7 @@ code {
     transparent 0%,
     color-mix(in srgb, var(--accent) 55%, transparent) 10%,
     transparent 28%,
-    color-mix(in srgb, #8fd4ff 40%, transparent) 42%,
+    color-mix(in srgb, var(--glow-cool) 40%, transparent) 42%,
     transparent 58%,
     color-mix(in srgb, var(--accent-deep) 55%, transparent) 72%,
     transparent 88%
@@ -737,12 +866,12 @@ code {
 .token.prolog,
 .token.doctype,
 .token.cdata {
-  color: #6d857c;
+  color: var(--tok-comment);
   font-style: italic;
 }
 
 .token.punctuation {
-  color: #9bb5aa;
+  color: var(--tok-punctuation);
 }
 
 .token.property,
@@ -752,7 +881,7 @@ code {
 .token.constant,
 .token.symbol,
 .token.deleted {
-  color: #7ee0b0;
+  color: var(--tok-property);
 }
 
 .token.selector,
@@ -761,7 +890,7 @@ code {
 .token.char,
 .token.builtin,
 .token.inserted {
-  color: #b8f5d4;
+  color: var(--tok-string);
 }
 
 .token.operator,
@@ -769,24 +898,24 @@ code {
 .token.url,
 .language-css .token.string,
 .style .token.string {
-  color: #9ed4ff;
+  color: var(--tok-operator);
 }
 
 .token.atrule,
 .token.attr-value,
 .token.keyword {
-  color: #3dff9a;
+  color: var(--tok-keyword);
 }
 
 .token.function,
 .token.class-name {
-  color: #8fd4ff;
+  color: var(--tok-function);
 }
 
 .token.regex,
 .token.important,
 .token.variable {
-  color: #f0c674;
+  color: var(--tok-regex);
 }
 
 .token.important,
@@ -849,11 +978,11 @@ a.feature-card:focus {
   background: conic-gradient(
     from var(--glow-angle),
     transparent 0%,
-    color-mix(in srgb, var(--accent) 70%, white) 8%,
+    color-mix(in srgb, var(--accent) 70%, var(--glow-tint)) 8%,
     transparent 22%,
-    color-mix(in srgb, #8fd4ff 65%, transparent) 38%,
+    color-mix(in srgb, var(--glow-cool) 65%, transparent) 38%,
     transparent 52%,
-    color-mix(in srgb, var(--accent-deep) 90%, #3dff9a) 68%,
+    color-mix(in srgb, var(--accent-deep) 90%, var(--accent)) 68%,
     transparent 82%,
     color-mix(in srgb, var(--accent) 45%, transparent) 92%,
     transparent 100%
@@ -868,7 +997,7 @@ a.feature-card:focus {
     transparent 0%,
     color-mix(in srgb, var(--accent) 55%, transparent) 10%,
     transparent 28%,
-    color-mix(in srgb, #8fd4ff 40%, transparent) 42%,
+    color-mix(in srgb, var(--glow-cool) 40%, transparent) 42%,
     transparent 58%,
     color-mix(in srgb, var(--accent-deep) 55%, transparent) 72%,
     transparent 88%

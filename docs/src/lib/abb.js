@@ -3,6 +3,8 @@
 // Upstream uses `export default abb = …` which throws in ESM (abb is not defined).
 // Also: grain noise is generated once as a fixed tile so mobile chrome
 // show/hide (viewport resize) does not rebuild the data-URL every frame.
+// Also: re-initialising an element now releases the stylesheets the previous
+// call adopted, so switching theme does not pile them up.
 
 const updateStyle = (points) =>
   points
@@ -64,10 +66,16 @@ function abb({
 
   const stylesheet = new CSSStyleSheet()
   const grainSheet = new CSSStyleSheet()
+
+  // Upstream filters for the two sheets it is about to create, which can never
+  // match — so re-initialising an element (as a theme switch does) left the
+  // previous pair adopted forever. Track them per element and drop them.
+  abb.sheets = abb.sheets || {}
+  const stale = abb.sheets[element] ?? []
+  abb.sheets[element] = [grainSheet, stylesheet]
+
   document.adoptedStyleSheets = [
-    ...document.adoptedStyleSheets.filter(
-      (sheet) => sheet !== stylesheet && sheet !== grainSheet,
-    ),
+    ...document.adoptedStyleSheets.filter((sheet) => !stale.includes(sheet)),
     grainSheet,
     stylesheet,
   ]

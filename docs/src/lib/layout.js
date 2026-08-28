@@ -2,6 +2,7 @@ import {
   a,
   aside,
   body,
+  button,
   details,
   div,
   footer,
@@ -46,6 +47,53 @@ const siteloVersion = require('../../../package.json').version
 const viteBolt = `<svg class="badge-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 11-13h-8z"/></svg>`
 
 const SITE_URL = 'https://sitelo.js.org'
+
+/** Background behind the browser chrome, mirroring `--paper` in each theme. */
+const THEME_COLORS = {
+  dark: '#071410',
+  light: '#eef3f0',
+}
+
+/**
+ * Resolves the theme before the first paint, so a visitor who chose light
+ * never sees a dark flash on the way in.
+ *
+ * Inline and blocking on purpose — anything deferred paints first. It always
+ * resolves to a concrete `light` or `dark`, which is why the stylesheet needs
+ * only one `[data-theme]` block rather than a matching media query. With
+ * JavaScript off nothing runs, no attribute is set, and the site stays dark.
+ */
+const themeBootScript = `(function(){var s;try{s=localStorage.getItem('sitelo-theme')}catch(e){}var t=s==='light'||s==='dark'?s:window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.dataset.theme=t;var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='light'?'${THEME_COLORS.light}':'${THEME_COLORS.dark}')})()`
+
+const sunIcon = `<svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.2v2.2M12 19.6v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.2 12h2.2M19.6 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg>`
+
+const moonIcon = `<svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 13.1A8.6 8.6 0 1 1 10.9 3.2a6.9 6.9 0 0 0 9.9 9.9z"/></svg>`
+
+/**
+ * Theme toggle: an icon-only button in the desktop bar, an icon and a label
+ * in the mobile menu, where every other row is labelled too.
+ *
+ * The server cannot know the visitor's theme, so the markup ships the label
+ * for the dark default and `main.js` rewrites it once the theme is resolved.
+ * The icon needs no such fix-up — CSS picks it straight off `data-theme`, so
+ * it is already right on the first paint.
+ */
+function themeToggle(lang, variant = 'bar') {
+  const t = strings(lang)
+  const inList = variant === 'list'
+
+  return button(
+    {
+      class: inList ? 'theme-toggle theme-toggle-row' : 'theme-toggle',
+      type: 'button',
+      'data-theme-toggle': '',
+      ...(inList ? {} : { 'aria-label': t.themeToLight, title: t.themeToLight }),
+    },
+    sunIcon,
+    moonIcon,
+    inList ? span({ class: 'theme-toggle-label' }, t.themeToLight) : '',
+  )
+}
 
 function badge({ variant, href, label, name, value, icon, external = true }) {
   return a(
@@ -173,6 +221,7 @@ function siteNav(activeHref = '/', lang = DEFAULT_LOCALE) {
       { class: 'nav-links' },
       ...links,
       languageSwitch(activeHref, lang),
+      themeToggle(lang),
     ),
     details(
       { class: 'nav-menu' },
@@ -181,6 +230,7 @@ function siteNav(activeHref = '/', lang = DEFAULT_LOCALE) {
         { class: 'nav-menu-panel' },
         ...links,
         languageSwitch(activeHref, lang, 'list'),
+        themeToggle(lang, 'list'),
       ),
     ),
   )
@@ -297,7 +347,8 @@ function pageShell({
       link({ rel: 'icon', href: '/logo.svg', type: 'image/svg+xml' }),
       link({ rel: 'apple-touch-icon', href: '/icon-192.png' }),
       link({ rel: 'manifest', href: '/manifest.webmanifest' }),
-      meta({ name: 'theme-color', content: '#071410' }),
+      meta({ name: 'theme-color', content: THEME_COLORS.dark }),
+      script(themeBootScript),
       canonical ? link({ rel: 'canonical', href: canonical }) : '',
       ...alternateLinks(path),
       meta({ property: 'og:title', content: pageTitle }),

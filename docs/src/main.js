@@ -8,6 +8,15 @@ Prism.highlightAll()
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+const THEME_KEY = 'sitelo-theme'
+
+/**
+ * Held at module scope on purpose: a MediaQueryList that nothing references
+ * can be collected along with its listeners, which would silently stop the
+ * site following the OS.
+ */
+const prefersLight = window.matchMedia('(prefers-color-scheme: light)')
+
 /**
  * Copy-button feedback in the page's language — the server renders the resting
  * label, this covers the states that only exist after a click.
@@ -22,24 +31,75 @@ const COPY_LABELS = {
   pt: { copy: 'Copiar', copied: 'Copiado', failed: 'Erro' },
 }
 
-// `lang` may be a full tag (pt-PT, zh-Hans); the labels are keyed by subtag.
-const copyLabels =
-  COPY_LABELS[document.documentElement.lang.split('-')[0]] ?? COPY_LABELS.en
-
-abb({
-  element: '#atmosphere',
-  background: '#071410',
-  colors: ['#1a9a5c', '#0a1c16', '#04100c', '#0a3d55', '#145c45', '#020805'],
-  speed: reduceMotion ? 0 : 0.45,
-  opacity: 0.9,
-  saturate: 1.05,
-  blur: 48,
-  grain: {
-    strength: 1.2,
-    opacity: 0.28,
-    blur: 0,
+/**
+ * Theme-toggle labels. The server renders the dark-theme wording because it
+ * cannot know which theme will resolve; `applyTheme` corrects it on load and
+ * on every flip. Keep these in step with `themeToLight` / `themeToDark` in
+ * lib/i18n.js.
+ */
+const THEME_LABELS = {
+  en: { toLight: 'Switch to light theme', toDark: 'Switch to dark theme' },
+  es: { toLight: 'Cambiar al tema claro', toDark: 'Cambiar al tema oscuro' },
+  fr: { toLight: 'Passer au th\u00e8me clair', toDark: 'Passer au th\u00e8me sombre' },
+  de: {
+    toLight: 'Zum hellen Design wechseln',
+    toDark: 'Zum dunklen Design wechseln',
   },
-})
+  ru: {
+    toLight: '\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u043d\u0430 \u0441\u0432\u0435\u0442\u043b\u0443\u044e \u0442\u0435\u043c\u0443',
+    toDark: '\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u043d\u0430 \u0442\u0451\u043c\u043d\u0443\u044e \u0442\u0435\u043c\u0443',
+  },
+  zh: { toLight: '\u5207\u6362\u5230\u6d45\u8272\u4e3b\u9898', toDark: '\u5207\u6362\u5230\u6df1\u8272\u4e3b\u9898' },
+  pt: {
+    toLight: 'Mudar para o tema claro',
+    toDark: 'Mudar para o tema escuro',
+  },
+}
+
+// `lang` may be a full tag (pt-PT, zh-Hans); the labels are keyed by subtag.
+const langSubtag = document.documentElement.lang.split('-')[0]
+const copyLabels = COPY_LABELS[langSubtag] ?? COPY_LABELS.en
+const themeLabels = THEME_LABELS[langSubtag] ?? THEME_LABELS.en
+
+/**
+ * Blob palettes for the drifting background, one per theme. The backdrop
+ * itself is read from `--paper` so it can never drift out of step with the
+ * stylesheet; only the blobs are listed here.
+ */
+const ATMOSPHERE = {
+  dark: {
+    colors: ['#1a9a5c', '#0a1c16', '#04100c', '#0a3d55', '#145c45', '#020805'],
+    opacity: 0.9,
+    saturate: 1.05,
+    // Grain reads far stronger over paper than over near-black.
+    grainOpacity: 0.28,
+  },
+  light: {
+    colors: ['#b6e6cd', '#e4f2eb', '#eef3f0', '#cde3f1', '#d6efe1', '#ffffff'],
+    opacity: 0.85,
+    saturate: 1,
+    grainOpacity: 0.14,
+  },
+}
+
+function paintAtmosphere(theme) {
+  const palette = ATMOSPHERE[theme] ?? ATMOSPHERE.dark
+
+  abb({
+    element: '#atmosphere',
+    background: paperColor(),
+    colors: palette.colors,
+    speed: reduceMotion ? 0 : 0.45,
+    opacity: palette.opacity,
+    saturate: palette.saturate,
+    blur: 48,
+    grain: {
+      strength: 1.2,
+      opacity: palette.grainOpacity,
+      blur: 0,
+    },
+  })
+}
 
 const buttons = document.querySelectorAll('[data-copy]')
 
@@ -109,9 +169,88 @@ for (const root of document.querySelectorAll('[data-code-tabs]')) {
   }
 }
 
+initTheme()
 startHeroTypewriter()
 initDocsSearch()
 closeMenusOnOutsideClick()
+
+/** Whatever `--paper` currently resolves to, in the theme now applied. */
+function paperColor() {
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue('--paper')
+    .trim()
+}
+
+/** The visitor's explicit choice, or null while they are following the OS. */
+function storedTheme() {
+  try {
+    const value = localStorage.getItem(THEME_KEY)
+    return value === 'light' || value === 'dark' ? value : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Light/dark toggle.
+ *
+ * The inline script in <head> has already resolved and applied a theme by the
+ * time this runs — all that is left is the parts that can wait for the first
+ * paint: the button labels, the background palette, and the listeners.
+ *
+ * Until the button is pressed there is nothing in storage and the site simply
+ * follows the OS, including when the OS flips while the page is open. The
+ * first press is what pins the choice.
+ */
+function initTheme() {
+  const toggles = document.querySelectorAll('[data-theme-toggle]')
+
+  const current = () =>
+    document.documentElement.dataset.theme === 'light' ? 'light' : 'dark'
+
+  function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme
+
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', paperColor())
+
+    const label = theme === 'dark' ? themeLabels.toLight : themeLabels.toDark
+    for (const toggle of toggles) {
+      // The menu variant is labelled by its own text; the bar variant, which
+      // is icon-only, by its aria-label.
+      const text = toggle.querySelector('.theme-toggle-label')
+      if (text) {
+        text.textContent = label
+      } else {
+        toggle.setAttribute('aria-label', label)
+        toggle.setAttribute('title', label)
+      }
+    }
+
+    paintAtmosphere(theme)
+  }
+
+  for (const toggle of toggles) {
+    toggle.addEventListener('click', () => {
+      const next = current() === 'dark' ? 'light' : 'dark'
+      try {
+        localStorage.setItem(THEME_KEY, next)
+      } catch {
+        // Private browsing or blocked storage — the flip still works, it
+        // just will not survive the next page load.
+      }
+      applyTheme(next)
+    })
+  }
+
+  prefersLight.addEventListener('change', (event) => {
+    if (storedTheme()) return
+    applyTheme(event.matches ? 'light' : 'dark')
+  })
+
+  applyTheme(current())
+}
 
 /**
  * The nav and language menus are plain <details>, which stay open until

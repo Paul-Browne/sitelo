@@ -116,6 +116,12 @@ export async function runPagefind({
     )
   }
 
+  // Write into a clean directory. The bundle is content-hashed, so without
+  // this the fragments and indexes of deleted pages linger in every later
+  // build — and a file left truncated by an interrupted write is never
+  // replaced, which silently breaks search rather than failing the build.
+  await rm(outputPath, { recursive: true, force: true })
+
   const { errors: writeErrors } = await index.writeFiles({ outputPath })
 
   if (writeErrors?.length) {
