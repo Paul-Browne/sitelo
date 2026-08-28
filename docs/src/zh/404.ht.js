@@ -19,7 +19,7 @@ export default () =>
         ' · ',
         a({ href: '/zh/docs' }, '文档'),
         ' · ',
-        a({ href: '/examples' }, '示例'),
+        a({ href: '/zh/examples' }, '示例'),
       ),
     ],
   })

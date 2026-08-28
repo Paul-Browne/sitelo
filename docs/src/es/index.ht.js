@@ -195,11 +195,11 @@ function mainSections() {
     sectionBlock(
       'Ejemplos',
       p(
-        'Recetas para montajes reales — empezando por un sitio con la API REST de WordPress. Los ejemplos están en inglés.',
+        'Recetas para montajes reales — empezando por un sitio con la API REST de WordPress.',
       ),
       p(
         a(
-          { class: 'btn btn-inline', href: '/examples' },
+          { class: 'btn btn-inline', href: '/es/examples' },
           'Ver los ejemplos',
           arrowIcon,
         ),

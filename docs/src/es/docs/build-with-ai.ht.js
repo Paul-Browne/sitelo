@@ -51,7 +51,7 @@ export default () =>
         'Si tu herramienta admite instrucciones persistentes (',
         code('AGENTS.md'),
         ', reglas de Cursor, instrucciones de Copilot, …), añade una regla breve sobre sitelo para que cada sesión arranque con el modelo mental correcto. El ',
-        a({ href: '/examples/basic' }, 'ejemplo básico'),
+        a({ href: '/es/examples/basic' }, 'ejemplo básico'),
         ' incluye un ',
         code('AGENTS.md'),
         ' que puedes copiar:',
@@ -69,9 +69,9 @@ export default () =>
         { class: 'docs-list' },
         li(
           'Parte de una plantilla — pídele al agente que genere el andamiaje a partir de ',
-          a({ href: '/examples/basic' }, 'examples/basic'),
+          a({ href: '/es/examples/basic' }, 'examples/basic'),
           ' o ',
-          a({ href: '/examples/wordpress' }, 'examples/wordpress'),
+          a({ href: '/es/examples/wordpress' }, 'examples/wordpress'),
           ' en lugar de inventarse un framework.',
         ),
         li(
@@ -124,7 +124,7 @@ export default () =>
       p(
         a({ href: '/es/docs' }, 'Primeros pasos'),
         ' · ',
-        a({ href: '/examples/basic' }, 'Ejemplo básico'),
+        a({ href: '/es/examples/basic' }, 'Ejemplo básico'),
         ' · ',
         a({ href: '/llms.txt' }, 'llms.txt'),
       ),

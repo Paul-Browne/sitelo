@@ -35,7 +35,7 @@ export default () =>
       ),
       p(
         'Des versions prêtes à copier de tout ceci sont fournies dans l’',
-        a({ href: '/examples/basic' }, 'exemple de base'),
+        a({ href: '/fr/examples/basic' }, 'exemple de base'),
         ' (',
         a(
           {
@@ -44,7 +44,7 @@ export default () =>
           },
           'examples/basic',
         ),
-        ' dans le dépôt ; les exemples sont en anglais).',
+        ' dans le dépôt).',
       ),
       h2('Netlify'),
       codeBlock('netlify.toml', s.netlify, 'bash'),

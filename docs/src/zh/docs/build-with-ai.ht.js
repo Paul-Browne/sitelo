@@ -51,7 +51,7 @@ export default () =>
         '如果你的工具支持长期指令（',
         code('AGENTS.md'),
         '、Cursor 规则、Copilot instructions，…），加一条简短的 sitelo 规则，让每次会话都从正确的心智模型开始。',
-        a({ href: '/examples/basic' }, '基础示例'),
+        a({ href: '/zh/examples/basic' }, '基础示例'),
         '里就有一份可以直接复制的 ',
         code('AGENTS.md'),
         '：',
@@ -69,9 +69,9 @@ export default () =>
         { class: 'docs-list' },
         li(
           '从模板出发 —— 让智能体基于 ',
-          a({ href: '/examples/basic' }, 'examples/basic'),
+          a({ href: '/zh/examples/basic' }, 'examples/basic'),
           ' 或 ',
-          a({ href: '/examples/wordpress' }, 'examples/wordpress'),
+          a({ href: '/zh/examples/wordpress' }, 'examples/wordpress'),
           ' 搭骨架，而不是自己发明一套框架。',
         ),
         li(
@@ -124,7 +124,7 @@ export default () =>
       p(
         a({ href: '/zh/docs' }, '快速开始'),
         ' · ',
-        a({ href: '/examples/basic' }, '基础示例'),
+        a({ href: '/zh/examples/basic' }, '基础示例'),
         ' · ',
         a({ href: '/llms.txt' }, 'llms.txt'),
       ),

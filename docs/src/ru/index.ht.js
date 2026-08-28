@@ -195,11 +195,11 @@ function mainSections() {
     sectionBlock(
       'Примеры',
       p(
-        'Рецепты для реальных задач — начиная с сайта на REST API WordPress. Примеры на английском.',
+        'Рецепты для реальных задач — начиная с сайта на REST API WordPress.',
       ),
       p(
         a(
-          { class: 'btn btn-inline', href: '/examples' },
+          { class: 'btn btn-inline', href: '/ru/examples' },
           'Смотреть примеры',
           arrowIcon,
         ),

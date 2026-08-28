@@ -73,8 +73,8 @@ export default () =>
       h2('Producción'),
       p(
         'Tu hosting estático sigue sirviendo las páginas. Monta un pequeño manejador allí donde ejecutes código de servidor —Node, serverless o una función edge— y renderizará los mismos módulos de isla. Para un recorrido completo con un host de Node ejecutable y plantillas para Netlify y Vercel, consulta el ',
-        a({ href: '/examples/islands' }, 'ejemplo de islas de servidor'),
-        ' (en inglés).',
+        a({ href: '/es/examples/islands' }, 'ejemplo de islas de servidor'),
+        '.',
       ),
       codeBlock('islands-function.js', s.server, 'javascript'),
       p(
@@ -130,7 +130,7 @@ export default () =>
         ),
         li(
           'Plantillas de host en ',
-          a({ href: '/examples/islands' }, 'examples/islands'),
+          a({ href: '/es/examples/islands' }, 'examples/islands'),
           ': ',
           code('server.js'),
           ' de Node, función de Netlify + rewrite, serverless de Vercel + rewrite',

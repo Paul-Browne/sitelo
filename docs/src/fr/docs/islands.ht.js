@@ -73,8 +73,8 @@ export default () =>
       h2('Production'),
       p(
         'Votre hébergeur statique continue de servir les pages. Montez un petit gestionnaire là où vous exécutez du code serveur — Node, serverless ou une fonction edge — et il rendra les mêmes modules d’îlot. Pour un parcours complet avec un hôte Node exécutable et des exemples Netlify et Vercel, voir l’',
-        a({ href: '/examples/islands' }, 'exemple d’îlots serveur'),
-        ' (en anglais).',
+        a({ href: '/fr/examples/islands' }, 'exemple d’îlots serveur'),
+        '.',
       ),
       codeBlock('islands-function.js', s.server, 'javascript'),
       p(
@@ -130,7 +130,7 @@ export default () =>
         ),
         li(
           'Exemples d’hôtes dans ',
-          a({ href: '/examples/islands' }, 'examples/islands'),
+          a({ href: '/fr/examples/islands' }, 'examples/islands'),
           ' : ',
           code('server.js'),
           ' pour Node, fonction Netlify + rewrite, serverless Vercel + rewrite',

@@ -195,11 +195,11 @@ function mainSections() {
     sectionBlock(
       'Exemples',
       p(
-        'Des recettes pour des cas réels — à commencer par un site basé sur l’API REST de WordPress. Les exemples sont en anglais.',
+        'Des recettes pour des cas réels — à commencer par un site basé sur l’API REST de WordPress.',
       ),
       p(
         a(
-          { class: 'btn btn-inline', href: '/examples' },
+          { class: 'btn btn-inline', href: '/fr/examples' },
           'Parcourir les exemples',
           arrowIcon,
         ),

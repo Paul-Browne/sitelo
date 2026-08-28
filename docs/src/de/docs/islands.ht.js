@@ -73,8 +73,8 @@ export default () =>
       h2('Produktion'),
       p(
         'Dein statischer Hoster liefert die Seiten weiterhin aus. Hänge einen kleinen Handler dort ein, wo du Server-Code ausführst — Node, Serverless oder eine Edge-Funktion — und er rendert dieselben Island-Module. Für einen vollständigen Durchgang mit lauffähigem Node-Host sowie Netlify- und Vercel-Vorlagen siehe das ',
-        a({ href: '/examples/islands' }, 'Server-Islands-Beispiel'),
-        ' (auf Englisch).',
+        a({ href: '/de/examples/islands' }, 'Server-Islands-Beispiel'),
+        '.',
       ),
       codeBlock('islands-function.js', s.server, 'javascript'),
       p(
@@ -131,7 +131,7 @@ export default () =>
         ),
         li(
           'Host-Vorlagen in ',
-          a({ href: '/examples/islands' }, 'examples/islands'),
+          a({ href: '/de/examples/islands' }, 'examples/islands'),
           ': Node-',
           code('server.js'),
           ', Netlify-Funktion + Rewrite, Vercel-Serverless + Rewrite',

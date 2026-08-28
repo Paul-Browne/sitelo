@@ -35,7 +35,7 @@ export default () =>
       ),
       p(
         '这些配置的可直接复制版本都在',
-        a({ href: '/examples/basic' }, '基础示例'),
+        a({ href: '/zh/examples/basic' }, '基础示例'),
         '里（仓库中的 ',
         a(
           {
@@ -44,7 +44,7 @@ export default () =>
           },
           'examples/basic',
         ),
-        '；示例为英文）。',
+        '）。',
       ),
       h2('Netlify'),
       codeBlock('netlify.toml', s.netlify, 'bash'),

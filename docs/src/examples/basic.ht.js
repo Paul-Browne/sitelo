@@ -1,88 +1,9 @@
 import { a, h2, h3, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { examplesLayout } from '../lib/layout.js'
+import { basicSnippets } from '../lib/snippets/examples-basic.js'
 
-const structureSnippet = `my-site/
-  sitelo.config.js
-  netlify.toml           # Netlify
-  vercel.json            # Vercel
-  wrangler.toml          # Cloudflare Pages
-  amplify.yml            # AWS Amplify
-  package.json
-  src/
-    index.ht.js
-    css/
-      styles.css`
-
-const netlifyTomlSnippet = `[build]
-  command = "npm run build"
-  publish = "dist"`
-
-const vercelJsonSnippet = `{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": null,
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "installCommand": "npm install"
-}`
-
-const wranglerTomlSnippet = `name = "sitelo-basic"
-compatibility_date = "2025-01-01"
-pages_build_output_dir = "dist"`
-
-const amplifyYmlSnippet = `version: 1
-frontend:
-  phases:
-    preBuild:
-      commands:
-        - npm install
-    build:
-      commands:
-        - npm run build
-  artifacts:
-    baseDirectory: dist
-    files:
-      - '**/*'
-  cache:
-    paths:
-      - node_modules/**/*`
-
-const pageTemplate = `export default () => \`
-  <html lang="en">
-    <head>
-      <title>sitelo — basic example</title>
-      <link rel="stylesheet" href="/css/styles.css">
-    </head>
-    <body>
-      <h1>Hello from sitelo</h1>
-    </body>
-  </html>
-\``
-
-const pageHt = `import { html, head, title, link, body, h1 } from 'javascript-to-html'
-
-export default () =>
-  html({ lang: 'en' },
-    head(
-      title('sitelo — basic example'),
-      link({ rel: 'stylesheet', href: '/styles.css' }),
-    ),
-    body(h1('Hello from sitelo')),
-  )`
-
-const pageJsx = `export default function Home() {
-  return (
-    <html lang="en">
-      <head>
-        <title>sitelo — basic example</title>
-        <link rel="stylesheet" href="/css/styles.css" />
-      </head>
-      <body>
-        <h1>Hello from sitelo</h1>
-      </body>
-    </html>
-  )
-}`
+const s = basicSnippets('en')
 
 export default () =>
   examplesLayout({
@@ -121,20 +42,15 @@ export default () =>
         li('One-click / connect-repo deploy from the example folder'),
       ),
       h2('Project layout'),
-      codeBlock('project', structureSnippet, 'bash'),
+      codeBlock('project', s.structure, 'bash'),
       pageCodeTabs({
         file: 'src/index.ht.js',
-        template: pageTemplate,
-        ht: pageHt,
-        jsx: pageJsx,
+        template: s.pageTemplate,
+        ht: s.pageHt,
+        jsx: s.pageJsx,
       }),
       h2('Build'),
-      codeBlock(
-        'shell',
-        `npm install
-npm run build`,
-        'bash',
-      ),
+      codeBlock('shell', s.build, 'bash'),
       h2('Deploy'),
       p(
         'From the sitelo monorepo, set the platform’s root/base directory to ',
@@ -142,9 +58,9 @@ npm run build`,
         '.',
       ),
       h3('Netlify'),
-      codeBlock('netlify.toml', netlifyTomlSnippet, 'toml'),
+      codeBlock('netlify.toml', s.netlifyToml, 'toml'),
       h3('Vercel'),
-      codeBlock('vercel.json', vercelJsonSnippet, 'json'),
+      codeBlock('vercel.json', s.vercelJson, 'json'),
       p(
         a(
           {
@@ -175,14 +91,14 @@ npm run build`,
         code('npx wrangler pages deploy dist'),
         ' after a local build.',
       ),
-      codeBlock('wrangler.toml', wranglerTomlSnippet, 'toml'),
+      codeBlock('wrangler.toml', s.wranglerToml, 'toml'),
       h3('AWS Amplify'),
       p(
         'Connect the repo in Amplify Hosting. For plain S3 + CloudFront, build locally and sync ',
         code('dist/'),
         ' to the bucket.',
       ),
-      codeBlock('amplify.yml', amplifyYmlSnippet, 'yaml'),
+      codeBlock('amplify.yml', s.amplifyYml, 'yaml'),
       p(
         'Working with Cursor, Copilot, or another agent? Copy ',
         code('AGENTS.md'),

@@ -72,8 +72,8 @@ export default () =>
       h2('生产环境'),
       p(
         '你的静态托管继续提供页面。在任何能运行服务端代码的地方挂一个小处理器 —— Node、serverless 或边缘函数 —— 它就会渲染同样的群岛模块。想要包含可运行 Node 宿主以及 Netlify、Vercel 模板的完整示例，请看',
-        a({ href: '/examples/islands' }, '服务端群岛示例'),
-        '（英文）。',
+        a({ href: '/zh/examples/islands' }, '服务端群岛示例'),
+        '。',
       ),
       codeBlock('islands-function.js', s.server, 'javascript'),
       p(
@@ -128,7 +128,7 @@ export default () =>
           '）',
         ),
         li(
-          a({ href: '/examples/islands' }, 'examples/islands'),
+          a({ href: '/zh/examples/islands' }, 'examples/islands'),
           ' 中的宿主模板：Node 的 ',
           code('server.js'),
           '、Netlify 函数 + rewrite、Vercel serverless + rewrite',

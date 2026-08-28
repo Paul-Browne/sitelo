@@ -51,7 +51,7 @@ export default () =>
         'Si votre outil accepte des instructions persistantes (',
         code('AGENTS.md'),
         ', règles Cursor, instructions Copilot, …), ajoutez une courte règle sitelo pour que chaque session démarre avec le bon modèle mental. L’',
-        a({ href: '/examples/basic' }, 'exemple de base'),
+        a({ href: '/fr/examples/basic' }, 'exemple de base'),
         ' inclut un ',
         code('AGENTS.md'),
         ' à copier :',
@@ -69,9 +69,9 @@ export default () =>
         { class: 'docs-list' },
         li(
           'Partez d’un modèle — demandez à l’agent de générer la structure depuis ',
-          a({ href: '/examples/basic' }, 'examples/basic'),
+          a({ href: '/fr/examples/basic' }, 'examples/basic'),
           ' ou ',
-          a({ href: '/examples/wordpress' }, 'examples/wordpress'),
+          a({ href: '/fr/examples/wordpress' }, 'examples/wordpress'),
           ' plutôt que d’inventer un framework.',
         ),
         li(
@@ -124,7 +124,7 @@ export default () =>
       p(
         a({ href: '/fr/docs' }, 'Démarrage'),
         ' · ',
-        a({ href: '/examples/basic' }, 'Exemple de base'),
+        a({ href: '/fr/examples/basic' }, 'Exemple de base'),
         ' · ',
         a({ href: '/llms.txt' }, 'llms.txt'),
       ),

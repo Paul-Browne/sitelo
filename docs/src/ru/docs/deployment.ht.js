@@ -35,7 +35,7 @@ export default () =>
       ),
       p(
         'Готовые к копированию версии всего этого лежат в ',
-        a({ href: '/examples/basic' }, 'базовом примере'),
+        a({ href: '/ru/examples/basic' }, 'базовом примере'),
         ' (',
         a(
           {
@@ -44,7 +44,7 @@ export default () =>
           },
           'examples/basic',
         ),
-        ' в репозитории; примеры — на английском).',
+        ' в репозитории).',
       ),
       h2('Netlify'),
       codeBlock('netlify.toml', s.netlify, 'bash'),

@@ -73,8 +73,8 @@ export default () =>
       h2('Продакшн'),
       p(
         'Ваш статический хостинг продолжает отдавать страницы. Подключите небольшой обработчик там, где у вас выполняется серверный код — Node, serverless или edge-функция — и он отрендерит те же модули островов. Полный разбор с готовым Node-хостом и заготовками для Netlify и Vercel — в ',
-        a({ href: '/examples/islands' }, 'примере серверных островов'),
-        ' (на английском).',
+        a({ href: '/ru/examples/islands' }, 'примере серверных островов'),
+        '.',
       ),
       codeBlock('islands-function.js', s.server, 'javascript'),
       p(
@@ -130,7 +130,7 @@ export default () =>
         ),
         li(
           'Заготовки хостов в ',
-          a({ href: '/examples/islands' }, 'examples/islands'),
+          a({ href: '/ru/examples/islands' }, 'examples/islands'),
           ': ',
           code('server.js'),
           ' для Node, функция Netlify + rewrite, serverless Vercel + rewrite',

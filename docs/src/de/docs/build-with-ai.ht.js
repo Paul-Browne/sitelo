@@ -51,7 +51,7 @@ export default () =>
         'Wenn dein Werkzeug dauerhafte Anweisungen unterstützt (',
         code('AGENTS.md'),
         ', Cursor-Regeln, Copilot-Instructions, …), ergänze eine kurze sitelo-Regel, damit jede Sitzung mit dem richtigen Denkmodell startet. Das ',
-        a({ href: '/examples/basic' }, 'Basis-Beispiel'),
+        a({ href: '/de/examples/basic' }, 'Basis-Beispiel'),
         ' enthält eine ',
         code('AGENTS.md'),
         ' zum Kopieren:',
@@ -69,9 +69,9 @@ export default () =>
         { class: 'docs-list' },
         li(
           'Starte von einer Vorlage — lass den Agenten das Gerüst aus ',
-          a({ href: '/examples/basic' }, 'examples/basic'),
+          a({ href: '/de/examples/basic' }, 'examples/basic'),
           ' oder ',
-          a({ href: '/examples/wordpress' }, 'examples/wordpress'),
+          a({ href: '/de/examples/wordpress' }, 'examples/wordpress'),
           ' erzeugen, statt ein Framework zu erfinden.',
         ),
         li(
@@ -124,7 +124,7 @@ export default () =>
       p(
         a({ href: '/de/docs' }, 'Erste Schritte'),
         ' · ',
-        a({ href: '/examples/basic' }, 'Basis-Beispiel'),
+        a({ href: '/de/examples/basic' }, 'Basis-Beispiel'),
         ' · ',
         a({ href: '/llms.txt' }, 'llms.txt'),
       ),

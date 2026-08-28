@@ -179,9 +179,9 @@ function mainSections() {
     ),
     sectionBlock(
       '示例',
-      p('面向真实场景的范例 —— 从一个基于 WordPress REST API 的站点开始。示例为英文。'),
+      p('面向真实场景的范例 —— 从一个基于 WordPress REST API 的站点开始。'),
       p(
-        a({ class: 'btn btn-inline', href: '/examples' }, '浏览示例', arrowIcon),
+        a({ class: 'btn btn-inline', href: '/zh/examples' }, '浏览示例', arrowIcon),
       ),
     ),
   )

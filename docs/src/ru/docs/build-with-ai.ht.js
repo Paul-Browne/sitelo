@@ -51,7 +51,7 @@ export default () =>
         'Если ваш инструмент поддерживает постоянные инструкции (',
         code('AGENTS.md'),
         ', правила Cursor, инструкции Copilot, …), добавьте короткое правило про sitelo, чтобы каждая сессия начиналась с верной модели. В ',
-        a({ href: '/examples/basic' }, 'базовом примере'),
+        a({ href: '/ru/examples/basic' }, 'базовом примере'),
         ' есть ',
         code('AGENTS.md'),
         ', который можно скопировать:',
@@ -69,9 +69,9 @@ export default () =>
         { class: 'docs-list' },
         li(
           'Начинайте с шаблона — попросите агента развернуть каркас из ',
-          a({ href: '/examples/basic' }, 'examples/basic'),
+          a({ href: '/ru/examples/basic' }, 'examples/basic'),
           ' или ',
-          a({ href: '/examples/wordpress' }, 'examples/wordpress'),
+          a({ href: '/ru/examples/wordpress' }, 'examples/wordpress'),
           ', вместо того чтобы выдумывать фреймворк.',
         ),
         li(
@@ -124,7 +124,7 @@ export default () =>
       p(
         a({ href: '/ru/docs' }, 'Начало работы'),
         ' · ',
-        a({ href: '/examples/basic' }, 'Базовый пример'),
+        a({ href: '/ru/examples/basic' }, 'Базовый пример'),
         ' · ',
         a({ href: '/llms.txt' }, 'llms.txt'),
       ),

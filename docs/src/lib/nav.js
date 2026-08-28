@@ -91,26 +91,66 @@ const DOC_LABELS = {
   ],
 }
 
-/**
- * Examples are English-only, so there is no `es` variant — Spanish pages link
- * to these same URLs.
- */
-const EXAMPLE_LABELS = [
-  { href: '/examples', label: 'Overview' },
-  { href: '/examples/basic', label: 'Basic site' },
-  { href: '/examples/todo', label: 'Todo app' },
-  { href: '/examples/blog', label: 'Markdown blog' },
-  { href: '/examples/wordpress', label: 'WordPress' },
-  { href: '/examples/islands', label: 'Server islands' },
-]
+/** Examples sidebar, per locale. */
+const EXAMPLE_LABELS = {
+  en: [
+    { href: '/examples', label: 'Overview' },
+    { href: '/examples/basic', label: 'Basic site' },
+    { href: '/examples/todo', label: 'Todo app' },
+    { href: '/examples/blog', label: 'Markdown blog' },
+    { href: '/examples/wordpress', label: 'WordPress' },
+    { href: '/examples/islands', label: 'Server islands' },
+  ],
+  es: [
+    { href: '/examples', label: 'Resumen' },
+    { href: '/examples/basic', label: 'Sitio básico' },
+    { href: '/examples/todo', label: 'App de tareas' },
+    { href: '/examples/blog', label: 'Blog en Markdown' },
+    { href: '/examples/wordpress', label: 'WordPress' },
+    { href: '/examples/islands', label: 'Islas de servidor' },
+  ],
+  fr: [
+    { href: '/examples', label: 'Vue d’ensemble' },
+    { href: '/examples/basic', label: 'Site de base' },
+    { href: '/examples/todo', label: 'Appli de tâches' },
+    { href: '/examples/blog', label: 'Blog en Markdown' },
+    { href: '/examples/wordpress', label: 'WordPress' },
+    { href: '/examples/islands', label: 'Îlots serveur' },
+  ],
+  de: [
+    { href: '/examples', label: 'Überblick' },
+    { href: '/examples/basic', label: 'Basis-Website' },
+    { href: '/examples/todo', label: 'Todo-App' },
+    { href: '/examples/blog', label: 'Markdown-Blog' },
+    { href: '/examples/wordpress', label: 'WordPress' },
+    { href: '/examples/islands', label: 'Server-Islands' },
+  ],
+  ru: [
+    { href: '/examples', label: 'Обзор' },
+    { href: '/examples/basic', label: 'Базовый сайт' },
+    { href: '/examples/todo', label: 'Список задач' },
+    { href: '/examples/blog', label: 'Блог на Markdown' },
+    { href: '/examples/wordpress', label: 'WordPress' },
+    { href: '/examples/islands', label: 'Серверные острова' },
+  ],
+  zh: [
+    { href: '/examples', label: '概览' },
+    { href: '/examples/basic', label: '基础站点' },
+    { href: '/examples/todo', label: '待办应用' },
+    { href: '/examples/blog', label: 'Markdown 博客' },
+    { href: '/examples/wordpress', label: 'WordPress' },
+    { href: '/examples/islands', label: '服务端群岛' },
+  ],
+}
 
 export function docNav(lang = DEFAULT_LOCALE) {
   const items = DOC_LABELS[lang] ?? DOC_LABELS[DEFAULT_LOCALE]
   return items.map(({ href, label }) => ({ href: localePath(href, lang), label }))
 }
 
-export function exampleNav() {
-  return EXAMPLE_LABELS
+export function exampleNav(lang = DEFAULT_LOCALE) {
+  const items = EXAMPLE_LABELS[lang] ?? EXAMPLE_LABELS[DEFAULT_LOCALE]
+  return items.map(({ href, label }) => ({ href: localePath(href, lang), label }))
 }
 
 export const DOC_NAV = docNav(DEFAULT_LOCALE)

@@ -106,7 +106,10 @@ function siteNav(activeHref = '/', lang = DEFAULT_LOCALE) {
       t.navDocs,
     ),
     a(
-      { class: onExamples ? 'is-active' : undefined, href: '/examples' },
+      {
+        class: onExamples ? 'is-active' : undefined,
+        href: localePath('/examples', lang),
+      },
       t.navExamples,
     ),
     a(
@@ -504,7 +507,7 @@ export function createLayouts(lang = DEFAULT_LOCALE) {
       ...args,
       lang,
       sidebarLabel: t.sidebarExamples,
-      sidebarItems: exampleNav(),
+      sidebarItems: exampleNav(lang),
       titleSuffix: t.titleSuffixExamples,
     })
   }

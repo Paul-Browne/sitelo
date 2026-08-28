@@ -195,11 +195,11 @@ function mainSections() {
     sectionBlock(
       'Beispiele',
       p(
-        'Rezepte für echte Setups — angefangen bei einer Website auf Basis der WordPress-REST-API. Die Beispiele sind auf Englisch.',
+        'Rezepte für echte Setups — angefangen bei einer Website auf Basis der WordPress-REST-API.',
       ),
       p(
         a(
-          { class: 'btn btn-inline', href: '/examples' },
+          { class: 'btn btn-inline', href: '/de/examples' },
           'Beispiele durchsehen',
           arrowIcon,
         ),

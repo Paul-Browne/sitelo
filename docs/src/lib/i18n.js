@@ -62,8 +62,8 @@ export const OG_LOCALES = {
  * Root-relative paths that exist in every locale.
  *
  * Keyed by the English path. The language switcher and the `hreflang`
- * alternates are emitted only for these — `/examples` is English-only, so
- * offering a translated URL for it would link to a 404.
+ * alternates are emitted only for these, so a path that gains a locale must
+ * be listed here or the switcher will not offer it.
  */
 export const TRANSLATED_PATHS = new Set([
   '/',
@@ -80,6 +80,12 @@ export const TRANSLATED_PATHS = new Set([
   '/docs/cli',
   '/docs/deployment',
   '/docs/build-with-ai',
+  '/examples',
+  '/examples/basic',
+  '/examples/todo',
+  '/examples/blog',
+  '/examples/wordpress',
+  '/examples/islands',
 ])
 
 /** Strip any locale prefix, returning the canonical English path. */

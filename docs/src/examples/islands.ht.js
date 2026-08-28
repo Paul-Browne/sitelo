@@ -1,215 +1,9 @@
 import { a, h2, h3, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { examplesLayout } from '../lib/layout.js'
+import { islandsExampleSnippets } from '../lib/snippets/examples-islands.js'
 
-const structureSnippet = `my-site/
-  sitelo.config.js
-  server.js              # Node host: static dist + islands
-  netlify.toml           # Netlify rewrite → function
-  vercel.json            # Vercel rewrite → api route
-  package.json
-  netlify/functions/
-    islands.mjs          # Netlify islands handler
-  api/islands/
-    [...path].js         # Vercel islands handler
-  src/
-    index.ht.js          # page with an island placeholder
-    js/
-      islands.js         # client loader (bundled into dist/)
-    islands/
-      time.js            # server-only fragment module
-    css/
-      styles.css`
-
-const configSnippet = `export default {
-  site: 'https://example.com',
-}`
-
-const islandSnippet = `export default function time({ props, request }) {
-  const label = typeof props?.label === 'string' ? props.label : 'Server time'
-  const now = new Date().toISOString()
-  const ua = request?.headers?.get?.('user-agent') ?? 'unknown'
-
-  return \`
-    <p><strong>\${label}:</strong> <time datetime="\${now}">\${now}</time></p>
-    <p class="muted">Rendered on request for <code>\${escapeHtml(ua.slice(0, 48))}</code></p>
-  \`
-}
-
-function escapeHtml(value) {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-}`
-
-const pageTemplate = `import { island } from 'sitelo/islands'
-
-export default () => \`
-  <html lang="en">
-    <head>
-      <title>Server islands demo</title>
-      <link rel="stylesheet" href="/css/styles.css">
-    </head>
-    <body>
-      <h1>Static page, live island</h1>
-      <p>This HTML was built once. The box below is filled at request time.</p>
-      \${island(
-        'time',
-        { label: 'Right now' },
-        '<p>Loading server time…</p>',
-      )}
-      <script type="module" src="/js/islands.js"></script>
-    </body>
-  </html>
-\``
-
-const pageHt = `import { html, head, title, link, body, h1, p, script } from 'javascript-to-html'
-import { island } from 'sitelo/islands'
-
-export default () =>
-  html({ lang: 'en' },
-    head(
-      title('Server islands demo'),
-      link({ rel: 'stylesheet', href: '/styles.css' }),
-    ),
-    body(
-      h1('Static page, live island'),
-      p('This HTML was built once. The box below is filled at request time.'),
-      island(
-        'time',
-        { label: 'Right now' },
-        '<p>Loading server time…</p>',
-      ),
-      script({ type: 'module', src: '/islands.js' }),
-    ),
-  )`
-
-const pageJsx = `import { island } from 'sitelo/islands'
-
-export default function Home() {
-  return (
-    <html lang="en">
-      <head>
-        <title>Server islands demo</title>
-        <link rel="stylesheet" href="/css/styles.css" />
-      </head>
-      <body>
-        <h1>Static page, live island</h1>
-        <p>This HTML was built once. The box below is filled at request time.</p>
-        {island(
-          'time',
-          { label: 'Right now' },
-          '<p>Loading server time…</p>',
-        )}
-        <script type="module" src="/js/islands.js" />
-      </body>
-    </html>
-  )
-}`
-
-const loaderSnippet = `import { mountIslands } from 'sitelo/islands/client'
-
-mountIslands()`
-
-const stylesSnippet = `body {
-  font-family: system-ui, sans-serif;
-  max-width: 36rem;
-  margin: 2rem auto;
-  padding: 0 1rem;
-  line-height: 1.5;
-}
-
-[data-sitelo-island] {
-  margin: 1.5rem 0;
-  padding: 1rem 1.25rem;
-  border: 1px solid #ccc;
-}
-
-[data-sitelo-island-state='loading'] {
-  opacity: 0.7;
-}
-
-.muted {
-  color: #666;
-  font-size: 0.9rem;
-}`
-
-const serverSnippet = `import fs from 'node:fs'
-import http from 'node:http'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { createIslandsFromDirectory, createIslandsNodeHandler } from 'sitelo/islands/server'
-
-const root = path.dirname(fileURLToPath(import.meta.url))
-const dist = path.join(root, 'dist')
-const port = Number(process.env.PORT) || 3000
-
-const handleIslands = createIslandsNodeHandler({
-  islands: createIslandsFromDirectory(path.join(root, 'src/islands')),
-})
-
-const MIME = {
-  '.html': 'text/html; charset=utf-8',
-  '.js': 'text/javascript; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
-  '.svg': 'image/svg+xml',
-  '.png': 'image/png',
-  '.ico': 'image/x-icon',
-  '.xml': 'application/xml',
-  '.json': 'application/json',
-}
-
-function sendFile(res, filePath) {
-  const ext = path.extname(filePath)
-  res.statusCode = 200
-  res.setHeader('Content-Type', MIME[ext] ?? 'application/octet-stream')
-  fs.createReadStream(filePath).pipe(res)
-}
-
-function resolveStatic(urlPath) {
-  const clean = decodeURIComponent(urlPath.split('?')[0])
-  const relative = clean === '/' ? 'index.html' : clean.replace(/^\\/+/, '')
-  const candidate = path.normalize(path.join(dist, relative))
-
-  if (!candidate.startsWith(dist + path.sep) && candidate !== dist) {
-    return null
-  }
-  if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
-    return candidate
-  }
-
-  const asIndex = path.join(candidate, 'index.html')
-  if (fs.existsSync(asIndex) && fs.statSync(asIndex).isFile()) {
-    return asIndex
-  }
-
-  return null
-}
-
-const server = http.createServer(async (req, res) => {
-  await handleIslands(req, res, () => {
-    const file = resolveStatic(req.url ?? '/')
-    if (file) {
-      sendFile(res, file)
-      return
-    }
-
-    const notFound = path.join(dist, '404.html')
-    res.statusCode = 404
-    if (fs.existsSync(notFound)) {
-      sendFile(res, notFound)
-    } else {
-      res.setHeader('Content-Type', 'text/plain; charset=utf-8')
-      res.end('Not found')
-    }
-  })
-})
-
-server.listen(port, () => {
-  console.log(\`Listening on http://localhost:\${port}\`)
-})`
+const s = islandsExampleSnippets('en')
 
 export default () =>
   examplesLayout({
@@ -251,8 +45,8 @@ export default () =>
         ),
       ),
       h2('Project layout'),
-      codeBlock('project', structureSnippet, 'bash'),
-      codeBlock('sitelo.config.js', configSnippet, 'javascript'),
+      codeBlock('project', s.structure, 'bash'),
+      codeBlock('sitelo.config.js', s.config, 'javascript'),
       h2('1. Island module'),
       p(
         'Plain ',
@@ -263,7 +57,7 @@ export default () =>
         code('{ name, props, request }'),
         ' and returns an HTML string. This one uses the request time and user-agent so you can see it’s rendered per request.',
       ),
-      codeBlock('src/islands/time.js', islandSnippet, 'javascript'),
+      codeBlock('src/islands/time.js', s.island, 'javascript'),
       h2('2. Place the island on a page'),
       p(
         code('island()'),
@@ -271,13 +65,13 @@ export default () =>
       ),
       pageCodeTabs({
         file: 'src/index.ht.js',
-        template: pageTemplate,
-        ht: pageHt,
-        jsx: pageJsx,
+        template: s.pageTemplate,
+        ht: s.pageHt,
+        jsx: s.pageJsx,
       }),
       h2('3. Client loader'),
-      codeBlock('src/js/islands.js', loaderSnippet, 'javascript'),
-      codeBlock('src/css/styles.css', stylesSnippet, 'css'),
+      codeBlock('src/js/islands.js', s.loader, 'javascript'),
+      codeBlock('src/css/styles.css', s.styles, 'css'),
       h2('4. Node host'),
       p(
         'After ',
@@ -294,15 +88,9 @@ export default () =>
         code('src/'),
         '.',
       ),
-      codeBlock('server.js', serverSnippet, 'javascript'),
+      codeBlock('server.js', s.server, 'javascript'),
       h2('5. Build and run'),
-      codeBlock(
-        'shell',
-        `npm install
-sitelo build
-node server.js`,
-        'bash',
-      ),
+      codeBlock('shell', s.buildRun, 'bash'),
       p(
         'Open ',
         code('http://localhost:3000'),
