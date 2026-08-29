@@ -96,7 +96,7 @@ export default () =>
         li(
           code('devToolbarDocsUrl'),
           ' — Docs link in the toolbar (default ',
-          code('https://sitelo.js.org/docs'),
+          code('https://sitelo.dev/docs'),
           ')',
         ),
       ),

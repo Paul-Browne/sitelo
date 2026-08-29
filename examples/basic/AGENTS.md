@@ -1,6 +1,6 @@
 # sitelo
 
-This project uses [sitelo](https://sitelo.js.org) — a Vite-powered static site generator.
+This project uses [sitelo](https://sitelo.dev) — a Vite-powered static site generator.
 
 ## Rules
 
@@ -11,7 +11,7 @@ This project uses [sitelo](https://sitelo.js.org) — a Vite-powered static site
 - Only JS/CSS referenced from HTML is bundled into `dist/`. Keep server-only code unreferenced so it never ships.
 - Config lives in `sitelo.config.js`. Put Vite options under `vite`.
 - Commands: `sitelo` (dev), `sitelo build`, `sitelo preview`.
-- For current APIs, read https://sitelo.js.org/llms.txt and https://sitelo.js.org/docs — do not invent APIs from other frameworks.
+- For current APIs, read https://sitelo.dev/llms.txt and https://sitelo.dev/docs — do not invent APIs from other frameworks.
 - Prefer [javascript-to-html](https://ht.js.org) (`ht.js`) for markup: tag functions that return HTML strings. Docs: https://ht.js.org
 - Server islands: `island()` + `src/islands/<name>.js` + `mountIslands()`; `sitelo` / `sitelo preview` serve `/_sitelo/islands`; production needs a host (see `examples/islands` for Node / Netlify / Vercel).
 

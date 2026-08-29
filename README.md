@@ -938,7 +938,7 @@ new PagefindUI({ element: '#search', showImages: false })
 ```
 
 Gitignore `public/pagefind/`. Full walkthrough:
-[sitelo.js.org/docs/configuration#pagefind-search](https://sitelo.js.org/docs/configuration#pagefind-search).
+[sitelo.dev/docs/configuration#pagefind-search](https://sitelo.dev/docs/configuration#pagefind-search).
 
 ### Build report
 
@@ -1065,7 +1065,7 @@ MIT
 
 ## Docs site
 
-The documentation at [sitelo.js.org](https://sitelo.js.org) lives in
+The documentation at [sitelo.dev](https://sitelo.dev) lives in
 [`docs/`](docs/) and is itself built with sitelo +
 [javascript-to-html](https://www.npmjs.com/package/javascript-to-html):
 

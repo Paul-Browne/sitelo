@@ -39,4 +39,4 @@ Add each island name to the serverless stubs’ `islands` map (or use `createIsl
 - `netlify.toml` / `netlify/functions/` — Netlify rewrite + function
 - `vercel.json` / `api/islands/` — Vercel rewrite + serverless route
 
-See the full walkthrough at [sitelo.js.org/examples/islands](https://sitelo.js.org/examples/islands).
+See the full walkthrough at [sitelo.dev/examples/islands](https://sitelo.dev/examples/islands).

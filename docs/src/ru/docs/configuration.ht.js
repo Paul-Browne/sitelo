@@ -108,7 +108,7 @@ export default () =>
         li(
           code('devToolbarDocsUrl'),
           ' — ссылка на документацию в панели (по умолчанию ',
-          code('https://sitelo.js.org/docs'),
+          code('https://sitelo.dev/docs'),
           ')',
         ),
       ),

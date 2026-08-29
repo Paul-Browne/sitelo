@@ -21,4 +21,4 @@ npm run build   # static site + rss.xml + sitemap.xml in dist/
 - `sitelo.config.js` — `rss` config generates `dist/rss.xml` with an item for
   every page under `/blog`; `site` enables `sitemap.xml`
 
-Full walkthrough: [sitelo.js.org/examples/blog](https://sitelo.js.org/examples/blog).
+Full walkthrough: [sitelo.dev/examples/blog](https://sitelo.dev/examples/blog).

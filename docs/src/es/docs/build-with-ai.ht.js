@@ -17,17 +17,17 @@ export default () =>
       h2('llms.txt'),
       p(
         'sitelo publica un resumen del framework legible por máquinas en ',
-        a({ href: '/llms.txt' }, 'sitelo.js.org/llms.txt'),
+        a({ href: '/llms.txt' }, 'sitelo.dev/llms.txt'),
         '. Muchos agentes pueden descargar una URL; pídele al tuyo que lea ese archivo (y la documentación para humanos) antes de escribir código de sitelo.',
       ),
       ul(
         { class: 'docs-list' },
         li(
-          a({ href: '/llms.txt' }, 'https://sitelo.js.org/llms.txt'),
+          a({ href: '/llms.txt' }, 'https://sitelo.dev/llms.txt'),
           ' — API y convenciones en formato compacto',
         ),
         li(
-          a({ href: '/es/docs' }, 'https://sitelo.js.org/es/docs'),
+          a({ href: '/es/docs' }, 'https://sitelo.dev/es/docs'),
           ' — guías completas',
         ),
         li(

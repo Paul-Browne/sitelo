@@ -16,7 +16,7 @@ const WP_HEADERS = {
   Accept: 'application/json',
   // Cloudflare (and similar) often block bare clients — identify ourselves.
   'User-Agent':
-    'sitelo-wordpress-example/1.0 (+https://sitelo.js.org; demo of Speckyboy)',
+    'sitelo-wordpress-example/1.0 (+https://sitelo.dev; demo of Speckyboy)',
 }
 
 /** Filled by getAllPosts / getPosts so data() can skip per-slug API calls. */

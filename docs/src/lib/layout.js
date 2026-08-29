@@ -46,7 +46,7 @@ const siteloVersion = require('../../../package.json').version
 
 const viteBolt = `<svg class="badge-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 11-13h-8z"/></svg>`
 
-const SITE_URL = 'https://sitelo.js.org'
+const SITE_URL = 'https://sitelo.dev'
 
 /** Background behind the browser chrome, mirroring `--paper` in each theme. */
 const THEME_COLORS = {

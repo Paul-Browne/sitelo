@@ -8,7 +8,7 @@
 
 const AGENTS_EN = `# sitelo
 
-This project uses [sitelo](https://sitelo.js.org) — a Vite-powered static site generator.
+This project uses [sitelo](https://sitelo.dev) — a Vite-powered static site generator.
 
 ## Rules
 
@@ -19,13 +19,13 @@ This project uses [sitelo](https://sitelo.js.org) — a Vite-powered static site
 - Only JS/CSS referenced from HTML is bundled into \`dist/\`. Keep server-only code unreferenced so it never ships.
 - Config lives in \`sitelo.config.js\`. Put Vite options under \`vite\`.
 - Commands: \`sitelo\` (dev), \`sitelo build\`, \`sitelo preview\`.
-- For current APIs, read https://sitelo.js.org/llms.txt and https://sitelo.js.org/docs — do not invent APIs from other frameworks.
+- For current APIs, read https://sitelo.dev/llms.txt and https://sitelo.dev/docs — do not invent APIs from other frameworks.
 - Prefer [javascript-to-html](https://ht.js.org) (\`ht.js\`) for markup: tag functions that return HTML strings. Docs: https://ht.js.org
 `
 
 const AGENTS_ES = `# sitelo
 
-Este proyecto usa [sitelo](https://sitelo.js.org) — un generador de sitios estáticos basado en Vite.
+Este proyecto usa [sitelo](https://sitelo.dev) — un generador de sitios estáticos basado en Vite.
 
 ## Reglas
 
@@ -36,7 +36,7 @@ Este proyecto usa [sitelo](https://sitelo.js.org) — un generador de sitios est
 - Solo el JS/CSS referenciado desde el HTML se empaqueta en \`dist/\`. Deja el código de servidor sin referenciar para que nunca se publique.
 - La configuración vive en \`sitelo.config.js\`. Pon las opciones de Vite bajo \`vite\`.
 - Comandos: \`sitelo\` (dev), \`sitelo build\`, \`sitelo preview\`.
-- Para las APIs actuales, lee https://sitelo.js.org/llms.txt y https://sitelo.js.org/docs — no inventes APIs de otros frameworks.
+- Para las APIs actuales, lee https://sitelo.dev/llms.txt y https://sitelo.dev/docs — no inventes APIs de otros frameworks.
 - Prefiere [javascript-to-html](https://ht.js.org) (\`ht.js\`) para el marcado: funciones de etiqueta que devuelven cadenas HTML. Docs: https://ht.js.org
 `
 
@@ -49,7 +49,7 @@ alwaysApply: true
 
 Pages are \`.ht.js\` (etc.) modules that return HTML strings — not React/Next/Astro components.
 Prefer javascript-to-html (https://ht.js.org) for markup. Use file-based routing, \`data()\`, and \`sitelo build\`.
-Prefer https://sitelo.js.org/llms.txt for sitelo APIs.
+Prefer https://sitelo.dev/llms.txt for sitelo APIs.
 `
 
 const CURSOR_ES = `---
@@ -61,12 +61,12 @@ alwaysApply: true
 
 Las páginas son módulos \`.ht.js\` (etc.) que devuelven cadenas HTML — no componentes de React/Next/Astro.
 Prefiere javascript-to-html (https://ht.js.org) para el marcado. Usa enrutado por archivos, \`data()\` y \`sitelo build\`.
-Consulta https://sitelo.js.org/llms.txt para las APIs de sitelo.
+Consulta https://sitelo.dev/llms.txt para las APIs de sitelo.
 `
 
 const AGENTS_FR = `# sitelo
 
-Ce projet utilise [sitelo](https://sitelo.js.org) — un générateur de sites statiques propulsé par Vite.
+Ce projet utilise [sitelo](https://sitelo.dev) — un générateur de sites statiques propulsé par Vite.
 
 ## Règles
 
@@ -77,13 +77,13 @@ Ce projet utilise [sitelo](https://sitelo.js.org) — un générateur de sites s
 - Seuls les JS/CSS référencés depuis le HTML sont inclus dans \`dist/\`. Laisse le code serveur non référencé pour qu’il ne soit jamais livré.
 - La configuration vit dans \`sitelo.config.js\`. Place les options Vite sous \`vite\`.
 - Commandes : \`sitelo\` (dev), \`sitelo build\`, \`sitelo preview\`.
-- Pour les API à jour, lis https://sitelo.js.org/llms.txt et https://sitelo.js.org/docs — n’invente pas d’API venant d’autres frameworks.
+- Pour les API à jour, lis https://sitelo.dev/llms.txt et https://sitelo.dev/docs — n’invente pas d’API venant d’autres frameworks.
 - Préfère [javascript-to-html](https://ht.js.org) (\`ht.js\`) pour le balisage : des fonctions de balise qui renvoient des chaînes HTML. Docs : https://ht.js.org
 `
 
 const AGENTS_DE = `# sitelo
 
-Dieses Projekt verwendet [sitelo](https://sitelo.js.org) — einen Vite-basierten Generator für statische Websites.
+Dieses Projekt verwendet [sitelo](https://sitelo.dev) — einen Vite-basierten Generator für statische Websites.
 
 ## Regeln
 
@@ -94,7 +94,7 @@ Dieses Projekt verwendet [sitelo](https://sitelo.js.org) — einen Vite-basierte
 - Nur aus dem HTML referenziertes JS/CSS landet in \`dist/\`. Lass Server-Code unreferenziert, damit er nie ausgeliefert wird.
 - Die Konfiguration liegt in \`sitelo.config.js\`. Vite-Optionen gehören unter \`vite\`.
 - Befehle: \`sitelo\` (dev), \`sitelo build\`, \`sitelo preview\`.
-- Für aktuelle APIs lies https://sitelo.js.org/llms.txt und https://sitelo.js.org/docs — erfinde keine APIs aus anderen Frameworks.
+- Für aktuelle APIs lies https://sitelo.dev/llms.txt und https://sitelo.dev/docs — erfinde keine APIs aus anderen Frameworks.
 - Bevorzuge [javascript-to-html](https://ht.js.org) (\`ht.js\`) für Markup: Tag-Funktionen, die HTML-Strings zurückgeben. Docs: https://ht.js.org
 `
 
@@ -107,7 +107,7 @@ alwaysApply: true
 
 Les pages sont des modules \`.ht.js\` (etc.) qui renvoient des chaînes HTML — pas des composants React/Next/Astro.
 Préfère javascript-to-html (https://ht.js.org) pour le balisage. Utilise le routage par fichiers, \`data()\` et \`sitelo build\`.
-Consulte https://sitelo.js.org/llms.txt pour les API de sitelo.
+Consulte https://sitelo.dev/llms.txt pour les API de sitelo.
 `
 
 const CURSOR_DE = `---
@@ -119,12 +119,12 @@ alwaysApply: true
 
 Seiten sind \`.ht.js\`-Module (usw.), die HTML-Strings zurückgeben — keine React-/Next-/Astro-Komponenten.
 Bevorzuge javascript-to-html (https://ht.js.org) für Markup. Nutze dateibasiertes Routing, \`data()\` und \`sitelo build\`.
-Konsultiere https://sitelo.js.org/llms.txt für die sitelo-APIs.
+Konsultiere https://sitelo.dev/llms.txt für die sitelo-APIs.
 `
 
 const AGENTS_RU = `# sitelo
 
-Этот проект использует [sitelo](https://sitelo.js.org) — генератор статических сайтов на базе Vite.
+Этот проект использует [sitelo](https://sitelo.dev) — генератор статических сайтов на базе Vite.
 
 ## Правила
 
@@ -135,13 +135,13 @@ const AGENTS_RU = `# sitelo
 - В \`dist/\` попадает только тот JS/CSS, на который ссылается HTML. Оставляй серверный код без ссылок, чтобы он никогда не публиковался.
 - Конфигурация лежит в \`sitelo.config.js\`. Параметры Vite — под ключом \`vite\`.
 - Команды: \`sitelo\` (dev), \`sitelo build\`, \`sitelo preview\`.
-- Актуальные API смотри на https://sitelo.js.org/llms.txt и https://sitelo.js.org/docs — не выдумывай API из других фреймворков.
+- Актуальные API смотри на https://sitelo.dev/llms.txt и https://sitelo.dev/docs — не выдумывай API из других фреймворков.
 - Для разметки предпочитай [javascript-to-html](https://ht.js.org) (\`ht.js\`): функции-теги, возвращающие строки HTML. Документация: https://ht.js.org
 `
 
 const AGENTS_ZH = `# sitelo
 
-本项目使用 [sitelo](https://sitelo.js.org) —— 一个由 Vite 驱动的静态站点生成器。
+本项目使用 [sitelo](https://sitelo.dev) —— 一个由 Vite 驱动的静态站点生成器。
 
 ## 规则
 
@@ -152,7 +152,7 @@ const AGENTS_ZH = `# sitelo
 - 只有被 HTML 引用的 JS/CSS 才会打包进 \`dist/\`。让服务端代码保持无引用，它就永远不会被发布。
 - 配置写在 \`sitelo.config.js\` 里。Vite 选项放在 \`vite\` 下。
 - 命令：\`sitelo\`（dev）、\`sitelo build\`、\`sitelo preview\`。
-- 当前 API 请阅读 https://sitelo.js.org/llms.txt 和 https://sitelo.js.org/docs —— 不要照搬其他框架的 API。
+- 当前 API 请阅读 https://sitelo.dev/llms.txt 和 https://sitelo.dev/docs —— 不要照搬其他框架的 API。
 - 标记优先使用 [javascript-to-html](https://ht.js.org)（\`ht.js\`）：返回 HTML 字符串的标签函数。文档：https://ht.js.org
 `
 
@@ -165,7 +165,7 @@ alwaysApply: true
 
 Страницы — это модули \`.ht.js\` (и т. п.), возвращающие строки HTML, а не компоненты React/Next/Astro.
 Для разметки предпочитай javascript-to-html (https://ht.js.org). Используй файловую маршрутизацию, \`data()\` и \`sitelo build\`.
-Об API sitelo смотри https://sitelo.js.org/llms.txt
+Об API sitelo смотри https://sitelo.dev/llms.txt
 `
 
 const CURSOR_ZH = `---
@@ -177,12 +177,12 @@ alwaysApply: true
 
 页面是返回 HTML 字符串的 \`.ht.js\`（等）模块，而不是 React/Next/Astro 组件。
 标记优先使用 javascript-to-html (https://ht.js.org)。使用基于文件的路由、\`data()\` 和 \`sitelo build\`。
-sitelo 的 API 请参阅 https://sitelo.js.org/llms.txt
+sitelo 的 API 请参阅 https://sitelo.dev/llms.txt
 `
 
 const AGENTS_PT = `# sitelo
 
-Este projeto usa o [sitelo](https://sitelo.js.org) — um gerador de sites estáticos assente no Vite.
+Este projeto usa o [sitelo](https://sitelo.dev) — um gerador de sites estáticos assente no Vite.
 
 ## Regras
 
@@ -193,7 +193,7 @@ Este projeto usa o [sitelo](https://sitelo.js.org) — um gerador de sites está
 - Só o JS/CSS referenciado a partir do HTML entra em \`dist/\`. Deixa o código de servidor sem referências para que nunca seja publicado.
 - A configuração vive em \`sitelo.config.js\`. Coloca as opções do Vite sob \`vite\`.
 - Comandos: \`sitelo\` (dev), \`sitelo build\`, \`sitelo preview\`.
-- Para as APIs atuais, lê https://sitelo.js.org/llms.txt e https://sitelo.js.org/docs — não inventes APIs de outras frameworks.
+- Para as APIs atuais, lê https://sitelo.dev/llms.txt e https://sitelo.dev/docs — não inventes APIs de outras frameworks.
 - Prefere [javascript-to-html](https://ht.js.org) (\`ht.js\`) para a marcação: funções de etiqueta que devolvem strings HTML. Docs: https://ht.js.org
 `
 
@@ -206,7 +206,7 @@ alwaysApply: true
 
 As páginas são módulos \`.ht.js\` (etc.) que devolvem strings HTML — não componentes de React/Next/Astro.
 Prefere javascript-to-html (https://ht.js.org) para a marcação. Usa encaminhamento por ficheiros, \`data()\` e \`sitelo build\`.
-Consulta https://sitelo.js.org/llms.txt para as APIs do sitelo.
+Consulta https://sitelo.dev/llms.txt para as APIs do sitelo.
 `
 
 const BY_LOCALE = {

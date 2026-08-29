@@ -18,13 +18,13 @@ export default () =>
       h2('llms.txt'),
       p(
         'sitelo publishes a machine-readable summary of the framework at ',
-        a({ href: '/llms.txt' }, 'sitelo.js.org/llms.txt'),
+        a({ href: '/llms.txt' }, 'sitelo.dev/llms.txt'),
         '. Many agents can fetch a URL; ask yours to read that file (and the human docs) before writing sitelo code.',
       ),
       ul(
         { class: 'docs-list' },
-        li(a({ href: '/llms.txt' }, 'https://sitelo.js.org/llms.txt'), ' — compact API and conventions'),
-        li(a({ href: '/docs' }, 'https://sitelo.js.org/docs'), ' — full guides'),
+        li(a({ href: '/llms.txt' }, 'https://sitelo.dev/llms.txt'), ' — compact API and conventions'),
+        li(a({ href: '/docs' }, 'https://sitelo.dev/docs'), ' — full guides'),
         li(
           a({ href: 'https://github.com/paul-browne/sitelo' }, 'GitHub README'),
           ' — mental model and feature overview',

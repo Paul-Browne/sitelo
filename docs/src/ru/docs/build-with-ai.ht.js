@@ -17,17 +17,17 @@ export default () =>
       h2('llms.txt'),
       p(
         'sitelo публикует машиночитаемое описание фреймворка по адресу ',
-        a({ href: '/llms.txt' }, 'sitelo.js.org/llms.txt'),
+        a({ href: '/llms.txt' }, 'sitelo.dev/llms.txt'),
         '. Многие агенты умеют загружать URL; попросите своего прочитать этот файл (и документацию для людей), прежде чем писать код на sitelo.',
       ),
       ul(
         { class: 'docs-list' },
         li(
-          a({ href: '/llms.txt' }, 'https://sitelo.js.org/llms.txt'),
+          a({ href: '/llms.txt' }, 'https://sitelo.dev/llms.txt'),
           ' — компактное описание API и соглашений',
         ),
         li(
-          a({ href: '/ru/docs' }, 'https://sitelo.js.org/ru/docs'),
+          a({ href: '/ru/docs' }, 'https://sitelo.dev/ru/docs'),
           ' — полные руководства',
         ),
         li(

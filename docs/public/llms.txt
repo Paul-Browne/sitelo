@@ -2,7 +2,7 @@
 
 > Zero-config static site generation powered by Vite. Pages are JavaScript/TypeScript functions that return HTML — no framework, no components, no client runtime unless you add it.
 
-Docs: https://sitelo.js.org/docs
+Docs: https://sitelo.dev/docs
 GitHub: https://github.com/paul-browne/sitelo
 npm: https://www.npmjs.com/package/sitelo
 
@@ -75,7 +75,7 @@ Docs: https://ht.js.org — `import { html, head, body, h1 } from 'javascript-to
 - `sitemap.xml` when `site` is set in config
 - `rss.xml` when `rss` is configured
 - Pagefind search index (`dist/pagefind/`) when `pagefind: true` (or an options object) is set; requires `npm install -D pagefind`. By default also synced to `public/pagefind/` for `sitelo` / `sitelo preview`. Mark content with `data-pagefind-body`.
-- Image optimization when `images: true` (or an options object) is set; requires `npm install -D sharp`. See https://sitelo.js.org/docs/images
+- Image optimization when `images: true` (or an options object) is set; requires `npm install -D sharp`. See https://sitelo.dev/docs/images
 
 ## Server islands
 
@@ -84,18 +84,18 @@ Docs: https://ht.js.org — `import { html, head, body, h1 } from 'javascript-to
 - Client: `mountIslands()` from `sitelo/islands/client`
 - Host: `createIslandsHandler` / `createIslandsNodeHandler` / `createIslandsFromDirectory` from `sitelo/islands/server`
 - Dev + preview: `sitelo` / `sitelo preview` serve `/_sitelo/islands/<name>` automatically
-- Production: Node host, or Netlify/Vercel stubs in https://sitelo.js.org/examples/islands
+- Production: Node host, or Netlify/Vercel stubs in https://sitelo.dev/examples/islands
 
 ## Deploy
 
-Static site = publish `dist/`. Example host configs: https://sitelo.js.org/examples/basic
+Static site = publish `dist/`. Example host configs: https://sitelo.dev/examples/basic
 
 ## Examples
 
-- Basic + deploy configs: https://sitelo.js.org/examples/basic
-- WordPress REST API: https://sitelo.js.org/examples/wordpress
-- Server islands: https://sitelo.js.org/examples/islands
+- Basic + deploy configs: https://sitelo.dev/examples/basic
+- WordPress REST API: https://sitelo.dev/examples/wordpress
+- Server islands: https://sitelo.dev/examples/islands
 
 ## AI guidance
 
-sitelo is not React, Next, Astro, or Hugo. Do not invent a component framework, `_app` layout system, or hydration model. Prefer functions that return HTML strings. Point agents at https://sitelo.js.org/llms.txt and https://sitelo.js.org/docs.
+sitelo is not React, Next, Astro, or Hugo. Do not invent a component framework, `_app` layout system, or hydration model. Prefer functions that return HTML strings. Point agents at https://sitelo.dev/llms.txt and https://sitelo.dev/docs.

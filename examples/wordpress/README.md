@@ -65,7 +65,7 @@ WP_CONCURRENCY=40 npm run build     # more parallel list pages
 Or skip featured images for a leaner rip (`embed: false` in
 `generateStaticParams`) — content is still cached for render.
 
-Full walkthrough: [sitelo.js.org/examples/wordpress](https://sitelo.js.org/examples/wordpress).
+Full walkthrough: [sitelo.dev/examples/wordpress](https://sitelo.dev/examples/wordpress).
 
 Content from Speckyboy remains © Speckyboy; this example only demonstrates
 static generation against a public REST API.

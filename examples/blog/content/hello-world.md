@@ -5,7 +5,7 @@ description: The obligatory first post — how this blog is built.
 ---
 
 This blog is a folder of markdown files rendered to static HTML by
-[sitelo](https://sitelo.js.org).
+[sitelo](https://sitelo.dev).
 
 Each post is a `.md` file in `content/` with a few lines of frontmatter:
 

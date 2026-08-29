@@ -1,4 +1,4 @@
 export default {
-  site: 'https://sitelo.js.org',
+  site: 'https://sitelo.dev',
   pagefind: true,
 }

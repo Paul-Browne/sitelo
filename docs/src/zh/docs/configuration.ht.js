@@ -107,7 +107,7 @@ export default () =>
         li(
           code('devToolbarDocsUrl'),
           ' —— 工具栏中的文档链接（默认 ',
-          code('https://sitelo.js.org/docs'),
+          code('https://sitelo.dev/docs'),
           '）',
         ),
       ),

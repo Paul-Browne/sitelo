@@ -23,7 +23,7 @@ const WP_HEADERS = {
   Accept: 'application/json',
   // Cloudflare (and similar) often block bare clients — identify ourselves.
   'User-Agent':
-    'wordpress-astro-example/1.0 (+https://sitelo.js.org; demo of Speckyboy)',
+    'wordpress-astro-example/1.0 (+https://sitelo.dev; demo of Speckyboy)',
 }
 
 /** Filled by getAllPosts / getPosts so callers can skip per-slug API calls. */

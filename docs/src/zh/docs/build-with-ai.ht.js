@@ -17,17 +17,17 @@ export default () =>
       h2('llms.txt'),
       p(
         'sitelo 在 ',
-        a({ href: '/llms.txt' }, 'sitelo.js.org/llms.txt'),
+        a({ href: '/llms.txt' }, 'sitelo.dev/llms.txt'),
         ' 发布了一份机器可读的框架摘要。很多智能体都能抓取 URL；在写 sitelo 代码之前，让它先读这个文件（以及给人看的文档）。',
       ),
       ul(
         { class: 'docs-list' },
         li(
-          a({ href: '/llms.txt' }, 'https://sitelo.js.org/llms.txt'),
+          a({ href: '/llms.txt' }, 'https://sitelo.dev/llms.txt'),
           ' —— 精简的 API 与约定',
         ),
         li(
-          a({ href: '/zh/docs' }, 'https://sitelo.js.org/zh/docs'),
+          a({ href: '/zh/docs' }, 'https://sitelo.dev/zh/docs'),
           ' —— 完整指南',
         ),
         li(

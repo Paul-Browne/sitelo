@@ -27,4 +27,4 @@ Then open `dist/` on any static host (or `npx serve dist`).
 - sitelo still discovers `import('/js/todo.js')` in the HTML and bundles it into `dist/js/todo.js`
 - Interactivity is plain exported functions; the page stays a static file
 
-See [sitelo.js.org/examples/todo](https://sitelo.js.org/examples/todo) and [Assets & styling](https://sitelo.js.org/docs/assets).
+See [sitelo.dev/examples/todo](https://sitelo.dev/examples/todo) and [Assets & styling](https://sitelo.dev/docs/assets).

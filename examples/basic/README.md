@@ -24,6 +24,6 @@ From the sitelo monorepo, set the platform root/base to `examples/basic`.
 
 Copy these config files into any sitelo project — they only assume `npm run build` → `dist/`.
 
-`AGENTS.md` in this folder is a starter rule file for AI coding tools — see [Build with AI](https://sitelo.js.org/docs/build-with-ai).
+`AGENTS.md` in this folder is a starter rule file for AI coding tools — see [Build with AI](https://sitelo.dev/docs/build-with-ai).
 
-See [sitelo.js.org/examples/basic](https://sitelo.js.org/examples/basic).
+See [sitelo.dev/examples/basic](https://sitelo.dev/examples/basic).

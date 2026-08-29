@@ -11,7 +11,7 @@ const ELISA_RETRIES = Number(process.env.ELISA_RETRIES ?? 6)
 const ELISA_HEADERS = {
   Accept: 'application/json',
   'User-Agent':
-    'sitelo-elisa-example/1.0 (+https://sitelo.js.org; demo of elisa.fi/kauppa)',
+    'sitelo-elisa-example/1.0 (+https://sitelo.dev; demo of elisa.fi/kauppa)',
 }
 
 /** @type {unknown[] | null} */

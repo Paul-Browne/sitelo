@@ -28,7 +28,7 @@ export function siteChrome({ title, description = '', body }) {
       ${body}
       <footer class="site-footer">
         Catalog data © <a href="https://elisa.fi/kauppa" rel="noopener">Elisa</a>.
-        Built with <a href="https://sitelo.js.org">sitelo</a>. No checkout.
+        Built with <a href="https://sitelo.dev">sitelo</a>. No checkout.
       </footer>
     </body>
   </html>

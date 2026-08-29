@@ -40,7 +40,7 @@ export default ({ data }) => `
       </main>
       <footer class="site-footer">
         Content © <a href="${data.source}" rel="noopener">Speckyboy</a>.
-        Built with <a href="https://sitelo.js.org">sitelo</a>.
+        Built with <a href="https://sitelo.dev">sitelo</a>.
       </footer>
     </body>
   </html>
