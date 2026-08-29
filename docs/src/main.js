@@ -10,6 +10,9 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
 
 const THEME_KEY = 'sitelo-theme'
 
+/** Keep in step with `CONSENT_KEY` in lib/layout.js. */
+const CONSENT_KEY = 'sitelo-analytics-consent'
+
 /**
  * Held at module scope on purpose: a MediaQueryList that nothing references
  * can be collected along with its listeners, which would silently stop the
@@ -173,6 +176,7 @@ initTheme()
 startHeroTypewriter()
 initDocsSearch()
 closeMenusOnOutsideClick()
+initCookieConsent()
 
 /** Whatever `--paper` currently resolves to, in the theme now applied. */
 function paperColor() {
@@ -250,6 +254,89 @@ function initTheme() {
   })
 
   applyTheme(current())
+}
+
+/** The visitor's answer, or null while they have not given one. */
+function storedConsent() {
+  try {
+    const value = localStorage.getItem(CONSENT_KEY)
+    return value === 'granted' || value === 'denied' ? value : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Cookie banner.
+ *
+ * The markup ships hidden, so someone who has already answered never sees it
+ * flash on the way in. Only a fresh visitor gets it, and only once — either
+ * button is an answer, and both are remembered.
+ *
+ * Accepting is what loads gtag.js: the head script left `siteloLoadAnalytics`
+ * ready but uncalled, and nothing has reached Google before this point.
+ * Declining stores that and calls nothing.
+ *
+ * With storage blocked there is nowhere to record an answer, so the banner
+ * would return on every page. Better to leave it off entirely and keep
+ * analytics off with it, which is the answer the visitor has not given.
+ */
+function initCookieConsent() {
+  const banner = document.querySelector('[data-cookie-banner]')
+  if (!banner || !storageWorks() || storedConsent()) return
+
+  banner.hidden = false
+  // Force a layout pass so the reveal animates from the hidden state rather
+  // than being collapsed into it.
+  void banner.offsetHeight
+  banner.classList.add('is-visible')
+
+  function decide(value) {
+    try {
+      localStorage.setItem(CONSENT_KEY, value)
+    } catch {
+      // Checked already; if it fails now the banner still goes away for the
+      // rest of this page and analytics stay off.
+    }
+
+    if (value === 'granted') window.siteloLoadAnalytics?.()
+
+    // Taken out of the layout once it has faded. A timer rather than
+    // `transitionend`, which does not fire everywhere and would strand the
+    // banner in the DOM; `pointer-events` in the stylesheet covers the gap in
+    // between either way.
+    banner.classList.remove('is-visible')
+    window.setTimeout(
+      () => {
+        banner.hidden = true
+      },
+      reduceMotion ? 0 : 260,
+    )
+  }
+
+  banner
+    .querySelector('[data-cookie-accept]')
+    ?.addEventListener('click', () => decide('granted'))
+  banner
+    .querySelector('[data-cookie-decline]')
+    ?.addEventListener('click', () => decide('denied'))
+}
+
+/**
+ * Can an answer actually be remembered? Private modes sometimes say no.
+ *
+ * Probes a throwaway key, never the real one — writing and clearing
+ * `CONSENT_KEY` to test it would erase the very answer this is asking about.
+ */
+function storageWorks() {
+  const probe = 'sitelo-storage-probe'
+  try {
+    localStorage.setItem(probe, '1')
+    localStorage.removeItem(probe)
+    return true
+  } catch {
+    return false
+  }
 }
 
 /**

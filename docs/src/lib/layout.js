@@ -67,11 +67,21 @@ const themeBootScript = `(function(){var s;try{s=localStorage.getItem('sitelo-th
 
 const GA_MEASUREMENT_ID = 'G-NSYEXEBN7C'
 
+/** Where the visitor's answer to the cookie banner is kept. */
+const CONSENT_KEY = 'sitelo-analytics-consent'
+
 /**
- * Google Analytics (gtag.js). The loader is async; this inline snippet queues
- * the page view so nothing is lost while it is still in flight.
+ * Google Analytics, held back until the visitor accepts.
+ *
+ * Nothing reaches Google before that — gtag.js is injected by
+ * `siteloLoadAnalytics`, which runs here only for someone who has already
+ * accepted, and otherwise waits for the banner in `main.js` to call it.
+ * Declining leaves the function defined and never called.
+ *
+ * Inline in <head> rather than deferred so a returning visitor's page view is
+ * counted at the same point it would have been without the gate.
  */
-const gaBootScript = `window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments)}gtag('js', new Date());gtag('config', '${GA_MEASUREMENT_ID}')`
+const analyticsBootScript = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}window.siteloLoadAnalytics=function(){if(window.siteloAnalyticsLoaded)return;window.siteloAnalyticsLoaded=true;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}';document.head.appendChild(s);gtag('js',new Date());gtag('config','${GA_MEASUREMENT_ID}')};try{if(localStorage.getItem('${CONSENT_KEY}')==='granted')window.siteloLoadAnalytics()}catch(e){}`
 
 const sunIcon = `<svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.2v2.2M12 19.6v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.2 12h2.2M19.6 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg>`
 
@@ -100,6 +110,48 @@ function themeToggle(lang, variant = 'bar') {
     sunIcon,
     moonIcon,
     inList ? span({ class: 'theme-toggle-label' }, t.themeToLight) : '',
+  )
+}
+
+/**
+ * Cookie consent.
+ *
+ * A small bar in the corner rather than a modal: it never covers the page, it
+ * traps nothing, and ignoring it simply leaves analytics off. Ships `hidden`
+ * and is revealed by `main.js`, which is the only side that can read the
+ * stored answer — so a visitor who has already decided never sees it flash.
+ */
+function cookieBanner(lang) {
+  const t = strings(lang)
+
+  return div(
+    {
+      class: 'cookie-banner',
+      'data-cookie-banner': '',
+      role: 'region',
+      'aria-label': t.cookieLabel,
+      hidden: true,
+    },
+    p({ class: 'cookie-banner-text' }, t.cookieText),
+    div(
+      { class: 'cookie-banner-actions' },
+      button(
+        {
+          class: 'cookie-btn cookie-btn-decline',
+          type: 'button',
+          'data-cookie-decline': '',
+        },
+        t.cookieDecline,
+      ),
+      button(
+        {
+          class: 'cookie-btn cookie-btn-accept',
+          type: 'button',
+          'data-cookie-accept': '',
+        },
+        t.cookieAccept,
+      ),
+    ),
   )
 }
 
@@ -383,16 +435,13 @@ function pageShell({
         href: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@500;600;700&family=Source+Sans+3:wght@400;600&display=swap',
       }),
       link({ rel: 'stylesheet', href: '/styles.css' }),
-      script({
-        async: true,
-        src: `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`,
-      }),
-      script(gaBootScript),
+      script(analyticsBootScript),
     ),
     body(
       { class: bodyClass },
       div({ id: 'atmosphere', class: 'atmosphere', 'aria-hidden': 'true' }),
       ...content,
+      cookieBanner(lang),
       script({ type: 'module', src: '/main.js' }),
     ),
   )
