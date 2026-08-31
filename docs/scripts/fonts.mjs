@@ -13,9 +13,14 @@
  */
 import { mkdirSync, writeFileSync } from 'node:fs'
 
-/** Exactly the query the old <link> used, so the faces stay the same. */
+/**
+ * Sora and Source Sans 3 are asked for as weight ranges, so Google serves one
+ * variable file per subset instead of one per weight — 25 KB of Sora covering
+ * 500/600/700 rather than 25 KB each. IBM Plex Mono has no variable axis on
+ * Google Fonts, so it stays two static weights.
+ */
 const FAMILIES =
-  'family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@500;600;700&family=Source+Sans+3:wght@400;600'
+  'family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@500..700&family=Source+Sans+3:wght@400..600'
 
 /**
  * The scripts these seven locales actually set. Google also offers greek,
@@ -50,7 +55,7 @@ const faces = css
       subset: b.match(/^\/\* ([a-z-]+) \*\//)?.[1],
       family: b.match(/font-family: '([^']+)'/)?.[1],
       style: b.match(/font-style: (\w+)/)?.[1],
-      weight: b.match(/font-weight: (\d+)/)?.[1],
+      weight: b.match(/font-weight: ([\d ]+);/)?.[1]?.trim(),
       range: b.match(/unicode-range: ([^;]+);/)?.[1],
       url: b.match(/url\((https:\/\/fonts\.gstatic\.com\/[^)]+)\)/)?.[1],
     }
@@ -64,7 +69,7 @@ mkdirSync(publicDir, { recursive: true })
 const rules = []
 let bytes = 0
 for (const f of faces) {
-  const name = `${slug(f.family)}-${f.weight}-${f.subset}.woff2`
+  const name = `${slug(f.family)}-${slug(f.weight)}-${f.subset}.woff2`
   const body = Buffer.from(await fetch(f.url).then((r) => r.arrayBuffer()))
   writeFileSync(new URL(name, publicDir), body)
   bytes += body.length

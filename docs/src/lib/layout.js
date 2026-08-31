@@ -439,6 +439,24 @@ function pageShell({
         href: '/logo.svg',
         fetchpriority: 'high',
       }),
+      /*
+       * Body and heading type, which every page sets before anything else is
+       * painted. Without these the browser cannot ask for a font until
+       * styles.css has parsed; naming them here runs both alongside it. One
+       * file per family covers every weight the site uses, so there is no
+       * chance of pulling a face the page never sets — and `crossorigin` is
+       * required even same-origin, since fonts are fetched in CORS mode and
+       * a hint without it is simply fetched twice.
+       */
+      ...['source-sans-3-400-600-latin', 'sora-500-700-latin'].map((f) =>
+        link({
+          rel: 'preload',
+          as: 'font',
+          type: 'font/woff2',
+          href: `/fonts/${f}.woff2`,
+          crossorigin: '',
+        }),
+      ),
       ...preload.map((p) => link({ rel: 'preload', ...p })),
       link({ rel: 'stylesheet', href: '/styles.css' }),
       script(analyticsBootScript),
