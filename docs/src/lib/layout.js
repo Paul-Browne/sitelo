@@ -430,10 +430,6 @@ function pageShell({
         href: 'https://fonts.gstatic.com',
         crossorigin: '',
       }),
-      link({
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@500;600;700&family=Source+Sans+3:wght@400;600&display=swap',
-      }),
       link({ rel: 'stylesheet', href: '/styles.css' }),
       script(analyticsBootScript),
     ),
