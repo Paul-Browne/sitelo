@@ -379,13 +379,13 @@ async function initDocsSearch() {
    */
   const releaseSpace = () => mount.classList.add('is-unavailable')
 
-  try {
-    const probe = await fetch('/pagefind/pagefind-ui.js', { method: 'HEAD' })
-    if (!probe.ok) return releaseSpace()
-  } catch {
-    return releaseSpace()
-  }
-
+  /*
+   * Both assets are requested straight away rather than behind a HEAD probe
+   * for the index. The probe cost a whole round trip before either could
+   * start — a third link in the chain from the document — and told us nothing
+   * the script's own `onerror` does not. Where there is no index this now
+   * 404s twice instead of once, which costs a dev nothing.
+   */
   const style = document.createElement('link')
   style.rel = 'stylesheet'
   style.href = '/pagefind/pagefind-ui.css'

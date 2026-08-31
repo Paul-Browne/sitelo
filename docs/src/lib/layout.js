@@ -387,6 +387,7 @@ function pageShell({
   bodyClass = '',
   path,
   lang = DEFAULT_LOCALE,
+  preload = [],
   children,
 }) {
   const t = strings(lang)
@@ -438,6 +439,7 @@ function pageShell({
         href: '/logo.svg',
         fetchpriority: 'high',
       }),
+      ...preload.map((p) => link({ rel: 'preload', ...p })),
       link({ rel: 'preconnect', href: 'https://fonts.googleapis.com' }),
       link({
         rel: 'preconnect',
@@ -576,6 +578,18 @@ function guideLayout({
     bodyClass: 'page-docs',
     path: activeHref,
     lang,
+    /*
+     * Only these pages render #docs-search, and only they should pay for it.
+     * main.js cannot ask for the search UI until it has run, which is after
+     * the document is parsed — naming the two files here hands them to the
+     * preload scanner instead, so they load beside main.js rather than behind
+     * it. A build with no index 404s them; that costs a dev two console lines
+     * and the page nothing, since main.js already collapses the empty mount.
+     */
+    preload: [
+      { as: 'style', href: '/pagefind/pagefind-ui.css' },
+      { as: 'script', href: '/pagefind/pagefind-ui.js' },
+    ],
     children: [
       header(
         { class: 'topbar' },
