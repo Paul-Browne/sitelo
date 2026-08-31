@@ -440,12 +440,6 @@ function pageShell({
         fetchpriority: 'high',
       }),
       ...preload.map((p) => link({ rel: 'preload', ...p })),
-      link({ rel: 'preconnect', href: 'https://fonts.googleapis.com' }),
-      link({
-        rel: 'preconnect',
-        href: 'https://fonts.gstatic.com',
-        crossorigin: '',
-      }),
       link({ rel: 'stylesheet', href: '/styles.css' }),
       script(analyticsBootScript),
     ),
