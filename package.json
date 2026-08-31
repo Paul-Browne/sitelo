@@ -76,7 +76,8 @@
     "docs:dev": "node ./bin/sitelo.js --root docs",
     "docs:build": "node ./bin/sitelo.js build --root docs",
     "docs:preview": "node ./bin/sitelo.js preview --root docs",
-    "docs:index": "npm run docs:build"
+    "docs:index": "npm run docs:build",
+    "docs:icons": "node ./docs/scripts/icons.mjs"
   },
   "dependencies": {
     "vite": "^8.2.2",
