@@ -903,7 +903,12 @@ code {
 
 .install-cmd::before {
   content: '> ';
-  color: var(--accent);
+  /*
+   * The keyword token, not the raw accent: both are neon on the dark pill,
+   * but on paper the accent only reaches 4.05:1 against the tinted pill,
+   * where the deepened keyword green clears 4.5:1.
+   */
+  color: var(--tok-keyword);
 }
 
 .install-copy {
@@ -912,7 +917,11 @@ code {
   border-radius: 999px;
   padding: 0.4rem 0.75rem;
   background: color-mix(in srgb, var(--ink) 10%, transparent);
-  color: var(--ink-soft);
+  /*
+   * Full ink, not --ink-soft: the chip sits on the already-tinted pill, and
+   * soft ink over those two stacked tints came to 4.36:1 on paper.
+   */
+  color: var(--ink);
   font: inherit;
   font-family: var(--font-body);
   font-size: 0.8rem;

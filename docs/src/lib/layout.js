@@ -424,6 +424,20 @@ function pageShell({
         content: `${SITE_URL}/logo.png`,
       }),
       meta({ name: 'twitter:card', content: 'summary' }),
+      /*
+       * The wordmark is above the fold on every page — the topbar on all of
+       * them, the hero as well on the landing pages. Both `img`s resolve to
+       * this one request, and the hint on the hero image alone does not reach
+       * it: the topbar's copy comes first in the document, so that is the one
+       * the preload scanner acts on. Stating it here settles the priority
+       * before either element is parsed.
+       */
+      link({
+        rel: 'preload',
+        as: 'image',
+        href: '/logo.svg',
+        fetchpriority: 'high',
+      }),
       link({ rel: 'preconnect', href: 'https://fonts.googleapis.com' }),
       link({
         rel: 'preconnect',

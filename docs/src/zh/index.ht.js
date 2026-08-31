@@ -102,6 +102,9 @@ function headerHero() {
         alt: 'sitelo',
         width: '280',
         height: '80',
+        // Above the fold and the hero's first paint, so it should not queue
+        // behind the page's other subresources.
+        fetchpriority: 'high',
       }),
       h1(
         { class: 'hero-headline' },
