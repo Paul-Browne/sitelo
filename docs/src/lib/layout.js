@@ -606,7 +606,13 @@ export function createLayouts(lang = DEFAULT_LOCALE) {
           { class: 'topbar' },
           div({ class: 'topbar-inner' }, siteNav(activeHref, lang)),
         ),
-        ...content,
+        /*
+         * The hero and the sections below it are separate blocks, but they
+         * still need one `main` around them: the other two layouts each have
+         * theirs, and without it the landing pages are the only ones with no
+         * landmark for a screen reader to skip the nav with.
+         */
+        main(...content),
         siteFooter(lang),
       ],
     })
