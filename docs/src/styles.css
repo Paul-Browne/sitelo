@@ -1481,7 +1481,15 @@ a.feature-card:hover h3 {
   overflow: auto;
 }
 
-/* Pagefind search (production builds only) */
+/*
+ * Pagefind search (production builds only).
+ *
+ * The UI is mounted from JS once /pagefind/ answers, so the mount is empty in
+ * the served HTML. Reserving the input's height up front stops the sidebar
+ * label and nav — and, on a narrow screen, the whole article below them —
+ * being pushed down when it lands. 64px is the height pagefind gives
+ * .pagefind-ui__search-input, so scaling it here keeps the two in step.
+ */
 #docs-search {
   --pagefind-ui-scale: 0.8;
   --pagefind-ui-primary: var(--accent);
@@ -1492,10 +1500,14 @@ a.feature-card:hover h3 {
   --pagefind-ui-border-width: 1px;
   --pagefind-ui-border-radius: 0.55rem;
   --pagefind-ui-font: var(--font-body);
+  min-height: calc(64px * var(--pagefind-ui-scale));
+  margin-bottom: 1.25rem;
 }
 
-#docs-search:not(:empty) {
-  margin-bottom: 1.25rem;
+/* No index to answer the probe — dev, usually — so hand the space back. */
+#docs-search.is-unavailable {
+  min-height: 0;
+  margin-bottom: 0;
 }
 
 #docs-search .pagefind-ui__search-input:focus,

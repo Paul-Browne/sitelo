@@ -372,11 +372,18 @@ async function initDocsSearch() {
   const mount = document.querySelector('#docs-search')
   if (!mount) return
 
+  /*
+   * The mount reserves the input's height so the sidebar does not jump when
+   * the UI lands. Nothing will land if there is no index — the usual case in
+   * dev — so collapse it again rather than leave a gap above the nav.
+   */
+  const releaseSpace = () => mount.classList.add('is-unavailable')
+
   try {
     const probe = await fetch('/pagefind/pagefind-ui.js', { method: 'HEAD' })
-    if (!probe.ok) return
+    if (!probe.ok) return releaseSpace()
   } catch {
-    return
+    return releaseSpace()
   }
 
   const style = document.createElement('link')
@@ -384,13 +391,14 @@ async function initDocsSearch() {
   style.href = '/pagefind/pagefind-ui.css'
   document.head.appendChild(style)
 
-  await new Promise((resolve, reject) => {
+  const loaded = await new Promise((resolve) => {
     const script = document.createElement('script')
     script.src = '/pagefind/pagefind-ui.js'
-    script.onload = resolve
-    script.onerror = reject
+    script.onload = () => resolve(true)
+    script.onerror = () => resolve(false)
     document.body.appendChild(script)
   })
+  if (!loaded) return releaseSpace()
 
   new window.PagefindUI({
     element: '#docs-search',
