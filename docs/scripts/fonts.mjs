@@ -20,7 +20,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
  * Google Fonts, so it stays two static weights.
  */
 const FAMILIES =
-  'family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@500..700&family=Source+Sans+3:wght@400..600'
+  'family=IBM+Plex+Mono:wght@400&family=Sora:wght@500..700&family=Source+Sans+3:wght@400..600'
 
 /**
  * The scripts these seven locales actually set. Google also offers greek,

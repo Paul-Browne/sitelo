@@ -1732,7 +1732,6 @@ a.feature-card:hover h3 {
   color: var(--ink-faint);
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  font-weight: 500;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
