@@ -448,7 +448,7 @@ function pageShell({
        * required even same-origin, since fonts are fetched in CORS mode and
        * a hint without it is simply fetched twice.
        */
-      ...['source-sans-3-400-600-latin', 'sora-500-700-latin'].map((f) =>
+      ...['source-sans-3-400-600-latin', 'sora-500-700-latin', 'ibm-plex-sans-400-500-latin'].map((f) =>
         link({
           rel: 'preload',
           as: 'font',
