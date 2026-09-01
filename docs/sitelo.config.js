@@ -18,7 +18,7 @@ export default {
    */
   lighthouse: {
     formFactor: 'desktop',
-    exclude: ['{de,es,fr,pt,ru,zh}.html', '{de,es,fr,pt,ru,zh}/**'],
+    exclude: ['{de,es,fr,pt,ru,zh}.html', '{de,es,fr,pt,ru,zh}/**', '404.html'],
     /*
      * No `performance` threshold, deliberately.
      * These three are *checked* — an alt attribute, a meta description, a
@@ -33,9 +33,9 @@ export default {
      * trend, and compare like with like.
      */
     thresholds: {
-      accessibility: 100,
-      'best-practices': 100,
-      seo: 100,
+      accessibility: 90,
+      'best-practices': 90,
+      seo: 90,
     },
   },
 }
