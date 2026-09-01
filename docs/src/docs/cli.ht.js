@@ -23,6 +23,12 @@ export default () =>
         li(code('dev'), ' — real SSR renders on request, including dynamic routes, plus a small dev toolbar'),
         li(code('build'), ' — static HTML in ', code('dist/'), ' (or your ', code('outDir'), ')'),
         li(code('preview'), ' — serve the production build locally'),
+        li(
+          code('lighthouse'),
+          ' — audit the production build (needs the ',
+          code('lighthouse'),
+          ' peer dependency)',
+        ),
       ),
       p(
         'Disable the toolbar with ',

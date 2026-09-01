@@ -36,9 +36,10 @@ jobs:
 
       - run: npm test
 
-  # sharp and pagefind are optional peers, and that declaration is
-  # load-bearing: drop it and only Yarn Berry's Plug'n'Play linker breaks,
-  # while npm and pnpm keep working. So exercise every manager for real.
+  # sharp, pagefind and lighthouse are optional peers, and that
+  # declaration is load-bearing: drop it and only Yarn Berry's Plug'n'Play
+  # linker breaks, while npm and pnpm keep working. So exercise every
+  # manager for real.
   optional-peers:
     runs-on: ubuntu-latest
 
