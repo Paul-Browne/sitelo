@@ -1192,14 +1192,19 @@ It runs last — after image optimization, Pagefind and the link check — so
 it measures exactly what ships, and its phase time shows up in the build
 report.
 
-Two things worth knowing before you gate a pipeline on this:
+Three things worth knowing before you gate a pipeline on this:
 
 - **Lighthouse drives a real Chrome.** Install one on the runner (GitHub's
   `ubuntu-latest` already has it) or point `CHROME_PATH` at a binary.
   Containers usually need `chromeFlags: ['--no-sandbox']`.
-- **Performance scores move between runs**, more so on a busy CI box.
-  `runs: 3` medians the noise away; thresholds on `accessibility`, `seo`
-  and `best-practices` are steady enough to pin at `100`.
+- **Performance is machine-dependent, badly.** A page that scores 100 on
+  a laptop scores around 60 on a hosted runner — two shared cores, no GPU,
+  software rendering. That is a systematic offset, not jitter, so `runs: 3`
+  will not close it (it only smooths run-to-run wobble on one machine).
+  Gate CI on `accessibility`, `best-practices` and `seo`: those are
+  properties of the HTML you shipped and score identically anywhere. Leave
+  `performance` in `categories` so it still prints, and either read it as
+  a trend or pin it against numbers measured on the runner itself.
 - **Pages are audited one at a time**, through a single Chrome. Running
   them in parallel would compete for the CPU Lighthouse is measuring, so
   budget a few seconds per page.
