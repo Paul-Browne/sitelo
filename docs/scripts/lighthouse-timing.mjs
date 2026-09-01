@@ -54,12 +54,17 @@ if (files.length === 0) {
 
 const rows = []
 const warnings = []
+/** @type {{ page: string, total: number, requests: object[] } | null} */
+let slowest = null
 
 for (const file of files) {
   const lhr = JSON.parse(await readFile(file, 'utf8'))
-  const byName = new Map(
-    (lhr.timing?.entries ?? []).map((entry) => [entry.name, entry.duration]),
-  )
+  /** A phase can appear more than once (about:blank, then the page). */
+  const byName = new Map()
+
+  for (const entry of lhr.timing?.entries ?? []) {
+    byName.set(entry.name, Math.max(byName.get(entry.name) ?? 0, entry.duration))
+  }
 
   rows.push({
     page: path.relative(dir, file).replace(/\.report\.json$/, ''),
@@ -69,6 +74,21 @@ for (const file of files) {
 
   for (const warning of lhr.runWarnings ?? []) {
     warnings.push(`${path.relative(dir, file)}: ${warning}`)
+  }
+
+  /*
+   * Keep the worst page's network log. A navigation that sits at
+   * Lighthouse's 45s ceiling is waiting on something, and a request that
+   * never finished is what that looks like from the outside.
+   */
+  const total = lhr.timing?.total ?? 0
+
+  if (!slowest || total > slowest.total) {
+    slowest = {
+      page: path.relative(dir, file).replace(/\.report\.json$/, ''),
+      total,
+      requests: lhr.audits?.['network-requests']?.details?.items ?? [],
+    }
   }
 }
 
@@ -97,4 +117,34 @@ if (warnings.length > 0) {
   for (const warning of warnings) console.log(`    ${warning}`)
 } else {
   console.log('\n  no lighthouse run warnings')
+}
+
+if (slowest && slowest.requests.length > 0) {
+  const duration = (request) =>
+    request.networkEndTime > 0 && request.networkRequestTime >= 0
+      ? request.networkEndTime - request.networkRequestTime
+      : Number.POSITIVE_INFINITY
+
+  const ranked = [...slowest.requests].sort((a, b) => duration(b) - duration(a))
+
+  console.log(`\n  slowest page (${slowest.page}) — its longest requests`)
+
+  for (const request of ranked.slice(0, 8)) {
+    const spent = duration(request)
+    const url = String(request.url ?? '').replace(/^https?:\/\/[^/]+/, '')
+
+    console.log(
+      `    ${(spent === Number.POSITIVE_INFINITY ? 'unfinished' : `${Math.round(spent)}ms`).padStart(11)}  ` +
+        `${String(request.statusCode ?? '-').padStart(3)}  ` +
+        `${String(request.resourceType ?? '-').padEnd(10)}  ${url.slice(0, 70)}`,
+    )
+  }
+
+  const unfinished = slowest.requests.filter(
+    (request) => !(request.networkEndTime > 0),
+  )
+
+  console.log(
+    `\n  ${slowest.requests.length} requests, ${unfinished.length} never finished`,
+  )
 }

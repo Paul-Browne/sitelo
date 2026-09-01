@@ -24,7 +24,18 @@ export default {
      * — measured, with identical scores either way. Nothing here reads the
      * saved report, so it is pure cost.
      */
-    flags: { disableFullPageScreenshot: true },
+    flags: {
+      disableFullPageScreenshot: true,
+      /*
+       * Temporary, with the diagnostic below. On a hosted runner every
+       * page sits at Lighthouse's default 45s load ceiling — it never
+       * decides the page is quiet — which is where 18 of the 20 minutes
+       * go. Capping the wait costs the three gated categories nothing
+       * (they read the DOM, and score 100 either way, measured), and it
+       * makes the run that collects the evidence bearable.
+       */
+      maxWaitForLoad: 15_000,
+    },
     /*
      * Diagnostic, and temporary: the JSON report carries Lighthouse's own
      * phase timings, which is how `docs/scripts/lighthouse-timing.mjs`
