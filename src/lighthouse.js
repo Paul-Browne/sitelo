@@ -1,3 +1,4 @@
+import fsSync from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import path from 'node:path'
@@ -579,6 +580,100 @@ export function lighthouseFlags(options, port) {
 }
 
 /**
+ * The file a static host would answer a request with, or `null` for a
+ * path with nothing behind it.
+ *
+ * By the time this runs, Vite has already rewritten the pretty URLs, so
+ * `/docs` arrives as `/docs.html`; only a trailing slash still has to be
+ * turned into a directory index.
+ *
+ * @param {string} siteDir
+ * @param {string} url the request URL, base already stripped
+ * @returns {string | null}
+ */
+export function resolveStaticFile(siteDir, url) {
+  const withoutQuery = url.split('?')[0].split('#')[0]
+
+  let pathname
+
+  try {
+    pathname = decodeURIComponent(withoutQuery)
+  } catch {
+    return null
+  }
+
+  const relative = pathname.endsWith('/')
+    ? `${pathname}index.html`
+    : pathname
+
+  const target = path.resolve(siteDir, `.${relative}`)
+
+  // `.%2e/` and friends: anything that climbs out of the build is a miss,
+  // not something to go looking for on disk.
+  if (target !== siteDir && !target.startsWith(siteDir + path.sep)) return null
+
+  try {
+    return fsSync.statSync(target).isFile() ? target : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Answer like a static host: 404 for a path with no file behind it.
+ *
+ * Vite's preview server falls back to `index.html` for anything it cannot
+ * resolve. A static host does not, and the difference is measurable —
+ * Lighthouse asks for `/robots.txt`, gets a 200 and a page of HTML, and
+ * reports the site's robots.txt as malformed. Every audited site would
+ * lose the same SEO point for a file that is correctly absent in
+ * production.
+ *
+ * Returning a function registers this *after* Vite's own static and
+ * html-fallback middlewares, so a rewritten `/docs.html` still resolves
+ * and only genuine misses land here.
+ *
+ * @param {string} siteDir
+ */
+export function staticHostPlugin(siteDir) {
+  /** @type {Buffer | null | undefined} */
+  let notFoundPage
+
+  return {
+    name: 'sitelo:lighthouse-static-host',
+
+    configurePreviewServer(server) {
+      return () => {
+        server.middlewares.use((req, res, next) => {
+          if (resolveStaticFile(siteDir, req.url ?? '/')) return next()
+
+          if (notFoundPage === undefined) {
+            const custom = path.join(siteDir, '404.html')
+
+            try {
+              notFoundPage = fsSync.readFileSync(custom)
+            } catch {
+              notFoundPage = null
+            }
+          }
+
+          // A build's own 404.html, served with a 404 — what GitHub Pages,
+          // Netlify and Cloudflare Pages all do with it.
+          res.statusCode = 404
+
+          if (notFoundPage) {
+            res.setHeader('Content-Type', 'text/html; charset=utf-8')
+            res.end(notFoundPage)
+          } else {
+            res.end('Not found')
+          }
+        })
+      }
+    },
+  }
+}
+
+/**
  * Run Lighthouse over the built site, printing a score table and holding
  * the scores against `thresholds`.
  *
@@ -629,8 +724,16 @@ export async function runLighthouse({
   const { lighthouse, launch } = await loadLighthouse()
 
   const server = await preview(
-    mergeConfig(previewConfig, {
+    // `root` pairs with the `outDir` below: the server has to serve the
+    // very directory the pages were read from. An explicit root in
+    // `previewConfig` — what the CLI passes — still wins.
+    mergeConfig(mergeConfig({ root }, previewConfig), {
       build: { outDir },
+      // A built site is a multi-page one. Vite's default `appType: 'spa'`
+      // rewrites every unmatched path to `index.html`, which no static
+      // host does — see `staticHostPlugin`.
+      appType: 'mpa',
+      plugins: [staticHostPlugin(siteDir)],
       preview: {
         open: false,
         ...(options.port != null ? { port: options.port } : {}),

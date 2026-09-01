@@ -1,10 +1,13 @@
 import assert from 'node:assert/strict'
 import { execFile } from 'node:child_process'
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import { test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
+
+import { preview } from 'vite'
 
 import {
   CATEGORIES,
@@ -17,7 +20,9 @@ import {
   median,
   normalizeLighthouseOptions,
   normalizeScore,
+  resolveStaticFile,
   selectPages,
+  staticHostPlugin,
   summarizeRuns,
   tableLayout,
 } from '../src/lighthouse.js'
@@ -301,6 +306,78 @@ test('lighthouseFlags: a user preset overrides the desktop defaults', () => {
 
   assert.equal(flags.throttlingMethod, 'provided')
   assert.deepEqual(flags.screenEmulation, { disabled: true })
+})
+
+test('resolveStaticFile: resolves files, directory indexes and misses', (t) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'sitelo-static-'))
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }))
+
+  fs.mkdirSync(path.join(dir, 'docs'), { recursive: true })
+  fs.writeFileSync(path.join(dir, 'index.html'), 'home')
+  fs.writeFileSync(path.join(dir, 'docs.html'), 'docs')
+  fs.writeFileSync(path.join(dir, 'docs', 'index.html'), 'docs index')
+  fs.writeFileSync(path.join(dir, 'a b.html'), 'spaced')
+
+  assert.equal(resolveStaticFile(dir, '/index.html'), path.join(dir, 'index.html'))
+  assert.equal(resolveStaticFile(dir, '/docs.html?v=1'), path.join(dir, 'docs.html'))
+  assert.equal(resolveStaticFile(dir, '/docs/'), path.join(dir, 'docs', 'index.html'))
+  assert.equal(resolveStaticFile(dir, '/'), path.join(dir, 'index.html'))
+  assert.equal(resolveStaticFile(dir, '/a%20b.html'), path.join(dir, 'a b.html'))
+
+  // Misses, including a directory and anything climbing out of the build.
+  assert.equal(resolveStaticFile(dir, '/robots.txt'), null)
+  assert.equal(resolveStaticFile(dir, '/docs'), null)
+  assert.equal(resolveStaticFile(dir, '/../secret.txt'), null)
+  assert.equal(resolveStaticFile(dir, '/%2e%2e/secret.txt'), null)
+  assert.equal(resolveStaticFile(dir, '/%zz'), null)
+})
+
+/**
+ * Vite's preview server is an SPA server by default: it answers every
+ * unmatched path with `index.html` and a 200. A static host does not, and
+ * Lighthouse notices — it reads that HTML as the site's robots.txt and
+ * marks it malformed, costing every audited site the same SEO point.
+ */
+test('the audit server answers a missing path like a static host', async (t) => {
+  const fixtureDir = createFixture('basic')
+  const siteDir = path.join(fixtureDir, 'dist')
+
+  t.after(() => {
+    fs.rmSync(siteDir, { recursive: true, force: true })
+    fs.rmSync(path.join(fixtureDir, '.sitelo'), { recursive: true, force: true })
+  })
+
+  await execFileAsync(process.execPath, [cliPath, 'build'], { cwd: fixtureDir })
+
+  const server = await preview({
+    root: fixtureDir,
+    build: { outDir: 'dist' },
+    logLevel: 'silent',
+    appType: 'mpa',
+    preview: { port: 0, open: false },
+    plugins: [staticHostPlugin(siteDir)],
+  })
+
+  t.after(() => server.close())
+
+  const origin = server.resolvedUrls.local[0]
+  const get = async (pathname) => {
+    const response = await fetch(new URL(pathname, origin))
+    return { status: response.status, body: await response.text() }
+  }
+
+  const missing = await get('robots.txt')
+  assert.equal(missing.status, 404)
+  // The build's own 404 page, the way a static host serves it.
+  assert.match(missing.body, /404/)
+
+  const home = await get('')
+  assert.equal(home.status, 200)
+  assert.match(home.body, /Hello from sitelo fixture/)
+
+  // A pretty URL still resolves through Vite's own html fallback.
+  const page = await get('404')
+  assert.equal(page.status, 200)
 })
 
 /**

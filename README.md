@@ -1019,6 +1019,13 @@ Pages are audited at the URL your site actually links — `/docs`, never
 `base` are all accounted for, and islands answer exactly as they do in
 `sitelo preview`.
 
+The audit server also answers like a static host rather than like a dev
+server: a path with no file behind it gets your `404.html` with a real
+404, not the home page with a 200. That one matters more than it sounds
+— Lighthouse asks every site for `/robots.txt`, and a dev server that
+hands back a page of HTML instead costs you an SEO point on every page
+for a file that is correctly absent in production.
+
 ### Thresholds
 
 With no config, the audit is a report. Give it thresholds and it becomes

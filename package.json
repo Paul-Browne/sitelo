@@ -1,6 +1,6 @@
 {
   "name": "sitelo",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "author": "Paul Browne",
   "type": "module",
   "license": "MIT",
@@ -75,6 +75,7 @@
     "test": "node --test test/*.test.js",
     "docs:dev": "node ./bin/sitelo.js --root docs",
     "docs:build": "node ./bin/sitelo.js build --root docs",
+    "docs:lighthouse": "node ./bin/sitelo.js lighthouse --root docs",
     "docs:preview": "node ./bin/sitelo.js preview --root docs",
     "docs:index": "npm run docs:build",
     "docs:icons": "node ./docs/scripts/icons.mjs",
