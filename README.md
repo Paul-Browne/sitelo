@@ -1069,7 +1069,7 @@ Scores are written the way Lighthouse displays them (`0`–`100`); its own
 | `categories` | all four | Any of `performance`, `accessibility`, `best-practices`, `seo` |
 | `thresholds` | `{}` | Minimum score per category |
 | `mode` | `'error'` | `'error'` fails the run; `'warn'` logs and continues |
-| `formFactor` | `'mobile'` | `'desktop'` applies Lighthouse's desktop preset |
+| `formFactor` | `'mobile'` | `'desktop'` applies Lighthouse's desktop preset; `['mobile', 'desktop']` audits both |
 | `runs` | `1` | Runs per page; the reported score is the median |
 | `output` | `false` | `true` for `.sitelo/lighthouse/`, or a directory path |
 | `formats` | `['html']` | Report formats to write: `html`, `json`, `csv` |
@@ -1079,6 +1079,49 @@ Scores are written the way Lighthouse displays them (`0`–`100`); its own
 | `flags` | `{}` | Passed straight to Lighthouse (see below) |
 | `config` | — | A full Lighthouse config object |
 | `onBuild` | `false` | Also audit at the end of `sitelo build` |
+
+### Both devices
+
+`formFactor` also takes an array, and the audit runs once per device:
+
+```js
+export default {
+  lighthouse: {
+    formFactor: ['mobile', 'desktop'],
+    thresholds: { performance: 90 },
+  },
+}
+```
+
+```
+[sitelo] lighthouse mobile - 3 pages
+
+  page   perf  a11y  best   seo
+  …
+
+[sitelo] lighthouse desktop - 3 pages
+
+  page   perf  a11y  best   seo
+  …
+
+[sitelo] lighthouse audited 3 pages (mobile, desktop) in 62.3s
+```
+
+Each device gets its own table, because the numbers are not comparable
+across profiles — mobile throttles the CPU four-fold and desktop does
+not, so the same page routinely scores twenty points apart. Thresholds
+apply to both, and a failure names the device it came from:
+
+```
+  /docs
+    mobile   performance  78 < 90
+    desktop  performance  94 < 90
+```
+
+Saved reports take the device into their filename
+(`index.mobile.report.html`) only when both ran, so a one-device setup
+keeps the plain name. Two devices is two full audits — budget twice the
+browser time.
 
 ### Lighthouse's own options
 

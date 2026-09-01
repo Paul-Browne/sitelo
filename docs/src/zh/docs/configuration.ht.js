@@ -327,7 +327,7 @@ export default () =>
         li(code('categories'), ' —— ', code('performance'), '、', code('accessibility'), '、', code('best-practices'), '、', code('seo')),
         li(code('thresholds'), ' —— 每个类别的最低分'),
         li(code('mode'), ' —— ', code("'error'"), '（默认）或 ', code("'warn'")),
-        li(code('formFactor'), ' —— ', code("'mobile'"), '（默认）或 ', code("'desktop'")),
+        li(code('formFactor'), ' —— ', code("'mobile'"), '（默认）、', code("'desktop'"), ' 或两者'),
         li(code('runs'), ' —— 重复审计并取中位数分数'),
         li(code('output'), ' / ', code('formats'), ' —— 保存每个页面的完整 Lighthouse 报告'),
         li(code('flags'), ' / ', code('config'), ' —— 原样传给 Lighthouse，其 CLI 支持的都能用'),

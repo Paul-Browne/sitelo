@@ -310,7 +310,7 @@ export default () =>
         li(code('categories'), ' — ', code('performance'), ', ', code('accessibility'), ', ', code('best-practices'), ', ', code('seo')),
         li(code('thresholds'), ' — the minimum score per category'),
         li(code('mode'), ' — ', code("'error'"), ' (default) or ', code("'warn'")),
-        li(code('formFactor'), ' — ', code("'mobile'"), ' (default) or ', code("'desktop'")),
+        li(code('formFactor'), ' — ', code("'mobile'"), ' (default), ', code("'desktop'"), ', or both'),
         li(code('runs'), ' — repeat the audit and report the median score'),
         li(code('output'), ' / ', code('formats'), ' — save the full Lighthouse report for every page'),
         li(code('flags'), ' / ', code('config'), ' — passed straight to Lighthouse, so anything its CLI accepts works'),

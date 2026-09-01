@@ -32,6 +32,13 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run docs:build
+
+      # Scores the English pages against the thresholds in
+      # docs/sitelo.config.js, before anything is published. lighthouse is
+      # a devDependency, so `npm ci` above already installed it, and the
+      # runner image ships the Chrome it drives.
+      - run: npm run docs:lighthouse
+
       - uses: actions/upload-pages-artifact@v5
         with:
           path: docs/dist

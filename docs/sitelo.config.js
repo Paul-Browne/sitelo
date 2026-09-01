@@ -19,5 +19,21 @@ export default {
   lighthouse: {
     formFactor: 'desktop',
     exclude: ['{de,es,fr,pt,ru,zh}.html', '{de,es,fr,pt,ru,zh}/**'],
+    /*
+     * Every page scores 100 across the board today, so these are a
+     * ratchet rather than an aspiration.
+     *
+     * Performance is the one pinned below its real score: it is measured
+     * rather than checked, and a hosted runner sharing its two cores with
+     * someone else can knock a few points off a page that did not change.
+     * A regression worth catching — an unoptimised image, a blocking
+     * script — costs tens of points, not three.
+     */
+    thresholds: {
+      performance: 95,
+      accessibility: 100,
+      'best-practices': 100,
+      seo: 100,
+    },
   },
 }

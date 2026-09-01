@@ -20,6 +20,9 @@ const CATEGORY_LABELS = {
   seo: 'seo',
 }
 
+/** The two device profiles Lighthouse emulates, in reporting order. */
+export const FORM_FACTORS = ['mobile', 'desktop']
+
 const OUTPUT_FORMATS = ['html', 'json', 'csv']
 const DEFAULT_INCLUDE = ['**/*.html']
 const DEFAULT_OUTPUT_DIR = '.sitelo/lighthouse'
@@ -59,7 +62,7 @@ const DESKTOP_SETTINGS = {
  * @property {string[]} categories
  * @property {Record<string, number>} thresholds scores as 0–1 fractions
  * @property {'warn' | 'error'} mode
- * @property {'mobile' | 'desktop'} formFactor
+ * @property {Array<'mobile' | 'desktop'>} formFactors
  * @property {number} runs
  * @property {string | false} output
  * @property {string[]} formats
@@ -185,12 +188,21 @@ export function normalizeLighthouseOptions(lighthouse) {
     )
   }
 
-  const formFactor = options.formFactor ?? 'mobile'
+  // One profile or both: a site is worth measuring on the device its
+  // visitors use, and for most sites that is more than one.
+  const requested = options.formFactor ?? 'mobile'
+  const formFactorList = Array.isArray(requested) ? requested : [requested]
 
-  if (formFactor !== 'mobile' && formFactor !== 'desktop') {
-    throw new Error(
-      `"lighthouse.formFactor" must be 'mobile' or 'desktop', got ${JSON.stringify(formFactor)}`,
-    )
+  if (formFactorList.length === 0) {
+    throw new Error('"lighthouse.formFactor" must name at least one device')
+  }
+
+  for (const entry of formFactorList) {
+    if (!FORM_FACTORS.includes(entry)) {
+      throw new Error(
+        `"lighthouse.formFactor" must be 'mobile', 'desktop', or an array of both, got ${JSON.stringify(entry)}`,
+      )
+    }
   }
 
   const output =
@@ -242,7 +254,8 @@ export function normalizeLighthouseOptions(lighthouse) {
     categories: selected,
     thresholds,
     mode,
-    formFactor,
+    // Reported mobile-first whatever order they were configured in.
+    formFactors: FORM_FACTORS.filter((entry) => formFactorList.includes(entry)),
     runs: toPositiveInteger(options.runs, 'lighthouse.runs', 1),
     output,
     formats: [...new Set(formats)],
@@ -381,9 +394,9 @@ export function formatTableRow(url, scores, categories, layout) {
 /**
  * Every category score that came in under its threshold.
  *
- * @param {Array<{ page: string, scores: Record<string, number | null> }>} pages
+ * @param {Array<{ page: string, formFactor: string, scores: Record<string, number | null> }>} pages
  * @param {Record<string, number>} thresholds
- * @returns {Array<{ page: string, category: string, score: number | null, threshold: number }>}
+ * @returns {Array<{ page: string, formFactor: string, category: string, score: number | null, threshold: number }>}
  */
 export function collectFailures(pages, thresholds) {
   const failures = []
@@ -393,7 +406,13 @@ export function collectFailures(pages, thresholds) {
       const score = page.scores[category]
 
       if (typeof score !== 'number' || score < threshold) {
-        failures.push({ page: page.page, category, score: score ?? null, threshold })
+        failures.push({
+          page: page.page,
+          formFactor: page.formFactor,
+          category,
+          score: score ?? null,
+          threshold,
+        })
       }
     }
   }
@@ -403,9 +422,13 @@ export function collectFailures(pages, thresholds) {
 
 /**
  * @param {ReturnType<typeof collectFailures>} failures
+ * @param {{ showFormFactor?: boolean }} [options] name the device on every
+ *   line, for a run that measured more than one
  * @returns {string}
  */
-export function formatFailures(failures) {
+export function formatFailures(failures, options = {}) {
+  const showFormFactor = options.showFormFactor === true
+
   const byPage = new Map()
 
   for (const failure of failures) {
@@ -425,10 +448,17 @@ export function formatFailures(failures) {
     lines.push(`  ${page}`)
 
     const width = Math.max(...entries.map((entry) => entry.category.length))
+    const deviceWidth = showFormFactor
+      ? Math.max(...entries.map((entry) => entry.formFactor.length))
+      : 0
 
     for (const entry of entries) {
+      const device = showFormFactor
+        ? `${entry.formFactor.padEnd(deviceWidth)}  `
+        : ''
+
       lines.push(
-        `    ${entry.category.padEnd(width)}  ${formatScore(entry.score)} < ${formatScore(entry.threshold)}`,
+        `    ${device}${entry.category.padEnd(width)}  ${formatScore(entry.score)} < ${formatScore(entry.threshold)}`,
       )
     }
 
@@ -529,24 +559,42 @@ async function launchChrome(launch, options) {
   }
 }
 
-/** Where a saved report lands, mirroring the site’s own structure. */
-function reportPath(outputDir, file, format) {
-  return path.join(outputDir, `${toPosix(file).replace(/\.html$/, '')}.report.${format}`)
+/**
+ * Where a saved report lands, mirroring the site’s own structure.
+ *
+ * The device only enters the name when both were measured — otherwise a
+ * site that audits one profile keeps the plain `index.report.html`.
+ *
+ * @param {string} outputDir
+ * @param {string} file
+ * @param {string} format
+ * @param {string | null} device
+ */
+function reportPath(outputDir, file, format, device) {
+  const base = toPosix(file).replace(/\.html$/, '')
+  return path.join(outputDir, `${base}${device ? `.${device}` : ''}.report.${format}`)
 }
 
 /**
- * @param {{ root: string, options: LighthouseOptions, file: string, report: string | string[] }} args
+ * @param {{
+ *   root: string
+ *   options: LighthouseOptions
+ *   file: string
+ *   formFactor: string
+ *   report: string | string[]
+ * }} args
  * @returns {Promise<string[]>} the paths written
  */
-async function writeReports({ root, options, file, report }) {
+async function writeReports({ root, options, file, formFactor, report }) {
   if (options.output === false) return []
 
   const outputDir = path.resolve(root, options.output)
   const reports = Array.isArray(report) ? report : [report]
+  const device = options.formFactors.length > 1 ? formFactor : null
 
   return Promise.all(
     options.formats.map(async (format, index) => {
-      const target = reportPath(outputDir, file, format)
+      const target = reportPath(outputDir, file, format, device)
       await mkdir(path.dirname(target), { recursive: true })
       await writeFile(target, reports[index] ?? '')
       return target
@@ -567,11 +615,12 @@ async function writeReports({ root, options, file, report }) {
  *
  * @param {LighthouseOptions} options
  * @param {number} port
+ * @param {'mobile' | 'desktop'} formFactor
  */
-export function lighthouseFlags(options, port) {
+export function lighthouseFlags(options, port, formFactor) {
   return {
     logLevel: 'error',
-    ...(options.formFactor === 'desktop' ? DESKTOP_SETTINGS : {}),
+    ...(formFactor === 'desktop' ? DESKTOP_SETTINGS : {}),
     ...options.flags,
     port,
     output: options.output === false ? 'json' : options.formats,
@@ -689,7 +738,13 @@ export function staticHostPlugin(siteDir) {
  *   warn?: (message: string) => void
  * }} args
  * @returns {Promise<{
- *   pages: Array<{ file: string, page: string, url: string, scores: Record<string, number | null> }>
+ *   pages: Array<{
+ *     file: string
+ *     page: string
+ *     url: string
+ *     formFactor: string
+ *     scores: Record<string, number | null>
+ *   }>
  *   failures: ReturnType<typeof collectFailures>
  * }>}
  */
@@ -756,34 +811,47 @@ export async function runLighthouse({
     const urls = paths.map((page) => new URL(page.replace(/^\//, ''), origin).href)
     const layout = tableLayout(paths, options.categories)
 
-    log(
-      `[sitelo] lighthouse ${options.formFactor} - ${pages.length} page${pages.length === 1 ? '' : 's'}` +
-        `${options.runs > 1 ? ` x ${options.runs} runs` : ''}\n`,
-    )
-    log(formatTableHeader(options.categories, layout))
+    /** @type {Awaited<ReturnType<typeof auditPages>>} */
+    const results = []
 
-    const results = await auditPages({
-      pages,
-      paths,
-      urls,
-      layout,
-      root,
-      options,
-      lighthouse,
-      launch,
-      log,
-    })
+    // A table per device rather than one wide one: the scores are not
+    // comparable across profiles, and a page reads the same in both.
+    for (const [index, formFactor] of options.formFactors.entries()) {
+      log(
+        `${index > 0 ? '\n' : ''}[sitelo] lighthouse ${formFactor} - ${pages.length} page${pages.length === 1 ? '' : 's'}` +
+          `${options.runs > 1 ? ` x ${options.runs} runs` : ''}\n`,
+      )
+      log(formatTableHeader(options.categories, layout))
+
+      results.push(
+        ...(await auditPages({
+          pages,
+          paths,
+          urls,
+          layout,
+          root,
+          options,
+          formFactor,
+          lighthouse,
+          launch,
+          log,
+        })),
+      )
+    }
 
     const elapsed = (performance.now() - startedAt) / 1000
 
     log(
-      `\n[sitelo] lighthouse audited ${pages.length} page${pages.length === 1 ? '' : 's'} in ${elapsed.toFixed(1)}s`,
+      `\n[sitelo] lighthouse audited ${pages.length} page${pages.length === 1 ? '' : 's'}` +
+        ` (${options.formFactors.join(', ')}) in ${elapsed.toFixed(1)}s`,
     )
 
     const failures = collectFailures(results, options.thresholds)
 
     if (failures.length > 0) {
-      const message = formatFailures(failures)
+      const message = formatFailures(failures, {
+        showFormFactor: options.formFactors.length > 1,
+      })
 
       if (options.mode === 'error') throw new Error(message)
 
@@ -797,7 +865,7 @@ export async function runLighthouse({
 }
 
 /**
- * Audit every page in turn, through one Chrome.
+ * Audit every page in turn on one device, through one Chrome.
  *
  * Serially, and deliberately: Lighthouse measures a page by loading it in
  * a browser it controls exclusively, so a second audit running alongside
@@ -812,11 +880,12 @@ async function auditPages({
   layout,
   root,
   options,
+  formFactor,
   lighthouse,
   launch,
   log,
 }) {
-  /** @type {Array<{ file: string, page: string, url: string, scores: Record<string, number | null> }>} */
+  /** @type {Array<{ file: string, page: string, url: string, formFactor: string, scores: Record<string, number | null> }>} */
   const results = []
 
   const chrome = await launchChrome(launch, options)
@@ -830,6 +899,7 @@ async function auditPages({
         chromePort: chrome.port,
         root,
         options,
+        formFactor,
         lighthouse,
       })
 
@@ -853,7 +923,16 @@ async function auditPages({
  * One page: `runs` Lighthouse runs, median scores, and the median run's
  * report saved when `output` is on.
  */
-async function auditPage({ file, page, url, chromePort, root, options, lighthouse }) {
+async function auditPage({
+  file,
+  page,
+  url,
+  chromePort,
+  root,
+  options,
+  formFactor,
+  lighthouse,
+}) {
   /** @type {Array<Record<string, number | null>>} */
   const runs = []
   /** @type {Array<string | string[]>} */
@@ -863,7 +942,11 @@ async function auditPage({ file, page, url, chromePort, root, options, lighthous
     let result
 
     try {
-      result = await lighthouse(url, lighthouseFlags(options, chromePort), options.config)
+      result = await lighthouse(
+        url,
+        lighthouseFlags(options, chromePort, formFactor),
+        options.config,
+      )
     } catch (error) {
       throw new Error(
         `"lighthouse" failed on ${url}: ${error instanceof Error ? error.message : error}`,
@@ -895,7 +978,7 @@ async function auditPage({ file, page, url, chromePort, root, options, lighthous
 
   const { scores, index } = summarizeRuns(runs, options.categories)
 
-  await writeReports({ root, options, file, report: reports[index] })
+  await writeReports({ root, options, file, formFactor, report: reports[index] })
 
-  return { file, page, url, scores }
+  return { file, page, url, formFactor, scores }
 }

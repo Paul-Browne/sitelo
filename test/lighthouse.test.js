@@ -45,7 +45,7 @@ test('normalizeLighthouseOptions: true → defaults', () => {
     categories: CATEGORIES,
     thresholds: {},
     mode: 'error',
-    formFactor: 'mobile',
+    formFactors: ['mobile'],
     runs: 1,
     output: false,
     formats: ['html'],
@@ -76,6 +76,24 @@ test('normalizeLighthouseOptions: categories keep the reporting order', () => {
   assert.deepEqual(options.categories, ['performance', 'seo'])
 })
 
+test('normalizeLighthouseOptions: formFactor takes one device or both', () => {
+  assert.deepEqual(normalizeLighthouseOptions(true).formFactors, ['mobile'])
+  assert.deepEqual(
+    normalizeLighthouseOptions({ formFactor: 'desktop' }).formFactors,
+    ['desktop'],
+  )
+  assert.deepEqual(
+    normalizeLighthouseOptions({ formFactor: ['mobile', 'desktop'] }).formFactors,
+    ['mobile', 'desktop'],
+  )
+  // Reported mobile-first however it was written, and never twice.
+  assert.deepEqual(
+    normalizeLighthouseOptions({ formFactor: ['desktop', 'mobile', 'desktop'] })
+      .formFactors,
+    ['mobile', 'desktop'],
+  )
+})
+
 test('normalizeLighthouseOptions: output true → default directory', () => {
   assert.equal(normalizeLighthouseOptions({ output: true }).output, '.sitelo/lighthouse')
   assert.equal(normalizeLighthouseOptions({ output: 'reports' }).output, 'reports')
@@ -103,7 +121,15 @@ test('normalizeLighthouseOptions: rejects invalid values', () => {
   )
   assert.throws(
     () => normalizeLighthouseOptions({ formFactor: 'tablet' }),
-    /must be 'mobile' or 'desktop'/,
+    /must be 'mobile', 'desktop', or an array of both/,
+  )
+  assert.throws(
+    () => normalizeLighthouseOptions({ formFactor: ['mobile', 'watch'] }),
+    /got "watch"/,
+  )
+  assert.throws(
+    () => normalizeLighthouseOptions({ formFactor: [] }),
+    /at least one device/,
   )
   assert.throws(
     () => normalizeLighthouseOptions({ formats: ['pdf'] }),
@@ -223,27 +249,55 @@ test('formatTableHeader/Row: columns line up', () => {
 
 test('collectFailures: only scores under their threshold', () => {
   const pages = [
-    { page: '/', scores: { performance: 0.98, seo: 1 } },
-    { page: '/docs', scores: { performance: 0.5, seo: 0.8 } },
+    { page: '/', formFactor: 'mobile', scores: { performance: 0.98, seo: 1 } },
+    { page: '/docs', formFactor: 'mobile', scores: { performance: 0.5, seo: 0.8 } },
   ]
 
   assert.deepEqual(collectFailures(pages, { performance: 0.9 }), [
-    { page: '/docs', category: 'performance', score: 0.5, threshold: 0.9 },
+    {
+      page: '/docs',
+      formFactor: 'mobile',
+      category: 'performance',
+      score: 0.5,
+      threshold: 0.9,
+    },
   ])
   assert.deepEqual(collectFailures(pages, {}), [])
 })
 
+test('collectFailures: the same page can fail on one device only', () => {
+  const pages = [
+    { page: '/docs', formFactor: 'mobile', scores: { performance: 0.7 } },
+    { page: '/docs', formFactor: 'desktop', scores: { performance: 0.99 } },
+  ]
+
+  assert.deepEqual(
+    collectFailures(pages, { performance: 0.9 }).map((f) => f.formFactor),
+    ['mobile'],
+  )
+})
+
 test('collectFailures: a missing score fails the threshold', () => {
   assert.deepEqual(
-    collectFailures([{ page: '/', scores: { seo: null } }], { seo: 0.9 }),
-    [{ page: '/', category: 'seo', score: null, threshold: 0.9 }],
+    collectFailures([{ page: '/', formFactor: 'mobile', scores: { seo: null } }], {
+      seo: 0.9,
+    }),
+    [
+      {
+        page: '/',
+        formFactor: 'mobile',
+        category: 'seo',
+        score: null,
+        threshold: 0.9,
+      },
+    ],
   )
 })
 
 test('formatFailures: groups by page, no log prefix', () => {
   const message = formatFailures([
-    { page: '/docs', category: 'performance', score: 0.5, threshold: 0.9 },
-    { page: '/docs', category: 'seo', score: 0.8, threshold: 1 },
+    { page: '/docs', formFactor: 'mobile', category: 'performance', score: 0.5, threshold: 0.9 },
+    { page: '/docs', formFactor: 'mobile', category: 'seo', score: 0.8, threshold: 1 },
   ])
 
   assert.equal(
@@ -259,6 +313,27 @@ test('formatFailures: groups by page, no log prefix', () => {
   assert.ok(!message.includes('[sitelo]'))
 })
 
+test('formatFailures: names the device when both were measured', () => {
+  const message = formatFailures(
+    [
+      { page: '/docs', formFactor: 'mobile', category: 'performance', score: 0.5, threshold: 0.9 },
+      { page: '/docs', formFactor: 'desktop', category: 'performance', score: 0.88, threshold: 0.9 },
+    ],
+    { showFormFactor: true },
+  )
+
+  assert.equal(
+    message,
+    [
+      '2 lighthouse scores below threshold on 1 page',
+      '',
+      '  /docs',
+      '    mobile   performance  50 < 90',
+      '    desktop  performance  88 < 90',
+    ].join('\n'),
+  )
+})
+
 test('lighthouseFlags: port, formats and categories stay sitelo-owned', () => {
   const options = normalizeLighthouseOptions({
     categories: ['seo'],
@@ -272,7 +347,7 @@ test('lighthouseFlags: port, formats and categories stay sitelo-owned', () => {
     },
   })
 
-  const flags = lighthouseFlags(options, 9222)
+  const flags = lighthouseFlags(options, 9222, 'mobile')
 
   assert.equal(flags.port, 9222)
   assert.deepEqual(flags.output, ['html', 'json'])
@@ -282,11 +357,10 @@ test('lighthouseFlags: port, formats and categories stay sitelo-owned', () => {
 })
 
 test('lighthouseFlags: desktop applies the preset, mobile leaves defaults', () => {
-  const desktop = lighthouseFlags(
-    normalizeLighthouseOptions({ formFactor: 'desktop' }),
-    9222,
-  )
-  const mobile = lighthouseFlags(normalizeLighthouseOptions(true), 9222)
+  // One options object, both devices — what a two-device run does.
+  const options = normalizeLighthouseOptions({ formFactor: ['mobile', 'desktop'] })
+  const desktop = lighthouseFlags(options, 9222, 'desktop')
+  const mobile = lighthouseFlags(options, 9222, 'mobile')
 
   assert.equal(desktop.formFactor, 'desktop')
   assert.equal(desktop.screenEmulation.mobile, false)
@@ -302,6 +376,7 @@ test('lighthouseFlags: a user preset overrides the desktop defaults', () => {
       flags: { throttlingMethod: 'provided', screenEmulation: { disabled: true } },
     }),
     9222,
+    'desktop',
   )
 
   assert.equal(flags.throttlingMethod, 'provided')

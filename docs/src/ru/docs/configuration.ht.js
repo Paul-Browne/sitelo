@@ -343,7 +343,7 @@ export default () =>
         li(code('categories'), ' — ', code('performance'), ', ', code('accessibility'), ', ', code('best-practices'), ', ', code('seo')),
         li(code('thresholds'), ' — минимальная оценка по категории'),
         li(code('mode'), ' — ', code("'error'"), ' (по умолчанию) или ', code("'warn'")),
-        li(code('formFactor'), ' — ', code("'mobile'"), ' (по умолчанию) или ', code("'desktop'")),
+        li(code('formFactor'), ' — ', code("'mobile'"), ' (по умолчанию), ', code("'desktop'"), ' или оба'),
         li(code('runs'), ' — повторить аудит и взять медианную оценку'),
         li(code('output'), ' / ', code('formats'), ' — сохранить полный отчёт Lighthouse по каждой странице'),
         li(code('flags'), ' / ', code('config'), ' — передаются в Lighthouse как есть, поэтому доступно всё, что понимает его CLI'),
