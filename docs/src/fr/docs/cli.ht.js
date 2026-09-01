@@ -32,6 +32,12 @@ export default () =>
           ')',
         ),
         li(code('preview'), ' — sert le build de production en local'),
+        li(
+          code('lighthouse'),
+          ' — audite le build de production (nécessite la dépendance pair ',
+          code('lighthouse'),
+          ')',
+        ),
       ),
       p(
         'Désactivez la barre d’outils avec ',

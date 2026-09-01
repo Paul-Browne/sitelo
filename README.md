@@ -66,6 +66,7 @@ That's the whole mental model. Everything else is convenience on top.
 - **Smart asset pipeline** — JS/TS/CSS referenced by your HTML is bundled and minified; server-only code never leaks into `dist`
 - **Asset validation** — broken `<script src>` / stylesheet links fail the build
 - **Link checking** — dead internal `<a href>` links reported against the real output
+- **Lighthouse audits** — score the real build against per-category thresholds, on demand or in CI
 - **Image optimization** — `<img>` tags get resized, converted, and turned into a `srcset`, in dev and in the build
 - **Real dev server** — pages render on request (dynamic routes included, no `generateStaticParams` needed in dev) with full reload and readable error frames
 - **Server islands** — static pages with regions rendered on the server at
@@ -105,9 +106,10 @@ it separately.
 Create pages in `src/` and run:
 
 ```bash
-sitelo        # dev server with live rendering
-sitelo build  # static site in dist/
-sitelo preview  # preview the production build
+sitelo             # dev server with live rendering
+sitelo build       # static site in dist/
+sitelo preview     # preview the production build
+sitelo lighthouse  # audit the production build
 ```
 
 ### Configuration (optional)
@@ -982,6 +984,178 @@ export default {
 
 ---
 
+## Lighthouse audits
+
+[Lighthouse](https://github.com/GoogleChrome/lighthouse) is an optional
+peer dependency — install it only if you want audits:
+
+```bash
+npm install -D lighthouse  # or: pnpm add -D lighthouse / yarn add -D lighthouse
+```
+
+Then audit the build you already have:
+
+```bash
+sitelo build
+sitelo lighthouse
+```
+
+sitelo starts the same preview server `sitelo preview` uses, points a
+headless Chrome at every page in `dist/`, and prints the scores:
+
+```
+[sitelo] lighthouse mobile - 3 pages
+
+  page           perf  a11y  best   seo
+  /                98   100   100   100
+  /docs            95   100   100   100
+  /docs/routing    97   100   100   100
+
+[sitelo] lighthouse audited 3 pages in 31.4s
+```
+
+Pages are audited at the URL your site actually links — `/docs`, never
+`dist/docs.html` — so `cleanUrls`, route groups, `mapOutputPath` and a
+`base` are all accounted for, and islands answer exactly as they do in
+`sitelo preview`.
+
+### Thresholds
+
+With no config, the audit is a report. Give it thresholds and it becomes
+a check:
+
+```js
+// sitelo.config.js
+export default {
+  lighthouse: {
+    exclude: ['404.html'],
+    thresholds: {
+      performance: 90,
+      accessibility: 100,
+      'best-practices': 95,
+      seo: 100,
+    },
+  },
+}
+```
+
+Anything under its threshold fails the command with a non-zero exit code,
+grouped by page:
+
+```
+[sitelo] 2 lighthouse scores below threshold on 1 page
+
+  /docs
+    performance    78 < 90
+    accessibility  93 < 100
+```
+
+Scores are written the way Lighthouse displays them (`0`–`100`); its own
+`0`–`1` fractions work too. Use `mode: 'warn'` to log instead of fail.
+
+### Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `include` | `'**/*.html'` | Glob(s) or RegExps of pages to audit, relative to the output directory |
+| `exclude` | `[]` | Glob(s) or RegExps to skip — `'404.html'` is the usual one |
+| `categories` | all four | Any of `performance`, `accessibility`, `best-practices`, `seo` |
+| `thresholds` | `{}` | Minimum score per category |
+| `mode` | `'error'` | `'error'` fails the run; `'warn'` logs and continues |
+| `formFactor` | `'mobile'` | `'desktop'` applies Lighthouse's desktop preset |
+| `runs` | `1` | Runs per page; the reported score is the median |
+| `output` | `false` | `true` for `.sitelo/lighthouse/`, or a directory path |
+| `formats` | `['html']` | Report formats to write: `html`, `json`, `csv` |
+| `headless` | `true` | `false` opens a visible Chrome — useful when a page misbehaves |
+| `chromeFlags` | `[]` | Extra Chrome flags, e.g. `['--no-sandbox']` inside a container |
+| `port` | — | Port for the preview server |
+| `flags` | `{}` | Passed straight to Lighthouse (see below) |
+| `config` | — | A full Lighthouse config object |
+| `onBuild` | `false` | Also audit at the end of `sitelo build` |
+
+### Lighthouse's own options
+
+`flags` is the escape hatch: it is handed to Lighthouse untouched, so
+anything its CLI accepts works here in camelCase.
+
+```js
+// sitelo.config.js
+export default {
+  lighthouse: {
+    formFactor: 'desktop',
+    flags: {
+      throttlingMethod: 'provided',           // --throttling-method=provided
+      maxWaitForLoad: 60_000,                 // --max-wait-for-load=60000
+      blockedUrlPatterns: ['**/analytics.js'], // --blocked-url-patterns=…
+      extraHeaders: { Cookie: 'preview=1' },
+      logLevel: 'info',
+    },
+  },
+}
+```
+
+Three flags stay sitelo's: `port` and `output` are plumbing, and
+`onlyCategories` follows the `categories` option so the score table and
+the audit can't drift apart. For anything bigger than flags — custom
+audits, budgets, a different gatherer set — pass a whole Lighthouse
+`config` object.
+
+### Reports
+
+`output` keeps Lighthouse's full report per page, mirroring the site's
+structure:
+
+```js
+export default {
+  lighthouse: {
+    output: true,                // → .sitelo/lighthouse/
+    formats: ['html', 'json'],
+  },
+}
+```
+
+```
+.sitelo/lighthouse/
+  index.report.html
+  docs/routing.report.html
+```
+
+With `runs > 1` the saved report is the median run, so it matches the
+score in the table.
+
+### In CI, and in the build
+
+`sitelo lighthouse` is a separate command because an audit costs a few
+seconds of real browser time per page. To spend that on every build
+anyway:
+
+```js
+export default {
+  lighthouse: {
+    onBuild: true,
+    thresholds: { performance: 90 },
+  },
+}
+```
+
+It runs last — after image optimization, Pagefind and the link check — so
+it measures exactly what ships, and its phase time shows up in the build
+report.
+
+Two things worth knowing before you gate a pipeline on this:
+
+- **Lighthouse drives a real Chrome.** Install one on the runner (GitHub's
+  `ubuntu-latest` already has it) or point `CHROME_PATH` at a binary.
+  Containers usually need `chromeFlags: ['--no-sandbox']`.
+- **Performance scores move between runs**, more so on a busy CI box.
+  `runs: 3` medians the noise away; thresholds on `accessibility`, `seo`
+  and `best-practices` are steady enough to pin at `100`.
+- **Pages are audited one at a time**, through a single Chrome. Running
+  them in parallel would compete for the CPU Lighthouse is measuring, so
+  budget a few seconds per page.
+
+---
+
 ## Plugin options
 
 Set these in `sitelo.config.js` (or pass them to `htmlPages()` in a Vite
@@ -1012,6 +1186,7 @@ export default {
 | `images` | — | `true` or options object; optimizes images in dev and after `sitelo build` (CLI only). Requires the `sharp` peer dependency |
 | `missingAssets` | `'error'` | `'error'` or `'warn'` for broken asset references |
 | `linkCheck` | — | `true`, `'warn'`, `'error'`, or `{ mode, exclude, checkFragments }`; checks internal `<a href>` against the build (CLI only) |
+| `lighthouse` | — | `true` or options object; audits the build via `sitelo lighthouse` (CLI only). Requires the `lighthouse` peer dependency |
 | `mapOutputPath` | — | `(page) => string` to customize output filenames |
 | `generatedTypesDir` | `'.sitelo/types'` | Where generated page helper `.d.ts` files are written |
 | `displayName` | `'sitelo'` | Label used in console / overlay messages |

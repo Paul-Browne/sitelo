@@ -5,18 +5,23 @@
 #
 #   ./test-package-manager.sh npm|pnpm|yarn|yarn-berry
 #
-# sharp and pagefind are declared as OPTIONAL PEER dependencies. That
-# declaration is load-bearing and fails in an asymmetric way: if it were
-# ever changed to a plain dependency, or dropped so the imports relied on
-# a hoisted copy, npm and pnpm would keep working and only Yarn Berry's
-# Plug'n'Play linker — which lets a package resolve only what it declares
-# — would break. This runs the real thing under each manager so that
-# cannot regress silently.
+# sharp, pagefind and lighthouse are declared as OPTIONAL PEER
+# dependencies. That declaration is load-bearing and fails in an
+# asymmetric way: if it were ever changed to a plain dependency, or
+# dropped so the imports relied on a hoisted copy, npm and pnpm would keep
+# working and only Yarn Berry's Plug'n'Play linker — which lets a package
+# resolve only what it declares — would break. This runs the real thing
+# under each manager so that cannot regress silently.
 #
 # For each manager:
-#   1. install sitelo alone      -> sharp/pagefind absent, plain build works
+#   1. install sitelo alone      -> optional peers absent, plain build works
 #   2. enable images             -> actionable error naming that manager
-#   3. install sharp + pagefind  -> real .webp variant and a real index
+#   3. run the audit             -> same actionable error for lighthouse
+#   4. install sharp + pagefind  -> real .webp variant and a real index
+#
+# lighthouse itself is never installed here: it is a 20 MB package that
+# drives a real browser, and what this job is testing is the resolution
+# rule, which the missing-package path already exercises.
 set -euo pipefail
 
 MANAGER="${1:?usage: test-package-manager.sh npm|pnpm|yarn|yarn-berry}"
@@ -137,12 +142,16 @@ add_deps() {
   esac
 }
 
-run_build() {
-  local dir="$1"
+run_cli() {
+  local dir="$1"; shift
   case "$MANAGER" in
-    npm|pnpm|yarn) ( cd "$dir" && ./node_modules/.bin/sitelo build 2>&1 ) ;;
-    yarn-berry)    ( cd "$dir" && corepack yarn sitelo build 2>&1 ) ;;
+    npm|pnpm|yarn) ( cd "$dir" && ./node_modules/.bin/sitelo "$@" 2>&1 ) ;;
+    yarn-berry)    ( cd "$dir" && corepack yarn sitelo "$@" 2>&1 ) ;;
   esac
+}
+
+run_build() {
+  run_cli "$1" build
 }
 
 # Yarn Berry uses Plug'n'Play: there is no node_modules at all, so absence
@@ -155,7 +164,7 @@ assert_peers_absent() {
 
   case "$MANAGER" in
     yarn-berry)
-      for pkg in sharp pagefind; do
+      for pkg in sharp pagefind lighthouse; do
         if ( cd "$dir" && corepack yarn node --input-type=module -e "$probe" "$pkg" 2>/dev/null ) \
              | grep -q RESOLVED; then
           fail "$pkg resolvable without being asked for"
@@ -163,12 +172,12 @@ assert_peers_absent() {
       done
       ;;
     *)
-      for pkg in sharp pagefind; do
+      for pkg in sharp pagefind lighthouse; do
         [ -d "$dir/node_modules/$pkg" ] && fail "$pkg installed without being asked for"
       done
       ;;
   esac
-  info "sharp and pagefind correctly absent"
+  info "sharp, pagefind and lighthouse correctly absent"
 }
 
 # --- 1. sitelo alone ------------------------------------------------------
@@ -208,7 +217,27 @@ if grep -qF "[sitelo] [sitelo]" "$WORK/err.log"; then
   cat "$WORK/err.log"; fail "doubled [sitelo] prefix in error output"
 fi
 
-# --- 3. with the peers installed, the features really work ----------------
+# --- 3. audit on, lighthouse missing -> the same actionable error ---------
+node -e "require('fs').writeFileSync('$BARE/sitelo.config.js','export default { buildReport: false }')"
+
+if run_cli "$BARE" lighthouse >"$WORK/lighthouse.log" 2>&1; then
+  cat "$WORK/lighthouse.log"; fail "sitelo lighthouse should fail when lighthouse is missing"
+fi
+
+grep -q "requires the lighthouse package" "$WORK/lighthouse.log" \
+  || { cat "$WORK/lighthouse.log"; fail "missing-lighthouse error was not actionable"; }
+
+case "$MANAGER" in
+  npm)               EXPECT="npm install -D lighthouse" ;;
+  pnpm)              EXPECT="pnpm add -D lighthouse" ;;
+  yarn|yarn-berry)   EXPECT="yarn add -D lighthouse" ;;
+esac
+
+grep -qF "$EXPECT" "$WORK/lighthouse.log" \
+  || { cat "$WORK/lighthouse.log"; fail "expected the error to suggest: $EXPECT"; }
+info "missing-lighthouse error suggests: $EXPECT"
+
+# --- 4. with the peers installed, the features really work ----------------
 FULL="$WORK/full"
 make_project "$FULL" "export default { buildReport: false, images: { widths: [400], formats: ['webp'] }, pagefind: true }"
 setup_manager "$FULL"

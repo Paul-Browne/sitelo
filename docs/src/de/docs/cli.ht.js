@@ -32,6 +32,12 @@ export default () =>
           ')',
         ),
         li(code('preview'), ' — serviert den Produktions-Build lokal'),
+        li(
+          code('lighthouse'),
+          ' — auditiert den Produktions-Build (benötigt die Peer-Dependency ',
+          code('lighthouse'),
+          ')',
+        ),
       ),
       p(
         'Die Toolbar lässt sich mit ',

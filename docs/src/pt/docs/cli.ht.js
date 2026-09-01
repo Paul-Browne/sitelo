@@ -32,6 +32,12 @@ export default () =>
           ' que indicares)',
         ),
         li(code('preview'), ' — serve a compilação de produção localmente'),
+        li(
+          code('lighthouse'),
+          ' — audita a compilação de produção (precisa da dependência par ',
+          code('lighthouse'),
+          ')',
+        ),
       ),
       p(
         'Desliga a barra com ',

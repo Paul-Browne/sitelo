@@ -21,6 +21,11 @@ const T = {
     indexAfterBuild:
       'Index only exists after `sitelo build` (synced to public/pagefind by default)',
     thenPreview: 'then: sitelo preview — or sitelo (dev) using public/pagefind',
+    skip404: 'the 404 page is rarely worth auditing',
+    desktopPreset: 'the Lighthouse desktop preset',
+    medianRuns: 'three runs per page, median score',
+    saveReports: 'full reports in .sitelo/lighthouse/',
+    auditEveryBuild: 'also audit at the end of sitelo build',
   },
   es: {
     myBlog: 'Mi blog',
@@ -42,6 +47,11 @@ const T = {
       'El índice solo existe tras `sitelo build` (se sincroniza a public/pagefind por defecto)',
     thenPreview:
       'luego: sitelo preview — o sitelo (dev) usando public/pagefind',
+    skip404: 'la página 404 rara vez merece una auditoría',
+    desktopPreset: 'preajuste de escritorio de Lighthouse',
+    medianRuns: 'tres ejecuciones por página, puntuación mediana',
+    saveReports: 'informes completos en .sitelo/lighthouse/',
+    auditEveryBuild: 'audita también al final de sitelo build',
   },
   fr: {
     myBlog: 'Mon blog',
@@ -61,6 +71,11 @@ const T = {
     onlyIndexed: 'Seule cette zone est indexée.',
     indexAfterBuild: 'L’index n’existe qu’après `sitelo build` (synchronisé vers public/pagefind par défaut)',
     thenPreview: 'ensuite : sitelo preview — ou sitelo (dev) avec public/pagefind',
+    skip404: 'la page 404 mérite rarement un audit',
+    desktopPreset: 'préréglage desktop de Lighthouse',
+    medianRuns: 'trois passages par page, score médian',
+    saveReports: 'rapports complets dans .sitelo/lighthouse/',
+    auditEveryBuild: 'audite aussi à la fin de sitelo build',
   },
   de: {
     myBlog: 'Mein Blog',
@@ -80,6 +95,11 @@ const T = {
     onlyIndexed: 'Nur dieser Bereich wird indexiert.',
     indexAfterBuild: 'Der Index existiert erst nach `sitelo build` (wird standardmäßig nach public/pagefind synchronisiert)',
     thenPreview: 'danach: sitelo preview — oder sitelo (dev) mit public/pagefind',
+    skip404: 'die 404-Seite lohnt einen Audit selten',
+    desktopPreset: 'Desktop-Preset von Lighthouse',
+    medianRuns: 'drei Durchläufe pro Seite, Median als Ergebnis',
+    saveReports: 'vollständige Berichte in .sitelo/lighthouse/',
+    auditEveryBuild: 'auch am Ende von sitelo build prüfen',
   },
   ru: {
     myBlog: 'Мой блог',
@@ -99,6 +119,11 @@ const T = {
     onlyIndexed: 'Индексируется только эта область.',
     indexAfterBuild: 'Индекс появляется только после `sitelo build` (по умолчанию синхронизируется в public/pagefind)',
     thenPreview: 'затем: sitelo preview — или sitelo (dev) с public/pagefind',
+    skip404: 'страницу 404 проверять обычно незачем',
+    desktopPreset: 'десктопный пресет Lighthouse',
+    medianRuns: 'три прогона на страницу, медианная оценка',
+    saveReports: 'полные отчёты в .sitelo/lighthouse/',
+    auditEveryBuild: 'проверять и в конце sitelo build',
   },
   zh: {
     myBlog: '我的博客',
@@ -118,6 +143,11 @@ const T = {
     onlyIndexed: '只有这个区域会被索引。',
     indexAfterBuild: '索引只在 `sitelo build` 之后存在（默认同步到 public/pagefind）',
     thenPreview: '然后：sitelo preview — 或使用 public/pagefind 的 sitelo (dev)',
+    skip404: '404 页面通常不需要审计',
+    desktopPreset: 'Lighthouse 的桌面预设',
+    medianRuns: '每页运行三次，取中位数',
+    saveReports: '完整报告写入 .sitelo/lighthouse/',
+    auditEveryBuild: '在 sitelo build 结束时也审计一次',
   },
   pt: {
     myBlog: 'O meu blogue',
@@ -137,6 +167,11 @@ const T = {
     onlyIndexed: 'Só esta região é indexada.',
     indexAfterBuild: 'O índice só existe depois de `sitelo build` (sincronizado para public/pagefind por omissão)',
     thenPreview: 'depois: sitelo preview — ou sitelo (dev) a usar public/pagefind',
+    skip404: 'a página 404 raramente vale uma auditoria',
+    desktopPreset: 'predefinição desktop do Lighthouse',
+    medianRuns: 'três execuções por página, pontuação mediana',
+    saveReports: 'relatórios completos em .sitelo/lighthouse/',
+    auditEveryBuild: 'audita também no fim de sitelo build',
   },
 }
 
@@ -212,6 +247,39 @@ export default {
     ../escape           -> ${t.escapesOutDir}
     /abuot              -> ${t.noSuchPage}
     /blog/missing-post  -> ${t.noSuchPage}`,
+
+    installLighthouse: `npm install -D lighthouse`,
+
+    lighthouse: `export default {
+  lighthouse: {
+    exclude: ['404.html'],   // ${t.skip404}
+    thresholds: {
+      performance: 90,
+      accessibility: 100,
+      'best-practices': 95,
+      seo: 100,
+    },
+  },
+}`,
+
+    lighthouseOptions: `export default {
+  lighthouse: {
+    formFactor: 'desktop',   // ${t.desktopPreset}
+    runs: 3,                 // ${t.medianRuns}
+    output: true,            // ${t.saveReports}
+    onBuild: true,           // ${t.auditEveryBuild}
+    flags: { throttlingMethod: 'provided' },
+  },
+}`,
+
+    lighthouseOutput: `[sitelo] lighthouse mobile - 3 pages
+
+  page           perf  a11y  best   seo
+  /                98   100   100   100
+  /docs            95   100   100   100
+  /docs/routing    97   100   100   100
+
+[sitelo] lighthouse audited 3 pages in 31.4s`,
 
     pagefind: `export default {
   pagefind: true,

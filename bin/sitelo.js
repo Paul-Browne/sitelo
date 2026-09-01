@@ -31,6 +31,10 @@ import {
   runLinkCheck,
 } from '../src/links.js';
 import {
+  normalizeLighthouseOptions,
+  runLighthouse,
+} from '../src/lighthouse.js';
+import {
   build,
   createLogger,
   createServer,
@@ -54,9 +58,10 @@ const VERSION = JSON.parse(
 const HELP = `Usage: sitelo [command] [options]
 
 Commands:
-  dev       Start the development server (default)
-  build     Build for production
-  preview   Preview the production build locally
+  dev         Start the development server (default)
+  build       Build for production
+  preview     Preview the production build locally
+  lighthouse  Audit the production build with Lighthouse
 
 Options:
   -c, --config <file>     Use a custom Vite config file
@@ -107,7 +112,11 @@ function parseArgs(argv) {
 
   if (args[0] && !args[0].startsWith('-')) {
     const maybeCommand = args.shift();
-    if (['dev', 'build', 'preview', 'help', '--help', '-h'].includes(maybeCommand)) {
+    if (
+      ['dev', 'build', 'preview', 'lighthouse', 'help', '--help', '-h'].includes(
+        maybeCommand,
+      )
+    ) {
       if (maybeCommand === 'help' || maybeCommand === '--help' || maybeCommand === '-h') {
         result.help = true;
       } else {
@@ -249,11 +258,19 @@ function splitSiteloConfig(options) {
       images: undefined,
       buildReport: undefined,
       linkCheck: undefined,
+      lighthouse: undefined,
     };
   }
 
-  const { vite, pagefind, images, buildReport, linkCheck, ...pluginOptions } =
-    options;
+  const {
+    vite,
+    pagefind,
+    images,
+    buildReport,
+    linkCheck,
+    lighthouse,
+    ...pluginOptions
+  } = options;
 
   if (vite != null && (typeof vite !== 'object' || Array.isArray(vite))) {
     throw new Error('[sitelo] sitelo.config.js "vite" must be an object');
@@ -267,6 +284,7 @@ function splitSiteloConfig(options) {
     images,
     buildReport,
     linkCheck,
+    lighthouse,
   };
 }
 
@@ -280,6 +298,7 @@ async function loadSiteloConfig(root) {
       images: undefined,
       buildReport: undefined,
       linkCheck: undefined,
+      lighthouse: undefined,
       configFile: undefined,
     };
   }
@@ -305,6 +324,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
     images,
     buildReport,
     linkCheck,
+    lighthouse,
     configFile: siteloConfigFile,
   } = await loadSiteloConfig(root);
 
@@ -332,6 +352,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
       images,
       buildReport,
       linkCheck,
+      lighthouse,
     };
   }
 
@@ -348,6 +369,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
     images,
     buildReport,
     linkCheck,
+    lighthouse,
   };
 }
 
@@ -507,6 +529,24 @@ function imagesDevPlugin({ root, pagesDir = 'src', publicDir, base, options }) {
   };
 }
 
+/**
+ * Inline config for a preview server over the current build.
+ *
+ * `sitelo preview` and `sitelo lighthouse` share it so an audit measures
+ * the same server a visitor would see, islands endpoint included.
+ */
+function previewInlineConfig(cli, { viteOptions, pluginOptions, plugins }) {
+  return mergeConfig(buildInlineConfig(cli, 'preview', viteOptions), {
+    plugins: [
+      islandsDevPlugin({
+        root: cli.root,
+        pagesDir: pluginOptions?.pagesDir,
+      }),
+      ...plugins,
+    ],
+  });
+}
+
 function resolvePublicDir(viteOptions) {
   return viteOptions?.publicDir === false
     ? false
@@ -615,6 +655,7 @@ async function runBuild(cli) {
     images,
     buildReport,
     linkCheck,
+    lighthouse,
   } = await resolveSiteloConfig({
     root: cli.root,
     configFile: cli.config,
@@ -630,6 +671,9 @@ async function runBuild(cli) {
   const reportOptions =
     cli.logLevel === 'silent' ? null : normalizeBuildReportOptions(buildReport);
   const linkCheckOptions = normalizeLinkCheckOptions(linkCheck);
+  // Normalized up front: a typo here should fail before the build starts,
+  // not twenty seconds of Lighthouse later.
+  const lighthouseOptions = normalizeLighthouseOptions(lighthouse);
 
   /** @type {Record<string, number>} */
   const timings = {};
@@ -694,6 +738,34 @@ async function runBuild(cli) {
     timings.links = since(linksStartedAt);
   }
 
+  // Last: it drives a browser over the finished output, so everything that
+  // rewrites a page has already run.
+  if (lighthouseOptions?.onBuild) {
+    const lighthouseStartedAt = performance.now();
+
+    // Fresh plugin instances: the ones above have just been through a
+    // build, and the preview server resolves its config all over again.
+    const { plugins: previewPlugins } = await resolveSiteloConfig({
+      root: cli.root,
+      configFile: cli.config,
+      command: 'serve',
+      mode,
+      debug: cli.debug,
+    });
+
+    await runLighthouse({
+      root: cli.root,
+      outDir,
+      options: lighthouseOptions,
+      previewConfig: previewInlineConfig(cli, {
+        viteOptions,
+        pluginOptions,
+        plugins: previewPlugins,
+      }),
+    });
+    timings.lighthouse = since(lighthouseStartedAt);
+  }
+
   if (!reportOptions) return;
 
   timings.total = since(startedAt);
@@ -717,18 +789,49 @@ async function runPreview(cli) {
   });
 
   const previewServer = await preview(
-    mergeConfig(buildInlineConfig(cli, 'preview', viteOptions), {
-      plugins: [
-        islandsDevPlugin({
-          root: cli.root,
-          pagesDir: pluginOptions?.pagesDir,
-        }),
-        ...plugins,
-      ],
-    }),
+    previewInlineConfig(cli, { viteOptions, pluginOptions, plugins }),
   );
 
   previewServer.printUrls();
+}
+
+/**
+ * `sitelo lighthouse` — audit the build that is already on disk.
+ *
+ * Auditing is slow enough that it is its own command rather than part of
+ * every build; `lighthouse: { onBuild: true }` opts into the build path.
+ */
+async function runLighthouseAudit(cli) {
+  const mode = cli.mode ?? 'production';
+  const { plugins, viteOptions, pluginOptions, lighthouse } =
+    await resolveSiteloConfig({
+      root: cli.root,
+      configFile: cli.config,
+      command: 'serve',
+      mode,
+      debug: cli.debug,
+    });
+
+  // Running the command is itself the opt-in, so an unconfigured site gets
+  // the defaults rather than an error.
+  const options = normalizeLighthouseOptions(lighthouse ?? true);
+  const previewConfig = previewInlineConfig(cli, {
+    viteOptions,
+    pluginOptions,
+    plugins,
+  });
+  const outDir =
+    cli.outDir ??
+    viteOptions?.build?.outDir ??
+    previewConfig.build?.outDir ??
+    'dist';
+
+  await runLighthouse({
+    root: cli.root,
+    outDir,
+    options,
+    previewConfig,
+  });
 }
 
 async function main() {
@@ -761,6 +864,9 @@ async function main() {
         break;
       case 'preview':
         await runPreview(cli);
+        break;
+      case 'lighthouse':
+        await runLighthouseAudit(cli);
         break;
       default:
         throw new Error(`Unknown command: ${cli.command}`);

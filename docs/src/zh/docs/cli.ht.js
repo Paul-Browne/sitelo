@@ -31,6 +31,12 @@ export default () =>
           '）',
         ),
         li(code('preview'), ' —— 在本地提供生产构建'),
+        li(
+          code('lighthouse'),
+          ' —— 审计生产构建（需要 ',
+          code('lighthouse'),
+          ' peer 依赖）',
+        ),
       ),
       p(
         '在 ',
