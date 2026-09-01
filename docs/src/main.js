@@ -362,6 +362,14 @@ function closeMenusOnOutsideClick() {
   })
 }
 
+/*
+ * The site builds with `cleanUrls: false`, so pagefind indexes `docs.html`
+ * rather than `docs/index.html` and reports that file path as the result
+ * URL. Strip the extension back to the extensionless URL every link, the
+ * canonical tag and the sitemap already use.
+ */
+const prettyResultUrl = (url) => url.replace(/\.html(?=$|[?#])/, '')
+
 /**
  * Pagefind search — indexes live under `/pagefind/`.
  * Production: written into `docs/dist` by `docs:build`.
@@ -404,6 +412,13 @@ async function initDocsSearch() {
     element: '#docs-search',
     showSubResults: true,
     showImages: false,
+    processResult: (result) => {
+      result.url = prettyResultUrl(result.url)
+      for (const sub of result.sub_results ?? []) {
+        sub.url = prettyResultUrl(sub.url)
+      }
+      return result
+    },
   })
 
   const input = mount.querySelector('input')
