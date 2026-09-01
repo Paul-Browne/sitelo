@@ -35,8 +35,8 @@ export const icons = {
   sparkles: featureIcon(
     '<path d="m12 3 1.9 4.6 4.6 1.9-4.6 1.9L12 16l-1.9-4.6-4.6-1.9 4.6-1.9z"/><path d="m19 15 .9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/>',
   ),
-  deploy: featureIcon(
-    '<polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 4 16.3"/>',
+  lighthouse: featureIcon(
+    '<path d="M8.4 5.5 12 2l3.6 3.5"/><path d="M9.7 5.5h4.6v3.2H9.7z"/><path d="M8 8.7h8"/><path d="M9.7 8.7 8 20.5"/><path d="M14.3 8.7 16 20.5"/><path d="M5.5 20.5h13"/><path d="M8.9 14.5h6.2"/><path d="M9 7H5.5"/><path d="M15 7H18.5"/>',
   ),
   gift: featureIcon(
     '<polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>',

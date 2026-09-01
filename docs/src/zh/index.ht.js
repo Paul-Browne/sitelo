@@ -75,12 +75,17 @@ const features = [
     '/zh/docs/build-with-ai',
   ],
   [
-    'deploy',
-    '一键部署',
-    '内置 Netlify、Vercel、Cloudflare Pages 与 AWS Amplify 的配置',
-    '/zh/docs/deployment',
+    'lighthouse',
+    'Lighthouse 审计',
+    '按阈值给真实构建打分 —— sitelo lighthouse（需安装 lighthouse）',
+    '/zh/docs/configuration#lighthouse-审计',
   ],
-  ['gift', '额外功能', '需要时提供 404.html、sitemap.xml 和 RSS', '/zh/docs/configuration'],
+  [
+    'gift',
+    '额外功能',
+    '需要时提供 404.html、sitemap.xml、RSS 与一键部署配置',
+    '/zh/docs/configuration',
+  ],
 ]
 
 export default () =>

@@ -80,15 +80,15 @@ const features = [
     '/ru/docs/build-with-ai',
   ],
   [
-    'deploy',
-    'Развёртывание в один клик',
-    'Конфигурации для Netlify, Vercel, Cloudflare Pages и AWS Amplify в комплекте',
-    '/ru/docs/deployment',
+    'lighthouse',
+    'Аудит Lighthouse',
+    'Оценка готовой сборки по порогам — sitelo lighthouse (установите lighthouse)',
+    '/ru/docs/configuration#аудит-lighthouse',
   ],
   [
     'gift',
     'Дополнительно',
-    '404.html, sitemap.xml и RSS — когда попросите',
+    '404.html, sitemap.xml, RSS и конфигурации для развёртывания в один клик',
     '/ru/docs/configuration',
   ],
 ]

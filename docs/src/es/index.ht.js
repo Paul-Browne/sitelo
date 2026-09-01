@@ -80,15 +80,15 @@ const features = [
     '/es/docs/build-with-ai',
   ],
   [
-    'deploy',
-    'Despliegue en un clic',
-    'Incluye configuraciones para Netlify, Vercel, Cloudflare Pages y AWS Amplify',
-    '/es/docs/deployment',
+    'lighthouse',
+    'Auditorías Lighthouse',
+    'Puntúa la compilación real frente a umbrales — sitelo lighthouse (instala lighthouse)',
+    '/es/docs/configuration#auditorias-lighthouse',
   ],
   [
     'gift',
     'Extras',
-    '404.html, sitemap.xml y RSS cuando los pidas',
+    '404.html, sitemap.xml, RSS y configuraciones de despliegue en un clic cuando los pidas',
     '/es/docs/configuration',
   ],
 ]
