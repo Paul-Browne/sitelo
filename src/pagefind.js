@@ -1,4 +1,4 @@
-import { cp, rm } from 'node:fs/promises'
+import { cp, readdir, readFile, rm } from 'node:fs/promises'
 import path from 'node:path'
 import { installCommand } from './package-manager.js'
 
@@ -40,6 +40,140 @@ export function normalizePagefindOptions(pagefind) {
 }
 
 /**
+ * Result URL for one HTML file, matching how the site actually links it.
+ *
+ * `index.html` keeps pagefind's own directory form, so a `cleanUrls` site
+ * indexes exactly as it did before. Flat `cleanUrls: false` output is linked
+ * without the extension — `docs/routing.html` is only ever reached as
+ * `/docs/routing` — so that is the URL a search result has to carry.
+ *
+ * @param {string} relativePath path within the build, relative to its root
+ * @param {{ keepIndexUrl?: boolean }} [options]
+ */
+export function pagefindUrl(relativePath, options = {}) {
+  const file = relativePath.split(path.sep).join('/')
+  const isIndex = file === 'index.html' || file.endsWith('/index.html')
+
+  if (isIndex) {
+    if (options.keepIndexUrl) return `/${file}`
+    return `/${file.slice(0, -'index.html'.length)}`
+  }
+
+  return `/${file.replace(/\.html$/, '')}`
+}
+
+/**
+ * Compile the glob subset pagefind's own `glob` option is written in —
+ * `**`, `*`, `?` and `{a,b}` alternation — to a regular expression.
+ */
+function globToRegExp(glob) {
+  let source = ''
+  let braces = 0
+
+  for (let i = 0; i < glob.length; i += 1) {
+    const char = glob[i]
+
+    if (char === '*' && glob[i + 1] === '*') {
+      i += 1
+      /*
+       * `**\/` spans zero or more directories, so `**\/*.html` still matches a
+       * file sitting at the root. A trailing `**` takes the rest of the path.
+       */
+      if (glob[i + 1] === '/') {
+        i += 1
+        source += '(?:[^/]*/)*'
+      } else {
+        source += '.*'
+      }
+    } else if (char === '*') source += '[^/]*'
+    else if (char === '?') source += '[^/]'
+    else if (char === '{') {
+      braces += 1
+      source += '(?:'
+    } else if (char === '}' && braces > 0) {
+      braces -= 1
+      source += ')'
+    } else if (char === ',' && braces > 0) source += '|'
+    else source += char.replace(/[.+^${}()|[\]\\]/g, '\\$&')
+  }
+
+  return new RegExp(`^${source}$`)
+}
+
+/**
+ * Whether a build-relative path is covered by a pagefind `glob`.
+ *
+ * Only flat builds need this: there sitelo enumerates the files itself rather
+ * than handing the directory to pagefind, so the option has to be applied
+ * here instead of by pagefind.
+ *
+ * @param {string} relativePath
+ * @param {string} glob
+ */
+export function matchesGlob(relativePath, glob) {
+  return globToRegExp(glob).test(relativePath.split(path.sep).join('/'))
+}
+
+/**
+ * Every `.html` file under `dir`, as paths relative to it.
+ *
+ * `pagefind/` is skipped for the same reason pagefind skips it: with
+ * `syncPublic`, the previous build's bundle is copied back out of `public/`
+ * into the output directory before this runs.
+ */
+async function collectHtmlFiles(dir, base = dir) {
+  const entries = await readdir(dir, { withFileTypes: true })
+  const files = []
+
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name)
+
+    if (entry.isDirectory()) {
+      if (entry.name === 'pagefind') continue
+      files.push(...(await collectHtmlFiles(full, base)))
+    } else if (entry.isFile() && entry.name.endsWith('.html')) {
+      files.push(path.relative(base, full))
+    }
+  }
+
+  return files.sort()
+}
+
+/**
+ * Index a flat build file by file, handing pagefind the URL outright.
+ *
+ * pagefind derives a result URL from the path it finds a file at, which is
+ * right for `docs/index.html` and wrong for `docs.html` — it would send
+ * searchers to `/docs.html` while every link, the canonical tag and the
+ * sitemap say `/docs`.
+ *
+ * @returns {Promise<number>} pages indexed
+ */
+async function addFlatFiles(index, siteDir, options) {
+  const files = await collectHtmlFiles(siteDir)
+  const pages = options.glob
+    ? files.filter((file) => matchesGlob(file, options.glob))
+    : files
+
+  const results = await Promise.all(
+    pages.map(async (file) =>
+      index.addHTMLFile({
+        url: pagefindUrl(file, { keepIndexUrl: options.keepIndexUrl }),
+        content: await readFile(path.join(siteDir, file), 'utf8'),
+      }),
+    ),
+  )
+
+  const errors = results.flatMap((result) => result.errors ?? [])
+
+  if (errors.length) {
+    throw new Error(`pagefind indexing failed:\n${errors.join('\n')}`)
+  }
+
+  return pages.length
+}
+
+/**
  * Lazily load pagefind with an actionable error when it is not installed.
  *
  * pagefind is an optional peer dependency — only sites that enable
@@ -71,6 +205,7 @@ async function loadPagefind() {
  *   outDir: string
  *   publicDir: string | false | undefined
  *   options: NonNullable<ReturnType<typeof normalizePagefindOptions>>
+ *   cleanUrls?: boolean
  *   log?: (message: string) => void
  * }} args
  */
@@ -79,6 +214,7 @@ export async function runPagefind({
   outDir,
   publicDir,
   options,
+  cleanUrls = true,
   log = console.log,
 }) {
   const { createIndex, close } = await loadPagefind()
@@ -105,15 +241,30 @@ export async function runPagefind({
     throw new Error('pagefind failed to create an index')
   }
 
-  const { errors: dirErrors, page_count: pageCount } = await index.addDirectory({
-    path: siteDir,
-    ...(options.glob ? { glob: options.glob } : {}),
-  })
+  /*
+   * A `cleanUrls` build is handed to pagefind whole — it walks the directory
+   * and derives `/docs/` from `docs/index.html` itself, which is the URL the
+   * site links. A flat build needs the URL supplied per file instead; see
+   * `addFlatFiles`.
+   */
+  let pageCount
 
-  if (dirErrors?.length) {
-    throw new Error(
-      `pagefind indexing failed:\n${dirErrors.join('\n')}`,
-    )
+  if (cleanUrls) {
+    const { errors: dirErrors, page_count: directoryCount } =
+      await index.addDirectory({
+        path: siteDir,
+        ...(options.glob ? { glob: options.glob } : {}),
+      })
+
+    if (dirErrors?.length) {
+      throw new Error(
+        `pagefind indexing failed:\n${dirErrors.join('\n')}`,
+      )
+    }
+
+    pageCount = directoryCount
+  } else {
+    pageCount = await addFlatFiles(index, siteDir, options)
   }
 
   // Write into a clean directory. The bundle is content-hashed, so without

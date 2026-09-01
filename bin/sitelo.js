@@ -607,14 +607,21 @@ async function runDev(cli) {
 
 async function runBuild(cli) {
   const mode = cli.mode ?? 'production';
-  const { plugins, viteOptions, pagefind, images, buildReport, linkCheck } =
-    await resolveSiteloConfig({
-      root: cli.root,
-      configFile: cli.config,
-      command: 'build',
-      mode,
-      debug: cli.debug,
-    });
+  const {
+    plugins,
+    viteOptions,
+    pluginOptions,
+    pagefind,
+    images,
+    buildReport,
+    linkCheck,
+  } = await resolveSiteloConfig({
+    root: cli.root,
+    configFile: cli.config,
+    command: 'build',
+    mode,
+    debug: cli.debug,
+  });
 
   const inline = buildInlineConfig(cli, 'build', viteOptions);
   const outDir =
@@ -667,6 +674,9 @@ async function runBuild(cli) {
       outDir,
       publicDir,
       options: pagefindOptions,
+      // Matches the plugin's own default. A site that registers the plugin in
+      // vite.config keeps its options there, out of reach here.
+      cleanUrls: pluginOptions?.cleanUrls ?? true,
     });
     timings.pagefind = since(pagefindStartedAt);
   }
