@@ -39,13 +39,6 @@ jobs:
       # runner image ships the Chrome it drives.
       - run: npm run docs:lighthouse
 
-      # Temporary: the audit costs ~4s a page locally and ~56s here, and
-      # Lighthouse's own phase timings say where that goes. Runs even when
-      # the audit fails, since a failing run is the interesting one.
-      - name: Where the audit spent its time
-        if: always()
-        run: node docs/scripts/lighthouse-timing.mjs
-
       - uses: actions/upload-pages-artifact@v5
         with:
           path: docs/dist

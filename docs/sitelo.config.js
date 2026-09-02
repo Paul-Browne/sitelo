@@ -27,12 +27,11 @@ export default {
     flags: {
       disableFullPageScreenshot: true,
       /*
-       * Temporary, with the diagnostic below. On a hosted runner every
-       * page sits at Lighthouse's default 45s load ceiling — it never
-       * decides the page is quiet — which is where 18 of the 20 minutes
-       * go. Capping the wait costs the three gated categories nothing
-       * (they read the DOM, and score 100 either way, measured), and it
-       * makes the run that collects the evidence bearable.
+       * A backstop, not the mechanism. Lighthouse waits 45s by default
+       * before giving up on a page; if anything ever stops settling on a
+       * runner again, this bounds the damage to a third of that. The
+       * three gated categories read the DOM and score the same either
+       * way, measured.
        */
       maxWaitForLoad: 15_000,
       /*
@@ -48,14 +47,6 @@ export default {
        */
       cpuQuietThresholdMs: 0,
     },
-    /*
-     * Diagnostic, and temporary: the JSON report carries Lighthouse's own
-     * phase timings, which is how `docs/scripts/lighthouse-timing.mjs`
-     * works out where a hosted runner spends 56s a page against 4s here.
-     * Drop both once that question is answered.
-     */
-    output: true,
-    formats: ['json'],
     exclude: ['{de,es,fr,pt,ru,zh}.html', '{de,es,fr,pt,ru,zh}/**', '404.html'],
     /*
      * No `performance` threshold, deliberately.
