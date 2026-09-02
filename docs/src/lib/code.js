@@ -1,4 +1,15 @@
 import { a, button, code as rawCode, div, pre, span } from 'javascript-to-html'
+import Prism from 'prismjs'
+/*
+ * Prism's core bundle already carries markup (and its `html` alias), css,
+ * clike and javascript; these are the three grammars the snippets use that it
+ * does not. Loading them here rather than in `main.js` is the whole point of
+ * highlighting at build time — a grammar the visitor never needs costs them
+ * nothing, because none of this reaches the browser.
+ */
+import 'prismjs/components/prism-bash.js'
+import 'prismjs/components/prism-json.js'
+import 'prismjs/components/prism-jsx.js'
 
 import { DEFAULT_LOCALE, strings } from './i18n.js'
 
@@ -30,6 +41,20 @@ export function code(...args) {
   )
 }
 
+/**
+ * Tokenised HTML for a snippet, ready to drop into a <code>.
+ *
+ * Prism escapes `&` and `<` on its way through, so the result is safe to
+ * insert as-is. A language it has no grammar for falls back to the plain
+ * escaped source, which is what the browser used to render for those blocks —
+ * a typo in a language name loses colour, never the snippet.
+ */
+function highlight(source, language) {
+  const grammar = Prism.languages[language]
+  if (!grammar) return escapeHtml(source)
+  return Prism.highlight(String(source), grammar, language)
+}
+
 function jsxFileLabel(file) {
   return file
     .replace(/\.ht\.ts$/, '.ht.tsx')
@@ -58,7 +83,7 @@ export function createCodeHelpers(lang = DEFAULT_LOCALE) {
       { class: 'code-glow' },
       pre(
         { class: `code language-${language}`, 'data-label': label },
-        code({ class: `language-${language}` }, source),
+        rawCode({ class: `language-${language}` }, highlight(source, language)),
       ),
       copyButton('code-copy'),
     )
@@ -69,7 +94,7 @@ export function createCodeHelpers(lang = DEFAULT_LOCALE) {
       { class: 'code-tabs-body' },
       pre(
         { class: `code language-${language}`, 'data-label': label },
-        code({ class: `language-${language}` }, source),
+        rawCode({ class: `language-${language}` }, highlight(source, language)),
       ),
       copyButton('code-copy'),
     )

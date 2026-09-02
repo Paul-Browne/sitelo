@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "docs",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["./bin/sitelo.js", "dev", "--root", "docs"],
+      "port": 5173
+    }
+  ]
+}

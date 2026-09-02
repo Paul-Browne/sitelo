@@ -1,10 +1,3 @@
-import Prism from 'prismjs'
-import 'prismjs/components/prism-javascript'
-import 'prismjs/components/prism-jsx'
-import 'prismjs/components/prism-bash'
-
-Prism.highlightAll()
-
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const THEME_KEY = 'sitelo-theme'
