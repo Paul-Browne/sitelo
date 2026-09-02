@@ -35,6 +35,18 @@ export default {
        * makes the run that collects the evidence bearable.
        */
       maxWaitForLoad: 15_000,
+      /*
+       * The actual fix. Lighthouse holds a navigation open until the main
+       * thread has been quiet for a second, and on a two-core runner that
+       * moment never arrives — every page sat at the ceiling and reported
+       * "loaded too slowly", while its network log showed 14 requests, all
+       * under 25ms, none unfinished. So it was never waiting on the site.
+       *
+       * Dropping that one condition halves the wait here (2.36s -> 1.07s)
+       * with every score identical; the load event and the network-quiet
+       * wait, which are what the DOM actually depends on, both stay.
+       */
+      cpuQuietThresholdMs: 0,
     },
     /*
      * Diagnostic, and temporary: the JSON report carries Lighthouse's own
