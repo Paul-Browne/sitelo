@@ -463,7 +463,12 @@ function pageShell({
     ),
     body(
       { class: bodyClass },
-      div({ id: 'atmosphere', class: 'atmosphere', 'aria-hidden': 'true' }),
+      div(
+        { id: 'atmosphere', class: 'atmosphere', 'aria-hidden': 'true' },
+        // Six drifting washes, coloured and animated entirely from the
+        // stylesheet — see `.atmosphere` in styles.css.
+        ...Array.from({ length: 6 }, () => span({ class: 'atmosphere-blob' })),
+      ),
       ...content,
       cookieBanner(lang),
       script({ type: 'module', src: '/main.js' }),

@@ -45,6 +45,16 @@
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
   --measure: 40rem;
   --page: min(68rem, calc(100% - 2.5rem));
+  /* Drifting background washes; see `.atmosphere`. */
+  --blob-1: #1a9a5c;
+  --blob-2: #0a1c16;
+  --blob-3: #04100c;
+  --blob-4: #0a3d55;
+  --blob-5: #145c45;
+  --blob-6: #020805;
+  --atmosphere-opacity: 0.9;
+  /* Grain reads far stronger over paper than over near-black. */
+  --grain-opacity: 0.28;
 }
 
 :root[data-theme='light'] {
@@ -78,6 +88,14 @@
   --tok-keyword: #056f3c;
   --tok-function: #1a5fb4;
   --tok-regex: #8a5a06;
+  --blob-1: #b6e6cd;
+  --blob-2: #e4f2eb;
+  --blob-3: #eef3f0;
+  --blob-4: #cde3f1;
+  --blob-5: #d6efe1;
+  --blob-6: #ffffff;
+  --atmosphere-opacity: 0.85;
+  --grain-opacity: 0.14;
 }
 
 *,
@@ -101,24 +119,136 @@ body {
   position: relative;
 }
 
+/*
+ * The page backdrop: six soft washes drifting behind everything, plus a
+ * grain tile over the top.
+ *
+ * Each wash is a static radial gradient that only ever moves, so the
+ * compositor can paint it once and slide the layer around. The softness is
+ * the gradient's own falloff rather than a `filter: blur()`, which is the
+ * whole point: a blur has to be re-rasterised whenever what is under it
+ * changes, and the previous version rewrote a blurred rule from
+ * `requestAnimationFrame` sixty times a second. That cost ~600ms of main
+ * thread on a two-core machine and meant the page never went idle.
+ */
 .atmosphere {
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
   overflow: hidden;
+  background: var(--paper);
 }
 
-/* Required hooks for animated-background-blobs */
-.atmosphere::before,
-.atmosphere::after {
+.atmosphere-blob {
   position: absolute;
+  width: 78vmax;
+  height: 78vmax;
+  /* Half the size, so `top`/`left` place the middle of the wash and the
+   * animation keeps `transform` to itself. */
+  margin: -39vmax 0 0 -39vmax;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle closest-side,
+    var(--blob) 0%,
+    transparent 100%
+  );
+  opacity: var(--atmosphere-opacity);
+  animation: var(--blob-drift) var(--blob-duration) ease-in-out infinite
+    alternate;
+}
+
+/* Primes, so the six never settle into a visible common rhythm. */
+.atmosphere-blob:nth-child(1) {
+  --blob: var(--blob-1);
+  --blob-drift: atmosphere-drift-a;
+  --blob-duration: 41s;
+  top: 78%;
+  left: 76%;
+}
+
+.atmosphere-blob:nth-child(2) {
+  --blob: var(--blob-2);
+  --blob-drift: atmosphere-drift-b;
+  --blob-duration: 53s;
+  top: 12%;
+  left: 44%;
+}
+
+.atmosphere-blob:nth-child(3) {
+  --blob: var(--blob-3);
+  --blob-drift: atmosphere-drift-c;
+  --blob-duration: 61s;
+  top: 22%;
+  left: 88%;
+}
+
+.atmosphere-blob:nth-child(4) {
+  --blob: var(--blob-4);
+  --blob-drift: atmosphere-drift-b;
+  --blob-duration: 67s;
+  top: 8%;
+  left: 6%;
+}
+
+.atmosphere-blob:nth-child(5) {
+  --blob: var(--blob-5);
+  --blob-drift: atmosphere-drift-a;
+  --blob-duration: 73s;
+  top: 84%;
+  left: 14%;
+}
+
+.atmosphere-blob:nth-child(6) {
+  --blob: var(--blob-6);
+  --blob-drift: atmosphere-drift-c;
+  --blob-duration: 83s;
+  top: 52%;
+  left: 50%;
+}
+
+/* Translation only: a scale would ask the compositor to re-raster. */
+@keyframes atmosphere-drift-a {
+  from {
+    transform: translate3d(-9%, -7%, 0);
+  }
+  to {
+    transform: translate3d(10%, 8%, 0);
+  }
+}
+
+@keyframes atmosphere-drift-b {
+  from {
+    transform: translate3d(8%, -10%, 0);
+  }
+  to {
+    transform: translate3d(-7%, 9%, 0);
+  }
+}
+
+@keyframes atmosphere-drift-c {
+  from {
+    transform: translate3d(-6%, 9%, 0);
+  }
+  to {
+    transform: translate3d(9%, -8%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atmosphere-blob {
+    animation: none;
+  }
+}
+
+/* Static tile, painted once. */
+.atmosphere::after {
   content: '';
-  top: -10%;
-  left: -10%;
-  width: 120%;
-  height: 120%;
+  position: absolute;
+  inset: 0;
   pointer-events: none;
+  opacity: var(--grain-opacity);
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.6666666666666667' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 1 0' /%3E%3C/filter%3E%3Crect opacity='1' width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E") repeat;
 }
 
 a {

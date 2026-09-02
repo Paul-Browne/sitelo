@@ -1,4 +1,3 @@
-import abb from './lib/abb.js'
 import Prism from 'prismjs'
 import 'prismjs/components/prism-javascript'
 import 'prismjs/components/prism-jsx'
@@ -63,46 +62,6 @@ const THEME_LABELS = {
 const langSubtag = document.documentElement.lang.split('-')[0]
 const copyLabels = COPY_LABELS[langSubtag] ?? COPY_LABELS.en
 const themeLabels = THEME_LABELS[langSubtag] ?? THEME_LABELS.en
-
-/**
- * Blob palettes for the drifting background, one per theme. The backdrop
- * itself is read from `--paper` so it can never drift out of step with the
- * stylesheet; only the blobs are listed here.
- */
-const ATMOSPHERE = {
-  dark: {
-    colors: ['#1a9a5c', '#0a1c16', '#04100c', '#0a3d55', '#145c45', '#020805'],
-    opacity: 0.9,
-    saturate: 1.05,
-    // Grain reads far stronger over paper than over near-black.
-    grainOpacity: 0.28,
-  },
-  light: {
-    colors: ['#b6e6cd', '#e4f2eb', '#eef3f0', '#cde3f1', '#d6efe1', '#ffffff'],
-    opacity: 0.85,
-    saturate: 1,
-    grainOpacity: 0.14,
-  },
-}
-
-function paintAtmosphere(theme) {
-  const palette = ATMOSPHERE[theme] ?? ATMOSPHERE.dark
-
-  abb({
-    element: '#atmosphere',
-    background: paperColor(),
-    colors: palette.colors,
-    speed: reduceMotion ? 0 : 0.45,
-    opacity: palette.opacity,
-    saturate: palette.saturate,
-    blur: 48,
-    grain: {
-      strength: 1.2,
-      opacity: palette.grainOpacity,
-      blur: 0,
-    },
-  })
-}
 
 const buttons = document.querySelectorAll('[data-copy]')
 
@@ -231,8 +190,6 @@ function initTheme() {
         toggle.setAttribute('title', label)
       }
     }
-
-    paintAtmosphere(theme)
   }
 
   for (const toggle of toggles) {
