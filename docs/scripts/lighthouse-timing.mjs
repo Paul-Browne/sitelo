@@ -3,20 +3,21 @@
  * reports it saved.
  *
  * Diagnostic, and temporary. The docs audit costs ~4s a page on a laptop
- * and ~56s a page on a GitHub runner, and a 14x gap is too big to explain
- * by "the runner is slower" without looking. Lighthouse times its own
- * phases; this prints them per page so the difference has a name.
+ * and ~55s on a GitHub runner, where `lh:driver:navigate` pins to
+ * Lighthouse's load ceiling on every page — it never decides the page is
+ * quiet. Lighthouse logs the whole navigation as one entry, so the reason
+ * has to come from the run's own diagnostics: a pegged main thread, a
+ * slow server, or a request that never finished.
  *
  *   node docs/scripts/lighthouse-timing.mjs [reportDir]
  */
 import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 
-/** The phases worth naming; everything else lands in the total. */
+/** Phases worth naming; the rest rolls up into the total. */
 const PHASES = [
   ['navigate', 'lh:driver:navigate'],
   ['benchmark', 'lh:gather:getBenchmarkIndex'],
-  ['screenshot', 'lh:gather:getArtifact:FullPageScreenshot'],
   ['a11y', 'lh:gather:getArtifact:Accessibility'],
   ['gather', 'lh:runner:gather'],
   ['audit', 'lh:runner:audit'],
@@ -38,13 +39,12 @@ async function collectReports(dir) {
 
 const dir = path.resolve(process.argv[2] ?? 'docs/.sitelo/lighthouse')
 
-let files
+let files = []
 
 try {
   files = await collectReports(dir)
 } catch {
-  console.error(`no lighthouse reports under ${dir}`)
-  process.exit(0)
+  // Reported below.
 }
 
 if (files.length === 0) {
@@ -54,11 +54,11 @@ if (files.length === 0) {
 
 const rows = []
 const warnings = []
-/** @type {{ page: string, total: number, requests: object[] } | null} */
-let slowest = null
 
 for (const file of files) {
   const lhr = JSON.parse(await readFile(file, 'utf8'))
+  const page = path.relative(dir, file).replace(/\.report\.json$/, '')
+
   /** A phase can appear more than once (about:blank, then the page). */
   const byName = new Map()
 
@@ -67,43 +67,50 @@ for (const file of files) {
   }
 
   rows.push({
-    page: path.relative(dir, file).replace(/\.report\.json$/, ''),
+    page,
     total: lhr.timing?.total ?? 0,
     phases: PHASES.map(([, name]) => byName.get(name) ?? 0),
+    diagnostics: lhr.audits?.diagnostics?.details?.items?.[0] ?? {},
+    longTasks: lhr.audits?.['long-tasks']?.details?.items ?? [],
+    requests: lhr.audits?.['network-requests']?.details?.items ?? [],
   })
 
-  for (const warning of lhr.runWarnings ?? []) {
-    warnings.push(`${path.relative(dir, file)}: ${warning}`)
-  }
-
-  /*
-   * Keep the worst page's network log. A navigation that sits at
-   * Lighthouse's 45s ceiling is waiting on something, and a request that
-   * never finished is what that looks like from the outside.
-   */
-  const total = lhr.timing?.total ?? 0
-
-  if (!slowest || total > slowest.total) {
-    slowest = {
-      page: path.relative(dir, file).replace(/\.report\.json$/, ''),
-      total,
-      requests: lhr.audits?.['network-requests']?.details?.items ?? [],
-    }
-  }
+  for (const warning of lhr.runWarnings ?? []) warnings.push(`${page}: ${warning}`)
 }
 
 const ms = (value) => `${Math.round(value)}`
 const width = Math.max(4, ...rows.map((row) => row.page.length))
-const columns = ['total', ...PHASES.map(([label]) => label)]
+const cells = (values) => values.map((value) => String(value).padStart(11)).join('')
 
 console.log(`\nlighthouse phase timings (ms) — ${rows.length} reports\n`)
+console.log(`  ${'page'.padEnd(width)}  ${cells(['total', ...PHASES.map(([label]) => label)])}`)
+
+for (const row of rows) {
+  console.log(`  ${row.page.padEnd(width)}  ${cells([ms(row.total), ...row.phases.map(ms)])}`)
+}
+
+/*
+ * Why the navigation would not settle. A page that never goes quiet is
+ * either busy (task time, tasks over 50ms), waiting on a slow server, or
+ * waiting on a request that never came back.
+ */
+console.log(`\nload diagnostics\n`)
 console.log(
-  `  ${'page'.padEnd(width)}  ${columns.map((c) => c.padStart(10)).join('')}`,
+  `  ${'page'.padEnd(width)}  ${cells(['taskTime', '>50ms', 'maxLatency', 'requests', 'unfinished'])}`,
 )
 
 for (const row of rows) {
-  const cells = [ms(row.total), ...row.phases.map(ms)]
-  console.log(`  ${row.page.padEnd(width)}  ${cells.map((c) => c.padStart(10)).join('')}`)
+  const unfinished = row.requests.filter((request) => !(request.networkEndTime > 0))
+
+  console.log(
+    `  ${row.page.padEnd(width)}  ${cells([
+      `${ms(row.diagnostics.totalTaskTime ?? 0)}ms`,
+      row.diagnostics.numTasksOver50ms ?? 0,
+      `${ms(row.diagnostics.maxServerLatency ?? 0)}ms`,
+      row.diagnostics.numRequests ?? row.requests.length,
+      unfinished.length,
+    ])}`,
+  )
 }
 
 const total = rows.reduce((sum, row) => sum + row.total, 0)
@@ -112,39 +119,41 @@ console.log(
     `${(total / rows.length / 1000).toFixed(1)}s a page`,
 )
 
-if (warnings.length > 0) {
-  console.log('\n  lighthouse run warnings')
-  for (const warning of warnings) console.log(`    ${warning}`)
-} else {
-  console.log('\n  no lighthouse run warnings')
-}
+console.log(
+  warnings.length > 0
+    ? `\n  lighthouse run warnings\n${warnings.map((w) => `    ${w}`).join('\n')}`
+    : '\n  no lighthouse run warnings',
+)
 
-if (slowest && slowest.requests.length > 0) {
-  const duration = (request) =>
-    request.networkEndTime > 0 && request.networkRequestTime >= 0
-      ? request.networkEndTime - request.networkRequestTime
-      : Number.POSITIVE_INFINITY
+/** The worst page in detail: what held the main thread, and what stalled. */
+const worst = rows.reduce((a, b) => (b.total > a.total ? b : a))
 
-  const ranked = [...slowest.requests].sort((a, b) => duration(b) - duration(a))
+console.log(`\n  worst page: ${worst.page}`)
 
-  console.log(`\n  slowest page (${slowest.page}) — its longest requests`)
-
-  for (const request of ranked.slice(0, 8)) {
-    const spent = duration(request)
-    const url = String(request.url ?? '').replace(/^https?:\/\/[^/]+/, '')
-
+if (worst.longTasks.length > 0) {
+  console.log('    longest main-thread tasks')
+  for (const task of [...worst.longTasks].sort((a, b) => b.duration - a.duration).slice(0, 5)) {
     console.log(
-      `    ${(spent === Number.POSITIVE_INFINITY ? 'unfinished' : `${Math.round(spent)}ms`).padStart(11)}  ` +
-        `${String(request.statusCode ?? '-').padStart(3)}  ` +
-        `${String(request.resourceType ?? '-').padEnd(10)}  ${url.slice(0, 70)}`,
+      `      ${ms(task.duration).padStart(7)}ms  ${String(task.url ?? '').replace(/^https?:\/\/[^/]+/, '').slice(0, 60)}`,
     )
   }
+} else {
+  console.log('    no long tasks recorded')
+}
 
-  const unfinished = slowest.requests.filter(
-    (request) => !(request.networkEndTime > 0),
-  )
+const spent = (request) =>
+  request.networkEndTime > 0 ? request.networkEndTime - request.networkRequestTime : Infinity
 
-  console.log(
-    `\n  ${slowest.requests.length} requests, ${unfinished.length} never finished`,
-  )
+const slowest = [...worst.requests].sort((a, b) => spent(b) - spent(a)).slice(0, 5)
+
+if (slowest.length > 0) {
+  console.log('    longest requests')
+  for (const request of slowest) {
+    const took = spent(request)
+    console.log(
+      `      ${(took === Infinity ? 'unfinished' : `${ms(took)}ms`).padStart(9)}  ` +
+        `${String(request.statusCode ?? '-').padStart(3)}  ` +
+        `${String(request.url ?? '').replace(/^https?:\/\/[^/]+/, '').slice(0, 60)}`,
+    )
+  }
 }
