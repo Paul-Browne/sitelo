@@ -17,6 +17,9 @@
 
 const THEME_KEY = 'sitelo-ui-theme'
 
+/** Most toasts on screen at once; the oldest is dropped past this. */
+const MAX_TOASTS = 5
+
 /** @param {Element | null} node @returns {HTMLElement | null} */
 function asElement(node) {
   return node instanceof HTMLElement ? node : null
@@ -115,9 +118,18 @@ export function setTheme(value) {
  * @returns {'light' | 'dark'}
  */
 export function getTheme() {
-  const explicit = document.documentElement.getAttribute('data-su-theme')
+  const root = document.documentElement
 
-  if (explicit === 'light' || explicit === 'dark') return explicit
+  /*
+   * The stylesheet honours both attributes, so this must too. Reading
+   * only `data-su-theme` made the toggle disagree with what was on
+   * screen on any site that sets `data-theme` itself.
+   */
+  for (const attribute of ['data-su-theme', 'data-theme']) {
+    const value = root.getAttribute(attribute)
+
+    if (value === 'light' || value === 'dark') return value
+  }
 
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
@@ -166,9 +178,37 @@ export function toast(message, { color = 'neutral', duration = 4000 } = {}) {
 
   region.append(node)
 
+  // A flood of toasts would otherwise fill the screen with a stack
+  // nobody can scroll — the region is fixed-position.
+  while (region.children.length > MAX_TOASTS) region.firstElementChild?.remove()
+
   if (duration > 0) setTimeout(() => node.remove(), duration)
 
   return node
+}
+
+/* ------------------------------------------------------------------ *
+ * Menus
+ * ------------------------------------------------------------------ */
+
+/**
+ * Close whichever open menus this click should close.
+ *
+ * A click outside a menu closes it, and so does activating one of its
+ * items — a menu that stays open after you have chosen something is the
+ * bug this exists to prevent. Other clicks *inside* a menu are left
+ * alone, so a menu can hold a form.
+ *
+ * @param {Element} target
+ */
+function closeMenus(target) {
+  const item = target.closest('[role="menuitem"]')
+
+  for (const open of document.querySelectorAll('details.su-menu[open]')) {
+    if (!open.contains(target) || (item && open.contains(item))) {
+      open.removeAttribute('open')
+    }
+  }
 }
 
 /* ------------------------------------------------------------------ *
@@ -188,6 +228,11 @@ export function init() {
 
     if (!target || typeof target.closest !== 'function') return
 
+    // First, and unconditionally: a click on a tab, a theme toggle or a
+    // dismiss button is still a click outside an open menu, and the
+    // early returns below used to skip this entirely.
+    closeMenus(target)
+
     const tab = asElement(target.closest('[role="tab"]'))
     const tabsRoot = tab?.closest('[data-su-tabs]')
 
@@ -205,27 +250,27 @@ export function init() {
 
     if (dismiss) {
       const owner = dismiss.getAttribute('data-su-dismiss')
-      const node = owner
-        ? document.getElementById(owner)
-        : dismiss.closest('.su-alert, .su-toast')
+      // Toasts are alerts, so one selector covers both.
+      const node = owner ? document.getElementById(owner) : dismiss.closest('.su-alert')
 
       node?.remove()
-      return
-    }
-
-    // Any click that landed outside an open menu closes it. Clicks
-    // inside one are left alone so a menu can hold a form.
-    for (const open of document.querySelectorAll('details.su-menu[open]')) {
-      if (!open.contains(target)) open.removeAttribute('open')
     }
   })
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
+      const active = document.activeElement
+      let restore = null
+
       for (const open of document.querySelectorAll('details.su-menu[open]')) {
+        // Only the menu that held focus hands it back — closing a menu
+        // elsewhere on the page should not move the caret.
+        if (active && open.contains(active)) restore = open.querySelector('summary')
+
         open.removeAttribute('open')
-        asElement(open.querySelector('summary'))?.focus()
       }
+
+      asElement(restore)?.focus()
 
       return
     }

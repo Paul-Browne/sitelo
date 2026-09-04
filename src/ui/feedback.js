@@ -97,10 +97,16 @@ export function progress(props = {}) {
     ...rest
   } = props
 
-  const indeterminate = value == null
-  const pct = indeterminate
-    ? 0
-    : Math.max(0, Math.min(100, (Number(value) / Number(max)) * 100))
+  /*
+   * A value that is not a finite number is treated as no value at all.
+   * Coercing it produced `aria-valuenow="NaN"` and a CSS width of
+   * `NaN%` — invalid on both counts, and silent.
+   */
+  const numeric = Number(value)
+  const limit = Number(max)
+  const scale = Number.isFinite(limit) && limit > 0 ? limit : 100
+  const indeterminate = value == null || !Number.isFinite(numeric)
+  const pct = indeterminate ? 0 : Math.max(0, Math.min(100, (numeric / scale) * 100))
 
   return div(
     attrs(rest, { class: cx('su-progress', colorClass(color)) }),
@@ -126,9 +132,9 @@ export function progress(props = {}) {
               ...(indeterminate
                 ? {}
                 : {
-                    'aria-valuenow': Number(value),
+                    'aria-valuenow': numeric,
                     'aria-valuemin': 0,
-                    'aria-valuemax': Number(max),
+                    'aria-valuemax': scale,
                   }),
             }),
         class: cx(

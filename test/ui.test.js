@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import * as ui from '../src/ui/index.js';
@@ -247,6 +248,18 @@ test('an unlabelled progress bar is decoration, not a nameless progressbar', () 
   assert.match(html, /--su-progress-value: 25%/);
 });
 
+test('progress() treats an unusable value as indeterminate', () => {
+  // Coercing these produced aria-valuenow="NaN" and a width of NaN%.
+  for (const value of ['abc', Number.NaN, Number.POSITIVE_INFINITY]) {
+    const html = ui.progress({ value, label: 'Building' });
+
+    assert.ok(!html.includes('NaN'), `${String(value)} does not leak NaN`);
+    assert.match(html, /su-progress-bar--indeterminate/);
+  }
+
+  assert.ok(!ui.progress({ value: 5, max: 'x', label: 'B' }).includes('NaN'), 'a bad max is ignored');
+});
+
 test('progress() clamps a value outside its range', () => {
   assert.match(ui.progress({ value: 300 }), /--su-progress-value: 100%/);
   assert.match(ui.progress({ value: -5 }), /--su-progress-value: 0%/);
@@ -359,6 +372,95 @@ test('an icon-only menu trigger carries an accessible name', () => {
   assert.ok(!html.includes('su-btn-label'), 'no empty label span');
 });
 
+/* -------------------------------------------------------------- *
+ * The contract between the rendered markup and sitelo/ui/client
+ *
+ * The runtime needs a DOM, so its behaviour is exercised in a browser
+ * rather than here. What these lock down is the seam: the hooks the
+ * script queries for, and the markup the components emit. That is where
+ * the two have actually drifted apart before.
+ * -------------------------------------------------------------- */
+
+/** @returns {string} */
+function clientSource() {
+  return readFileSync(
+    fileURLToPath(new URL('../src/ui/client.js', import.meta.url)),
+    'utf8',
+  );
+}
+
+test('every hook the client queries for is emitted by a component', () => {
+  const source = clientSource();
+
+  const hooks = [
+    ['data-su-tabs', ui.tabs({ items: [{ id: 'a', label: 'A', panel: 'x' }] })],
+    ['data-su-dismiss', ui.alert({ dismissible: true }, 'x')],
+    ['data-su-theme-toggle', ui.themeToggle()],
+    ['su-menu', ui.menu({ trigger: 'x' }, ui.menuItem('y'))],
+    ['su-toasts', ui.toasts()],
+    ['role="menuitem"', ui.menu({ trigger: 'x' }, ui.menuItem('y'))],
+    ['role="tab"', ui.tabs({ items: [{ id: 'a', label: 'A', panel: 'x' }] })],
+  ];
+
+  for (const [hook, html] of hooks) {
+    const needle = hook.replace('role="menuitem"', 'menuitem').replace('role="tab"', 'role="tab"');
+
+    assert.ok(source.includes(needle), `client.js looks for ${hook}`);
+    assert.ok(html.includes(hook), `a component renders ${hook}`);
+  }
+});
+
+test('the toasts region id is the one the client looks up', () => {
+  // toast() bails out entirely when getElementById misses.
+  const id = /getElementById\('([^']+)'\)/.exec(clientSource())?.[1];
+
+  assert.equal(id, 'su-toasts');
+  assert.match(ui.toasts(), new RegExp(`id="${id}"`));
+});
+
+test('the dismiss fallback selectors all match something a component renders', () => {
+  // This is the guard that would have caught `.su-toast`, a class the
+  // script closed on and nothing ever rendered.
+  const selector = /dismiss\.closest\('([^']+)'\)/.exec(clientSource())?.[1];
+
+  assert.ok(selector, 'the fallback selector was found in client.js');
+
+  const dismissible = ui.alert({ dismissible: true }, 'x');
+
+  for (const one of selector.split(',').map((part) => part.trim())) {
+    assert.match(one, /^\.[a-z-]+$/, `${one} is a plain class selector`);
+    assert.match(
+      dismissible,
+      new RegExp(`class="[^"]*\\b${one.slice(1)}\\b`),
+      `${one} matches the markup a dismiss button sits in`,
+    );
+  }
+});
+
+test('each tab points at a panel that exists, and one panel is visible', () => {
+  // The client resolves aria-controls with getElementById; a mismatch
+  // would leave every panel hidden.
+  const html = ui.tabs({
+    value: 'b',
+    items: [
+      { id: 'a', label: 'A', panel: 'PA' },
+      { id: 'b', label: 'B', panel: 'PB' },
+      { id: 'c', label: 'C', panel: 'PC' },
+    ],
+  });
+
+  const controls = [...html.matchAll(/aria-controls="([^"]+)"/g)].map((m) => m[1]);
+  const panelIds = [...html.matchAll(/id="([^"]+)" role="tabpanel"/g)].map((m) => m[1]);
+
+  assert.equal(controls.length, 3);
+  assert.deepEqual(controls, panelIds);
+
+  const panels = [...html.matchAll(/role="tabpanel"[^>]*>/g)].map((m) => m[0]);
+
+  assert.equal(panels.filter((p) => !p.includes('hidden')).length, 1, 'exactly one visible panel');
+  assert.equal((html.match(/aria-selected="true"/g) || []).length, 1, 'exactly one selected tab');
+});
+
 test('menu() is a details element that works without script', () => {
   const html = ui.menu({ trigger: 'More' }, ui.menuItem({ href: '/a' }, 'Edit'));
 
@@ -439,17 +541,17 @@ function readTokens(block) {
 test('every palette clears WCAG AA against the surface it sits on', () => {
   const css = ui.stylesheet({ minify: false });
 
-  const light = readTokens(
-    css.slice(css.indexOf(':root {'), css.indexOf("[data-theme='dark']")),
-  );
+  /*
+   * Anchored on block boundaries rather than on the exact selector text,
+   * which is a detail the sheet is allowed to change — an earlier version
+   * of this test broke the moment the dark selector gained a `:not()`.
+   */
+  const rootStart = css.indexOf(':root {');
+  const light = readTokens(css.slice(rootStart, css.indexOf('\n}', rootStart)));
   const dark = {
     ...light,
-    ...readTokens(
-      css.slice(
-        css.indexOf("[data-theme='dark'] ,"),
-        css.indexOf('@media (prefers-color-scheme: dark)'),
-      ),
-    ),
+    // The media query carries the full dark palette, and always exists.
+    ...readTokens(css.slice(css.indexOf('@media (prefers-color-scheme: dark)'))),
   };
 
   assert.ok(Object.keys(light).length > 40, 'light tokens were found');
