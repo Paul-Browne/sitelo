@@ -57,6 +57,22 @@ export default function render(ctx) { return `<html>…</html>` }
 
 Import helpers from `sitelo` (e.g. `fetchWithCache`) and `sitelo/page` for typed helpers.
 
+## Local JSON data
+
+Content kept in the repo as JSON is read with `sitelo/data` — no API needed:
+
+```js
+import { readJson, readJsonCollection } from 'sitelo/data'
+
+const posts = await readJsonCollection('data/posts', { sort: '-date' })
+const site = await readJson('data/site.json')
+```
+
+- `readJsonCollection` takes a directory of `.json` files (slug from the filename) or one file holding an array of entries or an object keyed by slug
+- Options: `slug`, `sort` (`'date'` / `'-date'` / compare fn), `recursive`, `root`, `cache`
+- Relative paths resolve from the project root; reads are memoized per file, and the dev server reloads when a JSON file a page read changes
+- See https://sitelo.dev/docs/data
+
 ## javascript-to-html (ht.js)
 
 Recommended for writing HTML in JavaScript without a templating engine or React.

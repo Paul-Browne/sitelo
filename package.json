@@ -43,6 +43,10 @@
       "types": "./src/types.d.ts",
       "import": "./src/types.js"
     },
+    "./data": {
+      "types": "./src/data.d.ts",
+      "import": "./src/data.js"
+    },
     "./jsx-runtime": {
       "types": "./src/jsx-runtime.d.ts",
       "import": "./src/jsx-runtime.js"

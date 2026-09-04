@@ -15,7 +15,7 @@ This project uses [sitelo](https://sitelo.dev) — a Vite-powered static site ge
 - Pages are modules under \`src/\` with extensions like \`.ht.js\` / \`.ht.ts\` / \`.ht.jsx\` that **export a default function (or string) returning HTML**.
 - Do **not** introduce React, Next.js, Astro, or a component/hydration framework unless the user explicitly asks.
 - Routing is file-based: \`about.ht.js\` → \`/about\`, \`[slug].ht.js\` → dynamic (use \`generateStaticParams\` for \`sitelo build\`).
-- Load data with \`export async function data(ctx)\`. Use \`fetchWithCache\` from \`sitelo\` for cached HTTP.
+- Load data with \`export async function data(ctx)\`. Use \`fetchWithCache\` from \`sitelo\` for cached HTTP. Read local JSON with \`readJson\` / \`readJsonCollection\` from \`sitelo/data\`.
 - Only JS/CSS referenced from HTML is bundled into \`dist/\`. Keep server-only code unreferenced so it never ships.
 - Config lives in \`sitelo.config.js\`. Put Vite options under \`vite\`.
 - Commands: \`sitelo\` (dev), \`sitelo build\`, \`sitelo preview\`.
@@ -32,7 +32,7 @@ Este proyecto usa [sitelo](https://sitelo.dev) — un generador de sitios estát
 - Las páginas son módulos dentro de \`src/\` con extensiones como \`.ht.js\` / \`.ht.ts\` / \`.ht.jsx\` que **exportan por defecto una función (o cadena) que devuelve HTML**.
 - **No** introduzcas React, Next.js, Astro ni ningún framework de componentes o hidratación salvo que el usuario lo pida explícitamente.
 - El enrutado se basa en archivos: \`about.ht.js\` → \`/about\`, \`[slug].ht.js\` → dinámica (usa \`generateStaticParams\` para \`sitelo build\`).
-- Carga datos con \`export async function data(ctx)\`. Usa \`fetchWithCache\` de \`sitelo\` para HTTP cacheado.
+- Carga datos con \`export async function data(ctx)\`. Usa \`fetchWithCache\` de \`sitelo\` para HTTP cacheado. Lee JSON local con \`readJson\` / \`readJsonCollection\` de \`sitelo/data\`.
 - Solo el JS/CSS referenciado desde el HTML se empaqueta en \`dist/\`. Deja el código de servidor sin referenciar para que nunca se publique.
 - La configuración vive en \`sitelo.config.js\`. Pon las opciones de Vite bajo \`vite\`.
 - Comandos: \`sitelo\` (dev), \`sitelo build\`, \`sitelo preview\`.
@@ -73,7 +73,7 @@ Ce projet utilise [sitelo](https://sitelo.dev) — un générateur de sites stat
 - Les pages sont des modules dans \`src/\` avec des extensions comme \`.ht.js\` / \`.ht.ts\` / \`.ht.jsx\` qui **exportent par défaut une fonction (ou une chaîne) renvoyant du HTML**.
 - N’introduis **pas** React, Next.js, Astro, ni un framework à composants/hydratation sauf demande explicite de l’utilisateur.
 - Le routage se base sur les fichiers : \`about.ht.js\` → \`/about\`, \`[slug].ht.js\` → dynamique (utilise \`generateStaticParams\` pour \`sitelo build\`).
-- Charge les données avec \`export async function data(ctx)\`. Utilise \`fetchWithCache\` depuis \`sitelo\` pour du HTTP mis en cache.
+- Charge les données avec \`export async function data(ctx)\`. Utilise \`fetchWithCache\` depuis \`sitelo\` pour du HTTP mis en cache. Lis du JSON local avec \`readJson\` / \`readJsonCollection\` depuis \`sitelo/data\`.
 - Seuls les JS/CSS référencés depuis le HTML sont inclus dans \`dist/\`. Laisse le code serveur non référencé pour qu’il ne soit jamais livré.
 - La configuration vit dans \`sitelo.config.js\`. Place les options Vite sous \`vite\`.
 - Commandes : \`sitelo\` (dev), \`sitelo build\`, \`sitelo preview\`.
@@ -90,7 +90,7 @@ Dieses Projekt verwendet [sitelo](https://sitelo.dev) — einen Vite-basierten G
 - Seiten sind Module unter \`src/\` mit Endungen wie \`.ht.js\` / \`.ht.ts\` / \`.ht.jsx\`, die **eine Default-Funktion (oder einen String) exportieren, die HTML zurückgibt**.
 - Führe **kein** React, Next.js, Astro oder Komponenten-/Hydration-Framework ein, sofern der Nutzer nicht ausdrücklich danach fragt.
 - Das Routing basiert auf Dateien: \`about.ht.js\` → \`/about\`, \`[slug].ht.js\` → dynamisch (nutze \`generateStaticParams\` für \`sitelo build\`).
-- Lade Daten mit \`export async function data(ctx)\`. Nutze \`fetchWithCache\` aus \`sitelo\` für gecachtes HTTP.
+- Lade Daten mit \`export async function data(ctx)\`. Nutze \`fetchWithCache\` aus \`sitelo\` für gecachtes HTTP. Lokales JSON liest du mit \`readJson\` / \`readJsonCollection\` aus \`sitelo/data\`.
 - Nur aus dem HTML referenziertes JS/CSS landet in \`dist/\`. Lass Server-Code unreferenziert, damit er nie ausgeliefert wird.
 - Die Konfiguration liegt in \`sitelo.config.js\`. Vite-Optionen gehören unter \`vite\`.
 - Befehle: \`sitelo\` (dev), \`sitelo build\`, \`sitelo preview\`.
@@ -131,7 +131,7 @@ const AGENTS_RU = `# sitelo
 - Страницы — это модули внутри \`src/\` с расширениями вроде \`.ht.js\` / \`.ht.ts\` / \`.ht.jsx\`, которые **экспортируют по умолчанию функцию (или строку), возвращающую HTML**.
 - **Не** добавляй React, Next.js, Astro или любой компонентный фреймворк с гидратацией, если пользователь не попросил об этом явно.
 - Маршрутизация строится на файлах: \`about.ht.js\` → \`/about\`, \`[slug].ht.js\` → динамическая (используй \`generateStaticParams\` для \`sitelo build\`).
-- Загружай данные через \`export async function data(ctx)\`. Для HTTP с кэшем используй \`fetchWithCache\` из \`sitelo\`.
+- Загружай данные через \`export async function data(ctx)\`. Для HTTP с кэшем используй \`fetchWithCache\` из \`sitelo\`. Локальный JSON читай через \`readJson\` / \`readJsonCollection\` из \`sitelo/data\`.
 - В \`dist/\` попадает только тот JS/CSS, на который ссылается HTML. Оставляй серверный код без ссылок, чтобы он никогда не публиковался.
 - Конфигурация лежит в \`sitelo.config.js\`. Параметры Vite — под ключом \`vite\`.
 - Команды: \`sitelo\` (dev), \`sitelo build\`, \`sitelo preview\`.
@@ -148,7 +148,7 @@ const AGENTS_ZH = `# sitelo
 - 页面是 \`src/\` 下的模块，扩展名形如 \`.ht.js\` / \`.ht.ts\` / \`.ht.jsx\`，并且**默认导出一个返回 HTML 的函数（或字符串）**。
 - 除非用户明确要求，**不要**引入 React、Next.js、Astro 或任何组件/水合框架。
 - 路由基于文件：\`about.ht.js\` → \`/about\`，\`[slug].ht.js\` → 动态路由（\`sitelo build\` 时使用 \`generateStaticParams\`）。
-- 用 \`export async function data(ctx)\` 加载数据。需要带缓存的 HTTP 时，使用 \`sitelo\` 提供的 \`fetchWithCache\`。
+- 用 \`export async function data(ctx)\` 加载数据。需要带缓存的 HTTP 时，使用 \`sitelo\` 提供的 \`fetchWithCache\`。需要读取本地 JSON 时，使用 \`sitelo/data\` 的 \`readJson\` / \`readJsonCollection\`。
 - 只有被 HTML 引用的 JS/CSS 才会打包进 \`dist/\`。让服务端代码保持无引用，它就永远不会被发布。
 - 配置写在 \`sitelo.config.js\` 里。Vite 选项放在 \`vite\` 下。
 - 命令：\`sitelo\`（dev）、\`sitelo build\`、\`sitelo preview\`。
@@ -189,7 +189,7 @@ Este projeto usa o [sitelo](https://sitelo.dev) — um gerador de sites estátic
 - As páginas são módulos dentro de \`src/\` com extensões como \`.ht.js\` / \`.ht.ts\` / \`.ht.jsx\` que **exportam por omissão uma função (ou string) que devolve HTML**.
 - **Não** introduzas React, Next.js, Astro nem qualquer framework de componentes/hidratação, a menos que o utilizador peça explicitamente.
 - O encaminhamento baseia-se em ficheiros: \`about.ht.js\` → \`/about\`, \`[slug].ht.js\` → dinâmica (usa \`generateStaticParams\` para \`sitelo build\`).
-- Carrega dados com \`export async function data(ctx)\`. Usa \`fetchWithCache\` do \`sitelo\` para HTTP com cache.
+- Carrega dados com \`export async function data(ctx)\`. Usa \`fetchWithCache\` do \`sitelo\` para HTTP com cache. Lê JSON local com \`readJson\` / \`readJsonCollection\` do \`sitelo/data\`.
 - Só o JS/CSS referenciado a partir do HTML entra em \`dist/\`. Deixa o código de servidor sem referências para que nunca seja publicado.
 - A configuração vive em \`sitelo.config.js\`. Coloca as opções do Vite sob \`vite\`.
 - Comandos: \`sitelo\` (dev), \`sitelo build\`, \`sitelo preview\`.

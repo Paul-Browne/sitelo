@@ -68,6 +68,42 @@ export default function Post({ data }) {
   )
 }`,
 
+    jsonTree: `data/
+├─ site.json
+└─ posts/
+   ├─ hello-world.json
+   └─ why-static.json`,
+
+    jsonCollection: `import { readJsonCollection } from 'sitelo/data'
+
+const posts = () => readJsonCollection('data/posts', { sort: '-date' })
+
+export async function generateStaticParams() {
+  return (await posts()).map((post) => ({ slug: post.slug }))
+}
+
+export async function data({ params }) {
+  return (await posts()).find((post) => post.slug === params.slug)
+}
+
+export default ({ data }) => \`
+  <html><body>
+    <h1>\${data.title}</h1>
+    <time datetime="\${data.date}">\${data.date}</time>
+    \${data.body}
+  </body></html>
+\``,
+
+    jsonSources: `// data/posts/hello-world.json  ->  { slug: 'hello-world', ... }
+await readJsonCollection('data/posts')
+
+// data/posts.json: [{ "slug": "hello-world", ... }]
+// data/posts.json: { "hello-world": { ... } }
+await readJsonCollection('data/posts.json')
+
+// data/site.json
+await readJson('data/site.json')`,
+
     cache: `import { fetchWithCache } from 'sitelo'
 
 export async function data({ params }) {
