@@ -78,8 +78,10 @@ export function alert(...args) {
 /**
  * Determinate or indeterminate progress bar.
  *
- * Omit `value` for the indeterminate animation. Exported as both
- * `progress` and `progressBar`.
+ * Omit `value` for the indeterminate animation. Pass `label` to give it
+ * an accessible name — without one the bar is marked `aria-hidden`,
+ * because a progressbar role with no name is both useless to a screen
+ * reader and invalid. Exported as both `progress` and `progressBar`.
  *
  * @param {object} [props] - `{ value, max, color, label, showValue, height }`
  * @returns {string}
@@ -111,15 +113,24 @@ export function progress(props = {}) {
         ),
     div(
       {
-        role: 'progressbar',
-        ...(indeterminate
-          ? {}
+        /*
+         * A progressbar with no accessible name tells a screen reader
+         * nothing, and is invalid besides — so an unlabelled bar is
+         * decoration, and says so. Same rule `spinner()` follows.
+         */
+        ...(label == null
+          ? { 'aria-hidden': 'true' }
           : {
-              'aria-valuenow': Number(value),
-              'aria-valuemin': 0,
-              'aria-valuemax': Number(max),
+              role: 'progressbar',
+              'aria-label': String(label),
+              ...(indeterminate
+                ? {}
+                : {
+                    'aria-valuenow': Number(value),
+                    'aria-valuemin': 0,
+                    'aria-valuemax': Number(max),
+                  }),
             }),
-        ...(label == null ? {} : { 'aria-label': String(label) }),
         class: cx(
           'su-progress-bar',
           indeterminate && 'su-progress-bar--indeterminate',

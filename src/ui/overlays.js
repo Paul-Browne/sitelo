@@ -5,11 +5,21 @@ import {
   div,
   h2,
   li,
+  span,
   summary,
   ul,
 } from 'javascript-to-html'
 
-import { attrs, cx, el, parseArgs } from './internal.js'
+import {
+  attrs,
+  BUTTON_VARIANTS,
+  colorClass,
+  cx,
+  el,
+  oneOf,
+  parseArgs,
+  SIZES,
+} from './internal.js'
 
 /**
  * Modal dialog built on the popover API.
@@ -143,16 +153,53 @@ export function drawer(...args) {
  * anchor positioning. This opens and closes with no script at all;
  * loading `sitelo/ui/client` adds close-on-outside-click and Escape.
  *
- * @param {...any} args - `menu({ trigger, align }, ...items)`
+ * The trigger is the `<summary>` itself, styled as a button — pass the
+ * label as `trigger` and the button props alongside it, rather than
+ * passing a rendered `button()`.
+ *
+ * @param {...any} args - `menu({ trigger, icon, label, variant, color, size, align }, ...items)`
  * @returns {string}
  */
 export function menu(...args) {
   const { props, children } = parseArgs(args)
-  const { trigger, align = 'start', ...rest } = props
+  const {
+    trigger,
+    icon,
+    label,
+    variant = 'outline',
+    color = 'neutral',
+    size = 'md',
+    align = 'start',
+    triggerClass,
+    ...rest
+  } = props
+
+  /*
+   * The summary *is* the trigger, so it takes the button styling rather
+   * than containing a button. A `<summary>` is already interactive, and
+   * putting a `<button>` inside one nests two controls where there is
+   * one action — invalid markup, and two tab stops for a single thing.
+   */
+  const iconOnly = trigger == null || trigger === ''
 
   return details(
     attrs(rest, { class: cx('su-menu', align === 'end' && 'su-menu--end') }),
-    summary({ 'aria-haspopup': 'menu' }, trigger ?? ''),
+    summary(
+      {
+        class: cx(
+          'su-btn',
+          `su-btn--${oneOf(variant, BUTTON_VARIANTS, 'outline')}`,
+          `su-btn--${oneOf(size, SIZES, 'md')}`,
+          iconOnly && icon && 'su-icon-btn',
+          colorClass(color, 'neutral'),
+          triggerClass,
+        ),
+        'aria-haspopup': 'menu',
+        ...(label ? { 'aria-label': String(label), title: String(label) } : {}),
+      },
+      icon ? span({ class: 'su-btn-icon' }, icon) : '',
+      iconOnly ? '' : span({ class: 'su-btn-label' }, trigger),
+    ),
     ul({ class: 'su-menu-list', role: 'menu' }, ...children),
   )
 }

@@ -1,9 +1,16 @@
-import { readFileSync } from 'node:fs'
+import { readFileSync, statSync } from 'node:fs'
 import { style } from 'javascript-to-html'
 
 const CSS_URL = new URL('./ui.css', import.meta.url)
 
-/** Cache keyed by whether the sheet was minified — reads once per build. */
+/**
+ * Cache keyed by minified-or-not *and* the file's modification time.
+ *
+ * A build renders hundreds of pages in one process and should read the
+ * sheet once; a dev server is one process that outlives edits to it.
+ * Keying on mtime satisfies both — a `stat` per call, and a re-read only
+ * when the file has actually changed.
+ */
 const cache = new Map()
 
 /**
@@ -37,10 +44,17 @@ function minifyCss(css) {
  * @returns {string}
  */
 export function stylesheet({ minify = true } = {}) {
-  const key = minify ? 'min' : 'raw'
+  const stamp = statSync(CSS_URL).mtimeMs
+  const key = `${minify ? 'min' : 'raw'}:${stamp}`
 
   if (!cache.has(key)) {
     const source = readFileSync(CSS_URL, 'utf8')
+
+    // Entries for older revisions can never be hit again.
+    for (const stale of cache.keys()) {
+      if (!stale.endsWith(`:${stamp}`)) cache.delete(stale)
+    }
+
     cache.set(key, minify ? minifyCss(source) : source)
   }
 

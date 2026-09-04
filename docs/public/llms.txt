@@ -89,7 +89,7 @@ Component library shipped with sitelo, at the `sitelo/ui` entry point. Component
 - Modals and drawers are `popover` elements, accordions and menus are `<details>`, tooltips are CSS — no script
 - Components: `container` `stack` `grid` `divider` `card` `cardHeader` `cardTitle` `cardSubtitle` `cardMedia` `cardBody` `cardFooter` `text` `heading` `link` `code` `kbd` `visuallyHidden` `button` `iconButton` `buttonGroup` `field` `input` `textarea` `select` `textField` `textareaField` `selectField` `checkbox` `radio` `toggle` `choiceGroup` `avatar` `avatarGroup` `badge` `chip` `tooltip` `table` `list` `listItem` `alert` `progress` `spinner` `skeleton` `toasts` `breadcrumbs` `pagination` `tabs` `appBar` `appBarNav` `appBarSpacer` `appBarActions` `navLink` `themeToggle` `modal` `drawer` `closeButton` `menu` `menuItem` `menuSeparator` `accordion` `accordionItem`
 - Props: an optional props object then children; unknown props pass through to the element as attributes
-- See https://sitelo.dev/docs/ui for the guide, and https://sitelo.dev/ui for the component gallery (one page per component, with live examples; Inputs documented so far)
+- See https://sitelo.dev/docs/ui for the guide, and https://sitelo.dev/ui for the component gallery — one page per component, every example rendered live
 
 ## Assets
 

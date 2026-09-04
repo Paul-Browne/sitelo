@@ -13,6 +13,7 @@ import {
 import { spinner } from './feedback.js'
 import {
   attrs,
+  BUTTON_VARIANTS,
   colorClass,
   cx,
   el,
@@ -20,8 +21,6 @@ import {
   parseArgs,
   SIZES,
 } from './internal.js'
-
-const BUTTON_VARIANTS = ['solid', 'soft', 'outline', 'ghost', 'link']
 
 /**
  * Button, or a link that looks like one.

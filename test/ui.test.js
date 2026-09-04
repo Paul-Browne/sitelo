@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 import * as ui from '../src/ui/index.js';
 import defaultExport from '../src/ui/index.js';
@@ -174,6 +175,18 @@ test('badge() clamps a count to max+', () => {
   assert.match(ui.badge({ content: 5 }, 'x'), />5</);
 });
 
+test('a labelled badge uses hidden text, not aria-label on a bare span', () => {
+  // aria-label is only valid on an element with a role, and a badge is a span.
+  const html = ui.badge({ content: 4, label: '4 unread messages' }, 'x');
+
+  assert.ok(!html.includes('aria-label'));
+  assert.match(html, /<span class="su-visually-hidden">4 unread messages<\/span>/);
+  assert.match(html, /<span aria-hidden="true">4<\/span>/);
+
+  // An unlabelled dot carries no meaning, so it stays out of the tree.
+  assert.match(ui.badge({ dot: true }, 'x'), /su-badge--dot[^>]*aria-hidden="true"/);
+});
+
 test('table() builds head and body from columns and rows', () => {
   const html = ui.table({
     columns: [
@@ -209,15 +222,29 @@ test('alert() announces urgent colors as alerts and the rest politely', () => {
   assert.ok(!ui.alert({ color: 'success', icon: false }, 'x').includes('<svg'));
 });
 
-test('progress() is indeterminate without a value and labelled with one', () => {
+test('progress() is indeterminate without a value', () => {
   assert.match(ui.progress(), /su-progress-bar--indeterminate/);
+});
 
-  const html = ui.progress({ value: 25, max: 50, showValue: true });
+test('progress() exposes its value only once it has a name', () => {
+  const html = ui.progress({ value: 25, max: 50, showValue: true, label: 'Building' });
 
+  assert.match(html, /role="progressbar"/);
+  assert.match(html, /aria-label="Building"/);
   assert.match(html, /aria-valuenow="25"/);
   assert.match(html, /aria-valuemax="50"/);
   assert.match(html, /--su-progress-value: 50%/);
   assert.match(html, />50%</);
+});
+
+test('an unlabelled progress bar is decoration, not a nameless progressbar', () => {
+  // A progressbar role with no accessible name is invalid and tells a
+  // screen reader nothing, so the bar opts out of the tree entirely.
+  const html = ui.progress({ value: 25 });
+
+  assert.match(html, /aria-hidden="true"/);
+  assert.ok(!html.includes('role="progressbar"'));
+  assert.match(html, /--su-progress-value: 25%/);
 });
 
 test('progress() clamps a value outside its range', () => {
@@ -313,11 +340,30 @@ test('accordion({ name }) makes the sections mutually exclusive', () => {
   assert.equal(html.match(/<details open/g).length, 1);
 });
 
+test('the menu trigger is the summary, not a button inside it', () => {
+  // A <summary> is already interactive; nesting a <button> in one is
+  // invalid and gives a single action two tab stops.
+  const html = ui.menu({ trigger: 'Actions', variant: 'soft' }, ui.menuItem('Edit'));
+  const [, summary] = /<summary\b([\s\S]*?)<\/summary>/.exec(html);
+
+  assert.ok(!/<(button|a|input|select|textarea)\b/.test(summary), 'no control nested in the summary');
+  assert.match(html, /<summary class="su-btn su-btn--soft su-btn--md su-c-neutral"/);
+  assert.match(html, /<span class="su-btn-label">Actions<\/span>/);
+});
+
+test('an icon-only menu trigger carries an accessible name', () => {
+  const html = ui.menu({ icon: '<svg></svg>', label: 'More actions' }, ui.menuItem('Rename'));
+
+  assert.match(html, /aria-label="More actions"/);
+  assert.match(html, /su-icon-btn/);
+  assert.ok(!html.includes('su-btn-label'), 'no empty label span');
+});
+
 test('menu() is a details element that works without script', () => {
   const html = ui.menu({ trigger: 'More' }, ui.menuItem({ href: '/a' }, 'Edit'));
 
   assert.match(html, /^<details class="su-menu"/);
-  assert.match(html, /<summary aria-haspopup="menu">More<\/summary>/);
+  assert.match(html, /aria-haspopup="menu"/);
   assert.match(html, /<li role="none"><a href="\/a" role="menuitem"/);
 });
 
@@ -410,6 +456,22 @@ test('every palette clears WCAG AA against the surface it sits on', () => {
   assert.notEqual(light['--su-primary'], dark['--su-primary'], 'dark tokens differ');
 
   for (const [theme, tokens] of [['light', light], ['dark', dark]]) {
+    // Body text, on both surfaces it is ever set against.
+    for (const [what, foreground] of [
+      ['body text', '--su-text'],
+      ['muted text', '--su-text-muted'],
+      ['subtle text', '--su-text-subtle'],
+    ]) {
+      for (const background of ['--su-surface', '--su-surface-2', '--su-bg']) {
+        const ratio = contrast(parseHex(tokens[foreground]), parseHex(tokens[background]));
+
+        assert.ok(
+          ratio >= 4.5,
+          `${theme} ${what} on ${background}: ${tokens[foreground]} on ${tokens[background]} is ${ratio.toFixed(2)}:1, below 4.5:1`,
+        );
+      }
+    }
+
     for (const color of ['primary', 'neutral', 'success', 'warning', 'danger']) {
       const pairs = [
         ['solid button', `--su-${color}-fg`, `--su-${color}`],
@@ -434,6 +496,35 @@ test('every palette clears WCAG AA against the surface it sits on', () => {
       }
     }
   }
+});
+
+test('stylesheet() picks up an edit to ui.css instead of serving a stale copy', async () => {
+  // A build reads the sheet once; a dev server outlives edits to it. This
+  // is the bug where a running server kept serving the old palette.
+  const { readFileSync, writeFileSync } = await import('node:fs');
+  const cssPath = fileURLToPath(new URL('../src/ui/ui.css', import.meta.url));
+  const original = readFileSync(cssPath, 'utf8');
+
+  assert.ok(original.includes('--su-primary:'), 'the token exists to edit');
+
+  try {
+    assert.ok(ui.stylesheet().includes('--su-primary'), 'reads before the edit');
+
+    writeFileSync(
+      cssPath,
+      original.replace('--su-primary:', '--su-canary-token: #abcdef;\n  --su-primary:'),
+    );
+
+    assert.match(
+      ui.stylesheet(),
+      /--su-canary-token/,
+      'the edit is visible to the next call',
+    );
+  } finally {
+    writeFileSync(cssPath, original);
+  }
+
+  assert.ok(!ui.stylesheet().includes('--su-canary-token'), 'and so is the revert');
 });
 
 test('styles() emits a style element that cannot close itself early', () => {

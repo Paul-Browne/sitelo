@@ -1,26 +1,53 @@
-import { div, table, tbody, td, th, thead, tr } from 'javascript-to-html'
+import {
+  br,
+  div,
+  em,
+  fragment,
+  script,
+  span,
+  strong,
+  table,
+  tbody,
+  td,
+  th,
+  thead,
+  tr,
+} from 'javascript-to-html'
 import * as ui from 'sitelo/ui'
 
 import { createCodeHelpers } from './code.js'
 import { DEFAULT_LOCALE } from './i18n.js'
 
 /**
- * The sitelo-ui stylesheet, for a UI page's `extraHead`.
+ * Everything a UI page needs in its head.
  *
- * Inline, exactly as a reader would add it to their own page, which also
- * means the demos on this site are styled by the same bytes the docs
- * tell them to ship.
+ * The stylesheet is inline, exactly as a reader would add it to their
+ * own page — so the demos here are styled by the same bytes the docs
+ * tell them to ship. The script is sitelo-ui's optional runtime, which
+ * only four components ask for; it is loaded here so those demos are
+ * genuinely interactive rather than pictures of themselves.
  */
-export function uiStyles() {
-  return [ui.styles()]
+export function uiHead() {
+  return [ui.styles(), script({ type: 'module', src: '/ui-client.js' })]
 }
+
+/*
+ * A few plain elements the demos need for scaffolding — a wrapper to
+ * scroll inside, a fragment when a demo has two roots (a trigger and
+ * the modal it opens). Only names that do not collide with a component
+ * are here; `table` and `link`, for instance, stay the sitelo-ui ones.
+ */
+const ELEMENTS = { br, div, em, fragment, span, strong }
 
 /*
  * Names the demo source can use bare. `default` is a reserved word and
  * cannot be a parameter, so it never reaches the evaluator.
  */
-const SCOPE = Object.keys(ui).filter((name) => name !== 'default')
-const VALUES = SCOPE.map((name) => ui[name])
+const SCOPE = [
+  ...Object.keys(ui).filter((name) => name !== 'default'),
+  ...Object.keys(ELEMENTS),
+]
+const VALUES = SCOPE.map((name) => ui[name] ?? ELEMENTS[name])
 
 /**
  * Run a demo snippet and return its HTML.

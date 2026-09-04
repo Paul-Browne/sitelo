@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiStyles } from '../lib/ui-demo.js'
+import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,7 @@ export default () =>
     description:
       'One choice out of several, as real radio inputs sharing a name — with a legend and a group role.',
     activeHref: '/ui/radio',
-    extraHead: uiStyles(),
+    extraHead: uiHead(),
     children: [
       p(
         'Radios are for picking exactly one option out of a small, visible set. ',

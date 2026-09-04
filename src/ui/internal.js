@@ -132,6 +132,9 @@ export function oneOf(value, allowed, fallback) {
 /** Colors every themed component accepts. */
 export const COLORS = ['primary', 'neutral', 'success', 'warning', 'danger']
 
+/** Button variants, shared with `menu()` whose trigger is a button. */
+export const BUTTON_VARIANTS = ['solid', 'soft', 'outline', 'ghost', 'link']
+
 /** Sizes every sized component accepts. */
 export const SIZES = ['sm', 'md', 'lg']
 

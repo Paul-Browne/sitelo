@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiStyles } from '../lib/ui-demo.js'
+import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,7 @@ export default () =>
     description:
       'An on/off toggle for a setting that takes effect immediately — a checkbox underneath, with role="switch".',
     activeHref: '/ui/switch',
-    extraHead: uiStyles(),
+    extraHead: uiHead(),
     children: [
       p(
         'A switch is for a setting that applies as soon as it is flipped. A checkbox is for a choice you confirm later, with a submit button. If your control sits in a form with a Save at the bottom, it is a checkbox.',

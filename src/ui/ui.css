@@ -67,24 +67,25 @@
   --su-border-strong: #c6d3d3;
   --su-text: #0f1a1c;
   --su-text-muted: #4c5f62;
-  --su-text-subtle: #77898c;
+  --su-text-subtle: #627376;
   --su-overlay: rgba(9, 20, 22, 0.45);
 
   /* Palettes — light */
   /*
-   * Dark enough that white label text clears 4.5:1 on the solid button,
-   * and that the same green clears it as link text on the page. The
-   * livelier #0d9668 this started as came in at 3.76 both ways.
+   * White label text on the base clears 4.5:1 at exactly 4.50, which is
+   * why hover and active go darker rather than lighter — a lighter
+   * hover would drop the solid button below AA the moment it is
+   * pointed at.
    */
-  --su-primary: #0a8259;
-  --su-primary-hover: #08714d;
-  --su-primary-active: #066041;
+  --su-primary: #0d6efd;
+  --su-primary-hover: #0b5ed7;
+  --su-primary-active: #0a58ca;
   --su-primary-fg: #ffffff;
-  --su-primary-soft: #d9f4e8;
-  --su-primary-soft-hover: #c4ebda;
-  --su-primary-soft-fg: #075f43;
-  --su-primary-border: #8adcbe;
-  --su-primary-ring: rgba(10, 130, 89, 0.32);
+  --su-primary-soft: #e7f1ff;
+  --su-primary-soft-hover: #d7e7ff;
+  --su-primary-soft-fg: #0a4faf;
+  --su-primary-border: #9ec5fe;
+  --su-primary-ring: rgba(13, 110, 253, 0.32);
 
   --su-neutral: #475b62;
   --su-neutral-hover: #3b4d53;
@@ -153,15 +154,15 @@
   --su-text-subtle: #7b8d8e;
   --su-overlay: rgba(0, 0, 0, 0.6);
 
-  --su-primary: #2fbb8b;
-  --su-primary-hover: #4bc99b;
-  --su-primary-active: #24a67a;
-  --su-primary-fg: #04140e;
-  --su-primary-soft: #0f2f27;
-  --su-primary-soft-hover: #163d31;
-  --su-primary-soft-fg: #7fe4c0;
-  --su-primary-border: #1e5a47;
-  --su-primary-ring: rgba(47, 187, 139, 0.36);
+  --su-primary: #6ea8fe;
+  --su-primary-hover: #8bbcff;
+  --su-primary-active: #5a99f5;
+  --su-primary-fg: #04101f;
+  --su-primary-soft: #0d243f;
+  --su-primary-soft-hover: #132e4e;
+  --su-primary-soft-fg: #9ec8ff;
+  --su-primary-border: #1d4b7d;
+  --su-primary-ring: rgba(110, 168, 254, 0.36);
 
   --su-neutral: #8ba1a4;
   --su-neutral-hover: #9db2b5;
@@ -224,15 +225,15 @@
     --su-text-subtle: #7b8d8e;
     --su-overlay: rgba(0, 0, 0, 0.6);
 
-    --su-primary: #2fbb8b;
-    --su-primary-hover: #4bc99b;
-    --su-primary-active: #24a67a;
-    --su-primary-fg: #04140e;
-    --su-primary-soft: #0f2f27;
-    --su-primary-soft-hover: #163d31;
-    --su-primary-soft-fg: #7fe4c0;
-    --su-primary-border: #1e5a47;
-    --su-primary-ring: rgba(47, 187, 139, 0.36);
+    --su-primary: #6ea8fe;
+    --su-primary-hover: #8bbcff;
+    --su-primary-active: #5a99f5;
+    --su-primary-fg: #04101f;
+    --su-primary-soft: #0d243f;
+    --su-primary-soft-hover: #132e4e;
+    --su-primary-soft-fg: #9ec8ff;
+    --su-primary-border: #1d4b7d;
+    --su-primary-ring: rgba(110, 168, 254, 0.36);
 
     --su-neutral: #8ba1a4;
     --su-neutral-hover: #9db2b5;
@@ -930,29 +931,55 @@
 }
 
 .su-check {
+  --su-check-size: 1.15rem;
+  --su-check-font: var(--su-text-sm);
+  --su-check-line: 1.35;
+  /*
+   * Half the difference between the line box and the control box, so
+   * the two optical centres line up. Stated in rem rather than em on
+   * purpose: the hidden <input> below uses this too, and an input does
+   * not inherit font-size, so an em would resolve differently there and
+   * leave the real control offset from the one you can see.
+   */
+  --su-check-offset: calc(
+    (var(--su-check-line) * var(--su-check-font) - var(--su-check-size)) / 2
+  );
   position: relative;
   display: inline-flex;
+  /*
+   * Aligned to the top rather than centred, so a label that wraps keeps
+   * its box beside the first line instead of drifting to the middle of
+   * the paragraph. The box is then centred *within* that line by the
+   * margin below.
+   */
   align-items: flex-start;
   gap: var(--su-space-sm);
   cursor: pointer;
-  font-size: var(--su-text-sm);
-  line-height: 1.35;
+  font-size: var(--su-check-font);
+  line-height: var(--su-check-line);
   color: var(--su-text);
 }
 
+/*
+ * The real control, kept exactly under the one that is drawn: same size,
+ * same offset. It is invisible, but it is what a forced-colors theme and
+ * a touch highlight actually render, so the two must not drift apart.
+ */
 .su-check input {
   position: absolute;
+  top: var(--su-check-offset);
+  inset-inline-start: 0;
   opacity: 0;
-  width: 1.15rem;
-  height: 1.15rem;
+  width: var(--su-check-size);
+  height: var(--su-check-size);
   margin: 0;
 }
 
 .su-check-box {
   flex: none;
-  width: 1.15rem;
-  height: 1.15rem;
-  margin-top: 0.1rem;
+  width: var(--su-check-size);
+  height: var(--su-check-size);
+  margin-top: var(--su-check-offset);
   border: var(--su-border-width) solid var(--su-border-strong);
   border-radius: var(--su-radius-sm);
   background: var(--su-surface);
@@ -1120,7 +1147,12 @@
   inset-inline-end: 0;
   transform: translate(45%, -35%);
   min-width: 1.15rem;
-  height: 1.15rem;
+  /*
+   * `min-height` rather than `height` so an unusual font grows the pill
+   * instead of spilling out of it; the radius is already fully round, so
+   * a taller badge stays a pill.
+   */
+  min-height: 1.15rem;
   padding-inline: 0.32rem;
   display: inline-flex;
   align-items: center;
@@ -1130,13 +1162,21 @@
   color: var(--su-c-fg, #fff);
   font-size: var(--su-text-xs);
   font-weight: var(--su-weight-semibold);
-  line-height: 1;
+  /*
+   * `normal`, not `1`. A line-height shorter than the font's own content
+   * area makes the leading negative, and a font's ascent and descent are
+   * not symmetric — so centring the line box left the digits sitting
+   * 0.75px high in a 19.55px pill, which is visible at this size.
+   */
+  line-height: normal;
   box-shadow: 0 0 0 2px var(--su-surface);
 }
 
 .su-badge--dot {
   min-width: 0.6rem;
   width: 0.6rem;
+  /* Overrides the min-height above, which a dot has no text to fill. */
+  min-height: 0.6rem;
   height: 0.6rem;
   padding: 0;
 }
@@ -1727,8 +1767,13 @@ a.su-list-item:hover,
   color: var(--su-text);
 }
 
+/*
+ * The soft foreground, not the base colour: base-on-soft is only 4.15:1
+ * for the primary palette, and this pairing is the same one soft buttons
+ * and pill tabs already use.
+ */
 .su-nav-link[aria-current='page'] {
-  color: var(--su-c, var(--su-primary));
+  color: var(--su-c-soft-fg, var(--su-primary-soft-fg));
   background: var(--su-c-soft, var(--su-primary-soft));
 }
 
@@ -1861,6 +1906,10 @@ a.su-list-item:hover,
   display: inline-block;
 }
 
+/*
+ * The summary carries the button classes — it is the trigger, not a
+ * wrapper around one — so this only has to take the marker away.
+ */
 .su-menu > summary {
   list-style: none;
   cursor: pointer;

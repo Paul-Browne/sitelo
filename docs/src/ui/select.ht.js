@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiStyles } from '../lib/ui-demo.js'
+import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,7 @@ export default () =>
     description:
       'A native select, styled to match the rest of the inputs, with options built from data.',
     activeHref: '/ui/select',
-    extraHead: uiStyles(),
+    extraHead: uiHead(),
     children: [
       p(
         'This is a real ',

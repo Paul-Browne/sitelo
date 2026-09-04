@@ -530,7 +530,22 @@ export interface DrawerProps extends BaseProps {
 
 export function drawer(...args: Args<DrawerProps>): string
 
-export function menu(...args: Args<BaseProps & { trigger?: Child; align?: 'start' | 'end' }>): string
+export interface MenuProps extends BaseProps {
+  /** Visible label. The `<summary>` is the trigger, so do not pass a `button()`. */
+  trigger?: Child
+  /** Markup placed before the label. */
+  icon?: Child
+  /** Accessible name — required when there is an icon and no `trigger`. */
+  label?: string
+  variant?: ButtonProps['variant']
+  color?: Color
+  size?: Size
+  align?: 'start' | 'end'
+  /** Extra classes for the trigger, rather than the wrapping details. */
+  triggerClass?: string
+}
+
+export function menu(...args: Args<MenuProps>): string
 export function menuItem(...args: Args<BaseProps & { href?: string; icon?: Child; as?: string }>): string
 export function menuSeparator(props?: BaseProps): string
 

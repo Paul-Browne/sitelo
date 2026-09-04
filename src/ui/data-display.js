@@ -93,16 +93,22 @@ export function badge(...args) {
         ? ''
         : String(content)
 
+  /*
+   * A label becomes visually hidden text rather than `aria-label`:
+   * `aria-label` is only valid on an element with a role, and a badge is
+   * a plain span. The visible value is hidden from the accessibility
+   * tree so the count is not announced twice.
+   */
   return span(
     attrs(rest, { class: 'su-badge-root' }),
     ...children,
     span(
       {
         class: cx('su-badge', dot && 'su-badge--dot', colorClass(color, 'danger')),
-        ...(label ? { 'aria-label': String(label) } : {}),
-        ...(dot && !label ? { 'aria-hidden': 'true' } : {}),
+        ...(!label && (dot || display === '') ? { 'aria-hidden': 'true' } : {}),
       },
-      display,
+      label ? span({ 'aria-hidden': 'true' }, display) : display,
+      label ? span({ class: 'su-visually-hidden' }, label) : '',
     ),
   )
 }

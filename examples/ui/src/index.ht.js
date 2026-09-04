@@ -56,7 +56,7 @@ export default () =>
         ui.appBarActions(
           ui.themeToggle(),
           ui.menu(
-            { trigger: ui.iconButton({ label: 'More', icon: icons.dots, variant: 'ghost', color: 'neutral' }), align: 'end' },
+            { label: 'More', icon: icons.dots, variant: 'ghost', align: 'end' },
             ui.menuItem({ href: 'https://github.com/paul-browne/sitelo' }, 'GitHub'),
             ui.menuItem({ href: 'https://sitelo.dev/docs' }, 'Docs'),
             ui.menuSeparator(),
