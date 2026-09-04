@@ -129,6 +129,23 @@ export function oneOf(value, allowed, fallback) {
   return typeof value === 'string' && allowed.includes(value) ? value : fallback
 }
 
+/**
+ * Escape text destined for element content.
+ *
+ * The library renders children as HTML by design — that is what lets
+ * components nest. This is for the handful of props documented as
+ * literal text, where a tag should be shown rather than built.
+ *
+ * @param {unknown} value
+ * @returns {string}
+ */
+export function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+}
+
 /** Colors every themed component accepts. */
 export const COLORS = ['primary', 'neutral', 'success', 'warning', 'danger']
 

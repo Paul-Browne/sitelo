@@ -1,4 +1,4 @@
-import { h2, p } from 'javascript-to-html'
+import { a, h2, p, strong } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
 import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
@@ -63,29 +63,47 @@ export default () =>
   ),
 )`, { align: 'start' }),
 
-      h2('Marking the current choice'),
-      p(
-        'A group is markup, not state — there is no selected index to set. For a segmented control, give the active button the emphasis and mark it with ',
-        code('aria-pressed'),
-        ' so the choice is announced too.',
-      ),
-      demo(`buttonGroup({ label: 'Text alignment' },
-  button({ variant: 'solid', color: 'neutral', 'aria-pressed': 'true' }, 'Left'),
-  button({ variant: 'outline', color: 'neutral', 'aria-pressed': 'false' }, 'Center'),
-  button({ variant: 'outline', color: 'neutral', 'aria-pressed': 'false' }, 'Right'),
-)`),
-
       h2('Links'),
       p(
         'Buttons with an ',
         code('href'),
-        ' group exactly the same way, which is the usual shape for a static site: one page per segment.',
+        ' group exactly the same way — for a row of things that each go somewhere, none of which is the one you are on.',
       ),
-      demo(`buttonGroup({ label: 'Docs sections' },
-  button({ href: '/docs', variant: 'outline', color: 'neutral' }, 'Docs'),
-  button({ href: '/ui', variant: 'outline', color: 'neutral' }, 'UI'),
-  button({ href: '/examples', variant: 'outline', color: 'neutral' }, 'Examples'),
+      demo(`buttonGroup({ label: 'Share' },
+  button({ href: '#rss', variant: 'outline', color: 'neutral' }, 'RSS'),
+  button({ href: '#json', variant: 'outline', color: 'neutral' }, 'JSON'),
+  button({ href: '#sitemap', variant: 'outline', color: 'neutral' }, 'Sitemap'),
 )`),
+
+      h2('Button group or toggle group?'),
+      p(
+        'A button group is a container: it joins whatever you put in it and holds no state. If one of the items is ',
+        strong('selected'),
+        ' — a segmented control, a filter, the section you are currently in — that is ',
+        a({ href: '/ui/toggle-group' }, 'toggle group'),
+        ', which builds the items from data and marks the active one for you.',
+      ),
+      p(
+        'The rule of thumb: if pressing one makes the others wrong, it is a toggle group. If each does its own separate thing, it is a button group.',
+      ),
+      demo(`stack({ gap: 'lg' },
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'buttonGroup — three separate actions'),
+    buttonGroup({ label: 'Row actions' },
+      button({ variant: 'outline', color: 'neutral' }, 'Edit'),
+      button({ variant: 'outline', color: 'neutral' }, 'Duplicate'),
+      button({ variant: 'outline', color: 'neutral' }, 'Delete'),
+    ),
+  ),
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'toggleGroup — one choice out of three'),
+    toggleGroup({
+      label: 'Text alignment',
+      value: 'Center',
+      items: ['Left', 'Center', 'Right'],
+    }),
+  ),
+)`, { align: 'start' }),
 
       h2('With an icon button'),
       demo(`buttonGroup({ label: 'Editor actions' },

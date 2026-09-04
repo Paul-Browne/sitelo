@@ -21,13 +21,14 @@ const s = uiSnippets('ru')
 
 /** The component reference table, one row per group. */
 const GROUPS = [
-  ['Раскладка', ['container', 'stack', 'grid', 'divider', 'card', 'cardHeader', 'cardTitle', 'cardSubtitle', 'cardMedia', 'cardBody', 'cardFooter']],
-  ['Типографика', ['text', 'heading', 'link', 'code', 'kbd', 'visuallyHidden']],
-  ['Поля ввода', ['button', 'iconButton', 'buttonGroup', 'field', 'input', 'textarea', 'select', 'textField', 'textareaField', 'selectField', 'checkbox', 'radio', 'toggle', 'choiceGroup']],
-  ['Отображение данных', ['avatar', 'avatarGroup', 'badge', 'chip', 'tooltip', 'table', 'list', 'listItem']],
-  ['Обратная связь', ['alert', 'progress', 'spinner', 'skeleton', 'toasts']],
+  ['Раскладка', ['container', 'stack', 'grid', 'divider', 'card', 'cardHeader', 'cardTitle', 'cardSubtitle', 'cardMedia', 'cardBody', 'cardFooter', 'aspectRatio']],
+  ['Типографика', ['text', 'heading', 'link', 'code', 'inlineCode', 'kbd', 'visuallyHidden', 'prose']],
+  ['Поля ввода', ['button', 'iconButton', 'buttonGroup', 'field', 'input', 'textarea', 'select', 'textField', 'textareaField', 'selectField', 'checkbox', 'radio', 'toggle', 'choiceGroup', 'slider', 'sliderField', 'toggleButton', 'toggleGroup']],
+  ['Отображение данных', ['avatar', 'avatarGroup', 'badge', 'chip', 'tooltip', 'table', 'list', 'listItem', 'figure']],
+  ['Обратная связь', ['alert', 'progress', 'spinner', 'skeleton', 'toasts', 'empty']],
   ['Навигация', ['breadcrumbs', 'pagination', 'tabs', 'appBar', 'appBarNav', 'appBarSpacer', 'appBarActions', 'navLink', 'themeToggle']],
-  ['Оверлеи', ['modal', 'drawer', 'closeButton', 'menu', 'menuItem', 'menuSeparator', 'accordion', 'accordionItem']],
+  ['Оверлеи', ['modal', 'drawer', 'closeButton', 'menu', 'menuItem', 'menuSeparator', 'accordion', 'accordionItem', 'collapsible']],
+  ['Секции', ['hero', 'footer', 'siteFooter', 'footerColumn', 'footerBottom', 'stat', 'statGroup', 'steps', 'timeline', 'timelineItem', 'mockup']],
   ['Стили', ['styles', 'stylesheet', 'theme', 'themeScript']],
 ]
 

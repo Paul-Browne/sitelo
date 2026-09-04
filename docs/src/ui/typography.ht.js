@@ -86,6 +86,28 @@ export default () =>
       demo(`text(
   'Run ', code('sitelo build'), ' or press ', kbd('⌘'), ' ', kbd('K'), ' to search.',
 )`, { align: 'stretch' }),
+      p(
+        'Children are rendered as HTML — that is what makes nesting work everywhere in this library, and ',
+        code('code()'),
+        ' is no exception. So a sample containing tags needs the ',
+        code('text'),
+        ' prop, which escapes them:',
+      ),
+      demo(`stack({ gap: 'sm' },
+  text(code({ text: '<em>Hello</em>' }), ' — text: shown as written'),
+  text(code('<em>Hello</em>'), ' — children: parsed as markup'),
+)`, { align: 'stretch' }),
+      p(
+        'Both are useful. ',
+        code('text'),
+        ' is for a code sample, where a tag should be read rather than built. Children are for output that has already been syntax-highlighted, where the markup ',
+        code('is'),
+        ' the point — a Prism or Shiki result goes straight in.',
+      ),
+      demo(`stack({ gap: 'sm' },
+  text(code({ text: 'sitelo build --root docs' })),
+  text(code('<span style="color: var(--su-primary-soft-fg)">sitelo</span> build')),
+)`, { align: 'stretch' }),
 
       h2('Composing'),
       p(

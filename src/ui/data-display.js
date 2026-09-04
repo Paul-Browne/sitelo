@@ -2,6 +2,8 @@ import {
   a,
   caption as captionEl,
   div,
+  figcaption,
+  figure as figureEl,
   img as imgEl,
   li,
   span,
@@ -312,4 +314,32 @@ export function listItem(...args) {
   if (href) return li(a(attrs({ href, ...rest }, own), ...body))
 
   return el(as, li)(attrs(rest, own), ...body)
+}
+
+/**
+ * An image with a caption, as one figure.
+ *
+ * Pass `src` for the common case, or children for anything else worth
+ * captioning — a table, a code block, a chart. `ratio` holds the space
+ * before the image loads, so a caption never jumps down the page.
+ *
+ * @param {...any} args - `figure({ src, alt, caption, ratio }, ...children)`
+ * @returns {string}
+ */
+export function figure(...args) {
+  const { props, children } = parseArgs(args)
+  const { src, alt, caption, ratio, ...rest } = props
+
+  const media = src
+    ? imgEl({ src, alt: alt ?? '', class: 'su-figure-media' })
+    : ''
+
+  return figureEl(
+    attrs(rest, { class: 'su-figure' }),
+    ratio && media
+      ? div({ class: 'su-aspect', style: `--su-aspect: ${ratio}` }, media)
+      : media,
+    ...children,
+    caption == null ? '' : figcaption({ class: 'su-figure-caption' }, caption),
+  )
 }

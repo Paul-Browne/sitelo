@@ -225,3 +225,27 @@ export function cardMedia(props = {}) {
     }),
   )
 }
+
+/**
+ * Hold a box at a fixed aspect ratio.
+ *
+ * The child fills it and is cropped rather than letterboxed, which is
+ * what an embed or a cover image wants — and because the height is
+ * known before the content loads, nothing on the page shifts when it
+ * arrives.
+ *
+ * @param {...any} args - `aspectRatio({ ratio }, ...children)`
+ * @returns {string}
+ */
+export function aspectRatio(...args) {
+  const { props, children } = parseArgs(args)
+  const { ratio, as, ...rest } = props
+
+  return el(as, div)(
+    attrs(rest, {
+      class: 'su-aspect',
+      style: { '--su-aspect': ratio },
+    }),
+    ...children,
+  )
+}

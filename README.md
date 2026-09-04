@@ -61,7 +61,7 @@ That's the whole mental model. Everything else is convenience on top.
 - **Dynamic routes** — `[slug]`, `[year]/[slug]`, catch-all `[...path]`, optional catch-all `[...path]?`
 - **Route groups** — `(admin)/users.ht.js` → `/users`
 - **Bring your own HTML** — template literals, [javascript-to-html](https://www.npmjs.com/package/javascript-to-html), or JSX/TSX
-- **sitelo-ui** — 60+ components (buttons, cards, forms, tables, modals) as functions returning HTML, with one small optional script
+- **sitelo-ui** — 90 components (buttons, cards, forms, tables, modals, prose, page sections) as functions returning HTML, with one small optional script
 - **Data loading** — `data()` runs at build time, with built-in fetch caching
 - **Typed pages** — per-route param types inferred from the filename
 - **Smart asset pipeline** — JS/TS/CSS referenced by your HTML is bundled and minified; server-only code never leaks into `dist`
@@ -623,19 +623,21 @@ without it.
 
 | Group | Components |
 | --- | --- |
-| Layout | `container` `stack` `grid` `divider` `card` `cardHeader` `cardTitle` `cardSubtitle` `cardMedia` `cardBody` `cardFooter` |
-| Typography | `text` `heading` `link` `code` `kbd` `visuallyHidden` |
-| Inputs | `button` `iconButton` `buttonGroup` `field` `input` `textarea` `select` `textField` `textareaField` `selectField` `checkbox` `radio` `toggle` `choiceGroup` |
-| Data display | `avatar` `avatarGroup` `badge` `chip` `tooltip` `table` `list` `listItem` |
-| Feedback | `alert` `progress` `spinner` `skeleton` `toasts` |
+| Layout | `container` `stack` `grid` `divider` `aspectRatio` `card` `cardHeader` `cardTitle` `cardSubtitle` `cardMedia` `cardBody` `cardFooter` |
+| Typography | `text` `heading` `link` `code` `kbd` `visuallyHidden` `prose` |
+| Inputs | `button` `iconButton` `buttonGroup` `field` `input` `textarea` `select` `slider` `textField` `textareaField` `selectField` `sliderField` `checkbox` `radio` `toggle` `toggleButton` `toggleGroup` `choiceGroup` |
+| Data display | `avatar` `avatarGroup` `badge` `chip` `tooltip` `table` `list` `listItem` `figure` |
+| Feedback | `alert` `empty` `progress` `spinner` `skeleton` `toasts` |
 | Navigation | `breadcrumbs` `pagination` `tabs` `appBar` `appBarNav` `appBarSpacer` `appBarActions` `navLink` `themeToggle` |
-| Overlays | `modal` `drawer` `closeButton` `menu` `menuItem` `menuSeparator` `accordion` `accordionItem` |
+| Overlays | `modal` `drawer` `closeButton` `menu` `menuItem` `menuSeparator` `accordion` `accordionItem` `collapsible` |
+| Sections | `hero` `footer` `siteFooter` `footerColumn` `footerBottom` `stat` `statGroup` `steps` `timeline` `timelineItem` `mockup` |
 | Styling | `styles` `stylesheet` `theme` `themeScript` |
 
 The switch is `toggle`, because `switch` is a reserved word and cannot
-be an import binding. `link`, `table`, `input`, `select` and `progress`
-each have a non-colliding alias — `textLink`, `dataTable`, `textInput`,
-`selectField`, `progressBar`.
+be an import binding — and `toggleButton` is a different thing, a button
+that stays pressed. `link`, `table`, `input`, `code`, `select`, `progress`
+and `footer` each have a non-colliding alias — `textLink`, `dataTable`,
+`textInput`, `inlineCode`, `selectField`, `progressBar`, `siteFooter`.
 
 Every export ships type declarations, so an editor completes `variant`,
 `color` and `size` in JavaScript as well as TypeScript.

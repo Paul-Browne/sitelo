@@ -1,4 +1,4 @@
-import { button, div, span } from 'javascript-to-html'
+import { button, div, p as pEl, span } from 'javascript-to-html'
 
 import { attrs, colorClass, cx, oneOf, parseArgs, SIZES, space } from './internal.js'
 
@@ -217,5 +217,28 @@ export function toasts(...args) {
     { id: 'su-toasts', role: 'region', 'aria-live': 'polite', 'aria-label': 'Notifications' },
     attrs(props, { class: 'su-toasts' }),
     ...children,
+  )
+}
+
+/**
+ * The state a list is in before it has anything in it.
+ *
+ * A blank space reads as a bug; this says which space is blank and what
+ * to do about it. Children become the action — usually a button.
+ *
+ * @param {...any} args - `empty({ icon, title, description }, ...actions)`
+ * @returns {string}
+ */
+export function empty(...args) {
+  const { props, children } = parseArgs(args)
+  const { icon, title, description, ...rest } = props
+
+  return div(
+    attrs(rest, { class: 'su-empty' }),
+    // The icon is decoration: the title already says what is going on.
+    icon ? div({ class: 'su-empty-icon', 'aria-hidden': 'true' }, icon) : '',
+    title == null ? '' : pEl({ class: 'su-empty-title' }, title),
+    description == null ? '' : pEl({ class: 'su-empty-description' }, description),
+    children.length ? div({ class: 'su-empty-actions' }, ...children) : '',
   )
 }

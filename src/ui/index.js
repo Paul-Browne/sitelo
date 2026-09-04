@@ -36,6 +36,7 @@ import * as inputs from './inputs.js'
 import * as layout from './layout.js'
 import * as navigation from './navigation.js'
 import * as overlays from './overlays.js'
+import * as sections from './sections.js'
 import * as styleApi from './styles.js'
 import * as typography from './typography.js'
 
@@ -45,6 +46,7 @@ export * from './inputs.js'
 export * from './layout.js'
 export * from './navigation.js'
 export * from './overlays.js'
+export * from './sections.js'
 export * from './styles.js'
 export * from './typography.js'
 
@@ -58,4 +60,5 @@ export default {
   ...feedback,
   ...navigation,
   ...overlays,
+  ...sections,
 }

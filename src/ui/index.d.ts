@@ -125,6 +125,15 @@ export function cardBody(...args: Args<BaseProps>): string
 export function cardFooter(...args: Args<BaseProps & { divided?: boolean }>): string
 export function cardMedia(props?: BaseProps & { src?: string; alt?: string; ratio?: string }): string
 
+export interface AspectRatioProps extends BaseProps {
+  /** Any CSS aspect-ratio value. Default `16 / 9`. */
+  ratio?: string
+  as?: string
+}
+
+/** Hold a box at a fixed ratio; the child fills and is cropped. */
+export function aspectRatio(...args: Args<AspectRatioProps>): string
+
 /* -------------------------------------------------------------- *
  * Typography
  * -------------------------------------------------------------- */
@@ -166,10 +175,27 @@ export interface LinkProps extends BaseProps {
 export function link(...args: Args<LinkProps>): string
 export const textLink: typeof link
 
-export function code(...args: Args<BaseProps>): string
+export interface CodeProps extends BaseProps {
+  /**
+   * Literal code. Escaped, so tags are shown rather than built — use
+   * this for samples. Children still render as HTML, for output that
+   * has already been syntax-highlighted.
+   */
+  text?: string
+}
+
+export function code(...args: Args<CodeProps>): string
 export const inlineCode: typeof code
 export function kbd(...args: Args<BaseProps>): string
 export function visuallyHidden(...args: Args<BaseProps>): string
+
+export interface ProseProps extends BaseProps {
+  size?: Size
+  as?: string
+}
+
+/** Style raw HTML from a Markdown renderer or a CMS. */
+export function prose(...args: Args<ProseProps>): string
 
 /* -------------------------------------------------------------- *
  * Inputs
@@ -303,6 +329,51 @@ export interface ChoiceGroupProps extends BaseProps {
 
 export function choiceGroup(...args: Args<ChoiceGroupProps>): string
 
+export interface SliderProps extends BaseProps {
+  min?: number | string
+  max?: number | string
+  step?: number | string
+  value?: number | string
+  /** Show the build-time value beside the track. */
+  showValue?: boolean
+  color?: Color
+  name?: string
+  invalid?: boolean
+  disabled?: boolean
+}
+
+export function slider(props?: SliderProps): string
+export function sliderField(props?: LabelledProps<SliderProps>): string
+
+export interface ToggleButtonProps extends BaseProps {
+  /** Sets aria-pressed. There is no script behind it. */
+  pressed?: boolean
+  variant?: 'outline' | 'ghost' | 'soft'
+  size?: Size
+  disabled?: boolean
+}
+
+export function toggleButton(...args: Args<ToggleButtonProps>): string
+
+export interface ToggleGroupItem {
+  value?: string | number
+  label?: Child
+  /** Renders a link marked with aria-current instead of a pressed button. */
+  href?: string
+  disabled?: boolean
+}
+
+export interface ToggleGroupProps extends BaseProps {
+  items?: (ToggleGroupItem | string | number)[]
+  /** Which item is on. An array when several can be. */
+  value?: string | number | (string | number)[]
+  label?: string
+  size?: Size
+  variant?: ToggleButtonProps['variant']
+}
+
+export function toggleGroup(...args: Args<ToggleGroupProps>): string
+
 /* -------------------------------------------------------------- *
  * Data display
  * -------------------------------------------------------------- */
@@ -385,6 +456,16 @@ export interface ListItemProps extends BaseProps {
 
 export function listItem(...args: Args<ListItemProps>): string
 
+export interface FigureProps extends BaseProps {
+  src?: string
+  alt?: string
+  caption?: Child
+  /** Holds the space before the image loads. */
+  ratio?: string
+}
+
+export function figure(...args: Args<FigureProps>): string
+
 /* -------------------------------------------------------------- *
  * Feedback
  * -------------------------------------------------------------- */
@@ -426,6 +507,15 @@ export interface SkeletonProps extends BaseProps {
 }
 
 export function skeleton(props?: SkeletonProps): string
+
+export interface EmptyProps extends BaseProps {
+  icon?: Child
+  title?: Child
+  description?: Child
+}
+
+/** The state a list is in before it has anything in it. */
+export function empty(...args: Args<EmptyProps>): string
 
 /** Live region that `toast()` from `sitelo/ui/client` appends to. */
 export function toasts(...args: Args<BaseProps>): string
@@ -563,6 +653,96 @@ export interface AccordionProps extends BaseProps {
 
 export function accordion(...args: Args<AccordionProps>): string
 export function accordionItem(...args: Args<BaseProps & { title?: Child; open?: boolean; name?: string }>): string
+
+export interface CollapsibleProps extends BaseProps {
+  /** Trigger content. Text and icons only — a summary is already interactive. */
+  trigger?: Child
+  open?: boolean
+}
+
+export function collapsible(...args: Args<CollapsibleProps>): string
+
+/* -------------------------------------------------------------- *
+ * Sections
+ * -------------------------------------------------------------- */
+
+export interface HeroProps extends BaseProps {
+  /** Small line above the title. */
+  eyebrow?: Child
+  title?: Child
+  description?: Child
+  /** Placed beside the text on a wide screen, above it on a narrow one. */
+  media?: Child
+  align?: 'center' | 'start'
+  /** Heading level for the title. Default `1` — lower it for a mid-page hero. */
+  level?: number
+  as?: string
+}
+
+/** The top of a landing page. Children are the action row. */
+export function hero(...args: Args<HeroProps>): string
+
+export interface FooterProps extends BaseProps {
+  /** A raw grid-template-columns value; auto-fits by default. */
+  columns?: string
+  as?: string
+}
+
+/** Site footer. Also exported as `siteFooter`, to sit beside `<footer>`. */
+export function footer(...args: Args<FooterProps>): string
+export const siteFooter: typeof footer
+
+export function footerColumn(...args: Args<BaseProps & { title?: Child }>): string
+export function footerBottom(...args: Args<BaseProps>): string
+
+export interface StatProps extends BaseProps {
+  label?: Child
+  value?: Child
+  /** A delta, coloured by `color`. */
+  change?: Child
+  color?: Color
+  icon?: Child
+  help?: Child
+}
+
+export function stat(props?: StatProps): string
+export function statGroup(...args: Args<BaseProps & { columns?: string }>): string
+
+export interface StepItem {
+  title?: Child
+  description?: Child
+}
+
+export interface StepsProps extends BaseProps {
+  items?: (StepItem | string)[]
+  /** Index of the step in progress. Earlier ones are complete. */
+  current?: number
+  direction?: 'horizontal' | 'vertical'
+  label?: string
+}
+
+export function steps(props?: StepsProps): string
+
+export interface TimelineItemProps extends BaseProps {
+  title?: Child
+  description?: Child
+  time?: Child
+  icon?: Child
+  color?: Color
+}
+
+export function timeline(...args: Args<BaseProps & { items?: TimelineItemProps[] }>): string
+export function timelineItem(...args: Args<TimelineItemProps>): string
+
+export interface MockupProps extends BaseProps {
+  variant?: 'browser' | 'window' | 'phone' | 'code'
+  /** Shown in the address bar. Browser variant only. */
+  url?: string
+  size?: Size
+}
+
+/** A screenshot in a frame. The frame is decoration. */
+export function mockup(...args: Args<MockupProps>): string
 
 declare const ui: {
   [name: string]: (...args: any[]) => string

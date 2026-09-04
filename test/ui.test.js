@@ -373,6 +373,216 @@ test('an icon-only menu trigger carries an accessible name', () => {
 });
 
 /* -------------------------------------------------------------- *
+ * Prose, empty, toggles, slider, aspect ratio, figure, collapsible
+ * -------------------------------------------------------------- */
+
+test('code({ text }) escapes, while children still render as HTML', () => {
+  // Children are markup by design — that is how pre-highlighted output
+  // works. `text` is the opt-in for showing a tag rather than building it.
+  assert.equal(
+    ui.code({ text: '<h1>Hello</h1>' }),
+    '<code class="su-code">&lt;h1&gt;Hello&lt;/h1&gt;</code>',
+  );
+
+  assert.equal(
+    ui.code('<span class="tok">const</span>'),
+    '<code class="su-code"><span class="tok">const</span></code>',
+  );
+
+  // ampersands escape first, so nothing is double-encoded
+  assert.match(ui.code({ text: 'a && b < c' }), />a &amp;&amp; b &lt; c</);
+  assert.match(ui.inlineCode({ text: '<em>x</em>' }), /&lt;em&gt;/);
+
+  // other props still reach the element
+  assert.match(ui.code({ text: 'x', id: 'c1' }), /<code id="c1" class="su-code">/);
+});
+
+test('prose() only styles inside its own wrapper', () => {
+  const css = ui.stylesheet({ minify: false });
+  const proseRules = css.split('\n').filter((line) => line.includes('.su-prose') && line.includes('{'));
+
+  assert.ok(proseRules.length > 10, 'prose has rules');
+
+  for (const rule of proseRules) {
+    assert.ok(rule.trimStart().startsWith('.su-prose'), `scoped to the wrapper: ${rule.trim()}`);
+  }
+
+  // and it leaves sitelo-ui components inside it alone
+  for (const rule of proseRules.filter((r) => r.includes(':where('))) {
+    assert.match(rule, /:not\(\[class\*='su-'\]\)/, `component-safe: ${rule.trim()}`);
+  }
+
+  assert.match(ui.prose('<h2>x</h2>'), /^<div class="su-prose"><h2>x<\/h2><\/div>$/);
+  assert.match(ui.prose({ size: 'lg' }, 'x'), /su-prose--lg/);
+});
+
+test('empty() renders only the parts it was given', () => {
+  const bare = ui.empty({ title: 'No posts' });
+
+  assert.match(bare, /su-empty-title/);
+  assert.ok(!bare.includes('su-empty-icon'));
+  assert.ok(!bare.includes('su-empty-description'));
+  assert.ok(!bare.includes('su-empty-actions'), 'no empty action row');
+
+  const full = ui.empty({ icon: '<svg></svg>', title: 'T', description: 'D' }, '<button></button>');
+
+  assert.match(full, /su-empty-icon" aria-hidden="true"/, 'the icon is decoration');
+  assert.match(full, /su-empty-actions/);
+});
+
+test('toggleButton() carries its state in aria-pressed', () => {
+  assert.match(ui.toggleButton({ pressed: true }, 'Bold'), /aria-pressed="true"/);
+  assert.match(ui.toggleButton('Bold'), /aria-pressed="false"/);
+  assert.match(ui.toggleButton('Bold'), /su-toggle-btn/);
+});
+
+test('toggleGroup() uses aria-current for links and aria-pressed for buttons', () => {
+  const buttons = ui.toggleGroup({
+    label: 'Alignment',
+    value: 'center',
+    items: ['left', 'center', 'right'],
+  });
+
+  // A radiogroup would be wrong here: these are pressed buttons, not radios.
+  assert.match(buttons, /role="group"/);
+  assert.ok(!buttons.includes('radiogroup'));
+  assert.equal((buttons.match(/aria-pressed="true"/g) || []).length, 1);
+
+  const links = ui.toggleGroup({
+    value: 'ui',
+    items: [
+      { value: 'docs', label: 'Docs', href: '/docs' },
+      { value: 'ui', label: 'UI', href: '/ui' },
+    ],
+  });
+
+  assert.match(links, /<a href="\/ui" aria-current="page"/);
+  assert.ok(!links.includes('aria-pressed'), 'a link is not a pressed button');
+
+  const many = ui.toggleGroup({ value: ['a', 'b'], items: ['a', 'b', 'c'] });
+
+  assert.equal((many.match(/aria-pressed="true"/g) || []).length, 2);
+});
+
+test('slider() is a native range input', () => {
+  const html = ui.slider({ min: 0, max: 10, step: 2, value: 4 });
+
+  assert.match(html, /<input type="range" min="0" max="10" step="2" value="4"/);
+  assert.ok(!html.includes('su-slider-output'), 'no readout unless asked for');
+
+  const withValue = ui.sliderField({ label: 'Quality', name: 'quality', value: 70, showValue: true });
+
+  assert.match(withValue, /<output class="su-slider-output" for="su-quality">70<\/output>/);
+  assert.match(withValue, /<label class="su-label" for="su-quality"/);
+});
+
+test('aspectRatio() and figure() hold their space before the image loads', () => {
+  assert.match(ui.aspectRatio({ ratio: '4 / 3' }, 'x'), /style="--su-aspect: 4 \/ 3"/);
+
+  const fig = ui.figure({ src: '/a.jpg', alt: 'A', caption: 'C', ratio: '16 / 9' });
+
+  assert.match(fig, /^<figure class="su-figure">/);
+  assert.match(fig, /--su-aspect: 16 \/ 9/);
+  assert.match(fig, /<figcaption class="su-figure-caption">C<\/figcaption>/);
+  assert.match(fig, /alt="A"/);
+
+  // alt is never omitted, even when not given
+  assert.match(ui.figure({ src: '/a.jpg' }), /alt=""/);
+});
+
+test('collapsible() puts nothing interactive in its summary', () => {
+  const html = ui.collapsible({ trigger: 'Show more', open: true }, '<p>body</p>');
+  const [, summary] = /<summary\b([\s\S]*?)<\/summary>/.exec(html);
+
+  assert.ok(!/<(button|a|input|select|textarea)\b/.test(summary));
+  assert.match(html, /^<details open class="su-collapsible">/);
+  assert.match(html, /su-collapsible-content/);
+});
+
+/* -------------------------------------------------------------- *
+ * Page sections
+ * -------------------------------------------------------------- */
+
+test('hero() renders only the parts it was given', () => {
+  const bare = ui.hero({ title: 'Hello' });
+
+  assert.match(bare, /^<section class="su-hero su-hero--center">/);
+  assert.match(bare, /<h1 class="su-hero-title">Hello<\/h1>/);
+  assert.ok(!bare.includes('su-hero-eyebrow'));
+  assert.ok(!bare.includes('su-hero-actions'), 'no empty action row');
+  assert.ok(!bare.includes('su-hero-media'));
+
+  const full = ui.hero({ eyebrow: 'v2', title: 'T', description: 'D', media: '<img alt="">' }, '<button></button>');
+
+  assert.match(full, /su-hero--split/, 'media switches on the two-column layout');
+  assert.match(full, /su-hero-actions/);
+});
+
+test('hero() titles the page by default, and defers when asked', () => {
+  // A hero is usually the h1 — but not one sitting part way down a page.
+  assert.match(ui.hero({ title: 'T' }), /<h1 class="su-hero-title">/);
+  assert.match(ui.hero({ level: 2, title: 'T' }), /<h2 class="su-hero-title">/);
+  assert.match(ui.hero({ level: 9, title: 'T' }), /<h6 class="su-hero-title">/, 'clamped');
+});
+
+test('footerBottom spans every column', () => {
+  const css = ui.stylesheet({ minify: false });
+
+  assert.match(css, /\.su-footer-bottom \{[^}]*grid-column: 1 \/ -1/, 'whatever the grid is doing');
+
+  const html = ui.footer(
+    ui.footerColumn({ title: 'Docs' }, '<a href="/docs">Guide</a>'),
+    ui.footerBottom('© 2026'),
+  );
+
+  assert.match(html, /^<footer class="su-footer">/);
+  assert.match(html, /<ul class="su-footer-links"><li><a href="\/docs">Guide<\/a><\/li><\/ul>/);
+});
+
+test('steps() marks what is done, what is current, and what is next', () => {
+  const html = ui.steps({
+    current: 1,
+    items: [{ title: 'Install' }, { title: 'Write' }, { title: 'Build' }],
+  });
+
+  assert.match(html, /su-step--complete/);
+  assert.match(html, /su-step--current[^>]*aria-current="step"/);
+  assert.match(html, /su-step--upcoming/);
+  assert.equal((html.match(/aria-current="step"/g) || []).length, 1);
+
+  // a tick reads faster than a number for something already done
+  assert.match(html, /su-step-marker" aria-hidden="true">✓</);
+  assert.match(html, /su-step-marker" aria-hidden="true">2</);
+
+  // first step: nothing complete yet
+  assert.ok(!ui.steps({ current: 0, items: ['a', 'b'] }).includes('su-step--complete'));
+});
+
+test('timeline() builds from items or from children', () => {
+  const fromItems = ui.timeline({ items: [{ time: '2026', title: 'v2' }] });
+  const fromChildren = ui.timeline(ui.timelineItem({ time: '2026', title: 'v2' }));
+
+  assert.equal(fromItems, fromChildren, 'both paths render the same entry');
+  assert.match(fromItems, /^<ol class="su-timeline">/);
+  assert.match(fromItems, /su-timeline-marker" aria-hidden="true"/, 'the marker is decoration');
+});
+
+test('mockup() frames are decoration, not content', () => {
+  const browser = ui.mockup({ variant: 'browser', url: 'sitelo.dev' }, '<p>page</p>');
+
+  assert.match(browser, /su-mockup--browser/);
+  assert.match(browser, /su-mockup-url">sitelo.dev</);
+  assert.match(browser, /su-mockup-dots" aria-hidden="true"/);
+  assert.match(browser, /<p>page<\/p>/);
+
+  // a phone has a notch and no address bar; a window has a bar and no url
+  assert.match(ui.mockup({ variant: 'phone' }), /su-mockup-notch" aria-hidden="true"/);
+  assert.ok(!ui.mockup({ variant: 'phone' }).includes('su-mockup-bar'));
+  assert.ok(!ui.mockup({ variant: 'window' }).includes('su-mockup-url'));
+  assert.match(ui.mockup({ variant: 'nonsense' }), /su-mockup--browser/, 'unknown variant falls back');
+});
+
+/* -------------------------------------------------------------- *
  * The contract between the rendered markup and sitelo/ui/client
  *
  * The runtime needs a DOM, so its behaviour is exercised in a browser

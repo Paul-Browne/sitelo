@@ -1,6 +1,7 @@
 import {
   a,
   code as codeEl,
+  div,
   h1,
   h2,
   h3,
@@ -12,7 +13,7 @@ import {
   span,
 } from 'javascript-to-html'
 
-import { attrs, colorClass, cx, el, oneOf, parseArgs } from './internal.js'
+import { attrs, colorClass, cx, el, escapeHtml, oneOf, parseArgs } from './internal.js'
 
 const VARIANTS = [
   'h1',
@@ -127,13 +128,28 @@ export { link as textLink }
 /**
  * Inline code. Also exported as `inlineCode`.
  *
+ * Children render as HTML, like everywhere else in this library — which
+ * is what you want for pre-highlighted output, and what you do not want
+ * for a sample containing tags. Pass `text` for the second case and the
+ * markup is escaped rather than built:
+ *
+ * ```js
+ * code({ text: '<h1>Hello</h1>' })   // shows the tags
+ * code(highlighted)                  // renders the spans
+ * ```
+ *
  * @param {...any} args
  * @returns {string}
  */
 export function code(...args) {
   const { props, children } = parseArgs(args)
+  const { text: literal, ...rest } = props
 
-  return codeEl(attrs(props, { class: 'su-code' }), ...children)
+  return codeEl(
+    attrs(rest, { class: 'su-code' }),
+    literal == null ? '' : escapeHtml(literal),
+    ...children,
+  )
 }
 
 export { code as inlineCode }
@@ -161,4 +177,28 @@ export function visuallyHidden(...args) {
   const { props, children } = parseArgs(args)
 
   return span(attrs(props, { class: 'su-visually-hidden' }), ...children)
+}
+
+/**
+ * Style a block of HTML you did not write.
+ *
+ * Markdown renderers and CMS fields hand back bare tags — `<h2>`, `<p>`,
+ * `<ul>`, `<blockquote>` — with no classes to hook onto. Everywhere else
+ * in this library styling is class-scoped precisely so it never reaches
+ * markup you did not opt in; `prose` is the one deliberate exception,
+ * and it only applies inside its own wrapper.
+ *
+ * @param {...any} args - `prose({ size, as }, ...children)`
+ * @returns {string}
+ */
+export function prose(...args) {
+  const { props, children } = parseArgs(args)
+  const { size = 'md', as, ...rest } = props
+
+  return el(as, div)(
+    attrs(rest, {
+      class: cx('su-prose', size !== 'md' && `su-prose--${oneOf(size, ['sm', 'md', 'lg'], 'md')}`),
+    }),
+    ...children,
+  )
 }

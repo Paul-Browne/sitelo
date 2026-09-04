@@ -2,6 +2,7 @@ import {
   a,
   button as buttonEl,
   div,
+  output as outputEl,
   input as inputEl,
   label as labelEl,
   option as optionEl,
@@ -488,5 +489,162 @@ export function choiceGroup(...args) {
     ...items,
     ...children,
     help == null ? '' : div({ class: 'su-help' }, help),
+  )
+}
+
+/**
+ * Range input, styled to match the other controls.
+ *
+ * A native `<input type="range">`, so it is keyboard-operable and
+ * announced correctly with nothing loaded.
+ *
+ * @param {object} [props] - `{ min, max, step, value, showValue, color, invalid }`
+ * @returns {string}
+ */
+export function slider(props = {}) {
+  const {
+    min = 0,
+    max = 100,
+    step,
+    value,
+    showValue = false,
+    color = 'primary',
+    invalid = false,
+    id,
+    ...rest
+  } = props
+
+  const control = inputEl(
+    {
+      type: 'range',
+      min,
+      max,
+      ...(step == null ? {} : { step }),
+      ...(value == null ? {} : { value }),
+      ...(id ? { id } : {}),
+      ...(invalid ? { 'aria-invalid': 'true' } : {}),
+    },
+    attrs(rest, { class: cx('su-slider', colorClass(color)) }),
+  )
+
+  if (!showValue) return control
+
+  /*
+   * The output carries the value the page was built with. Keeping it in
+   * step with the thumb is one line of your own script — this library
+   * ships no JavaScript for it, and a stale number would be worse than
+   * none.
+   */
+  return div(
+    { class: 'su-slider-row' },
+    control,
+    outputEl(
+      { class: 'su-slider-output', ...(id ? { for: id } : {}) },
+      value == null ? min : value,
+    ),
+  )
+}
+
+/**
+ * Labelled range input.
+ *
+ * @param {object} [props]
+ * @returns {string}
+ */
+export function sliderField(props = {}) {
+  return labelledField(slider, props)
+}
+
+const TOGGLE_VARIANTS = ['outline', 'ghost', 'soft']
+
+/**
+ * A button that stays pressed.
+ *
+ * `aria-pressed` is the whole state: there is no hidden input and no
+ * script, so on a static page this shows a setting rather than changing
+ * one. Wire it up with your own listener, or use a link when the choice
+ * is really a different page.
+ *
+ * @param {...any} args - `toggleButton({ pressed, variant, color, size }, ...children)`
+ * @returns {string}
+ */
+export function toggleButton(...args) {
+  const { props, children } = parseArgs(args)
+  const { pressed = false, variant = 'outline', class: className, ...rest } = props
+
+  return button(
+    {
+      'aria-pressed': pressed ? 'true' : 'false',
+      variant: oneOf(variant, TOGGLE_VARIANTS, 'outline'),
+      color: 'neutral',
+      class: cx('su-toggle-btn', className),
+      ...rest,
+    },
+    ...children,
+  )
+}
+
+/**
+ * A set of toggle buttons joined into one control.
+ *
+ * `items` with an `href` renders links and marks the active one with
+ * `aria-current` — the shape a static site usually wants, where each
+ * segment is its own page. Without `href` they are buttons carrying
+ * `aria-pressed`. Pass an array as `value` when several can be on.
+ *
+ * @param {...any} args - `toggleGroup({ items, value, label, size, variant }, ...children)`
+ * @returns {string}
+ */
+export function toggleGroup(...args) {
+  const { props, children } = parseArgs(args)
+  const { items = [], value, label, size = 'md', variant = 'outline', ...rest } = props
+
+  const selected = Array.isArray(value) ? value.map(String) : value == null ? [] : [String(value)]
+
+  const rendered = items.map((entry) => {
+    const item = typeof entry === 'object' && entry != null ? entry : { value: entry }
+    const isOn = selected.includes(String(item.value))
+
+    // A link is not a pressed button — it is the current page.
+    if (item.href) {
+      return button(
+        {
+          href: item.href,
+          variant,
+          color: 'neutral',
+          size,
+          class: 'su-toggle-btn',
+          ...(isOn ? { 'aria-current': 'page' } : {}),
+          ...(item.disabled ? { disabled: true } : {}),
+        },
+        item.label ?? String(item.value),
+      )
+    }
+
+    return toggleButton(
+      {
+        pressed: isOn,
+        variant,
+        size,
+        ...(item.value == null ? {} : { value: item.value }),
+        ...(item.disabled ? { disabled: true } : {}),
+      },
+      item.label ?? String(item.value),
+    )
+  })
+
+  /*
+   * `group`, not `radiogroup`: a radiogroup expects children with
+   * role="radio", and these are pressed buttons or links. Pass an array
+   * as `value` when more than one can be on at once.
+   */
+  return div(
+    {
+      role: 'group',
+      ...(label ? { 'aria-label': String(label) } : {}),
+    },
+    attrs(rest, { class: 'su-btn-group su-toggle-group' }),
+    ...rendered,
+    ...children,
   )
 }

@@ -21,13 +21,14 @@ const s = uiSnippets('de')
 
 /** The component reference table, one row per group. */
 const GROUPS = [
-  ['Layout', ['container', 'stack', 'grid', 'divider', 'card', 'cardHeader', 'cardTitle', 'cardSubtitle', 'cardMedia', 'cardBody', 'cardFooter']],
-  ['Typografie', ['text', 'heading', 'link', 'code', 'kbd', 'visuallyHidden']],
-  ['Eingaben', ['button', 'iconButton', 'buttonGroup', 'field', 'input', 'textarea', 'select', 'textField', 'textareaField', 'selectField', 'checkbox', 'radio', 'toggle', 'choiceGroup']],
-  ['Datenanzeige', ['avatar', 'avatarGroup', 'badge', 'chip', 'tooltip', 'table', 'list', 'listItem']],
-  ['Rückmeldung', ['alert', 'progress', 'spinner', 'skeleton', 'toasts']],
+  ['Layout', ['container', 'stack', 'grid', 'divider', 'card', 'cardHeader', 'cardTitle', 'cardSubtitle', 'cardMedia', 'cardBody', 'cardFooter', 'aspectRatio']],
+  ['Typografie', ['text', 'heading', 'link', 'code', 'inlineCode', 'kbd', 'visuallyHidden', 'prose']],
+  ['Eingaben', ['button', 'iconButton', 'buttonGroup', 'field', 'input', 'textarea', 'select', 'textField', 'textareaField', 'selectField', 'checkbox', 'radio', 'toggle', 'choiceGroup', 'slider', 'sliderField', 'toggleButton', 'toggleGroup']],
+  ['Datenanzeige', ['avatar', 'avatarGroup', 'badge', 'chip', 'tooltip', 'table', 'list', 'listItem', 'figure']],
+  ['Rückmeldung', ['alert', 'progress', 'spinner', 'skeleton', 'toasts', 'empty']],
   ['Navigation', ['breadcrumbs', 'pagination', 'tabs', 'appBar', 'appBarNav', 'appBarSpacer', 'appBarActions', 'navLink', 'themeToggle']],
-  ['Overlays', ['modal', 'drawer', 'closeButton', 'menu', 'menuItem', 'menuSeparator', 'accordion', 'accordionItem']],
+  ['Overlays', ['modal', 'drawer', 'closeButton', 'menu', 'menuItem', 'menuSeparator', 'accordion', 'accordionItem', 'collapsible']],
+  ['Abschnitte', ['hero', 'footer', 'siteFooter', 'footerColumn', 'footerBottom', 'stat', 'statGroup', 'steps', 'timeline', 'timelineItem', 'mockup']],
   ['Styling', ['styles', 'stylesheet', 'theme', 'themeScript']],
 ]
 

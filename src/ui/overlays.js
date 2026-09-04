@@ -281,3 +281,27 @@ export function accordionItem(...args) {
     div({ class: 'su-accordion-panel' }, ...children),
   )
 }
+
+/**
+ * A single disclosure: a trigger, and content that folds away.
+ *
+ * The same `<details>` an accordion is built from, without the
+ * accordion's borders and grouping — for one "show more" in the middle
+ * of a page. Keep the trigger to text and icons: a `<summary>` is
+ * already interactive, so a button or link inside it nests two controls
+ * where there is one.
+ *
+ * @param {...any} args - `collapsible({ trigger, open }, ...children)`
+ * @returns {string}
+ */
+export function collapsible(...args) {
+  const { props, children } = parseArgs(args)
+  const { trigger, open = false, ...rest } = props
+
+  return details(
+    open ? { open: true } : {},
+    attrs(rest, { class: 'su-collapsible' }),
+    summary({ class: 'su-collapsible-trigger' }, trigger ?? ''),
+    div({ class: 'su-collapsible-content' }, ...children),
+  )
+}
