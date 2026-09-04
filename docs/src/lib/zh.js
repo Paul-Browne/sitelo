@@ -9,5 +9,5 @@ import { createLayouts } from './layout.js'
 
 export const { code, codeBlock, pageCodeTabs } = createCodeHelpers('zh')
 
-export const { landingLayout, pageLayout, docsLayout, examplesLayout } =
+export const { landingLayout, pageLayout, docsLayout, uiLayout, examplesLayout } =
   createLayouts('zh')

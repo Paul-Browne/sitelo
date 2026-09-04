@@ -38,7 +38,7 @@ import {
   localePath,
   strings,
 } from './i18n.js'
-import { docNav, exampleNav } from './nav.js'
+import { docNav, exampleNav, hasUiSection, uiNav } from './nav.js'
 
 const require = createRequire(import.meta.url)
 const viteVersion = require('vite/package.json').version
@@ -227,6 +227,7 @@ function siteNav(activeHref = '/', lang = DEFAULT_LOCALE) {
   const base = basePath(activeHref)
 
   const onDocs = base.startsWith('/docs')
+  const onUi = base === '/ui' || base.startsWith('/ui/')
   const onExamples = base.startsWith('/examples')
   const onAbout = base === '/about'
 
@@ -238,6 +239,15 @@ function siteNav(activeHref = '/', lang = DEFAULT_LOCALE) {
       },
       t.navDocs,
     ),
+    hasUiSection(lang)
+      ? a(
+          {
+            ...(onUi ? { class: 'is-active' } : {}),
+            href: localePath('/ui', lang),
+          },
+          t.navUi,
+        )
+      : '',
     a(
       {
         ...(onExamples ? { class: 'is-active' } : {}),
@@ -348,14 +358,18 @@ function sideNav({ label, items, activeHref }) {
     p({ class: 'docs-sidebar-label' }, label),
     nav(
       { class: 'docs-side-nav' },
+      // A `heading` entry groups the links that follow it; the UI sidebar
+      // uses them to keep the component reference's sections.
       ...items.map((item) =>
-        a(
-          {
-            href: item.href,
-            ...(item.href === activeHref ? { class: 'is-active' } : {}),
-          },
-          item.label,
-        ),
+        item.heading
+          ? p({ class: 'docs-side-nav-heading' }, item.heading)
+          : a(
+              {
+                href: item.href,
+                ...(item.href === activeHref ? { class: 'is-active' } : {}),
+              },
+              item.label,
+            ),
       ),
     ),
   )
@@ -388,6 +402,7 @@ function pageShell({
   path,
   lang = DEFAULT_LOCALE,
   preload = [],
+  extraHead = [],
   children,
 }) {
   const t = strings(lang)
@@ -458,6 +473,14 @@ function pageShell({
         }),
       ),
       ...preload.map((p) => link({ rel: 'preload', ...p })),
+      /*
+       * Before the site stylesheet on purpose. sitelo-ui declares
+       * `color-scheme` on bare `:root`, and the docs sheet does too — its
+       * dark default is the one that has to survive, so it must come last.
+       * Nothing else collides: every sitelo-ui rule is scoped to an `su-`
+       * class, and this site has none.
+       */
+      ...extraHead,
       link({ rel: 'stylesheet', href: '/styles.css' }),
       script(analyticsBootScript),
     ),
@@ -578,23 +601,30 @@ function pageNav(items, activeHref, lang) {
 
 function guideLayout({
   title: heading,
+  // Overrides the composed `<heading> · <suffix>`, for the page whose
+  // heading is already the section's name.
+  pageTitle,
   description,
   activeHref,
   sidebarLabel,
   sidebarItems,
   titleSuffix,
   lang,
+  extraHead,
   children,
 }) {
   const content = Array.isArray(children) ? children : [children]
   const { transformed, headings } = withHeadingAnchors(content, lang)
+  // Group headings are labels, not destinations, so prev/next skips them.
+  const pages = sidebarItems.filter((item) => item.href)
 
   return pageShell({
-    pageTitle: `${heading} · ${titleSuffix}`,
+    pageTitle: pageTitle ?? `${heading} · ${titleSuffix}`,
     description,
     bodyClass: 'page-docs',
     path: activeHref,
     lang,
+    extraHead,
     /*
      * Only these pages render #docs-search, and only they should pay for it.
      * main.js cannot ask for the search UI until it has run, which is after
@@ -624,7 +654,7 @@ function guideLayout({
           h1(heading),
           tableOfContents(headings, lang),
           ...transformed,
-          pageNav(sidebarItems, activeHref, lang),
+          pageNav(pages, activeHref, lang),
         ),
       ),
       siteFooter(lang),
@@ -693,6 +723,16 @@ export function createLayouts(lang = DEFAULT_LOCALE) {
     })
   }
 
+  function uiLayout(args) {
+    return guideLayout({
+      ...args,
+      lang,
+      sidebarLabel: t.sidebarUi,
+      sidebarItems: uiNav(lang),
+      titleSuffix: t.titleSuffixUi,
+    })
+  }
+
   function examplesLayout(args) {
     return guideLayout({
       ...args,
@@ -703,7 +743,7 @@ export function createLayouts(lang = DEFAULT_LOCALE) {
     })
   }
 
-  return { landingLayout, pageLayout, docsLayout, examplesLayout }
+  return { landingLayout, pageLayout, docsLayout, uiLayout, examplesLayout }
 }
 
 const en = createLayouts(DEFAULT_LOCALE)
@@ -711,4 +751,5 @@ const en = createLayouts(DEFAULT_LOCALE)
 export const landingLayout = en.landingLayout
 export const pageLayout = en.pageLayout
 export const docsLayout = en.docsLayout
+export const uiLayout = en.uiLayout
 export const examplesLayout = en.examplesLayout

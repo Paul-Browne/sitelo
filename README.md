@@ -639,7 +639,10 @@ each have a non-colliding alias — `textLink`, `dataTable`, `textInput`,
 
 Every export ships type declarations, so an editor completes `variant`,
 `color` and `size` in JavaScript as well as TypeScript.
-`examples/ui` renders the whole set on one page.
+`examples/ui` renders the whole set on one page, and
+[sitelo.dev/ui](https://sitelo.dev/ui) is the component gallery — one
+page per component, each example rendered by the build that renders the
+page around it.
 
 ---
 

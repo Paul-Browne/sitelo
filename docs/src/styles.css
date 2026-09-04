@@ -1900,6 +1900,17 @@ a.feature-card:hover h3 {
     flex-wrap: wrap;
     gap: 0.35rem;
   }
+
+  /*
+   * The sidebar becomes a wrapping row here, so a group heading has to
+   * claim its own line or it reads as one more link in the middle of the
+   * list.
+   */
+  .docs-side-nav-heading {
+    flex-basis: 100%;
+    margin: 0.5rem 0 0;
+    padding: 0;
+  }
 }
 
 /*
@@ -1994,6 +2005,144 @@ a.feature-card:hover h3 {
 @media (prefers-reduced-motion: reduce) {
   .cookie-banner,
   .cookie-btn {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * UI section
+ *
+ * The sidebar keeps the component reference's groups, and every demo
+ * shows the live component above the code that produced it. The demos
+ * are styled by sitelo-ui itself, which reads the same `data-theme` the
+ * rest of this site does — so they follow the theme toggle for free.
+ * ------------------------------------------------------------------ */
+
+.docs-side-nav-heading {
+  margin: 0.9rem 0 0.15rem;
+  padding: 0 0.65rem;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.docs-side-nav-heading:first-child {
+  margin-top: 0;
+}
+
+.ui-demo {
+  margin: 0 0 1.75rem;
+}
+
+.ui-demo-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 2rem 1.5rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: var(--paper-elevated);
+}
+
+.ui-demo-preview--center {
+  justify-content: center;
+  align-items: center;
+}
+
+.ui-demo-preview--start {
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+/* Forms and tables want the full width rather than a centred cluster. */
+.ui-demo-preview--stretch {
+  display: block;
+}
+
+.ui-demo-preview > * {
+  min-width: 0;
+}
+
+/* The demo's own code block sits directly under its preview. */
+.ui-demo .code-glow {
+  margin-bottom: 0;
+}
+
+/* Landing page gallery */
+.ui-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1rem;
+  margin: 0 0 2rem;
+  padding: 0;
+  list-style: none;
+}
+
+.ui-gallery-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: var(--paper-elevated);
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.ui-gallery-card:hover,
+.ui-gallery-card:focus-within {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  transform: translateY(-2px);
+}
+
+.ui-gallery-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 5rem;
+  padding: 0.75rem;
+  border-radius: 0.55rem;
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+
+/* Stretched link: the anchor is on the name, the hit area is the card. */
+.ui-gallery-name {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+}
+
+.ui-gallery-name::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.ui-gallery-name:hover {
+  text-decoration: underline;
+}
+
+.ui-gallery-summary {
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 640px) {
+  .ui-demo-preview {
+    padding: 1.25rem 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-gallery-card {
     transition: none;
   }
 }

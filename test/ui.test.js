@@ -343,6 +343,99 @@ test('stylesheet() minifies without unbalancing the CSS', () => {
   }
 });
 
+/**
+ * Relative luminance, per WCAG 2.
+ * @param {[number, number, number]} rgb
+ * @returns {number}
+ */
+function luminance(rgb) {
+  const [r, g, b] = rgb.map((value) => {
+    const channel = value / 255;
+    return channel <= 0.03928
+      ? channel / 12.92
+      : ((channel + 0.055) / 1.055) ** 2.4;
+  });
+
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/** @param {string} value @returns {[number, number, number] | null} */
+function parseHex(value) {
+  const match = /^#([0-9a-f]{6})$/i.exec(value.trim());
+
+  if (!match) return null;
+
+  const int = Number.parseInt(match[1], 16);
+
+  return [(int >> 16) & 255, (int >> 8) & 255, int & 255];
+}
+
+/** @returns {number} */
+function contrast(foreground, background) {
+  const [lighter, darker] = [luminance(foreground), luminance(background)].sort(
+    (a, b) => b - a,
+  );
+
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/** Custom properties declared in one block of the sheet. */
+function readTokens(block) {
+  const tokens = {};
+
+  for (const [, name, value] of block.matchAll(/(--su-[a-z0-9-]+):\s*([^;]+);/g)) {
+    tokens[name] = value.trim();
+  }
+
+  return tokens;
+}
+
+test('every palette clears WCAG AA against the surface it sits on', () => {
+  const css = ui.stylesheet({ minify: false });
+
+  const light = readTokens(
+    css.slice(css.indexOf(':root {'), css.indexOf("[data-theme='dark']")),
+  );
+  const dark = {
+    ...light,
+    ...readTokens(
+      css.slice(
+        css.indexOf("[data-theme='dark'] ,"),
+        css.indexOf('@media (prefers-color-scheme: dark)'),
+      ),
+    ),
+  };
+
+  assert.ok(Object.keys(light).length > 40, 'light tokens were found');
+  assert.notEqual(light['--su-primary'], dark['--su-primary'], 'dark tokens differ');
+
+  for (const [theme, tokens] of [['light', light], ['dark', dark]]) {
+    for (const color of ['primary', 'neutral', 'success', 'warning', 'danger']) {
+      const pairs = [
+        ['solid button', `--su-${color}-fg`, `--su-${color}`],
+        ['soft button', `--su-${color}-soft-fg`, `--su-${color}-soft`],
+        ['outline, ghost and link text', `--su-${color}-soft-fg`, '--su-surface'],
+        ['link colour on a surface', `--su-${color}`, '--su-surface'],
+      ];
+
+      for (const [what, foreground, background] of pairs) {
+        const fg = parseHex(tokens[foreground]);
+        const bg = parseHex(tokens[background]);
+
+        assert.ok(fg, `${theme} ${foreground} is a hex colour`);
+        assert.ok(bg, `${theme} ${background} is a hex colour`);
+
+        const ratio = contrast(fg, bg);
+
+        assert.ok(
+          ratio >= 4.5,
+          `${theme} ${color} ${what}: ${tokens[foreground]} on ${tokens[background]} is ${ratio.toFixed(2)}:1, below 4.5:1`,
+        );
+      }
+    }
+  }
+});
+
 test('styles() emits a style element that cannot close itself early', () => {
   const html = ui.styles();
 

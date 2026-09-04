@@ -112,6 +112,38 @@ const DOC_LABELS = {
   ],
 }
 
+/**
+ * UI sidebar.
+ *
+ * Grouped, so the sections of the component reference survive into the
+ * navigation. A `heading` entry is a label, not a link.
+ *
+ * English only for now — the pages under `/ui` have no translations yet,
+ * so {@link hasUiSection} keeps the section out of the other locales'
+ * chrome rather than sending them to an English page.
+ */
+const UI_LABELS = {
+  en: [
+    { href: '/ui', label: 'Overview' },
+    { heading: 'Inputs' },
+    { href: '/ui/button', label: 'Button' },
+    { href: '/ui/button-group', label: 'Button group' },
+    { href: '/ui/text-field', label: 'Text field' },
+    { href: '/ui/select', label: 'Select' },
+    { href: '/ui/checkbox', label: 'Checkbox' },
+    { href: '/ui/radio', label: 'Radio group' },
+    { href: '/ui/switch', label: 'Switch' },
+  ],
+}
+
+/** Locales that have the `/ui` section. */
+const UI_LOCALES = new Set(Object.keys(UI_LABELS))
+
+/** @param {string} lang @returns {boolean} */
+export function hasUiSection(lang = DEFAULT_LOCALE) {
+  return UI_LOCALES.has(lang)
+}
+
 /** Examples sidebar, per locale. */
 const EXAMPLE_LABELS = {
   en: [
@@ -184,6 +216,16 @@ export function docNav(lang = DEFAULT_LOCALE) {
   return items.map(({ href, label }) => ({ href: localePath(href, lang), label }))
 }
 
+export function uiNav(lang = DEFAULT_LOCALE) {
+  const items = UI_LABELS[lang] ?? UI_LABELS[DEFAULT_LOCALE]
+
+  return items.map((item) =>
+    item.heading
+      ? item
+      : { href: localePath(item.href, lang), label: item.label },
+  )
+}
+
 export function exampleNav(lang = DEFAULT_LOCALE) {
   const items = EXAMPLE_LABELS[lang] ?? EXAMPLE_LABELS[DEFAULT_LOCALE]
   return items.map(({ href, label }) => ({ href: localePath(href, lang), label }))
@@ -191,3 +233,4 @@ export function exampleNav(lang = DEFAULT_LOCALE) {
 
 export const DOC_NAV = docNav(DEFAULT_LOCALE)
 export const EXAMPLE_NAV = exampleNav()
+export const UI_NAV = uiNav(DEFAULT_LOCALE)

@@ -71,15 +71,20 @@
   --su-overlay: rgba(9, 20, 22, 0.45);
 
   /* Palettes — light */
-  --su-primary: #0d9668;
-  --su-primary-hover: #0b8058;
-  --su-primary-active: #096a49;
+  /*
+   * Dark enough that white label text clears 4.5:1 on the solid button,
+   * and that the same green clears it as link text on the page. The
+   * livelier #0d9668 this started as came in at 3.76 both ways.
+   */
+  --su-primary: #0a8259;
+  --su-primary-hover: #08714d;
+  --su-primary-active: #066041;
   --su-primary-fg: #ffffff;
   --su-primary-soft: #d9f4e8;
   --su-primary-soft-hover: #c4ebda;
   --su-primary-soft-fg: #075f43;
   --su-primary-border: #8adcbe;
-  --su-primary-ring: rgba(13, 150, 104, 0.32);
+  --su-primary-ring: rgba(10, 130, 89, 0.32);
 
   --su-neutral: #475b62;
   --su-neutral-hover: #3b4d53;
@@ -719,10 +724,6 @@
 .su-btn--loading {
   cursor: progress;
   pointer-events: none;
-}
-
-.su-btn--loading .su-btn-label {
-  opacity: 0.65;
 }
 
 .su-btn-icon {
