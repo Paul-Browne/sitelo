@@ -16,7 +16,10 @@
     "html-generator",
     "javascript-to-html",
     "static-html",
-    "blog-generator"
+    "blog-generator",
+    "ui",
+    "component-library",
+    "sitelo-ui"
   ],
   "description": "Zero-config static site generation powered by Vite and vite-plugin-html-pages",
   "homepage": "https://github.com/paul-browne/sitelo",
@@ -29,7 +32,10 @@
   },
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/ui/client.js",
+    "**/*.css"
+  ],
   "exports": {
     ".": {
       "types": "./src/index.d.ts",
@@ -47,6 +53,15 @@
       "types": "./src/data.d.ts",
       "import": "./src/data.js"
     },
+    "./ui": {
+      "types": "./src/ui/index.d.ts",
+      "import": "./src/ui/index.js"
+    },
+    "./ui/client": {
+      "types": "./src/ui/client.d.ts",
+      "import": "./src/ui/client.js"
+    },
+    "./ui/styles.css": "./src/ui/ui.css",
     "./jsx-runtime": {
       "types": "./src/jsx-runtime.d.ts",
       "import": "./src/jsx-runtime.js"
@@ -86,6 +101,7 @@
     "docs:fonts": "node ./docs/scripts/fonts.mjs"
   },
   "dependencies": {
+    "javascript-to-html": "^1.1.5",
     "vite": "^8.2.2",
     "vite-plugin-html-pages": "^2.3.4"
   },
@@ -113,7 +129,6 @@
   },
   "devDependencies": {
     "@types/node": "^20.17.0",
-    "javascript-to-html": "^1.1.5",
     "lighthouse": "^13.4.1",
     "pagefind": "^1.5.2",
     "prismjs": "^1.30.0",

@@ -1,0 +1,12 @@
+{
+  "name": "sitelo-example-ui",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "sitelo",
+    "build": "sitelo build"
+  },
+  "dependencies": {
+    "sitelo": "file:../.."
+  }
+}

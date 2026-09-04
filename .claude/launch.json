@@ -4,8 +4,24 @@
     {
       "name": "docs",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["./bin/sitelo.js", "dev", "--root", "docs"],
+      "runtimeArgs": [
+        "./bin/sitelo.js",
+        "dev",
+        "--root",
+        "docs"
+      ],
       "port": 5173
+    },
+    {
+      "name": "ui-example",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "./bin/sitelo.js",
+        "dev",
+        "--root",
+        "examples/ui"
+      ],
+      "port": 5174
     }
   ]
 }

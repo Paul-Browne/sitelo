@@ -84,6 +84,7 @@ export const TRANSLATED_PATHS = new Set([
   '/docs/routing',
   '/docs/data',
   '/docs/islands',
+  '/docs/ui',
   '/docs/assets',
   '/docs/images',
   '/docs/typescript',

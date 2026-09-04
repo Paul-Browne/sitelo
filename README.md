@@ -61,6 +61,7 @@ That's the whole mental model. Everything else is convenience on top.
 - **Dynamic routes** — `[slug]`, `[year]/[slug]`, catch-all `[...path]`, optional catch-all `[...path]?`
 - **Route groups** — `(admin)/users.ht.js` → `/users`
 - **Bring your own HTML** — template literals, [javascript-to-html](https://www.npmjs.com/package/javascript-to-html), or JSX/TSX
+- **sitelo-ui** — 60+ components (buttons, cards, forms, tables, modals) as functions returning HTML, with one small optional script
 - **Data loading** — `data()` runs at build time, with built-in fetch caching
 - **Typed pages** — per-route param types inferred from the filename
 - **Smart asset pipeline** — JS/TS/CSS referenced by your HTML is bundled and minified; server-only code never leaks into `dist`
@@ -519,6 +520,126 @@ from the filename: `[slug]` → `{ slug: string }`, `[...path]` →
 Matching type declarations are generated into
 `.sitelo/types/` whenever the dev server or a build
 runs — add that folder to `.gitignore`.
+
+---
+
+## Components (sitelo-ui)
+
+`sitelo/ui` is a component library for sitelo — buttons, cards, forms,
+tables, tabs, modals and the rest. Every component is a function that
+returns a string of HTML, so it nests straight into a
+[javascript-to-html](https://www.npmjs.com/package/javascript-to-html)
+tree with nothing in between. No compiler, no runtime, no hydration.
+
+```js
+// src/index.ht.js
+import { body, head, html, title } from 'javascript-to-html'
+import { styles, container, stack, heading, text, button } from 'sitelo/ui'
+
+export default () =>
+  html({ lang: 'en' },
+    head(title('My site'), styles()),
+    body(
+      container({ size: 'md' },
+        stack({ gap: 'md' },
+          heading({ level: 1 }, 'Hello'),
+          text({ variant: 'lead' }, 'A page built from components.'),
+          button({ href: '/docs' }, 'Read the docs'),
+        ),
+      ),
+    ),
+  )
+```
+
+`styles()` returns a `<style>` element holding the whole stylesheet
+(~7 kB gzipped), so there is nothing to copy and nothing to configure.
+If you would rather link it once and let the browser cache it across
+pages, import the CSS from a bundled entry file instead:
+
+```js
+// src/main.js
+import 'sitelo/ui/styles.css'
+```
+
+### Props
+
+Every component takes an optional props object followed by children,
+exactly like a javascript-to-html element. Props the component
+understands are consumed by name; **everything else falls through to the
+rendered element as an attribute**:
+
+```js
+button({ variant: 'soft', color: 'danger', id: 'del', 'data-page': slug }, 'Delete')
+// <button type="button" id="del" data-page="…" class="su-btn su-btn--soft … su-c-danger">
+```
+
+Component names match what they render, which means a few of them
+(`button`, `input`, `table`, `link`, `code`, `select`, `progress`)
+collide with javascript-to-html's element functions. Import the library
+as a namespace when you need both:
+
+```js
+import * as ui from 'sitelo/ui'
+```
+
+### Theming
+
+Everything is driven by CSS custom properties — five palettes, a
+spacing scale, radii, type and shadows. `theme()` overrides them, and
+dark mode resolves from `prefers-color-scheme` unless `data-theme` or
+`data-su-theme` says otherwise:
+
+```js
+head(
+  styles(),
+  theme({
+    primary: { base: '#5b5bd6', hover: '#4a4ac4', fg: '#fff' },
+    radiusMd: '2px',
+  }, {
+    dark: { primary: { base: '#8f8ff0' } },
+  }),
+)
+```
+
+### JavaScript
+
+Most components need none. Modals and drawers are `popover` elements,
+so the browser handles opening, the backdrop, click-outside and Escape.
+Accordions are `<details name>`, menus are `<details>`, tooltips are
+CSS.
+
+Four things want a script — tabs whose panels swap in place, the close
+button on a dismissible alert, `toast()`, and the theme toggle:
+
+```js
+// src/main.js
+import 'sitelo/ui/client'
+```
+
+It is about 3 kB, and every component it touches renders correctly
+without it.
+
+### What is in it
+
+| Group | Components |
+| --- | --- |
+| Layout | `container` `stack` `grid` `divider` `card` `cardHeader` `cardTitle` `cardSubtitle` `cardMedia` `cardBody` `cardFooter` |
+| Typography | `text` `heading` `link` `code` `kbd` `visuallyHidden` |
+| Inputs | `button` `iconButton` `buttonGroup` `field` `input` `textarea` `select` `textField` `textareaField` `selectField` `checkbox` `radio` `toggle` `choiceGroup` |
+| Data display | `avatar` `avatarGroup` `badge` `chip` `tooltip` `table` `list` `listItem` |
+| Feedback | `alert` `progress` `spinner` `skeleton` `toasts` |
+| Navigation | `breadcrumbs` `pagination` `tabs` `appBar` `appBarNav` `appBarSpacer` `appBarActions` `navLink` `themeToggle` |
+| Overlays | `modal` `drawer` `closeButton` `menu` `menuItem` `menuSeparator` `accordion` `accordionItem` |
+| Styling | `styles` `stylesheet` `theme` `themeScript` |
+
+The switch is `toggle`, because `switch` is a reserved word and cannot
+be an import binding. `link`, `table`, `input`, `select` and `progress`
+each have a non-colliding alias — `textLink`, `dataTable`, `textInput`,
+`selectField`, `progressBar`.
+
+Every export ships type declarations, so an editor completes `variant`,
+`color` and `size` in JavaScript as well as TypeScript.
+`examples/ui` renders the whole set on one page.
 
 ---
 

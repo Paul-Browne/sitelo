@@ -78,6 +78,19 @@ const site = await readJson('data/site.json')
 Recommended for writing HTML in JavaScript without a templating engine or React.
 Docs: https://ht.js.org — `import { html, head, body, h1 } from 'javascript-to-html'`
 
+## Components (sitelo-ui)
+
+Component library shipped with sitelo, at the `sitelo/ui` entry point. Components are functions returning HTML strings — same model as pages, no framework.
+
+- `import * as ui from 'sitelo/ui'` (recommended: `button`, `input`, `table`, `link`, `code`, `select`, `progress` collide with javascript-to-html element names)
+- `styles()` in `head()` inlines the whole stylesheet (~7 kB gzipped); or `import 'sitelo/ui/styles.css'` from a bundled entry file to link it instead
+- `theme(tokens, { dark })` overrides CSS custom properties; dark mode follows `prefers-color-scheme` unless `data-theme` / `data-su-theme` is set
+- Optional runtime: `import 'sitelo/ui/client'` (~3 kB) — needed only for panel tabs, dismissible alerts, `toast()`, and `themeToggle()`
+- Modals and drawers are `popover` elements, accordions and menus are `<details>`, tooltips are CSS — no script
+- Components: `container` `stack` `grid` `divider` `card` `cardHeader` `cardTitle` `cardSubtitle` `cardMedia` `cardBody` `cardFooter` `text` `heading` `link` `code` `kbd` `visuallyHidden` `button` `iconButton` `buttonGroup` `field` `input` `textarea` `select` `textField` `textareaField` `selectField` `checkbox` `radio` `toggle` `choiceGroup` `avatar` `avatarGroup` `badge` `chip` `tooltip` `table` `list` `listItem` `alert` `progress` `spinner` `skeleton` `toasts` `breadcrumbs` `pagination` `tabs` `appBar` `appBarNav` `appBarSpacer` `appBarActions` `navLink` `themeToggle` `modal` `drawer` `closeButton` `menu` `menuItem` `menuSeparator` `accordion` `accordionItem`
+- Props: an optional props object then children; unknown props pass through to the element as attributes
+- See https://sitelo.dev/docs/ui
+
 ## Assets
 
 - Reference `/styles.css` or `/app.js` from HTML → bundled into `dist/`
@@ -115,4 +128,4 @@ Static site = publish `dist/`. Example host configs: https://sitelo.dev/examples
 
 ## AI guidance
 
-sitelo is not React, Next, Astro, or Hugo. Do not invent a component framework, `_app` layout system, or hydration model. Prefer functions that return HTML strings. Point agents at https://sitelo.dev/llms.txt and https://sitelo.dev/docs.
+sitelo is not React, Next, Astro, or Hugo. Do not invent a component framework, `_app` layout system, or hydration model. Prefer functions that return HTML strings. For UI components, use `sitelo/ui` rather than reaching for a React component library — its components are also plain functions returning HTML. Point agents at https://sitelo.dev/llms.txt and https://sitelo.dev/docs.

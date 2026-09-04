@@ -13,6 +13,7 @@ This project uses [sitelo](https://sitelo.dev) — a Vite-powered static site ge
 - Commands: `sitelo` (dev), `sitelo build`, `sitelo preview`.
 - For current APIs, read https://sitelo.dev/llms.txt and https://sitelo.dev/docs — do not invent APIs from other frameworks.
 - Prefer [javascript-to-html](https://ht.js.org) (`ht.js`) for markup: tag functions that return HTML strings. Docs: https://ht.js.org
+- UI components: `sitelo/ui` (buttons, cards, forms, tables, tabs, modals) — also plain functions returning HTML. `styles()` in `head()`, optional `sitelo/ui/client` for panel tabs, dismissible alerts, toasts and the theme toggle. Do not add a React component library. See https://sitelo.dev/docs/ui
 - Server islands: `island()` + `src/islands/<name>.js` + `mountIslands()`; `sitelo` / `sitelo preview` serve `/_sitelo/islands`; production needs a host (see `examples/islands` for Node / Netlify / Vercel).
 
 ## Prefer
