@@ -32,6 +32,12 @@ export default () =>
           '-Dateien, zu statischen Seiten gerendert, mit RSS-Feed und ohne Client-JS.',
         ),
         li(
+          a({ href: '/de/examples/json' }, 'Lokales JSON'),
+          ' — ein Katalog aus ',
+          code('.json'),
+          '-Dateien im Repository: eine Seite pro Datei, ohne API und ohne Datenbank.',
+        ),
+        li(
           a({ href: '/de/examples/wordpress' }, 'WordPress'),
           ' — hole Beiträge über die WordPress-REST-API mit ',
           code('fetchWithCache'),

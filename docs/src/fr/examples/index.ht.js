@@ -32,6 +32,12 @@ export default () =>
           ' rendus en pages statiques, avec un flux RSS et zéro JS côté client.',
         ),
         li(
+          a({ href: '/fr/examples/json' }, 'JSON local'),
+          ' — un catalogue construit à partir de fichiers ',
+          code('.json'),
+          ' du dépôt : une page par fichier, sans API ni base de données.',
+        ),
+        li(
           a({ href: '/fr/examples/wordpress' }, 'WordPress'),
           ' — récupérez les articles depuis l’API REST de WordPress avec ',
           code('fetchWithCache'),

@@ -95,6 +95,7 @@ export const TRANSLATED_PATHS = new Set([
   '/examples/basic',
   '/examples/todo',
   '/examples/blog',
+  '/examples/json',
   '/examples/wordpress',
   '/examples/islands',
 ])

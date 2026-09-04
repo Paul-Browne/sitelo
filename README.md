@@ -406,6 +406,90 @@ Only `GET` requests are cached by default (pass a `cacheKey` to cache
 other methods), and error responses are never cached — a flaky API
 during one build won't poison the next one.
 
+### Local JSON files
+
+No API? Keep the content in the repo as JSON and read it with
+`sitelo/data`:
+
+```
+my-site/
+├─ data/
+│  ├─ site.json
+│  └─ posts/
+│     ├─ hello-world.json
+│     └─ why-static.json
+└─ src/
+   ├─ index.ht.js
+   └─ blog/[slug].ht.js
+```
+
+```js
+// src/blog/[slug].ht.js
+import { readJsonCollection } from 'sitelo/data'
+
+const posts = () => readJsonCollection('data/posts', { sort: '-date' })
+
+export async function generateStaticParams() {
+  return (await posts()).map((post) => ({ slug: post.slug }))
+}
+
+export async function data({ params }) {
+  return (await posts()).find((post) => post.slug === params.slug)
+}
+
+export default ({ data }) => `
+  <html><body>
+    <h1>${data.title}</h1>
+    <time datetime="${data.date}">${data.date}</time>
+    ${data.body}
+  </body></html>
+`
+```
+
+Relative paths resolve from the project root, so `data/posts` means the
+same thing whether you run `sitelo` in the site directory or point
+`--root` at it. Absolute paths and `file:` URLs work too — use
+`new URL('../data/', import.meta.url)` to anchor at the page module.
+
+| Function | Returns |
+|----------|---------|
+| `readJson(source, options?)` | The parsed contents of one `.json` file |
+| `readJsonCollection(source, options?)` | An array of entries, each with a `slug` |
+
+`readJsonCollection` takes either a **directory** of `.json` files — one
+file per entry, slug from the filename — or a **single file** holding an
+array of entries or an object keyed by slug:
+
+```js
+// data/posts/hello-world.json  → { slug: 'hello-world', … }
+await readJsonCollection('data/posts')
+
+// data/posts.json: [{ "slug": "hello-world", … }]
+// data/posts.json: { "hello-world": { … } }
+await readJsonCollection('data/posts.json')
+```
+
+| Option | Description |
+|--------|-------------|
+| `slug` | Field name, or a function of the entry, to slug by. Defaults to the filename, the object key, or the entry's own `slug` / `id` |
+| `sort` | Field name — `'date'` ascending, `'-date'` descending — or a compare function |
+| `recursive` | Read `.json` files in subdirectories too, slugged by their path (`guide/intro`) |
+| `root` | Directory relative paths resolve from |
+| `cache` | `'auto'` \| `'memory'` \| `'none'` |
+
+Reads are memoized per file, so a 500-page build parses each file once.
+Under `sitelo build` the memo is kept outright; in the dev server it is
+revalidated against mtime, and editing a JSON file a page read reloads
+the browser. A collection is a fresh array on every call (sorting it is
+safe), but the parsed objects themselves are shared between callers —
+copy one before mutating it.
+
+Two entries claiming the same slug is a build error rather than a silent
+overwrite, as is a missing file or malformed JSON, both named by path.
+
+A full catalogue built this way — all three source shapes, one page per
+file — is in [`examples/json`](./examples/json).
+
 ---
 
 ## TypeScript & typed params

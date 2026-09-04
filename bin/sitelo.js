@@ -18,6 +18,7 @@ import {
   normalizeImageOptions,
   runImages,
 } from '../src/images.js';
+import { clearDataCache, onDataRead } from '../src/data.js';
 import {
   normalizePagefindOptions,
   runPagefind,
@@ -530,6 +531,51 @@ function imagesDevPlugin({ root, pagesDir = 'src', publicDir, base, options }) {
 }
 
 /**
+ * Reload the browser when local JSON data changes.
+ *
+ * Nothing is configured: `sitelo/data` reports every path a page reads, and
+ * those are the paths watched. Data usually lives outside `src/`, where the
+ * page watcher does not look, so an edit would otherwise sit there until the
+ * dev server was restarted.
+ */
+function dataDevPlugin() {
+  return {
+    name: 'sitelo:data-dev',
+
+    configureServer(server) {
+      /** @type {Set<string>} */
+      const watched = new Set();
+
+      const stopListening = onDataRead((target) => {
+        if (watched.has(target)) return;
+        watched.add(target);
+        server.watcher.add(target);
+      });
+
+      server.httpServer?.on('close', stopListening);
+
+      const reload = (file) => {
+        if (!file.endsWith('.json')) return;
+
+        const touched = [...watched].some(
+          (target) =>
+            file === target || file.startsWith(`${target}${path.sep}`),
+        );
+
+        if (!touched) return;
+
+        clearDataCache();
+        server.ws.send({ type: 'full-reload', path: '*' });
+      };
+
+      server.watcher.on('add', reload);
+      server.watcher.on('change', reload);
+      server.watcher.on('unlink', reload);
+    },
+  };
+}
+
+/**
  * Inline config for a preview server over the current build.
  *
  * `sitelo preview` and `sitelo lighthouse` share it so an audit measures
@@ -625,6 +671,7 @@ async function runDev(cli) {
           root: cli.root,
           pagesDir: pluginOptions?.pagesDir,
         }),
+        dataDevPlugin(),
         ...(imageOptions?.dev
           ? [
               imagesDevPlugin({
@@ -853,6 +900,11 @@ async function main() {
     console.log(VERSION);
     return;
   }
+
+  // `sitelo/data` resolves relative paths from here, so `data/posts.json`
+  // means the same thing whether the site is the working directory or a
+  // `--root` below it.
+  process.env.SITELO_ROOT = cli.root;
 
   try {
     switch (cli.command) {

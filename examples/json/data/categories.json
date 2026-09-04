@@ -1,0 +1,14 @@
+{
+  "seating": {
+    "name": "Seating",
+    "description": "Chairs and stools for long working days."
+  },
+  "desks": {
+    "name": "Desks",
+    "description": "Fixed-height and sit-stand work surfaces."
+  },
+  "lighting": {
+    "name": "Lighting",
+    "description": "Task lamps that keep the glare off your screen."
+  }
+}
