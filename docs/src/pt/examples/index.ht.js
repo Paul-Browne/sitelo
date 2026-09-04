@@ -32,6 +32,12 @@ export default () =>
           ' renderizados para páginas estáticas, com feed RSS e zero JS de cliente.',
         ),
         li(
+          a({ href: '/pt/examples/json' }, 'JSON local'),
+          ' — um catálogo construído a partir de ficheiros ',
+          code('.json'),
+          ' do repositório: uma página por ficheiro, sem API nem base de dados.',
+        ),
+        li(
           a({ href: '/pt/examples/wordpress' }, 'WordPress'),
           ' — vai buscar artigos à API REST do WordPress com ',
           code('fetchWithCache'),

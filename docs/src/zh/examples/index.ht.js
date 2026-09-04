@@ -32,6 +32,12 @@ export default () =>
           ' 文件的文件夹渲染成静态页面，带 RSS 订阅，且零客户端 JS。',
         ),
         li(
+          a({ href: '/zh/examples/json' }, '本地 JSON'),
+          ' —— 用仓库里的 ',
+          code('.json'),
+          ' 文件构建的目录：每个文件一个页面，没有 API，也没有数据库。',
+        ),
+        li(
           a({ href: '/zh/examples/wordpress' }, 'WordPress'),
           ' —— 用 ',
           code('fetchWithCache'),

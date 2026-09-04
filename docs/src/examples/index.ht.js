@@ -33,6 +33,12 @@ export default () =>
           ' files rendered to static pages, with an RSS feed and zero client JS.',
         ),
         li(
+          a({ href: '/examples/json' }, 'Local JSON'),
+          ' — a catalogue built from ',
+          code('.json'),
+          ' files in the repo: one page per file, no API and no database.',
+        ),
+        li(
           a({ href: '/examples/wordpress' }, 'WordPress'),
           ' — pull posts from the WordPress REST API with ',
           code('fetchWithCache'),

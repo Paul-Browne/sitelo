@@ -1,0 +1,75 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+body {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+a {
+  color: inherit;
+}
+
+.lede {
+  opacity: 0.75;
+}
+
+.categories,
+.products {
+  padding: 0;
+  list-style: none;
+}
+
+.categories li,
+.products li {
+  margin: 0 0 1.5rem;
+}
+
+.categories a,
+.products a {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.categories p,
+.products p {
+  margin: 0.2rem 0 0;
+  opacity: 0.75;
+}
+
+.price {
+  opacity: 0.6;
+  font-size: 0.9em;
+  margin-left: 0.5em;
+}
+
+article .price {
+  display: block;
+  margin: 0;
+  font-size: 1.25rem;
+  opacity: 1;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1.5rem;
+  margin: 2rem 0 0;
+}
+
+dt {
+  font-weight: 600;
+}
+
+dd {
+  margin: 0;
+}
+
+footer {
+  margin-top: 3rem;
+  opacity: 0.75;
+}

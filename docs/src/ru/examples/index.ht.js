@@ -32,6 +32,12 @@ export default () =>
           ', отрендеренных в статические страницы, с RSS-лентой и без клиентского JS.',
         ),
         li(
+          a({ href: '/ru/examples/json' }, 'Локальный JSON'),
+          ' — каталог из ',
+          code('.json'),
+          '-файлов в репозитории: по странице на файл, без API и без базы данных.',
+        ),
+        li(
           a({ href: '/ru/examples/wordpress' }, 'WordPress'),
           ' — забирайте записи из REST API WordPress через ',
           code('fetchWithCache'),

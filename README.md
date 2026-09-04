@@ -487,6 +487,9 @@ copy one before mutating it.
 Two entries claiming the same slug is a build error rather than a silent
 overwrite, as is a missing file or malformed JSON, both named by path.
 
+A full catalogue built this way — all three source shapes, one page per
+file — is in [`examples/json`](./examples/json).
+
 ---
 
 ## TypeScript & typed params

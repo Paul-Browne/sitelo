@@ -109,6 +109,7 @@ Static site = publish `dist/`. Example host configs: https://sitelo.dev/examples
 ## Examples
 
 - Basic + deploy configs: https://sitelo.dev/examples/basic
+- Local JSON files as data: https://sitelo.dev/examples/json
 - WordPress REST API: https://sitelo.dev/examples/wordpress
 - Server islands: https://sitelo.dev/examples/islands
 
