@@ -150,3 +150,6 @@ test/fixtures/**/dist/
 
 # per-test-file fixture working copies
 test/.tmp/
+
+# misc
+.DS_Store
