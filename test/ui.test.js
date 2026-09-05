@@ -550,8 +550,10 @@ test('steps() marks what is done, what is current, and what is next', () => {
   assert.match(html, /su-step--upcoming/);
   assert.equal((html.match(/aria-current="step"/g) || []).length, 1);
 
-  // a tick reads faster than a number for something already done
-  assert.match(html, /su-step-marker" aria-hidden="true">✓</);
+  // a tick reads faster than a number for something already done, and it
+  // is drawn rather than typed so its weight matches the digits beside it
+  assert.match(html, /su-step-marker" aria-hidden="true"><svg/);
+  assert.ok(!html.includes('✓'), 'no glyph tick');
   assert.match(html, /su-step-marker" aria-hidden="true">2</);
 
   // first step: nothing complete yet

@@ -159,6 +159,10 @@ export function statGroup(...args) {
   )
 }
 
+/** The tick on a completed step. */
+const STEP_TICK =
+  '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7"/></svg>'
+
 /**
  * A numbered flow, with the steps behind you marked done.
  *
@@ -184,7 +188,9 @@ export function steps(props = {}) {
       span(
         { class: 'su-step-marker', 'aria-hidden': 'true' },
         // A tick reads faster than a number for something already done.
-        state === 'complete' ? '✓' : String(index + 1),
+        // Drawn rather than typed: the glyph's weight and baseline do
+        // not match the digits beside it in every font.
+        state === 'complete' ? STEP_TICK : String(index + 1),
       ),
       div(
         { class: 'su-step-content' },

@@ -2705,30 +2705,41 @@ svg.su-theme-icon-moon {
  * ------------------------------------------------------------------ */
 
 .su-steps {
+  --su-step-marker: 1.8rem;
   display: flex;
-  gap: var(--su-space-md);
   margin: 0;
   padding: 0;
   list-style: none;
-  counter-reset: none;
 }
 
+/*
+ * Horizontal: the marker sits above its label, centred, with the
+ * connector running between markers. Beside the label — which is where
+ * it started — the connector strikes straight through the text.
+ */
 .su-step {
   position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: var(--su-space-sm);
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--su-space-xs);
+  padding-inline: var(--su-space-xs);
+  text-align: center;
 }
 
-/* The connector between one marker and the next. */
+/*
+ * From this marker's edge to the next one's. Steps share the width
+ * evenly, so the next marker's centre is exactly one step away — hence
+ * the 50% either side.
+ */
 .su-step:not(:last-child)::after {
   content: '';
   position: absolute;
-  top: 0.9rem;
-  inset-inline-start: 2.5rem;
-  inset-inline-end: calc(var(--su-space-md) * -1);
+  top: calc(var(--su-step-marker) / 2 - 1px);
+  inset-inline-start: calc(50% + var(--su-step-marker) / 2 + 0.4rem);
+  inset-inline-end: calc(-50% + var(--su-step-marker) / 2 + 0.4rem);
   height: 2px;
   background: var(--su-border);
 }
@@ -2742,8 +2753,8 @@ svg.su-theme-icon-moon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.8rem;
-  height: 1.8rem;
+  width: var(--su-step-marker);
+  height: var(--su-step-marker);
   border-radius: var(--su-radius-full);
   border: 2px solid var(--su-border-strong);
   background: var(--su-surface);
@@ -2751,6 +2762,13 @@ svg.su-theme-icon-moon {
   font-size: var(--su-text-sm);
   font-weight: var(--su-weight-semibold);
   line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.su-step-marker svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  display: block;
 }
 
 .su-step--complete .su-step-marker {
@@ -2767,7 +2785,6 @@ svg.su-theme-icon-moon {
 
 .su-step-content {
   min-width: 0;
-  padding-top: 0.15rem;
 }
 
 .su-step-title {
@@ -2788,6 +2805,10 @@ svg.su-theme-icon-moon {
   line-height: var(--su-leading-snug);
 }
 
+/*
+ * Vertical: back to marker-beside-label, with the connector running
+ * down from one marker to the next.
+ */
 .su-steps--vertical {
   flex-direction: column;
   gap: var(--su-space-lg);
@@ -2795,12 +2816,21 @@ svg.su-theme-icon-moon {
 
 .su-steps--vertical .su-step {
   flex: none;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--su-space-sm);
+  padding-inline: 0;
+  text-align: start;
+}
+
+.su-steps--vertical .su-step-content {
+  padding-top: 0.15rem;
 }
 
 .su-steps--vertical .su-step:not(:last-child)::after {
-  top: 2rem;
-  bottom: calc(var(--su-space-lg) * -1);
-  inset-inline-start: 0.85rem;
+  top: calc(var(--su-step-marker) + 0.35rem);
+  bottom: calc(var(--su-space-lg) * -1 + 0.35rem);
+  inset-inline-start: calc(var(--su-step-marker) / 2 - 1px);
   inset-inline-end: auto;
   width: 2px;
   height: auto;
@@ -2815,12 +2845,21 @@ svg.su-theme-icon-moon {
 
   .su-steps .su-step {
     flex: none;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--su-space-sm);
+    padding-inline: 0;
+    text-align: start;
+  }
+
+  .su-steps .su-step-content {
+    padding-top: 0.15rem;
   }
 
   .su-steps .su-step:not(:last-child)::after {
-    top: 2rem;
-    bottom: calc(var(--su-space-lg) * -1);
-    inset-inline-start: 0.85rem;
+    top: calc(var(--su-step-marker) + 0.35rem);
+    bottom: calc(var(--su-space-lg) * -1 + 0.35rem);
+    inset-inline-start: calc(var(--su-step-marker) / 2 - 1px);
     inset-inline-end: auto;
     width: 2px;
     height: auto;
