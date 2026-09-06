@@ -257,6 +257,7 @@ export function timelineItem(...args) {
 }
 
 const MOCKUP_VARIANTS = ['browser', 'window', 'phone', 'code']
+const MOCKUP_DOTS = ['mono', 'mac']
 
 /**
  * A screenshot in a frame.
@@ -265,16 +266,37 @@ const MOCKUP_VARIANTS = ['browser', 'window', 'phone', 'code']
  * and a terminal. The frame is decoration — it is `aria-hidden`, so a
  * screen reader gets the content and not a description of chrome.
  *
- * @param {...any} args - `mockup({ variant, url, size }, ...children)`
+ * `dots` picks what the three buttons look like: `mono` follows the theme,
+ * `mac` paints the macOS traffic lights.
+ *
+ * The phone takes two of its own: `frame` tints the outer rail with any CSS
+ * color, and `notch` draws the Dynamic Island — pass `false` for a device
+ * that has none.
+ *
+ * @param {...any} args - `mockup({ variant, url, dots, frame, notch, size }, ...children)`
  * @returns {string}
  */
 export function mockup(...args) {
   const { props, children } = parseArgs(args)
-  const { variant = 'browser', url, size = 'md', ...rest } = props
+  const {
+    variant = 'browser',
+    url,
+    dots: dotStyle = 'mono',
+    frame,
+    notch = true,
+    size = 'md',
+    ...rest
+  } = props
 
   const kind = oneOf(variant, MOCKUP_VARIANTS, 'browser')
   const dots = span(
-    { class: 'su-mockup-dots', 'aria-hidden': 'true' },
+    {
+      class: cx(
+        'su-mockup-dots',
+        oneOf(dotStyle, MOCKUP_DOTS, 'mono') === 'mac' && 'su-mockup-dots--mac',
+      ),
+      'aria-hidden': 'true',
+    },
     span({ class: 'su-mockup-dot' }),
     span({ class: 'su-mockup-dot' }),
     span({ class: 'su-mockup-dot' }),
@@ -294,8 +316,11 @@ export function mockup(...args) {
   return div(
     attrs(rest, {
       class: cx('su-mockup', `su-mockup--${kind}`, size !== 'md' && `su-mockup--${oneOf(size, SIZES, 'md')}`),
+      style: { '--su-mockup-frame': kind === 'phone' ? frame : undefined },
     }),
-    kind === 'phone' ? span({ class: 'su-mockup-notch', 'aria-hidden': 'true' }) : '',
+    kind === 'phone' && notch
+      ? span({ class: 'su-mockup-notch', 'aria-hidden': 'true' })
+      : '',
     bar,
     div({ class: 'su-mockup-body' }, ...children),
   )

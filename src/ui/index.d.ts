@@ -738,6 +738,12 @@ export interface MockupProps extends BaseProps {
   variant?: 'browser' | 'window' | 'phone' | 'code'
   /** Shown in the address bar. Browser variant only. */
   url?: string
+  /** What the three buttons look like. `mac` paints the traffic lights. */
+  dots?: 'mono' | 'mac'
+  /** Tints the outer rail. Any CSS color. Phone variant only. */
+  frame?: string
+  /** Draw the Dynamic Island. Phone variant only. */
+  notch?: boolean
   size?: Size
 }
 

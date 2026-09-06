@@ -35,6 +35,18 @@ export default () =>
   ),
 )`, { align: 'stretch' }),
 
+      h2('Traffic lights'),
+      p(
+        'The buttons follow the theme by default. ',
+        code("dots: 'mac'"),
+        ' paints them the macOS red, yellow and green instead — the same three in either theme, since the point of them is to be recognisable.',
+      ),
+      demo(`mockup({ variant: 'browser', url: 'sitelo.dev', dots: 'mac' },
+  div({ style: 'padding: 1.5rem' },
+    text({ variant: 'small' }, 'A window you have seen before.'),
+  ),
+)`, { align: 'stretch' }),
+
       h2('Terminal'),
       p(
         'The ',
@@ -49,8 +61,11 @@ export default () =>
 )`, { align: 'stretch' }),
 
       h2('Phone'),
+      p(
+        'A current handset: a Dynamic Island floating clear of the bezel, rather than a notch cut into it. Leave room for it at the top of the screen.',
+      ),
       demo(`mockup({ variant: 'phone' },
-  div({ style: 'padding: 2.5rem 1rem 1rem' },
+  div({ style: 'padding: 3rem 1rem 1rem' },
     stack({ gap: 'md' },
       text({ variant: 'h6', as: 'div' }, 'sitelo'),
       text({ variant: 'caption', tone: 'muted' }, 'Static sites, no framework.'),
@@ -58,6 +73,19 @@ export default () =>
     ),
   ),
 )`),
+
+      h2('Frame and island'),
+      p(
+        code('frame'),
+        ' tints the outer rail — any CSS color, so a device finish is a hex rather than a name this library would have to keep a list of. ',
+        code('notch: false'),
+        ' leaves the island off for anything that has none.',
+      ),
+      demo(`stack({ direction: 'row', gap: 'md', wrap: true },
+  mockup({ variant: 'phone', size: 'sm', frame: '#a8674a' }, ''),
+  mockup({ variant: 'phone', size: 'sm', frame: '#2c3644' }, ''),
+  mockup({ variant: 'phone', size: 'sm', frame: '#c9ced4', notch: false }, ''),
+)`, { align: 'stretch' }),
 
       h2('With a screenshot'),
       p(
@@ -77,7 +105,7 @@ export default () =>
       p(
         'A mockup fills its container by default. ',
         code('size'),
-        ' pins it to a fixed width instead — and the phone is always phone-width.',
+        ' pins it to a fixed width instead. The phone has its own three — 22rem of phone would be a tablet — and it keeps its proportions at all of them: the corners, the rail and the island are fractions of the width rather than fixed lengths.',
       ),
       demo(`stack({ gap: 'md', align: 'flex-start' },
   mockup({ variant: 'window', size: 'sm' }, div({ style: 'padding: 1rem' }, text({ variant: 'small' }, 'size: sm'))),
@@ -106,6 +134,9 @@ export default () =>
       propsTable([
         ['variant', "'browser' | 'window' | 'phone' | 'code'", "'browser'", 'Which frame to draw.'],
         ['url', 'string', '', 'Shown in the address bar. Browser variant only.'],
+        ['dots', "'mono' | 'mac'", "'mono'", 'What the three buttons look like.'],
+        ['frame', 'string', '', 'Tints the outer rail. Any CSS color. Phone only.'],
+        ['notch', 'boolean', 'true', 'Draw the Dynamic Island. Phone only.'],
         ['size', "'sm' | 'md' | 'lg'", "'md'", 'Fixed width. Medium fills the container.'],
       ]),
     ],

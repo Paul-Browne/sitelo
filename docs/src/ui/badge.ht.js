@@ -38,7 +38,7 @@ export default () =>
         code('n+'),
         ', so a badge never grows wide enough to unbalance the thing it sits on.',
       ),
-      demo(`stack({ direction: 'row', gap: 'xl', align: 'center' },
+      demo(`stack({ direction: 'row', gap: 'xl', align: 'center', wrap: true },
   badge({ content: 9 }, button({ variant: 'soft', color: 'neutral' }, 'Nine')),
   badge({ content: 250 }, button({ variant: 'soft', color: 'neutral' }, 'Capped at 99')),
   badge({ content: 250, max: 999 }, button({ variant: 'soft', color: 'neutral' }, 'max: 999')),

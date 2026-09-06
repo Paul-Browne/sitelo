@@ -20,6 +20,7 @@ import {
   script,
   span,
   summary,
+  sup,
   title,
   ul,
 } from 'javascript-to-html'
@@ -351,25 +352,61 @@ function siteFooter(lang = DEFAULT_LOCALE) {
   )
 }
 
+/**
+ * Section sidebar.
+ *
+ * A `<details>` rather than a bare list. The component reference runs to
+ * sixty-odd links, which on a phone pushed the article a full screen down;
+ * closed it costs one row. The stylesheet forces it open from 861px up,
+ * where the sidebar has a column of its own and nothing to gain by hiding.
+ *
+ * The summary names the page the visitor is on, since a closed nav leaves
+ * them nothing else to place themselves by. It is the phone's label, and the
+ * `<p>` above it the wide screen's — one of the two is always `display: none`,
+ * which is what keeps a permanently open disclosure from offering a desktop
+ * visitor a control that does nothing. Search sits outside the whole thing,
+ * in reach on every screen.
+ */
 function sideNav({ label, items, activeHref }) {
+  const current = items.find((item) => item.href === activeHref)
+
   return aside(
     { class: 'docs-sidebar', 'aria-label': label },
     div({ id: 'docs-search' }),
     p({ class: 'docs-sidebar-label' }, label),
-    nav(
-      { class: 'docs-side-nav' },
-      // A `heading` entry groups the links that follow it; the UI sidebar
-      // uses them to keep the component reference's sections.
-      ...items.map((item) =>
-        item.heading
-          ? p({ class: 'docs-side-nav-heading' }, item.heading)
-          : a(
-              {
-                href: item.href,
-                ...(item.href === activeHref ? { class: 'is-active' } : {}),
-              },
-              item.label,
-            ),
+    details(
+      { class: 'docs-sidebar-disclosure' },
+      summary(
+        { class: 'docs-sidebar-toggle' },
+        label,
+        current ? span({ class: 'docs-sidebar-current' }, current.label) : '',
+      ),
+      nav(
+        { class: 'docs-side-nav' },
+        // A `heading` entry groups the links that follow it; the UI sidebar
+        // uses them to keep the component reference's sections.
+        ...items.map((item) =>
+          item.heading
+            ? p({ class: 'docs-side-nav-heading' }, item.heading)
+            : a(
+                {
+                  href: item.href,
+                  ...(item.href === activeHref ? { class: 'is-active' } : {}),
+                },
+                item.label,
+                // `js` marks a component that wants the client runtime. The
+                // title is what a mouse gets; the visually hidden text is
+                // what a screen reader reads, since "js" on its own is
+                // announced as a letter pair and explains nothing.
+                item.js
+                  ? sup(
+                      { class: 'docs-side-nav-js', title: 'Needs JavaScript' },
+                      'js',
+                      span({ class: 'docs-sr-only' }, ' (needs JavaScript)'),
+                    )
+                  : '',
+              ),
+        ),
       ),
     ),
   )
@@ -477,8 +514,10 @@ function pageShell({
        * Before the site stylesheet on purpose. sitelo-ui declares
        * `color-scheme` on bare `:root`, and the docs sheet does too — its
        * dark default is the one that has to survive, so it must come last.
-       * Nothing else collides: every sitelo-ui rule is scoped to an `su-`
-       * class, and this site has none.
+       * `text-size-adjust` is declared on `:root` by both sheets at the
+       * same `100%`, so their order does not matter. Nothing else collides:
+       * every other sitelo-ui rule is scoped to an `su-` class, and this
+       * site has none.
        */
       ...extraHead,
       link({ rel: 'stylesheet', href: '/styles.css' }),

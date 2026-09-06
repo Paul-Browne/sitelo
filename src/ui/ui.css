@@ -1,10 +1,16 @@
 /*!
  * sitelo-ui — component styles.
  *
- * Every rule is scoped to an `su-` class, so dropping this in never
- * restyles markup you wrote yourself. Colors, spacing, radii and type
- * are all custom properties on `:root`: override them with
+ * Every rule that paints something is scoped to an `su-` class, so dropping
+ * this in never restyles markup you wrote yourself. Colors, spacing, radii
+ * and type are all custom properties on `:root`: override them with
  * `theme()` from `sitelo/ui`, or by hand, and every component follows.
+ *
+ * `:root` also carries two inherited declarations that a component cannot
+ * set for itself, because the browser reads them off the document element:
+ * `color-scheme` and `text-size-adjust`. Both are explained where they are
+ * declared below, and both reach the rest of the page — override either on
+ * `:root` if that is not what you want.
  *
  * Dark mode resolves from `prefers-color-scheme` and is overridden by
  * `data-theme` / `data-su-theme` on any ancestor.
@@ -128,6 +134,20 @@
   --su-danger-ring: rgba(208, 44, 44, 0.3);
 
   color-scheme: light;
+
+  /*
+   * iOS Safari runs its own text autosizing even on a page that declares
+   * `width=device-width`, inflating any block it judges too wide for the
+   * screen. It decides block by block, so a component can come out with its
+   * own text at two different sizes — a wide `nowrap` cell boosted while the
+   * narrow one beside it is left alone. No desktop engine does this, so it
+   * only ever shows up on a real handset.
+   *
+   * `100%` stops the automatic inflation and still lets the reader
+   * pinch-zoom; `none` would take that away.
+   */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /*
@@ -1605,6 +1625,12 @@ a.su-list-item:hover,
 
 .su-pagination {
   display: flex;
+  /*
+   * Twelve pages with `siblings: 3` is wider than a phone, and without
+   * this the row pushed the whole page sideways rather than the control
+   * taking a second line.
+   */
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--su-space-xs);
   list-style: none;
@@ -1716,6 +1742,13 @@ a.su-list-item:hover,
   top: 0;
   z-index: 30;
   display: flex;
+  /*
+   * A bar carrying a brand, three links and two buttons does not fit a
+   * phone. Wrapping to a second row is not what a real site would do with
+   * it — that is a menu — but it keeps the bar inside the page, which is
+   * the part the component can be responsible for.
+   */
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--su-space-md);
   padding: var(--su-space-sm) var(--su-space-md);
@@ -2955,6 +2988,9 @@ svg.su-theme-icon-moon {
 .su-mockup {
   --su-mockup-width: 100%;
   width: var(--su-mockup-width);
+  /* `size` pins a width — 22rem, 60rem — which on a narrow screen is wider
+   * than the page. Pinned is not the same as immovable. */
+  max-width: 100%;
   border: var(--su-border-width) solid var(--su-border-strong);
   border-radius: var(--su-radius-lg);
   background: var(--su-surface);
@@ -2986,6 +3022,27 @@ svg.su-theme-icon-moon {
   border-radius: var(--su-radius-full);
   background: var(--su-border-strong);
 }
+
+/*
+ * `dots: 'mac'` — the macOS traffic lights.
+ *
+ * Fixed hex rather than theme tokens, and the same three in light and dark.
+ * These are a quotation of someone else's window chrome, so they have to
+ * stay recognisable instead of following the palette: routing the first one
+ * through `--su-danger` would give you a themed red, not *that* red.
+ *
+ * They are still custom properties, so a site that wants its own three can
+ * set them on the mockup without touching the global tokens.
+ */
+.su-mockup-dots--mac {
+  --su-mockup-dot-close: #ff5f57;
+  --su-mockup-dot-minimize: #febc2e;
+  --su-mockup-dot-zoom: #28c840;
+}
+
+.su-mockup-dots--mac .su-mockup-dot:nth-child(1) { background: var(--su-mockup-dot-close); }
+.su-mockup-dots--mac .su-mockup-dot:nth-child(2) { background: var(--su-mockup-dot-minimize); }
+.su-mockup-dots--mac .su-mockup-dot:nth-child(3) { background: var(--su-mockup-dot-zoom); }
 
 .su-mockup-url {
   flex: 1;
@@ -3032,29 +3089,82 @@ svg.su-theme-icon-moon {
   overflow-x: auto;
 }
 
+/*
+ * The rail and the bezel are two different things, so they are two
+ * different properties. `frame` tints the rail the way a phone's band is
+ * anodised; the bezel behind the screen stays near-black in both themes,
+ * because a switched-off screen is black on every device there has ever
+ * been and a themed one would read as a bug.
+ *
+ * Every length below is a multiple of `--su-mockup-phone-unit`, one
+ * seventeenth of the frame's width. The multipliers are the rem values
+ * this was drawn at — `2.6` is still the 2.6rem corner at the default
+ * width — but they now hold their proportions at any size. Fixed radii
+ * were right at one width and turned a narrower phone into a capsule.
+ */
 .su-mockup--phone {
+  --su-mockup-frame: var(--su-border-strong);
+  --su-mockup-bezel: #08090c;
   --su-mockup-width: 17rem;
+  --su-mockup-phone-unit: calc(var(--su-mockup-width) / 17);
+  --su-mockup-phone-padding: calc(0.4 * var(--su-mockup-phone-unit));
   position: relative;
-  padding: 0.6rem;
-  border-width: 2px;
-  border-radius: 2.2rem;
-  background: var(--su-surface-2);
+  padding: var(--su-mockup-phone-padding);
+  border-width: calc(0.18 * var(--su-mockup-phone-unit));
+  border-color: var(--su-mockup-frame);
+  border-radius: calc(2.6 * var(--su-mockup-phone-unit));
+  background: var(--su-mockup-bezel);
 }
 
+/*
+ * `size` on a phone picks another phone, not the widths the browser and
+ * window frames share — 22rem of phone is a tablet.
+ */
+.su-mockup--phone.su-mockup--sm { --su-mockup-width: 11rem; }
+.su-mockup--phone.su-mockup--lg { --su-mockup-width: 22rem; }
+
 .su-mockup--phone .su-mockup-body {
-  min-height: 24rem;
-  border-radius: 1.7rem;
+  /*
+   * Tall enough to read as a phone. A current handset is around 19.5:9, and
+   * at this width the old 24rem came out nearer 3:2 — a slab, not a phone.
+   * It is a floor rather than a height, so a screen with more in it than
+   * this still grows.
+   */
+  min-height: calc(32 * var(--su-mockup-phone-unit));
+  border-radius: calc(2.6 * var(--su-mockup-phone-unit) - var(--su-mockup-phone-padding));
   background: var(--su-surface);
 }
 
+/*
+ * The Dynamic Island rather than the old notch: a pill floating clear of
+ * the top bezel, not a bite taken out of it. It sits `0.6rem` below the
+ * screen's top edge — `top` is measured from the padding box, and the
+ * screen starts one `padding` in.
+ *
+ * The lens is `::after` rather than another span. It is one more piece of
+ * the same decoration, and the island is already `aria-hidden`.
+ */
 .su-mockup-notch {
   position: absolute;
-  top: 0.6rem;
+  top: var(--su-mockup-phone-unit);
   left: 50%;
   transform: translateX(-50%);
   z-index: 1;
-  width: 4.5rem;
-  height: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: calc(5 * var(--su-mockup-phone-unit));
+  height: calc(1.6 * var(--su-mockup-phone-unit));
+  padding-right: calc(0.34 * var(--su-mockup-phone-unit));
   border-radius: var(--su-radius-full);
-  background: var(--su-surface-2);
+  background: #000;
+}
+
+.su-mockup-notch::after {
+  content: '';
+  width: calc(0.4 * var(--su-mockup-phone-unit));
+  height: calc(0.4 * var(--su-mockup-phone-unit));
+  border-radius: var(--su-radius-full);
+  /* A lens reads as a lens only by being barely lighter than the island. */
+  background: #161c26;
 }

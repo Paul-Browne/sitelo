@@ -116,7 +116,8 @@ const DOC_LABELS = {
  * UI sidebar.
  *
  * Grouped, so the sections of the component reference survive into the
- * navigation. A `heading` entry is a label, not a link.
+ * navigation. A `heading` entry is a label, not a link, and `js` marks the
+ * four components that want `sitelo/ui/client` to be loaded.
  *
  * English only for now — the pages under `/ui` have no translations yet,
  * so {@link hasUiSection} keeps the section out of the other locales'
@@ -156,17 +157,17 @@ const UI_LABELS = {
     { href: '/ui/list', label: 'List' },
     { href: '/ui/figure', label: 'Figure' },
     { heading: 'Feedback' },
-    { href: '/ui/alert', label: 'Alert' },
+    { href: '/ui/alert', label: 'Alert', js: true },
     { href: '/ui/empty', label: 'Empty' },
     { href: '/ui/progress', label: 'Progress' },
     { href: '/ui/skeleton', label: 'Skeleton' },
-    { href: '/ui/toast', label: 'Toast' },
+    { href: '/ui/toast', label: 'Toast', js: true },
     { heading: 'Navigation' },
     { href: '/ui/breadcrumbs', label: 'Breadcrumbs' },
     { href: '/ui/pagination', label: 'Pagination' },
-    { href: '/ui/tabs', label: 'Tabs' },
+    { href: '/ui/tabs', label: 'Tabs', js: true },
     { href: '/ui/app-bar', label: 'App bar' },
-    { href: '/ui/theme-toggle', label: 'Theme toggle' },
+    { href: '/ui/theme-toggle', label: 'Theme toggle', js: true },
     { heading: 'Overlays' },
     { href: '/ui/modal', label: 'Modal' },
     { href: '/ui/drawer', label: 'Drawer' },
@@ -271,7 +272,11 @@ export function uiNav(lang = DEFAULT_LOCALE) {
   return items.map((item) =>
     item.heading
       ? item
-      : { href: localePath(item.href, lang), label: item.label },
+      : {
+          href: localePath(item.href, lang),
+          label: item.label,
+          ...(item.js ? { js: true } : {}),
+        },
   )
 }
 

@@ -12,6 +12,22 @@
  */
 :root {
   color-scheme: dark;
+  /*
+   * iOS Safari runs its own text autosizing even on a page that declares
+   * `width=device-width`, inflating any block it judges too wide for the
+   * screen. It decides block by block, so the props tables came out mixed on
+   * a phone: the narrow `Prop` cells stayed at 0.92rem while a wide `nowrap`
+   * cell — Typography's `'h1'…'h6' | 'lead' | …` — was boosted past the
+   * heading beside it, while the shorter tables on Card were left alone. No
+   * desktop engine does this, so it only ever showed up on a real handset.
+   *
+   * `100%` stops the automatic inflation and still lets the reader
+   * pinch-zoom; `none` would take that away. sitelo-ui declares the same
+   * thing on `:root`, at the same value — this sheet does not depend on that
+   * one being loaded.
+   */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   --ink: #e8f2ee;
   --ink-soft: #9bb5aa;
   --ink-faint: #6d857c;
@@ -1666,6 +1682,17 @@ a.feature-card:hover h3 {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
+/*
+ * The sidebar's disclosure, open here and closed on a phone — see the
+ * 860px block. `content-visibility` is how a browser hides a closed
+ * <details>, so overriding it on the content is what holds this one open
+ * whatever the `open` attribute says.
+ */
+.docs-sidebar-disclosure::details-content {
+  content-visibility: visible;
+  block-size: auto;
+}
+
 .docs-sidebar-label {
   margin: 0 0 0.75rem;
   color: var(--ink-faint);
@@ -1673,6 +1700,18 @@ a.feature-card:hover h3 {
   font-size: 0.72rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+/* The phone's label — the summary of the disclosure the nav sits in. */
+.docs-sidebar-toggle {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.docs-sidebar-toggle::-webkit-details-marker {
+  display: none;
 }
 
 .docs-side-nav {
@@ -1895,10 +1934,76 @@ a.feature-card:hover h3 {
     border-bottom: 1px solid var(--line);
   }
 
+  /*
+   * Sixty-odd component links push the article a screen and a half down a
+   * phone, so the nav closes and hands that space back. One tap on the row
+   * below opens it; a page load closes it again, which is what a visitor
+   * who has just followed one of its links wants anyway.
+   */
+  .docs-sidebar-disclosure:not([open])::details-content {
+    content-visibility: hidden;
+    block-size: 0;
+  }
+
+  .docs-sidebar-label {
+    display: none;
+  }
+
+  .docs-sidebar-toggle {
+    display: flex;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--line);
+    border-radius: 0.55rem;
+    color: var(--ink-faint);
+    background: color-mix(in srgb, var(--ink) 4%, transparent);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  /* Same caret as the language switcher, turned over when open. */
+  .docs-sidebar-toggle::after {
+    content: '';
+    flex: none;
+    width: 0.4rem;
+    height: 0.4rem;
+    margin-left: auto;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+  }
+
+  .docs-sidebar-disclosure[open] .docs-sidebar-toggle {
+    color: var(--ink-soft);
+  }
+
+  .docs-sidebar-disclosure[open] .docs-sidebar-toggle::after {
+    transform: translateY(1px) rotate(-135deg);
+  }
+
+  /*
+   * The page the visitor is on. Worth the row only while the nav is closed,
+   * but it costs nothing open either, and hiding it there would make the
+   * summary jump between two widths on every tap.
+   */
+  .docs-sidebar-current {
+    overflow: hidden;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    letter-spacing: normal;
+    text-transform: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .docs-side-nav {
     flex-direction: row;
     flex-wrap: wrap;
     gap: 0.35rem;
+    margin-top: 0.75rem;
   }
 
   /*
@@ -2030,6 +2135,42 @@ a.feature-card:hover h3 {
 
 .docs-side-nav-heading:first-child {
   margin-top: 0;
+}
+
+/*
+ * The "js" against a component's name in the UI sidebar: it wants
+ * `sitelo/ui/client` loaded. Deliberately quiet — every one of them still
+ * renders without the script, so this is a note, not a warning.
+ *
+ * `top: 0` cancels the superscript lift the browser applies by default,
+ * which on a 0.6rem mark inside a 0.95rem link was enough to push the row
+ * taller than its neighbours.
+ */
+.docs-side-nav-js {
+  top: 0;
+  margin-left: 0.3em;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+  vertical-align: super;
+}
+
+.docs-side-nav a:hover .docs-side-nav-js,
+.docs-side-nav a.is-active .docs-side-nav-js {
+  color: inherit;
+}
+
+/* Read aloud, never drawn — the mark itself is only two letters. */
+.docs-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 .ui-demo {
