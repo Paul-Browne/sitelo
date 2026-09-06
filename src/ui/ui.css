@@ -406,10 +406,23 @@
 .su-page-link:focus-visible,
 .su-menu-item:focus-visible,
 .su-list-item-action:focus-visible,
+.su-collapsible-trigger:focus-visible,
 .su-switch input:focus-visible + .su-switch-track,
 .su-check input:focus-visible + .su-check-box {
   outline: 2px solid var(--su-c, var(--su-primary));
   outline-offset: 2px;
+}
+
+/*
+ * Every `<summary>` the library styles draws its own marker, so the
+ * default one comes off all three together. This is the WebKit-only
+ * half of that — each rule above also sets `list-style: none`, which
+ * is what the other engines read.
+ */
+.su-menu > summary::-webkit-details-marker,
+.su-accordion-item > summary::-webkit-details-marker,
+.su-collapsible-trigger::-webkit-details-marker {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -436,9 +449,14 @@
   padding-inline: var(--su-container-gutter, var(--su-space-md));
 }
 
+/*
+ * `lg` is the default and deliberately has no rule. Restating the 72rem
+ * fallback here would pin default containers to it, so a site that set
+ * `--su-container-width` for the page would see every size follow but
+ * that one — the class is still emitted, as a hook to hang overrides on.
+ */
 .su-container--sm { --su-container-width: 40rem; }
 .su-container--md { --su-container-width: 56rem; }
-.su-container--lg { --su-container-width: 72rem; }
 .su-container--xl { --su-container-width: 88rem; }
 .su-container--full { --su-container-width: none; }
 
@@ -688,8 +706,9 @@
     color var(--su-transition), box-shadow var(--su-transition);
 }
 
+/* `md` is the default, carried by the fallbacks above — see the note on
+ * `.su-container--sm` for why it does not get a rule of its own. */
 .su-btn--sm { --su-btn-padding-y: 0.4rem; --su-btn-padding-x: 0.75rem; --su-btn-font-size: var(--su-text-xs); --su-btn-height: 2rem; }
-.su-btn--md { --su-btn-padding-y: 0.6rem; --su-btn-padding-x: 1rem; --su-btn-font-size: var(--su-text-sm); --su-btn-height: 2.5rem; }
 .su-btn--lg { --su-btn-padding-y: 0.8rem; --su-btn-padding-x: 1.4rem; --su-btn-font-size: var(--su-text-md); --su-btn-height: 3rem; }
 
 .su-btn--solid {
@@ -1954,10 +1973,6 @@ a.su-list-item:hover,
   cursor: pointer;
 }
 
-.su-menu > summary::-webkit-details-marker {
-  display: none;
-}
-
 .su-menu-list {
   position: absolute;
   z-index: 50;
@@ -2026,10 +2041,6 @@ a.su-list-item:hover,
   font-weight: var(--su-weight-medium);
   list-style: none;
   color: var(--su-text);
-}
-
-.su-accordion-item > summary::-webkit-details-marker {
-  display: none;
 }
 
 .su-accordion-item > summary::after {
@@ -2312,10 +2323,6 @@ svg.su-theme-icon-moon {
   border-radius: var(--su-radius-sm);
 }
 
-.su-collapsible-trigger::-webkit-details-marker {
-  display: none;
-}
-
 .su-collapsible-trigger::after {
   content: '';
   width: 0.4rem;
@@ -2333,11 +2340,6 @@ svg.su-theme-icon-moon {
 .su-collapsible-trigger:hover {
   text-decoration: underline;
   text-underline-offset: 0.18em;
-}
-
-.su-collapsible-trigger:focus-visible {
-  outline: 2px solid var(--su-c, var(--su-primary));
-  outline-offset: 2px;
 }
 
 .su-collapsible-content {
@@ -2737,43 +2739,50 @@ svg.su-theme-icon-moon {
  * Steps
  * ------------------------------------------------------------------ */
 
+/*
+ * Vertical is the base and horizontal is the override, rather than the
+ * other way round. A row of steps has nowhere to go on a phone, so the
+ * narrow layout was needed twice — once for `--vertical`, once for the
+ * phone — and the two copies had to be kept in step by hand. Written
+ * this way each layout is stated once: `--vertical` simply never opts
+ * in to the horizontal block below.
+ */
 .su-steps {
   --su-step-marker: 1.8rem;
   display: flex;
+  flex-direction: column;
+  gap: var(--su-space-lg);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-/*
- * Horizontal: the marker sits above its label, centred, with the
- * connector running between markers. Beside the label — which is where
- * it started — the connector strikes straight through the text.
- */
+/* Marker beside the label, with the connector running down between them. */
 .su-step {
   position: relative;
-  flex: 1;
+  flex: none;
   min-width: 0;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--su-space-xs);
-  padding-inline: var(--su-space-xs);
-  text-align: center;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--su-space-sm);
+  padding-inline: 0;
+  text-align: start;
 }
 
 /*
- * From this marker's edge to the next one's. Steps share the width
- * evenly, so the next marker's centre is exactly one step away — hence
- * the 50% either side.
+ * From under this marker to the top of the next one. The list gap sits
+ * between the two items, so the run has to reach back across it.
  */
 .su-step:not(:last-child)::after {
   content: '';
   position: absolute;
-  top: calc(var(--su-step-marker) / 2 - 1px);
-  inset-inline-start: calc(50% + var(--su-step-marker) / 2 + 0.4rem);
-  inset-inline-end: calc(-50% + var(--su-step-marker) / 2 + 0.4rem);
-  height: 2px;
+  top: calc(var(--su-step-marker) + 0.35rem);
+  bottom: calc(var(--su-space-lg) * -1 + 0.35rem);
+  inset-inline-start: calc(var(--su-step-marker) / 2 - 1px);
+  inset-inline-end: auto;
+  width: 2px;
+  height: auto;
   background: var(--su-border);
 }
 
@@ -2818,6 +2827,7 @@ svg.su-theme-icon-moon {
 
 .su-step-content {
   min-width: 0;
+  padding-top: 0.15rem;
 }
 
 .su-step-title {
@@ -2839,63 +2849,45 @@ svg.su-theme-icon-moon {
 }
 
 /*
- * Vertical: back to marker-beside-label, with the connector running
- * down from one marker to the next.
+ * Horizontal once there is room for it: the marker sits above its label,
+ * centred, with the connector running between markers. `--vertical` is
+ * excluded rather than reverted, so it keeps the base layout at every
+ * width. `width > 40rem` is the exact complement of the `max-width:
+ * 40rem` this replaced, so the breakpoint has not moved.
  */
-.su-steps--vertical {
-  flex-direction: column;
-  gap: var(--su-space-lg);
-}
-
-.su-steps--vertical .su-step {
-  flex: none;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: var(--su-space-sm);
-  padding-inline: 0;
-  text-align: start;
-}
-
-.su-steps--vertical .su-step-content {
-  padding-top: 0.15rem;
-}
-
-.su-steps--vertical .su-step:not(:last-child)::after {
-  top: calc(var(--su-step-marker) + 0.35rem);
-  bottom: calc(var(--su-space-lg) * -1 + 0.35rem);
-  inset-inline-start: calc(var(--su-step-marker) / 2 - 1px);
-  inset-inline-end: auto;
-  width: 2px;
-  height: auto;
-}
-
-/* A row of steps has nowhere to go on a phone. */
-@media (max-width: 40rem) {
-  .su-steps {
-    flex-direction: column;
-    gap: var(--su-space-lg);
-  }
-
-  .su-steps .su-step {
-    flex: none;
+@media (width > 40rem) {
+  .su-steps:not(.su-steps--vertical) {
     flex-direction: row;
-    align-items: flex-start;
-    gap: var(--su-space-sm);
-    padding-inline: 0;
-    text-align: start;
+    /* `normal`, the initial value, rather than `0` — the row layout had
+     * no gap before this block existed, and this restores exactly that. */
+    gap: normal;
   }
 
-  .su-steps .su-step-content {
-    padding-top: 0.15rem;
+  .su-steps:not(.su-steps--vertical) .su-step {
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--su-space-xs);
+    padding-inline: var(--su-space-xs);
+    text-align: center;
   }
 
-  .su-steps .su-step:not(:last-child)::after {
-    top: calc(var(--su-step-marker) + 0.35rem);
-    bottom: calc(var(--su-space-lg) * -1 + 0.35rem);
-    inset-inline-start: calc(var(--su-step-marker) / 2 - 1px);
-    inset-inline-end: auto;
-    width: 2px;
-    height: auto;
+  .su-steps:not(.su-steps--vertical) .su-step-content {
+    padding-top: 0;
+  }
+
+  /*
+   * From this marker's edge to the next one's. Steps share the width
+   * evenly, so the next marker's centre is exactly one step away — hence
+   * the 50% either side.
+   */
+  .su-steps:not(.su-steps--vertical) .su-step:not(:last-child)::after {
+    top: calc(var(--su-step-marker) / 2 - 1px);
+    bottom: auto;
+    inset-inline-start: calc(50% + var(--su-step-marker) / 2 + 0.4rem);
+    inset-inline-end: calc(-50% + var(--su-step-marker) / 2 + 0.4rem);
+    width: auto;
+    height: 2px;
   }
 }
 
@@ -2945,7 +2937,13 @@ svg.su-theme-icon-moon {
   border-radius: var(--su-radius-full);
   border: 2px solid var(--su-surface);
   background: var(--su-c, var(--su-border-strong));
-  color: var(--su-c-fg, #fff);
+  /*
+   * `color` on a timeline item is optional, so both halves of this pair
+   * have to work uncoloured too. The fallback is the body text, not
+   * white: an uncoloured marker sits on `--su-border-strong`, and white
+   * on that is 1.54:1 in light mode — an icon you cannot see.
+   */
+  color: var(--su-c-fg, var(--su-text));
   font-size: 0.6rem;
   line-height: 1;
 }

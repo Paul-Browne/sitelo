@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code } from '../lib/code.js'
+import { code, codeBlock } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
 import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
 
@@ -64,10 +64,14 @@ export default () =>
 )`, { align: 'stretch' }),
 
       h2('Dismissible'),
+      p('The close button carries its own handler:'),
+      codeBlock(
+        'Rendered markup',
+        `onclick="import('/su/alert.js').then(m=>m.dismiss(this))"`,
+        'html',
+      ),
       p(
-        'The close button carries its own handler — ',
-        code("onclick=\"import('/su/alert.js').then(m=>m.dismiss(this))\""),
-        ' — so the alert below really closes with nothing imported on this page. If that module never arrives, the button renders and does nothing, which is why an alert should never be the only place a message appears.',
+        'So the alert below really closes with nothing imported on this page. If that module never arrives, the button renders and does nothing, which is why an alert should never be the only place a message appears.',
       ),
       demo(`alert({ color: 'primary', title: 'Dismissible', dismissible: true },
   'Click the × — the handler fetches itself on the first press.',

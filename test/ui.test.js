@@ -820,6 +820,33 @@ function readTokens(block) {
   return tokens;
 }
 
+test('the two dark blocks stay in step with each other', () => {
+  const css = ui.stylesheet({ minify: false });
+
+  /*
+   * The dark tokens are written out twice — once for `data-theme`, once
+   * for the media query — because plain CSS cannot share a declaration
+   * block between a selector and an `@media`. Nothing in the language
+   * keeps the copies equal, and the contrast test below reads only the
+   * media one, so a token added to that copy alone would ship a
+   * `data-theme="dark"` palette that no test has ever looked at.
+   */
+  const attrStart = css.indexOf("\n[data-theme='dark']");
+  const attribute = readTokens(css.slice(attrStart, css.indexOf('\n}', attrStart)));
+
+  const mediaStart = css.indexOf('@media (prefers-color-scheme: dark)');
+  const media = readTokens(css.slice(mediaStart, css.indexOf('\n  }', mediaStart)));
+
+  assert.ok(Object.keys(attribute).length > 40, 'the attribute block was found');
+  assert.ok(Object.keys(media).length > 40, 'the media block was found');
+
+  assert.deepEqual(
+    attribute,
+    media,
+    'data-theme dark and prefers-color-scheme dark declare the same tokens',
+  );
+});
+
 test('every palette clears WCAG AA against the surface it sits on', () => {
   const css = ui.stylesheet({ minify: false });
 
