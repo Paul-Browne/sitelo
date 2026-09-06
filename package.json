@@ -33,7 +33,6 @@
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "sideEffects": [
-    "./src/ui/client.js",
     "**/*.css"
   ],
   "exports": {

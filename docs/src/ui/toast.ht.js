@@ -32,12 +32,16 @@ body(
   // …the page…
   toasts(),
 )`, 'javascript'),
-      p('And load the runtime from a bundled entry file:'),
+      p(
+        'This is the one part of the runtime nothing on the page triggers for you, so it is the one part you import yourself:',
+      ),
       codeBlock('src/main.js', `import { toast } from 'sitelo/ui/client'
 
 document.querySelector('#save').addEventListener('click', () => {
   toast('Saved.', { color: 'success' })
 })`, 'javascript'),
+      p('Or reach it the way the components do, and skip the bundle entirely:'),
+      codeBlock('Anywhere', `button({ onclick: "import('/su/toast.js').then(m=>m.toast('Saved.'))" }, 'Save')`, 'javascript'),
 
       h2('Try it'),
       p(

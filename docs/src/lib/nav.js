@@ -117,7 +117,7 @@ const DOC_LABELS = {
  *
  * Grouped, so the sections of the component reference survive into the
  * navigation. A `heading` entry is a label, not a link, and `js` marks the
- * four components that want `sitelo/ui/client` to be loaded.
+ * four components that fetch a runtime module of their own.
  *
  * English only for now — the pages under `/ui` have no translations yet,
  * so {@link hasUiSection} keeps the section out of the other locales'

@@ -1,5 +1,6 @@
 import { button, div, p as pEl, span } from 'javascript-to-html'
 
+import { handler } from './handlers.js'
 import { attrs, colorClass, cx, oneOf, parseArgs, SIZES, space } from './internal.js'
 
 /** Default glyph per alert color — plain SVG, no icon dependency. */
@@ -59,14 +60,15 @@ export function alert(...args) {
       ...children,
     ),
     dismissible
-      ? // `data-su-dismiss` is picked up by sitelo/ui/client; without
-        // that script the button simply does nothing, so the alert
-        // still renders correctly with JavaScript off.
+      ? // The button fetches its own handler on the first click. With no
+        // JavaScript — or a request that never lands — it does nothing
+        // and the alert stays, which is what the server rendered.
         button(
           {
             type: 'button',
             class: 'su-alert-dismiss',
             'data-su-dismiss': '',
+            onclick: handler('alert', 'dismiss(this)'),
             'aria-label': String(dismissLabel),
           },
           '&times;',

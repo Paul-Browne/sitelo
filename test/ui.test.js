@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import * as ui from '../src/ui/index.js';
 import defaultExport from '../src/ui/index.js';
+import { configureUiClient, RUNTIME_MODULES } from '../src/ui/handlers.js';
 import { attrs, parseArgs, space } from '../src/ui/internal.js';
 
 /* ------------------------------------------------------------------ *
@@ -320,7 +321,7 @@ test('tabs() renders a tablist when items have panels', () => {
     value: 'b',
   });
 
-  assert.match(html, /data-su-tabs/);
+  assert.match(html, /role="tablist"/);
   assert.match(html, /id="b-tab"[^>]*aria-selected="true"/);
   assert.match(html, /id="a-panel"[^>]*hidden/);
   assert.ok(!/id="b-panel"[^>]*hidden/.test(html));
@@ -585,68 +586,137 @@ test('mockup() frames are decoration, not content', () => {
 });
 
 /* -------------------------------------------------------------- *
- * The contract between the rendered markup and sitelo/ui/client
+ * The contract between a component's event attribute and the module
+ * it imports
  *
  * The runtime needs a DOM, so its behaviour is exercised in a browser
- * rather than here. What these lock down is the seam: the hooks the
- * script queries for, and the markup the components emit. That is where
- * the two have actually drifted apart before.
+ * rather than here. What these lock down is the seam: the URL each
+ * handler names, and the export it calls on the other side. That is
+ * where the two have actually drifted apart before.
  * -------------------------------------------------------------- */
 
-/** @returns {string} */
-function clientSource() {
+/** @param {string} name @returns {string} */
+function runtimeSource(name) {
   return readFileSync(
-    fileURLToPath(new URL('../src/ui/client.js', import.meta.url)),
+    fileURLToPath(new URL(`../src/ui/runtime/${name}.js`, import.meta.url)),
     'utf8',
   );
 }
 
-test('every hook the client queries for is emitted by a component', () => {
-  const source = clientSource();
+/** Every `import('…/x.js').then(m=>m.call(…))` in a piece of markup. */
+function handlersIn(html) {
+  return [...html.matchAll(/import\('([^']+)'\)\.then\(m=>m\.([A-Za-z]+)\(([^)]*)\)\)/g)].map(
+    ([whole, url, call, args]) => ({ whole, url, call, args }),
+  );
+}
 
-  const hooks = [
-    ['data-su-tabs', ui.tabs({ items: [{ id: 'a', label: 'A', panel: 'x' }] })],
-    ['data-su-dismiss', ui.alert({ dismissible: true }, 'x')],
-    ['data-su-theme-toggle', ui.themeToggle()],
-    ['su-menu', ui.menu({ trigger: 'x' }, ui.menuItem('y'))],
-    ['su-toasts', ui.toasts()],
-    ['role="menuitem"', ui.menu({ trigger: 'x' }, ui.menuItem('y'))],
-    ['role="tab"', ui.tabs({ items: [{ id: 'a', label: 'A', panel: 'x' }] })],
-  ];
+/** One rendering of each component that wires itself to a module. */
+const WIRED = [
+  ['tabs', ui.tabs({ items: [{ id: 'a', label: 'A', panel: 'x' }] })],
+  ['alert', ui.alert({ dismissible: true }, 'x')],
+  ['themeToggle', ui.themeToggle()],
+  ['menu', ui.menu({ trigger: 'x' }, ui.menuItem('y'))],
+];
 
-  for (const [hook, html] of hooks) {
-    const needle = hook.replace('role="menuitem"', 'menuitem').replace('role="tab"', 'role="tab"');
+test('every module a handler imports exports the function it calls', () => {
+  for (const [name, html] of WIRED) {
+    const handlers = handlersIn(html);
 
-    assert.ok(source.includes(needle), `client.js looks for ${hook}`);
-    assert.ok(html.includes(hook), `a component renders ${hook}`);
+    assert.ok(handlers.length > 0, `${name}() renders at least one inline import`);
+
+    for (const { url, call } of handlers) {
+      const module = /^\/su\/([a-z]+)\.js$/.exec(url)?.[1];
+
+      assert.ok(module, `${name}() imports from ${url}, which is under the served base`);
+      assert.ok(RUNTIME_MODULES.includes(module), `${module} is a module the plugin serves`);
+      assert.match(
+        runtimeSource(module),
+        new RegExp(`export function ${call}\\b`),
+        `${module}.js exports ${call}(), which ${name}() calls`,
+      );
+    }
   }
 });
 
-test('the toasts region id is the one the client looks up', () => {
+test('handlers are valid JavaScript and never break out of the attribute', () => {
+  for (const [name, html] of WIRED) {
+    for (const value of html.matchAll(/ on[a-z]+="([^"]*)"/g)) {
+      const body = value[1];
+
+      // javascript-to-html escapes `"` as `&#34;`, which would be an
+      // entity inside a script rather than a quote — the handler has to
+      // hold together without any.
+      assert.ok(!body.includes('&#'), `${name}()'s handler needs no escaping`);
+      assert.doesNotThrow(
+        () => new Function('event', body),
+        `${name}()'s handler parses`,
+      );
+    }
+  }
+});
+
+test('no component asks the page to load a script', () => {
+  // The whole point of the inline imports: a page that imports nothing
+  // still gets working tabs, alerts, menus and theme toggle.
+  for (const [name, html] of WIRED) {
+    assert.ok(!html.includes('<script'), `${name}() renders no script tag`);
+  }
+});
+
+test('RUNTIME_MODULES lists exactly what is in runtime/', () => {
+  // The plugin serves this list and nothing else; a module added to the
+  // directory but not the list would 404 on first click.
+  const onDisk = readdirSync(fileURLToPath(new URL('../src/ui/runtime', import.meta.url)))
+    .filter((file) => file.endsWith('.js'))
+    .map((file) => file.slice(0, -'.js'.length))
+    .sort();
+
+  assert.deepEqual([...RUNTIME_MODULES].sort(), onDisk);
+});
+
+test('runtime modules stand alone', () => {
+  // They are copied into the build one file at a time, by name — an
+  // import between them would resolve to a file that was never copied.
+  for (const name of RUNTIME_MODULES) {
+    assert.ok(
+      !/^\s*import\s/m.test(runtimeSource(name)),
+      `${name}.js imports nothing`,
+    );
+  }
+});
+
+test('configureUiClient() moves every handler to the new base', () => {
+  try {
+    configureUiClient({ base: '/assets/su' });
+
+    const html = ui.alert({ dismissible: true }, 'x');
+
+    assert.match(html, /import\('\/assets\/su\/alert\.js'\)/);
+  } finally {
+    configureUiClient({ base: null });
+  }
+});
+
+test('the toasts region id is the one toast() looks up', () => {
   // toast() bails out entirely when getElementById misses.
-  const id = /getElementById\('([^']+)'\)/.exec(clientSource())?.[1];
+  const id = /getElementById\('([^']+)'\)/.exec(runtimeSource('toast'))?.[1];
 
   assert.equal(id, 'su-toasts');
   assert.match(ui.toasts(), new RegExp(`id="${id}"`));
 });
 
-test('the dismiss fallback selectors all match something a component renders', () => {
+test('the dismiss fallback selector matches something a component renders', () => {
   // This is the guard that would have caught `.su-toast`, a class the
   // script closed on and nothing ever rendered.
-  const selector = /dismiss\.closest\('([^']+)'\)/.exec(clientSource())?.[1];
+  const selector = /closest\('([^']+)'\)/.exec(runtimeSource('alert'))?.[1];
 
-  assert.ok(selector, 'the fallback selector was found in client.js');
-
-  const dismissible = ui.alert({ dismissible: true }, 'x');
-
-  for (const one of selector.split(',').map((part) => part.trim())) {
-    assert.match(one, /^\.[a-z-]+$/, `${one} is a plain class selector`);
-    assert.match(
-      dismissible,
-      new RegExp(`class="[^"]*\\b${one.slice(1)}\\b`),
-      `${one} matches the markup a dismiss button sits in`,
-    );
-  }
+  assert.ok(selector, 'the fallback selector was found in alert.js');
+  assert.match(selector, /^\.[a-z-]+$/, `${selector} is a plain class selector`);
+  assert.match(
+    ui.alert({ dismissible: true }, 'x'),
+    new RegExp(`class="[^"]*\\b${selector.slice(1)}\\b`),
+    `${selector} matches the markup a dismiss button sits in`,
+  );
 });
 
 test('each tab points at a panel that exists, and one panel is visible', () => {
@@ -676,7 +746,7 @@ test('each tab points at a panel that exists, and one panel is visible', () => {
 test('menu() is a details element that works without script', () => {
   const html = ui.menu({ trigger: 'More' }, ui.menuItem({ href: '/a' }, 'Edit'));
 
-  assert.match(html, /^<details class="su-menu"/);
+  assert.match(html, /^<details ontoggle="[^"]+" class="su-menu"/);
   assert.match(html, /aria-haspopup="menu"/);
   assert.match(html, /<li role="none"><a href="\/a" role="menuitem"/);
 });
