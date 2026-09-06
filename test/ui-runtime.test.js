@@ -4,7 +4,7 @@ import { mkdtempSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
-import { uiRuntime } from '../src/ui/plugin.js';
+import { uiClientPrefix, uiRuntime } from '../src/ui/plugin.js';
 import { configureUiClient, RUNTIME_MODULES } from '../src/ui/handlers.js';
 
 /** A throwaway outDir holding one page. */
@@ -185,5 +185,50 @@ test('the plugin follows configureUiClient(), not just its own option', () => {
     assert.ok(handled, 'the moved URL is served');
   } finally {
     configureUiClient({ base: null });
+  }
+});
+
+test('uiClientPrefix names the prefix the page validator must skip', () => {
+  const before = process.env.SITELO_UI_BASE;
+
+  try {
+    delete process.env.SITELO_UI_BASE;
+
+    assert.equal(uiClientPrefix(), '/su/', 'the default base');
+    assert.equal(uiClientPrefix({ base: '/su/' }), '/su/');
+
+    // A sub-path deploy, however the caller punctuated it. The trailing
+    // slash matters: it is what makes the exemption a directory prefix
+    // rather than an exact URL.
+    assert.equal(uiClientPrefix({ base: 'assets/su' }), '/assets/su/');
+    assert.equal(uiClientPrefix({ base: '/app/su' }), '/app/su/');
+
+    /*
+     * A runtime on another origin never appears as a root-relative URL in
+     * the page, so the validator would not look at it anyway — and naming
+     * it would only add a prefix that can never match.
+     */
+    assert.equal(uiClientPrefix({ base: 'https://cdn.example.com/su/' }), null);
+    assert.equal(uiClientPrefix({ base: '//cdn.example.com/su/' }), null);
+  } finally {
+    restoreEnv(before);
+  }
+});
+
+test('uiClientPrefix reads a base published to the environment', () => {
+  const before = process.env.SITELO_UI_BASE;
+
+  try {
+    // What `uiRuntime`'s own config() hook writes for the pages to read.
+    process.env.SITELO_UI_BASE = '/env/su/';
+
+    assert.equal(uiClientPrefix(), '/env/su/');
+    assert.equal(
+      uiClientPrefix({ base: '/explicit/su/' }),
+      '/explicit/su/',
+      'an explicit option still wins',
+    );
+  } finally {
+    restoreEnv(before);
   }
 });

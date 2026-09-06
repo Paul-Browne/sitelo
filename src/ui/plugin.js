@@ -15,7 +15,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { RUNTIME_MODULES, uiClientBase } from './handlers.js';
+import {
+  DEFAULT_UI_CLIENT_BASE,
+  RUNTIME_MODULES,
+  uiClientBase,
+} from './handlers.js';
 
 const RUNTIME_DIR = fileURLToPath(new URL('./runtime/', import.meta.url));
 
@@ -71,6 +75,27 @@ function target() {
   return isExternal(base)
     ? { external: true, prefix: base }
     : { external: false, prefix: normalize(base) };
+}
+
+/**
+ * The root-relative prefix the runtime answers on, or `null` when it
+ * lives on another origin and is nobody here's to account for.
+ *
+ * Read from the static option rather than {@link uiClientBase}, because
+ * the only caller runs while the plugin array is being built — before
+ * `config()` has set the environment, and long before a page module
+ * could have called `configureUiClient()`. A site that moves the base
+ * that late is telling the components, not the bundler.
+ *
+ * @param {object} [options]
+ * @param {string} [options.base]
+ * @returns {string | null}
+ */
+export function uiClientPrefix({ base } = {}) {
+  const resolved =
+    base ?? process.env.SITELO_UI_BASE ?? DEFAULT_UI_CLIENT_BASE;
+
+  return isExternal(resolved) ? null : normalize(resolved);
 }
 
 /**

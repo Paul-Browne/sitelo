@@ -1,8 +1,15 @@
 import htmlPages from 'vite-plugin-html-pages';
 
-import { uiRuntime } from './ui/plugin.js';
+import { uiClientPrefix, uiRuntime } from './ui/plugin.js';
 
 export * from 'vite-plugin-html-pages';
+
+/** Whatever a caller passed for a list option, as a list. */
+function toArray(value) {
+  if (value == null) return [];
+
+  return Array.isArray(value) ? value : [value];
+}
 
 /**
  * Sitelo’s default plugin entry. Same as vite-plugin-html-pages, with
@@ -16,11 +23,25 @@ export * from 'vite-plugin-html-pages';
  *   deploy, or to an absolute URL to host the files yourself.
  */
 export default function sitelo(options = {}) {
-  const { uiClient, ...pluginOptions } = options;
+  const { uiClient, externalAssets, ...pluginOptions } = options;
+
+  /*
+   * The runtime is served by the plugin below — in dev from middleware,
+   * on a build by copying out of the package — so there is no file under
+   * the pages directory for the page validator to find. Left to itself it
+   * reports every component that imports one as a missing asset. Naming
+   * the prefix here is the whole of the fix; a site's own
+   * `externalAssets` still comes through untouched.
+   */
+  const runtimePrefix = uiClientPrefix(uiClient);
 
   return [
     htmlPages({
       ...pluginOptions,
+      externalAssets: [
+        ...toArray(externalAssets),
+        ...(runtimePrefix ? [runtimePrefix] : []),
+      ],
       generatedTypesDir: options.generatedTypesDir ?? '.sitelo/types',
       displayName: options.displayName ?? 'sitelo',
     }),
