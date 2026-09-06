@@ -189,14 +189,26 @@ export function theme(tokens = {}, { selector = ':root', dark, nonce } = {}) {
  * visitor who chose light sees a dark flash on every navigation, because
  * the choice lives in `localStorage` and the server cannot read it.
  *
+ * It also marks the toggles `aria-pressed` once the body has parsed —
+ * the flip itself is handled by the button's own inline import, but
+ * nothing has been pressed yet on a fresh page load, and a toggle that
+ * announces the wrong state until you use it is worse than the ~150
+ * bytes this costs.
+ *
  * @param {object} [options]
  * @param {string} [options.nonce]
  * @returns {string}
  */
 export function themeScript({ nonce } = {}) {
   const source =
-    "(function(){try{var t=localStorage.getItem('sitelo-ui-theme');" +
-    "if(t==='light'||t==='dark')document.documentElement.setAttribute('data-su-theme',t)}catch(e){}})()"
+    "(function(){var d=document,r=d.documentElement;" +
+    "try{var t=localStorage.getItem('sitelo-ui-theme');" +
+    "if(t==='light'||t==='dark')r.setAttribute('data-su-theme',t)}catch(e){}" +
+    "function p(){var v=r.getAttribute('data-su-theme')||r.getAttribute('data-theme');" +
+    "if(v!=='light'&&v!=='dark')v=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';" +
+    "for(var b of d.querySelectorAll('[data-su-theme-toggle]'))" +
+    "b.setAttribute('aria-pressed',v==='dark')}" +
+    "d.readyState==='loading'?d.addEventListener('DOMContentLoaded',p,{once:true}):p()})()"
 
   return `<script${nonce ? ` nonce="${nonce}"` : ''}>${source}</script>`
 }

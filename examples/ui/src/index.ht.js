@@ -362,7 +362,7 @@ export default () =>
               items: [
                 {
                   title: 'Does this ship any JavaScript?',
-                  content: 'Only if you import sitelo/ui/client. Everything on this page except the tabs, the toast and the theme toggle works without it.',
+                  content: 'A few hundred bytes, and only once you use tabs, a dismissible alert, a menu or the theme toggle — each fetches its own handler on the first interaction. Everything on this page renders and works before that.',
                   open: true,
                 },
                 {

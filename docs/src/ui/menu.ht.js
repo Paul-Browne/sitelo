@@ -28,9 +28,9 @@ export default () =>
         '. A summary is already interactive, and a button inside one nests two controls where there is a single action: invalid markup, and two tab stops for one thing.',
       ),
       p(
-        'Loading ',
-        code('sitelo/ui/client'),
-        ' adds close-on-outside-click and Escape. Without it a menu still opens and closes from its own summary — which is what this page would show if the script were removed.',
+        'Close-on-outside-click and Escape come from an ',
+        code('ontoggle'),
+        ' handler that imports them the first time a menu is opened — and only then. If that module never arrives, a menu still opens and closes from its own summary.',
       ),
 
       h2('Basic menu'),

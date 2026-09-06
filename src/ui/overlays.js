@@ -10,6 +10,7 @@ import {
   ul,
 } from 'javascript-to-html'
 
+import { handler } from './handlers.js'
 import {
   attrs,
   BUTTON_VARIANTS,
@@ -150,8 +151,9 @@ export function drawer(...args) {
  *
  * A `<details>` rather than a popover, because a popover lives in the
  * top layer and cannot be positioned against its trigger without
- * anchor positioning. This opens and closes with no script at all;
- * loading `sitelo/ui/client` adds close-on-outside-click and Escape.
+ * anchor positioning. This opens and closes with no script at all; the
+ * `ontoggle` import below adds close-on-outside-click and Escape, and
+ * only once a menu has actually been opened.
  *
  * The trigger is the `<summary>` itself, styled as a button — pass the
  * label as `trigger` and the button props alongside it, rather than
@@ -183,6 +185,7 @@ export function menu(...args) {
   const iconOnly = trigger == null || trigger === ''
 
   return details(
+    { ontoggle: handler('menu', 'toggled(this)') },
     attrs(rest, { class: cx('su-menu', align === 'end' && 'su-menu--end') }),
     summary(
       {

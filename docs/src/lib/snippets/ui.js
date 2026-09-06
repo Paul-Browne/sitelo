@@ -31,7 +31,7 @@ const T = {
     deleteWord: 'Delete',
     cannotUndo: 'This cannot be undone.',
     linkTabsComment: 'Link tabs: one page per tab, no script at all.',
-    panelTabsComment: 'Panel tabs: swap in place, needs sitelo/ui/client.',
+    panelTabsComment: 'Panel tabs: swap in place, and fetch the code to do it themselves.',
     docsLabel: 'Docs',
     installLabel: 'Install',
     useLabel: 'Use',
@@ -66,7 +66,7 @@ const T = {
     deleteWord: 'Eliminar',
     cannotUndo: 'Esto no se puede deshacer.',
     linkTabsComment: 'Pestañas de enlace: una página por pestaña, sin ningún script.',
-    panelTabsComment: 'Pestañas con panel: cambian en el sitio, necesitan sitelo/ui/client.',
+    panelTabsComment: 'Pestañas con panel: cambian en el sitio y piden solas el código para hacerlo.',
     docsLabel: 'Docs',
     installLabel: 'Instalar',
     useLabel: 'Usar',
@@ -101,7 +101,7 @@ const T = {
     deleteWord: 'Supprimer',
     cannotUndo: 'Cette action est irréversible.',
     linkTabsComment: 'Onglets liens : une page par onglet, aucun script.',
-    panelTabsComment: 'Onglets à panneaux : échange sur place, nécessite sitelo/ui/client.',
+    panelTabsComment: 'Onglets à panneaux : échange sur place, et ils vont chercher le code eux-mêmes.',
     docsLabel: 'Docs',
     installLabel: 'Installer',
     useLabel: 'Utiliser',
@@ -136,7 +136,7 @@ const T = {
     deleteWord: 'Löschen',
     cannotUndo: 'Das lässt sich nicht rückgängig machen.',
     linkTabsComment: 'Link-Tabs: eine Seite pro Tab, ganz ohne Skript.',
-    panelTabsComment: 'Panel-Tabs: wechseln an Ort und Stelle, brauchen sitelo/ui/client.',
+    panelTabsComment: 'Panel-Tabs: wechseln an Ort und Stelle und holen sich den Code dafür selbst.',
     docsLabel: 'Docs',
     installLabel: 'Installieren',
     useLabel: 'Verwenden',
@@ -171,7 +171,7 @@ const T = {
     deleteWord: 'Удалить',
     cannotUndo: 'Это действие необратимо.',
     linkTabsComment: 'Вкладки-ссылки: по странице на вкладку, без единого скрипта.',
-    panelTabsComment: 'Вкладки с панелями: переключаются на месте, нужен sitelo/ui/client.',
+    panelTabsComment: 'Вкладки с панелями: переключаются на месте и сами подгружают нужный код.',
     docsLabel: 'Документация',
     installLabel: 'Установка',
     useLabel: 'Использование',
@@ -206,7 +206,7 @@ const T = {
     deleteWord: '删除',
     cannotUndo: '此操作无法撤销。',
     linkTabsComment: '链接式标签页：一个标签一个页面，完全不需要脚本。',
-    panelTabsComment: '面板式标签页：就地切换，需要 sitelo/ui/client。',
+    panelTabsComment: '面板式标签页：就地切换，所需代码由它们自己加载。',
     docsLabel: '文档',
     installLabel: '安装',
     useLabel: '使用',
@@ -241,7 +241,7 @@ const T = {
     deleteWord: 'Eliminar',
     cannotUndo: 'Isto não pode ser desfeito.',
     linkTabsComment: 'Separadores de ligação: uma página por separador, sem qualquer script.',
-    panelTabsComment: 'Separadores com painel: trocam no lugar, precisam de sitelo/ui/client.',
+    panelTabsComment: 'Separadores com painel: trocam no lugar e vão buscar sozinhos o código.',
     docsLabel: 'Docs',
     installLabel: 'Instalar',
     useLabel: 'Usar',
@@ -305,8 +305,14 @@ head(
   }),
 )`,
 
+    handler: `<!-- rendered by alert({ dismissible: true }) -->
+<button class="su-alert-dismiss"
+        onclick="import('/su/alert.js').then(m=>m.dismiss(this))">
+  &times;
+</button>`,
+
     client: `// src/main.js
-import 'sitelo/ui/client'`,
+import { toast } from 'sitelo/ui/client'`,
 
     themeToggle: `import { styles, themeScript, themeToggle } from 'sitelo/ui'
 

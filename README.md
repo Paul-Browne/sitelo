@@ -609,15 +609,40 @@ Accordions are `<details name>`, menus are `<details>`, tooltips are
 CSS.
 
 Four things want a script — tabs whose panels swap in place, the close
-button on a dismissible alert, `toast()`, and the theme toggle:
+button on a dismissible alert, closing a menu on an outside click or
+Escape, and the theme toggle — and each one goes and gets its own. The
+import is the event attribute:
+
+```html
+<!-- rendered by alert({ dismissible: true }) -->
+<button class="su-alert-dismiss"
+        onclick="import('/su/alert.js').then(m=>m.dismiss(this))">
+  &times;
+</button>
+```
+
+So there is nothing to add to an entry file. sitelo's plugin serves
+those modules from `/su/` in dev and copies the ones your pages
+reference into the build; each is well under a kilobyte, none is
+fetched before the first interaction, and every component renders
+correctly until it is — panel tabs show the panel the server marked
+active, menus open and close on their own, the dismiss button does
+nothing.
+
+Deploying under a sub-path, or hosting the modules elsewhere:
+
+```js
+// vite.config.js
+sitelo({ uiClient: { base: '/assets/su/' } })
+```
+
+`toast()` is the exception, because nothing on the page triggers it for
+you. Import it, along with the theme helpers, from a bundled entry:
 
 ```js
 // src/main.js
-import 'sitelo/ui/client'
+import { toast, setTheme } from 'sitelo/ui/client'
 ```
-
-It is about 3 kB, and every component it touches renders correctly
-without it.
 
 ### What is in it
 

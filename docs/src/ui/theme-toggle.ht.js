@@ -17,11 +17,9 @@ export default () =>
         ' on its own — a site that is happy following the operating system needs nothing on this page. The toggle is for letting a reader override that.',
       ),
       p(
-        'It is one of the four components that need ',
-        code('sitelo/ui/client'),
-        ', because the choice lives in ',
+        'It is one of the four components that need a script, because the choice lives in ',
         code('localStorage'),
-        ' and only a script can read it.',
+        ' and only a script can read it. The button fetches that script itself, on the first press.',
       ),
 
       h2('Setting it up'),
@@ -39,10 +37,19 @@ body(
     appBarActions(themeToggle()),
   ),
 )`, 'javascript'),
-      codeBlock('src/main.js', `import 'sitelo/ui/client'`, 'javascript'),
       p(
+        'There is no third file. ',
         code('themeScript()'),
-        ' is blocking and inline on purpose. Anything deferred paints first, which is exactly the dark flash it exists to prevent.',
+        ' is blocking and inline on purpose — anything deferred paints first, which is exactly the dark flash it exists to prevent — and the flip itself rides on the button:',
+      ),
+      codeBlock('Rendered markup', `<button data-su-theme-toggle
+        onclick="import('/su/theme.js').then(m=>m.toggle(this))">`, 'html'),
+      p(
+        'Pair the two. ',
+        code('themeScript()'),
+        ' is also what marks the toggle ',
+        code('aria-pressed'),
+        ' on load: nothing has been pressed yet, so the button itself cannot know which theme resolved.',
       ),
 
       h2('The toggle'),

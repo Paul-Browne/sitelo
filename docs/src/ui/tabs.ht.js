@@ -36,9 +36,9 @@ export default () =>
 
       h2('Panel tabs'),
       p(
-        'These need ',
-        code('sitelo/ui/client'),
-        ', which this page loads — click them and they really switch, arrow keys included. Without the script the panel the server marked active is simply the one that shows.',
+        'Each tab imports its handler on the first click — ',
+        code("onclick=\"import('/su/tabs.js').then(m=>m.select(this))\""),
+        ' — so these really switch, arrow keys included, with nothing imported on this page. Until that module lands, the panel the server marked active is simply the one that shows.',
       ),
       demo(`tabs({
   value: 'install',

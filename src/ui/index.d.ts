@@ -60,6 +60,19 @@ export function theme(tokens?: Record<string, unknown>, options?: ThemeOptions):
 export function themeScript(options?: { nonce?: string }): string
 
 /* -------------------------------------------------------------- *
+ * Client runtime
+ * -------------------------------------------------------------- */
+
+/**
+ * Serve the runtime that components import from their event attributes
+ * somewhere other than `/su/` — a sub-path deploy, or a CDN.
+ *
+ * Equivalent to the plugin's `uiClient.base` option; call it once, from
+ * a module your pages import.
+ */
+export function configureUiClient(options?: { base?: string | null }): void
+
+/* -------------------------------------------------------------- *
  * Layout
  * -------------------------------------------------------------- */
 
@@ -589,7 +602,7 @@ export function appBarSpacer(props?: BaseProps): string
 export function appBarActions(...args: Args<BaseProps>): string
 export function navLink(...args: Args<BaseProps & { href?: string; current?: boolean; color?: Color }>): string
 
-/** Light/dark toggle. Needs `sitelo/ui/client` and `themeScript()`. */
+/** Light/dark toggle. Wires itself; pair it with `themeScript()`. */
 export function themeToggle(props?: BaseProps & { label?: string; variant?: ButtonProps['variant']; color?: Color }): string
 
 /* -------------------------------------------------------------- *

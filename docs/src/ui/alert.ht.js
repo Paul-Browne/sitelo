@@ -65,12 +65,12 @@ export default () =>
 
       h2('Dismissible'),
       p(
-        'The close button is wired to ',
-        code('sitelo/ui/client'),
-        ', which this page loads — so the alert below really closes. Without that script the button renders and does nothing, which is why an alert should never be the only place a message appears.',
+        'The close button carries its own handler — ',
+        code("onclick=\"import('/su/alert.js').then(m=>m.dismiss(this))\""),
+        ' — so the alert below really closes with nothing imported on this page. If that module never arrives, the button renders and does nothing, which is why an alert should never be the only place a message appears.',
       ),
       demo(`alert({ color: 'primary', title: 'Dismissible', dismissible: true },
-  'Click the × — this page loads the client runtime, so it works.',
+  'Click the × — the handler fetches itself on the first press.',
 )`, { align: 'stretch' }),
 
       h2('Rich content'),
@@ -95,7 +95,7 @@ export default () =>
         ['variant', "'soft' | 'outline' | 'solid'", "'soft'", 'How much weight the alert carries.'],
         ['title', 'Child', '', 'Bold first line.'],
         ['icon', 'Child | false', '', 'Custom icon markup, or false for none.'],
-        ['dismissible', 'boolean', 'false', 'Adds a close button. Needs sitelo/ui/client.'],
+        ['dismissible', 'boolean', 'false', 'Adds a close button that imports its own handler.'],
         ['dismissLabel', 'string', "'Dismiss'", 'Accessible name for that button.'],
       ]),
     ],

@@ -1,5 +1,6 @@
 import { a, button as buttonEl, div, header, li, nav, ol, span } from 'javascript-to-html'
 
+import { handler, tablistKeydown } from './handlers.js'
 import { attrs, colorClass, cx, el, parseArgs } from './internal.js'
 
 /**
@@ -174,7 +175,18 @@ export function tabs(...args) {
   const tablist = div(
     {
       class: 'su-tablist',
-      ...(panelled ? { role: 'tablist', 'aria-label': String(label) } : {}),
+      ...(panelled
+        ? {
+            role: 'tablist',
+            'aria-label': String(label),
+            /*
+             * Roving focus is a property of the list, not of one tab, so
+             * this is the one handler the component delegates: it reads
+             * `event.target` rather than `this`.
+             */
+            onkeydown: tablistKeydown(),
+          }
+        : {}),
     },
     ...normalized.map((item) => {
       const selected = item === active
@@ -199,7 +211,9 @@ export function tabs(...args) {
           'aria-controls': `${item.id}-panel`,
           'aria-selected': selected ? 'true' : 'false',
           tabindex: selected ? 0 : -1,
-          ...(item.disabled ? { disabled: true } : {}),
+          ...(item.disabled
+            ? { disabled: true }
+            : { onclick: handler('tabs', 'select(this)') }),
         },
         item.label,
       )
@@ -223,7 +237,6 @@ export function tabs(...args) {
     : []
 
   return div(
-    ...(panelled ? [{ 'data-su-tabs': '' }] : []),
     attrs(rest, {
       class: cx('su-tabs', variant === 'pills' && 'su-tabs--pills', colorClass(color)),
     }),
@@ -307,9 +320,11 @@ const MOON_ICON =
 /**
  * Light/dark toggle.
  *
- * Needs `sitelo/ui/client` to do anything, and `themeScript()` in the
- * head so the stored choice survives a navigation without a flash. The
- * icon itself is pure CSS, so it is right on the first paint.
+ * Wires itself: the button imports `theme.js` when it is first pressed.
+ * Put `themeScript()` in the head as well, so the stored choice
+ * survives a navigation without a flash and the button starts out
+ * saying which theme is on. The icon itself is pure CSS, so it is right
+ * on the first paint.
  *
  * @param {object} [props] - `{ label, size, variant, color }`
  * @returns {string}
@@ -326,6 +341,7 @@ export function themeToggle(props = {}) {
     {
       type: 'button',
       'data-su-theme-toggle': '',
+      onclick: handler('theme', 'toggle(this)'),
       'aria-label': String(label),
       title: String(label),
     },

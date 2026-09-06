@@ -2138,9 +2138,10 @@ a.feature-card:hover h3 {
 }
 
 /*
- * The "js" against a component's name in the UI sidebar: it wants
- * `sitelo/ui/client` loaded. Deliberately quiet — every one of them still
- * renders without the script, so this is a note, not a warning.
+ * The "js" against a component's name in the UI sidebar: it fetches a
+ * runtime module of its own on the first interaction. Deliberately quiet —
+ * every one of them still renders before that, so this is a note, not a
+ * warning.
  *
  * `top: 0` cancels the superscript lift the browser applies by default,
  * which on a 0.6rem mark inside a 0.95rem link was enough to push the row

@@ -1,17 +1,14 @@
 /**
- * Optional browser runtime for sitelo-ui.
+ * sitelo-ui's runtime, for calling yourself.
  *
- * Import it for its side effects — it wires the document-level
- * listeners on load — and call the named exports when you want to drive
- * the same behaviour yourself.
+ * Components wire themselves through inline imports in their own event
+ * attributes, so none of them need this. It is here for the parts a
+ * page drives rather than a click.
  *
  * ```js
- * import 'sitelo/ui/client'
+ * import { toast, setTheme } from 'sitelo/ui/client'
  * ```
  */
-
-/** Attach the document listeners. Called on load; safe to call again. */
-export function init(): void
 
 /** Apply a theme and remember it. `'system'` clears the override. */
 export function setTheme(value: 'light' | 'dark' | 'system'): void
