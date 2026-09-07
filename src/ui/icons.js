@@ -530,6 +530,17 @@ export function icon(...args) {
 
   const sized = size == null || size === '' ? undefined : oneOf(size, SIZES, '')
 
+  /*
+   * A spinning icon turns an inner group rather than the `<svg>` itself.
+   * Rotating the element means CSS resolves the origin in CSS pixels,
+   * and an `em`-sized icon lands on a fraction of one — 7.4375px inside
+   * a default button. WebKit does not keep that fraction, so the glyph
+   * orbits a point slightly off its centre and the spin wobbles. Inside
+   * the group the origin is (12, 12) in the viewBox's own units, which
+   * is exact whatever size the icon is drawn at.
+   */
+  const content = spin ? `<g>${markup}</g>` : markup
+
   return `<svg${serialize({
     ...BASE,
     ...paint,
@@ -545,5 +556,5 @@ export function icon(...args) {
     ...(label == null
       ? { 'aria-hidden': 'true' }
       : { role: 'img', 'aria-label': String(label) }),
-  })}>${markup}</svg>`
+  })}>${content}</svg>`
 }

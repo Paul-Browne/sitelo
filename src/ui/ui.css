@@ -720,18 +720,20 @@
 .su-icon--sm { --su-icon-size: 0.875em; }
 .su-icon--lg { --su-icon-size: 1.25em; }
 
-.su-icon--spin {
+/*
+ * The group inside the icon turns, not the icon. Rotating the `<svg>`
+ * makes CSS resolve the origin in CSS pixels, and an `em`-sized icon is
+ * very often a fraction of one — 7.4375px inside a default button.
+ * WebKit does not keep that fraction, so the glyph orbits a point just
+ * off its own centre and the spin wobbles instead of turning. `view-box`
+ * puts the origin at (12, 12) in the viewBox's own units, which is exact
+ * at every size, and the rotation happens before the viewBox is scaled
+ * to the element rather than after.
+ */
+.su-icon--spin > g {
   animation: su-icon-spin 0.7s linear infinite;
+  transform-box: view-box;
   transform-origin: 50% 50%;
-  /*
-   * An icon is sized in `em`, so its box is very often a fractional
-   * number of pixels — 14.875 inside a default button. Redrawing the
-   * glyph at a new sub-pixel offset every frame makes the spin wobble
-   * rather than turn, and the faster the display refreshes the more
-   * obvious it is. This promotes the icon to its own layer, so it is
-   * rasterised once and the compositor turns that instead: steadier,
-   * and less work per frame.
-   */
   will-change: transform;
 }
 
@@ -751,7 +753,7 @@
  * fast rotation the preference is asking to avoid.
  */
 @media (prefers-reduced-motion: reduce) {
-  .su-icon--spin { animation-duration: 3s; }
+  .su-icon--spin > g { animation-duration: 3s; }
 }
 
 /* ------------------------------------------------------------------ *
