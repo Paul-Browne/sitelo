@@ -340,6 +340,7 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li(code('include'), ' / ', code('exclude'), ' — quelles pages sont auditées (globs ou expressions régulières)'),
+        li(code('sample'), ' — auditer ce nombre de pages au hasard par motif ', code('include'), ', plutôt que toutes'),
         li(code('categories'), ' — ', code('performance'), ', ', code('accessibility'), ', ', code('best-practices'), ', ', code('seo')),
         li(code('thresholds'), ' — score minimal par catégorie'),
         li(code('mode'), ' — ', code("'error'"), ' (par défaut) ou ', code("'warn'")),

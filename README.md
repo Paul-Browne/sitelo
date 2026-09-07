@@ -1381,6 +1381,7 @@ Scores are written the way Lighthouse displays them (`0`–`100`); its own
 |--------|---------|-------------|
 | `include` | `'**/*.html'` | Glob(s) or RegExps of pages to audit, relative to the output directory |
 | `exclude` | `[]` | Glob(s) or RegExps to skip — `'404.html'` is the usual one |
+| `sample` | — | Audit this many random pages per `include` pattern instead of all of them |
 | `categories` | all four | Any of `performance`, `accessibility`, `best-practices`, `seo` |
 | `thresholds` | `{}` | Minimum score per category |
 | `mode` | `'error'` | `'error'` fails the run; `'warn'` logs and continues |
@@ -1437,6 +1438,35 @@ Saved reports take the device into their filename
 (`index.mobile.report.html`) only when both ran, so a one-device setup
 keeps the plain name. Two devices is two full audits — budget twice the
 browser time.
+
+### Sampling a big site
+
+A site grows faster than the audit does: every page is a fresh Chrome
+navigation, so 70 pages is minutes, not seconds. `sample` audits a
+handful of them instead, drawn afresh each run.
+
+```js
+// sitelo.config.js
+export default {
+  lighthouse: {
+    include: ['*.html', 'docs/**', 'ui/**'],
+    sample: 5,  // 5 of each — 15 pages, not 70
+  },
+}
+```
+
+Per `include` pattern, not per site, because the two are rarely balanced:
+sampling 15 pages out of a site whose 48 component pages outnumber its 13
+guides would mostly re-audit components. `include` is already where the
+sections of a site are named, so it is what the sample is drawn along; a
+page belongs to the first pattern that matches it, and a section with
+fewer pages than the sample is audited whole.
+
+The trade is coverage for time. Sampling can only tell you a section is
+healthy, never that every page in it is — a regression on one page
+surfaces within a few runs rather than on the next one. Leave `sample`
+off (or set it to `null`) for the runs that have to be exhaustive, such
+as before a release.
 
 ### Lighthouse's own options
 

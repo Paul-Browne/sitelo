@@ -59,6 +59,7 @@ const DESKTOP_SETTINGS = {
  * @typedef {object} LighthouseOptions
  * @property {Array<string | RegExp>} include
  * @property {Array<string | RegExp>} exclude
+ * @property {number | null} sample pages per `include` pattern, or all of them
  * @property {string[]} categories
  * @property {Record<string, number>} thresholds scores as 0–1 fractions
  * @property {'warn' | 'error'} mode
@@ -111,7 +112,8 @@ function toPatterns(value, label) {
 /**
  * @param {unknown} value
  * @param {string} label
- * @param {number} fallback
+ * @param {N} fallback
+ * @template N
  */
 function toPositiveInteger(value, label, fallback) {
   if (value == null) return fallback
@@ -251,6 +253,7 @@ export function normalizeLighthouseOptions(lighthouse) {
   return {
     include: toPatterns(options.include ?? DEFAULT_INCLUDE, 'lighthouse.include'),
     exclude: toPatterns(options.exclude ?? [], 'lighthouse.exclude'),
+    sample: toPositiveInteger(options.sample, 'lighthouse.sample', null),
     categories: selected,
     thresholds,
     mode,
@@ -283,14 +286,68 @@ function matchesAny(relativePath, patterns) {
 /**
  * The pages to audit, in build order.
  *
+ * `sample` takes that many pages per `include` pattern rather than all of
+ * them, drawn afresh each run. Per pattern, not per site, because the two
+ * are rarely balanced — a site whose 48 component pages outnumber its 13
+ * guides would sample almost nothing but components — and `include` is
+ * already where the sections of a site are named:
+ *
+ * ```js
+ * { include: ['docs/**', 'ui/**'], sample: 5 }  // 5 of each
+ * ```
+ *
+ * A page is drawn for the first pattern that matches it, so overlapping
+ * patterns cannot audit it twice.
+ *
  * @param {string[]} files build-relative `.html` paths
- * @param {Pick<LighthouseOptions, 'include' | 'exclude'>} options
+ * @param {Pick<LighthouseOptions, 'include' | 'exclude'> & { sample?: number | null }} options
+ * @param {() => number} [random] injectable for tests
  * @returns {string[]}
  */
-export function selectPages(files, options) {
-  return files.filter(
+export function selectPages(files, options, random = Math.random) {
+  const matched = files.filter(
     (file) => matchesAny(file, options.include) && !matchesAny(file, options.exclude),
   )
+
+  const sample = options.sample ?? null
+
+  if (sample == null) return matched
+
+  /** @type {Map<number, string[]>} */
+  const groups = new Map()
+
+  for (const file of matched) {
+    const group = options.include.findIndex((pattern) => matchesAny(file, [pattern]))
+    groups.set(group, [...(groups.get(group) ?? []), file])
+  }
+
+  const kept = new Set()
+
+  for (const group of groups.values()) {
+    for (const file of shuffle(group, random).slice(0, sample)) kept.add(file)
+  }
+
+  // Back into build order: the sampling decides *which* pages, not the
+  // order the table reports them in.
+  return matched.filter((file) => kept.has(file))
+}
+
+/**
+ * A copy of `items`, Fisher-Yates shuffled.
+ *
+ * @param {string[]} items
+ * @param {() => number} random
+ * @returns {string[]}
+ */
+function shuffle(items, random) {
+  const shuffled = [...items]
+
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+
+  return shuffled
 }
 
 /**
@@ -770,6 +827,10 @@ export async function runLighthouse({
 
   const pages = selectPages(files, options)
 
+  // Only for the log line: what the audit would have covered unsampled.
+  const matched =
+    options.sample == null ? null : selectPages(files, { ...options, sample: null }).length
+
   if (pages.length === 0) {
     throw new Error(
       `"lighthouse" matched no pages in ${path.relative(root, siteDir) || siteDir} (check "lighthouse.include" / "lighthouse.exclude")`,
@@ -819,6 +880,7 @@ export async function runLighthouse({
     for (const [index, formFactor] of options.formFactors.entries()) {
       log(
         `${index > 0 ? '\n' : ''}[sitelo] lighthouse ${formFactor} - ${pages.length} page${pages.length === 1 ? '' : 's'}` +
+          `${matched == null ? '' : ` sampled from ${matched}`}` +
           `${options.runs > 1 ? ` x ${options.runs} runs` : ''}\n`,
       )
       log(formatTableHeader(options.categories, layout))
@@ -843,6 +905,7 @@ export async function runLighthouse({
 
     log(
       `\n[sitelo] lighthouse audited ${pages.length} page${pages.length === 1 ? '' : 's'}` +
+        `${matched == null ? '' : ` of ${matched}`}` +
         ` (${options.formFactors.join(', ')}) in ${elapsed.toFixed(1)}s`,
     )
 

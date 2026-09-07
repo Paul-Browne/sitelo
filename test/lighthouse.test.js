@@ -42,6 +42,7 @@ test('normalizeLighthouseOptions: true → defaults', () => {
   assert.deepEqual(normalizeLighthouseOptions(true), {
     include: ['**/*.html'],
     exclude: [],
+    sample: null,
     categories: CATEGORIES,
     thresholds: {},
     mode: 'error',
@@ -188,6 +189,54 @@ test('selectPages: include and exclude are globs over build-relative paths', () 
   assert.deepEqual(
     selectPages(files, { include: ['**/*.html'], exclude: [/^docs\//] }),
     ['404.html', 'index.html'],
+  )
+})
+
+test('selectPages: sample takes that many pages per include pattern', () => {
+  const files = [
+    'index.html',
+    'docs/a.html',
+    'docs/b.html',
+    'docs/c.html',
+    'ui/x.html',
+    'ui/y.html',
+    'ui/z.html',
+  ]
+
+  // A predictable "random": always the first candidate still in hand.
+  const pages = selectPages(
+    files,
+    { include: ['docs/**', 'ui/**'], exclude: [], sample: 2 },
+    () => 0,
+  )
+
+  assert.equal(pages.length, 4)
+  assert.equal(pages.filter((page) => page.startsWith('docs/')).length, 2)
+  assert.equal(pages.filter((page) => page.startsWith('ui/')).length, 2)
+  // Build order, whatever order they were drawn in.
+  assert.deepEqual(pages, [...pages].sort())
+})
+
+test('selectPages: sample draws a page for its first matching pattern only', () => {
+  const files = ['docs/a.html', 'docs/b.html']
+
+  // `**/*.html` would match both again; overlapping patterns must not
+  // audit a page twice, nor pad one group out of another's pages.
+  const pages = selectPages(
+    files,
+    { include: ['docs/**', '**/*.html'], exclude: [], sample: 1 },
+    () => 0,
+  )
+
+  assert.equal(pages.length, 1)
+})
+
+test('selectPages: sample keeps a group smaller than the sample whole', () => {
+  const files = ['docs/a.html', 'ui/x.html', 'ui/y.html']
+
+  assert.deepEqual(
+    selectPages(files, { include: ['docs/**', 'ui/**'], exclude: [], sample: 5 }),
+    files,
   )
 })
 

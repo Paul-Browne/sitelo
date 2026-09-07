@@ -340,6 +340,7 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li(code('include'), ' / ', code('exclude'), ' — какие страницы проверять (globs или регулярные выражения)'),
+        li(code('sample'), ' — проверять столько случайных страниц на каждый шаблон ', code('include'), ', а не все'),
         li(code('categories'), ' — ', code('performance'), ', ', code('accessibility'), ', ', code('best-practices'), ', ', code('seo')),
         li(code('thresholds'), ' — минимальная оценка по категории'),
         li(code('mode'), ' — ', code("'error'"), ' (по умолчанию) или ', code("'warn'")),

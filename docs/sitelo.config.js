@@ -49,6 +49,19 @@ export default {
     },
     exclude: ['{de,es,fr,pt,ru,zh}.html', '{de,es,fr,pt,ru,zh}/**', '404.html'],
     /*
+     * A sample, not the whole site. `sample` draws its pages per `include`
+     * pattern, so the four sections here are what keeps the reading
+     * balanced: the 48 component pages under `ui/` would otherwise drown
+     * out the 13 guides under `docs/`, and they are the pages most alike
+     * anyway — one template, one component apiece.
+     *
+     * 20 pages instead of 71, redrawn every run, so a page that regresses
+     * surfaces within a few runs rather than never. Set `sample: null` for
+     * the full sweep when that matters — before a release, say.
+     */
+    include: ['*.html', 'docs/**', 'ui/**', 'examples/**'],
+    sample: 5,
+    /*
      * No `performance` threshold, deliberately.
      *
      * These three are *checked* — an alt attribute, a meta description, a

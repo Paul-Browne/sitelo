@@ -324,6 +324,7 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li(code('include'), ' / ', code('exclude'), ' —— 审计哪些页面（glob 或正则）'),
+        li(code('sample'), ' —— 每个 ', code('include'), ' 模式随机抽取这么多页面，而不是全部'),
         li(code('categories'), ' —— ', code('performance'), '、', code('accessibility'), '、', code('best-practices'), '、', code('seo')),
         li(code('thresholds'), ' —— 每个类别的最低分'),
         li(code('mode'), ' —— ', code("'error'"), '（默认）或 ', code("'warn'")),
