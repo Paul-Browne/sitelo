@@ -722,10 +722,26 @@
 
 .su-icon--spin {
   animation: su-icon-spin 0.7s linear infinite;
-  transform-origin: center;
+  transform-origin: 50% 50%;
+  /*
+   * An icon is sized in `em`, so its box is very often a fractional
+   * number of pixels — 14.875 inside a default button. Redrawing the
+   * glyph at a new sub-pixel offset every frame makes the spin wobble
+   * rather than turn, and the faster the display refreshes the more
+   * obvious it is. This promotes the icon to its own layer, so it is
+   * rasterised once and the compositor turns that instead: steadier,
+   * and less work per frame.
+   */
+  will-change: transform;
 }
 
+/*
+ * `from` is spelled out rather than left implicit. Without it the
+ * animation interpolates out of `none`, which an engine is free to
+ * resolve its own way.
+ */
 @keyframes su-icon-spin {
+  from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
@@ -826,6 +842,18 @@
 .su-btn--loading {
   cursor: progress;
   pointer-events: none;
+}
+
+/*
+ * A button's children go inside this span, so the button's own `gap`
+ * sits outside it and cannot separate an icon passed as a child from
+ * the words next to it — `button(icon('trash'), 'Delete')` would run the
+ * two together. The gap belongs here, in `em` so it tracks the label.
+ */
+.su-btn-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
 }
 
 .su-btn-icon {

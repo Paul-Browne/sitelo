@@ -315,7 +315,9 @@ const STATUS_DISC = 'M12 2.1a9.9 9.9 0 1 1 0 19.8 9.9 9.9 0 0 1 0-19.8z'
  * is the single `fill` attribute and the two forms cannot drift apart.
  *
  * A string is a second drawing, for glyphs the outline path cannot be
- * filled into. Two kinds need one. A status glyph's mark sits inside its
+ * filled into. `help`'s is the outline glyph's own centreline offset by
+ * half the stroke and closed up — drawing that question mark freehand
+ * put it a size too big and a shade too heavy against its siblings. Two kinds need one. A status glyph's mark sits inside its
  * shape, so painting it would swallow the tick — the mark is knocked
  * back out with `fill-rule: evenodd`, which wants it as a closed outline
  * rather than the stroked line the outline form uses; those drop their
@@ -339,7 +341,7 @@ const FILLED = {
   'check-circle': `<path stroke="none" d="${STATUS_DISC}M8.44 11.66 10.67 13.89 15.53 8.5a.9.9 0 0 1 1.34 1.2L11.37 15.8a.9.9 0 0 1-1.31.04L7.16 12.94a.9.9 0 0 1 1.28-1.28z"/>`,
   'x-circle': `<path stroke="none" d="${STATUS_DISC}M12 10.73 14.57 8.16a.9.9 0 0 1 1.27 1.27L13.27 12l2.57 2.57a.9.9 0 0 1-1.27 1.27L12 13.27l-2.57 2.57a.9.9 0 0 1-1.27-1.27L10.73 12 8.16 9.43a.9.9 0 0 1 1.27-1.27z"/>`,
   info: `<path stroke="none" d="${STATUS_DISC}M12 10.1a.9.9 0 0 1 .9.9v5.5a.9.9 0 0 1-1.8 0V11a.9.9 0 0 1 .9-.9zM12 6.75a1.05 1.05 0 1 1 0 2.1 1.05 1.05 0 0 1 0-2.1z"/>`,
-  help: `<path stroke="none" d="${STATUS_DISC}M8.5 8.6a3.5 3.5 0 0 1 7 0 .9.9 0 0 1-.12.44l-2.6 4.6a.9.9 0 0 1-1.56-.88L13.82 8.16l-.12.44a1.7 1.7 0 0 0-3.4 0 .9.9 0 0 1-1.8 0zM12 16.15a1.05 1.05 0 1 1 0 2.1 1.05 1.05 0 0 1 0-2.1z"/>`,
+  help: `<path stroke="none" d="${STATUS_DISC}M12 16.15a1.05 1.05 0 1 1 0 2.1 1.05 1.05 0 0 1 0-2.1zM10.21 9.69L10.41 9.31L10.64 9.03L10.93 8.8L11.26 8.63L11.62 8.54L11.98 8.52L12.35 8.57L12.69 8.7L13.01 8.89L13.27 9.15L13.48 9.45L13.62 9.79L13.69 10.13L13.68 10.41L13.56 10.68L13.33 10.97L13.01 11.29L12.6 11.64L12.15 12.03L11.68 12.53L11.27 13.23L11.11 13.99A0.9 0.9 0 0 0 12.89 14.21L12.94 13.89L13.1 13.64L13.39 13.34L13.77 13L14.21 12.63L14.67 12.17L15.11 11.59L15.42 10.84L15.49 10.01L15.35 9.27L15.06 8.59L14.64 7.98L14.11 7.47L13.49 7.08L12.79 6.83L12.06 6.72L11.33 6.76L10.62 6.95L9.96 7.28L9.38 7.74L8.91 8.31L8.59 8.91A0.9 0.9 0 0 0 10.21 9.69Z"/>`,
   'alert-triangle':
     '<path stroke="none" d="M11.22 2.95a.9.9 0 0 1 1.56 0l9.6 16.6a.9.9 0 0 1-.78 1.35H2.4a.9.9 0 0 1-.78-1.35zM12 8.7a.9.9 0 0 1 .9.9v4.4a.9.9 0 0 1-1.8 0V9.6a.9.9 0 0 1 .9-.9zM12 15.95a1.05 1.05 0 1 1 0 2.1 1.05 1.05 0 0 1 0-2.1z"/>',
 }
