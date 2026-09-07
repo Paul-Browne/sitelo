@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { grid, icon, iconNames, stack, text } from 'sitelo/ui'
+import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
@@ -30,11 +30,37 @@ const cell = (name) =>
  * behind the set it documents. */
 const gallery = () => grid({ min: '7.5rem', gap: 'sm' }, ...iconNames().map(cell))
 
+/**
+ * The glyphs filled by painting their own path, as opposed to the ones
+ * carrying a second drawing — told apart by whether the two forms are
+ * the same markup, so neither demo can fall behind the set.
+ */
+const body = (html) => html.replace(/^<svg[^>]*>/, '')
+
+const samePath = () =>
+  fillableIcons().filter((name) => body(icon(name, { filled: true })) === body(icon(name)))
+
+/**
+ * The fill demo, written out rather than hand-listed — the source is
+ * what the page prints, so a glyph that becomes fillable turns up here
+ * without anyone remembering to add it.
+ */
+const fillDemo = ({ filled = false } = {}) => {
+  const props = filled ? "{ filled: true, size: 'lg' }" : "{ size: 'lg' }"
+  const calls = samePath().map((name) => `  icon('${name}', ${props}),`)
+
+  return [
+    "stack({ direction: 'row', gap: 'md', align: 'center' },",
+    ...calls,
+    ')',
+  ].join('\n')
+}
+
 export default () =>
   uiLayout({
     title: 'Icons',
     description:
-      'A set of 63 glyphs on one grid, rendered inline so an icon takes the colour and size of the text around it.',
+      'A set of 91 glyphs on one grid, rendered inline so an icon takes the colour and size of the text around it.',
     activeHref: '/ui/icons',
     extraHead: uiHead(),
     children: [
@@ -115,6 +141,63 @@ icon('trash', { label: 'Delete' }) // announced as an image
 // An icon-only button labels the button, not the glyph inside it
 iconButton({ label: 'Delete', icon: icon('trash') })`, 'javascript'),
 
+      h2('Filled'),
+      p(
+        code('filled'),
+        ' paints a glyph instead of outlining it. It is the same path either way — only the ',
+        code('fill'),
+        ' attribute changes — so the two forms share an outer edge exactly and cannot drift apart.',
+      ),
+      demo(fillDemo()),
+      p('And the same names filled:'),
+      demo(fillDemo({ filled: true })),
+      p(
+        'It is a prop rather than a second set of names because the filled state is nearly always a ',
+        code('state'),
+        ' — saved, liked, rated — so it wants a boolean, not a different string:',
+      ),
+      codeBlock('', `icon('heart', { filled: liked })
+icon('bookmark', { filled: saved, label: saved ? 'Saved' : 'Save' })
+
+// rather than
+icon(liked ? 'heart-filled' : 'heart')`, 'javascript'),
+      p(
+        'The status glyphs fill differently, because their mark sits ',
+        code('inside'),
+        ' the shape. Painting the circle would swallow the tick, so the mark is knocked back out of it instead:',
+      ),
+      demo(`stack({ direction: 'row', gap: 'md', align: 'center' },
+  icon('check-circle', { filled: true, size: 'lg' }),
+  icon('x-circle', { filled: true, size: 'lg' }),
+  icon('info', { filled: true, size: 'lg' }),
+  icon('help', { filled: true, size: 'lg' }),
+  icon('alert-triangle', { filled: true, size: 'lg' }),
+)`),
+      p(
+        'Those carry a second drawing — the shape solid with the mark cut out of it by ',
+        code('fill-rule: evenodd'),
+        ' — because a knockout cannot be had from the outline path by changing an attribute. The outer shape is drawn at the outline\u2019s outer edge, so the two forms still end on the same silhouette. It is the same prop either way; which mechanism a glyph uses is its own business.',
+      ),
+      p(
+        'A chevron has no inside to paint at all — it is an open line — so it fills to the triangle its own three points describe, keeping the stroke that rounds the corners:',
+      ),
+      demo(`stack({ direction: 'row', gap: 'md', align: 'center' },
+  icon('chevron-up', { filled: true, size: 'lg' }),
+  icon('chevron-down', { filled: true, size: 'lg' }),
+  icon('chevron-left', { filled: true, size: 'lg' }),
+  icon('chevron-right', { filled: true, size: 'lg' }),
+)`),
+      p(
+        code('fillableIcons()'),
+        ' lists everything that answers to ',
+        code('filled'),
+        '. A glyph without a filled form ignores it and stays outlined — filling ',
+        code('eye'),
+        ' would lose the pupil and ',
+        code('tag'),
+        ' its hole, so neither pretends to.',
+      ),
+
       h2('Spin'),
       p(
         code('spin'),
@@ -153,7 +236,7 @@ iconButton({ label: 'Delete', icon: icon('trash') })`, 'javascript'),
           ['x, cross', 'close'],
           ['question', 'help'],
           ['loading', 'spinner'],
-          ['cog, gear', 'settings'],
+          ['cog, gears', 'gear'],
           ['delete, trash-can', 'trash'],
           ['pencil', 'edit'],
           ['notification', 'bell'],
@@ -161,6 +244,23 @@ iconButton({ label: 'Delete', icon: icon('trash') })`, 'javascript'),
           ['bolt, lightning', 'zap'],
           ['arrow-back', 'arrow-left'],
           ['arrow-forward', 'arrow-right'],
+          ['cart', 'shopping-cart'],
+          ['bag', 'shopping-bag'],
+          ['card', 'credit-card'],
+          ['cash, money', 'banknote'],
+          ['delivery, shipping', 'truck'],
+          ['shop', 'store'],
+          ['discount, sale', 'percent'],
+          ['login, sign-in', 'log-in'],
+          ['logout, sign-out', 'log-out'],
+          ['map-pin, marker', 'location'],
+          ['mobile', 'smartphone'],
+          ['like', 'thumbs-up'],
+          ['dislike', 'thumbs-down'],
+          ['comment, message, chat', 'comment-bubble'],
+          ['ai, magic', 'sparkles'],
+          ['printer', 'print'],
+          ['accessibility, a11y', 'universal-access'],
         ].map(([alias, target]) =>
           text({ variant: 'small' }, code(alias), ' → ', code(target)),
         ),
@@ -182,6 +282,8 @@ registerIcons({
   // A name that already exists replaces it everywhere, which is how you
   // restyle a built-in without forking the library.
   check: '<path d="m5 13 4 4 10-11"/>',
+  // One closed shape, so it can answer to \`filled\` like the built-ins.
+  pin: { markup: '<path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/>', fillable: true },
 })`, 'javascript'),
       codeBlock('', `import { icon } from 'sitelo/ui'
 
@@ -209,13 +311,18 @@ registerIcons({ check: null }) // and back to the built-in`, 'javascript'),
         ['size', "'sm' | 'md' | 'lg' | string", "'md'", 'A token, or any CSS length. Default is 1em.'],
         ['label', 'string', '', 'Announce it as an image with this name, instead of hiding it.'],
         ['spin', 'boolean', 'false', 'Rotate it continuously.'],
+        ['filled', 'boolean', 'false', 'Paint the glyph rather than outline it. Ignored by glyphs that cannot be filled.'],
       ]),
       p(
         'An unknown name renders nothing at all rather than throwing — a cosmetic prop should not be able to fail a build. ',
         code('hasIcon(name)'),
         ' tells you whether one exists, and ',
         code('iconNames()'),
-        ' lists them all.',
+        ' lists them all, and ',
+        code('fillableIcons()'),
+        ' the ones that take ',
+        code('filled'),
+        '.',
       ),
     ],
   })

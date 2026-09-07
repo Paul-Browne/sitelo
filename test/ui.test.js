@@ -1008,7 +1008,11 @@ test('icon() takes the name as an argument or a prop', () => {
 test('icon() resolves aliases to the drawing they name', () => {
   assert.equal(ui.icon('danger'), ui.icon('x-circle'));
   assert.equal(ui.icon('x'), ui.icon('close'));
-  assert.equal(ui.icon('gear'), ui.icon('settings'));
+  assert.equal(ui.icon('gears'), ui.icon('gear'));
+  assert.equal(ui.icon('ai'), ui.icon('sparkles'));
+
+  // `settings` is the sliders glyph; a cog is its own drawing.
+  assert.notEqual(ui.icon('gear'), ui.icon('settings'));
 });
 
 test('icon() renders nothing for a name it does not have', () => {
@@ -1066,6 +1070,75 @@ test('every glyph is well-formed and draws inside the 24x24 grid', () => {
   }
 });
 
+test('icon({ filled }) paints the glyphs whose drawing is one closed shape', () => {
+  for (const name of ui.fillableIcons()) {
+    assert.match(ui.icon(name, { filled: true }), /fill="currentColor"/, `${name} fills`);
+    assert.match(ui.icon(name), /fill="none"/, `${name} outlines by default`);
+  }
+});
+
+test('icon({ filled }) is ignored by a glyph that has no filled form', () => {
+  // An open line has no inside to paint; `eye` and `tag` would lose the
+  // pupil and the hole, and neither has been given a second drawing.
+  for (const name of ['check', 'search', 'eye', 'tag', 'menu', 'zap']) {
+    assert.ok(!ui.fillableIcons().includes(name), `${name} is not fillable`);
+    assert.match(ui.icon(name, { filled: true }), /fill="none"/, `${name} stays outlined`);
+  }
+});
+
+test('a glyph filled by painting its own path cannot drift from the outline', () => {
+  const inner = (html) => html.replace(/^<svg[^>]*>/, '');
+
+  // These are filled by painting the outline path itself, so the two
+  // forms are the same markup by construction and cannot disagree.
+  for (const name of ['bell', 'bookmark', 'folder', 'heart', 'star']) {
+    assert.ok(ui.fillableIcons().includes(name), `${name} is fillable`);
+    assert.equal(inner(ui.icon(name, { filled: true })), inner(ui.icon(name)), name);
+  }
+});
+
+test('a chevron fills to the triangle its own three points describe', () => {
+  for (const [name, triangle] of [
+    ['chevron-up', 'M6 15 12 9 18 15z'],
+    ['chevron-down', 'M6 9 12 15 18 9z'],
+    ['chevron-left', 'M15 6 9 12 15 18z'],
+    ['chevron-right', 'M9 6 15 12 9 18z'],
+  ]) {
+    const filled = ui.icon(name, { filled: true });
+
+    assert.match(filled, new RegExp(triangle.replace(/ /g, ' ')), name);
+    assert.match(filled, /fill="currentColor"/, name);
+    // It keeps the stroke — that is what rounds the corners.
+    assert.ok(!filled.includes('stroke="none"'), `${name} keeps its stroke`);
+    assert.match(ui.icon(name), /fill="none"/, `${name} still outlines by default`);
+  }
+});
+
+test('a glyph whose mark sits inside the shape knocks it back out', () => {
+  for (const name of ['alert-triangle', 'check-circle', 'help', 'info', 'x-circle']) {
+    const filled = ui.icon(name, { filled: true });
+
+    assert.match(filled, /fill="currentColor"/, `${name} is painted`);
+    // Without evenodd the mark would be painted over rather than cut out,
+    // and without dropping the stroke it would be drawn back in.
+    assert.match(filled, /fill-rule="evenodd"/, `${name} knocks the mark out`);
+    assert.match(filled, /stroke="none"/, `${name} carries no stroke`);
+
+    // The outline form is untouched by any of that.
+    assert.match(ui.icon(name), /fill="none"/);
+    assert.match(ui.icon(name), /stroke-width="1.8"/);
+  }
+});
+
+test('fillableIcons() is a subset of the set, and follows aliases', () => {
+  const names = ui.iconNames();
+
+  for (const name of ui.fillableIcons()) assert.ok(names.includes(name), name);
+
+  // `bolt` resolves to `zap`, which is not fillable
+  assert.match(ui.icon('bolt', { filled: true }), /fill="none"/);
+});
+
 test('iconNames() lists each drawing once and leaves aliases out', () => {
   const names = ui.iconNames();
 
@@ -1095,6 +1168,36 @@ test('registerIcons() adds glyphs and can replace a built-in', () => {
 
   ui.registerIcons({ 'test-logo': null });
   assert.equal(ui.hasIcon('test-logo'), false);
+});
+
+test('registerIcons() can give a custom glyph a drawing of its own to fill with', () => {
+  ui.registerIcons({
+    'test-solid': { markup: '<path d="M4 4h16v16H4z"/>', filled: '<path d="M2 2h20v20H2zM8 8h8v8H8z"/>' },
+  });
+
+  assert.ok(ui.fillableIcons().includes('test-solid'));
+  assert.match(ui.icon('test-solid', { filled: true }), /fill-rule="evenodd"/);
+  assert.match(ui.icon('test-solid', { filled: true }), /M2 2h20v20H2z/);
+  // and the outline form still uses its own markup
+  assert.match(ui.icon('test-solid'), /M4 4h16v16H4z/);
+
+  ui.registerIcons({ 'test-solid': null });
+  assert.equal(ui.hasIcon('test-solid'), false);
+});
+
+test('registerIcons() can declare a custom glyph fillable', () => {
+  ui.registerIcons({ 'test-blob': { markup: '<path d="M4 20 12 4l8 16z"/>', fillable: true } });
+
+  assert.ok(ui.fillableIcons().includes('test-blob'));
+  assert.match(ui.icon('test-blob', { filled: true }), /fill="currentColor"/);
+
+  // The bare string form stays unfillable, so nothing changes for existing callers.
+  ui.registerIcons({ 'test-blob': '<path d="M4 20 12 4l8 16z"/>' });
+  assert.ok(!ui.fillableIcons().includes('test-blob'));
+  assert.match(ui.icon('test-blob', { filled: true }), /fill="none"/);
+
+  ui.registerIcons({ 'test-blob': null });
+  assert.equal(ui.hasIcon('test-blob'), false);
 });
 
 test('registerIcons() overrides a built-in, and null puts it back', () => {

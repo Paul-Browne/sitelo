@@ -61,7 +61,7 @@ That's the whole mental model. Everything else is convenience on top.
 - **Dynamic routes** — `[slug]`, `[year]/[slug]`, catch-all `[...path]`, optional catch-all `[...path]?`
 - **Route groups** — `(admin)/users.ht.js` → `/users`
 - **Bring your own HTML** — template literals, [javascript-to-html](https://www.npmjs.com/package/javascript-to-html), or JSX/TSX
-- **sitelo-ui** — 87 components (buttons, cards, forms, tables, modals, prose, page sections) and a 63-icon set, as functions returning HTML, with one small optional script
+- **sitelo-ui** — 87 components (buttons, cards, forms, tables, modals, prose, page sections) and a 91-icon set, as functions returning HTML, with one small optional script
 - **Data loading** — `data()` runs at build time, with built-in fetch caching
 - **Typed pages** — per-route param types inferred from the filename
 - **Smart asset pipeline** — JS/TS/CSS referenced by your HTML is bundled and minified; server-only code never leaks into `dist`
@@ -603,7 +603,7 @@ head(
 
 ### Icons
 
-`icon()` returns an inline `<svg>` from a set of 63 glyphs, drawn on one
+`icon()` returns an inline `<svg>` from a set of 91 glyphs, drawn on one
 24x24 grid in `currentColor`, so an icon takes the colour and the font
 size of whatever it sits in:
 
@@ -619,6 +619,33 @@ legible. A sprite referenced with `<use>` would save on the order of a
 hundred gzipped bytes of HTML per page and cost a round trip to do it —
 repeated markup is exactly what gzip is best at, so most of what a
 sprite exists to dedupe has been deduped already.
+
+`filled` paints a glyph rather than outlining it:
+
+```js
+icon('heart', { filled: liked })
+```
+
+It is a prop rather than a second set of names (`heart-filled`) because
+the filled state is nearly always a *state* — saved, liked, rated — so a
+boolean maps onto it directly. It is also the same path either way, with
+only the `fill` attribute changing, so the two forms share an outer edge
+and cannot drift apart.
+
+The status glyphs fill too, but their mark sits *inside* the shape, so
+painting the circle would swallow it. Those carry a second drawing — the
+shape solid with the mark cut back out by `fill-rule: evenodd` — whose
+outer edge matches the outline's, so the two forms still share a
+silhouette. It is the same prop either way:
+
+```js
+icon('check-circle', { filled: true })   // solid disc, tick knocked out
+```
+
+`fillableIcons()` lists everything that answers to `filled`. A glyph
+without a filled form ignores it and stays outlined, rather than
+rendering something broken — filling `eye` would lose the pupil and `tag`
+its hole, so neither pretends to.
 
 An icon is `aria-hidden` unless you give it a `label`, which is right
 whenever adjacent text already says what it means. Label it when the
@@ -696,7 +723,7 @@ import { toast, setTheme } from 'sitelo/ui/client'
 | Navigation | `breadcrumbs` `pagination` `tabs` `appBar` `appBarNav` `appBarSpacer` `appBarActions` `navLink` `themeToggle` |
 | Overlays | `modal` `drawer` `closeButton` `menu` `menuItem` `menuSeparator` `accordion` `accordionItem` `collapsible` |
 | Sections | `hero` `footer` `siteFooter` `footerColumn` `footerBottom` `stat` `statGroup` `steps` `timeline` `timelineItem` `mockup` |
-| Icons | `icon` `iconNames` `hasIcon` `registerIcons` — 63 glyphs |
+| Icons | `icon` `iconNames` `fillableIcons` `hasIcon` `registerIcons` — 91 glyphs |
 | Styling | `styles` `stylesheet` `theme` `themeScript` |
 
 The switch is `toggle`, because `switch` is a reserved word and cannot

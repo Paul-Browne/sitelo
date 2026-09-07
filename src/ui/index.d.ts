@@ -66,24 +66,39 @@ export function themeScript(options?: { nonce?: string }): string
 /** Every glyph in the built-in set, named for what it draws. */
 export type IconGlyph =
   | 'alert-triangle' | 'arrow-down' | 'arrow-left' | 'arrow-right'
-  | 'arrow-up' | 'bell' | 'bold' | 'bookmark' | 'calendar' | 'check'
-  | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right'
-  | 'chevron-up' | 'chevrons-left' | 'chevrons-right' | 'clock' | 'close'
-  | 'code' | 'copy' | 'database' | 'download' | 'edit' | 'external-link'
-  | 'eye' | 'eye-off' | 'file' | 'filter' | 'folder' | 'globe' | 'heart'
-  | 'help' | 'home' | 'image' | 'info' | 'italic' | 'layers' | 'link'
-  | 'lock'
-  | 'mail' | 'menu' | 'minus' | 'moon' | 'more-horizontal'
-  | 'more-vertical' | 'package' | 'plus' | 'refresh' | 'search'
-  | 'settings' | 'spinner' | 'star' | 'sun' | 'tag' | 'terminal' | 'trash'
-  | 'unlock' | 'upload' | 'user' | 'users' | 'x-circle' | 'zap'
+  | 'arrow-up' | 'banknote' | 'bell' | 'bold' | 'bookmark' | 'calendar'
+  | 'camera' | 'check' | 'check-circle' | 'chevron-down' | 'chevron-left'
+  | 'chevron-right' | 'chevron-up' | 'chevrons-left' | 'chevrons-right'
+  | 'clock' | 'close' | 'code' | 'coins' | 'comment-bubble' | 'copy'
+  | 'credit-card' | 'database' | 'download' | 'edit' | 'external-link'
+  | 'eye' | 'eye-off' | 'feather' | 'file' | 'filter' | 'folder' | 'gear'
+  | 'gift' | 'globe' | 'heart' | 'help' | 'home' | 'image' | 'info'
+  | 'italic' | 'key' | 'layers' | 'link' | 'location' | 'lock' | 'log-in'
+  | 'log-out' | 'mail' | 'menu' | 'minus' | 'moon' | 'more-horizontal'
+  | 'more-vertical' | 'package' | 'percent' | 'pin' | 'plus' | 'print'
+  | 'receipt' | 'refresh' | 'search' | 'settings' | 'share'
+  | 'shopping-bag' | 'shopping-cart' | 'smartphone' | 'sparkles'
+  | 'spinner' | 'star' | 'store' | 'sun' | 'tag' | 'terminal'
+  | 'thumbs-down' | 'thumbs-up' | 'trash' | 'truck' | 'universal-access'
+  | 'unlock' | 'upload' | 'user' | 'users' | 'video' | 'wallet'
+  | 'x-circle' | 'zap'
 
 /** Names that resolve to a glyph drawn under a different name. */
 export type IconAlias =
   | 'x' | 'cross' | 'success' | 'warning' | 'danger' | 'error' | 'question'
-  | 'loading' | 'cog' | 'gear' | 'trash-can' | 'delete' | 'pencil'
-  | 'notification' | 'dots' | 'bolt' | 'lightning' | 'arrow-back'
-  | 'arrow-forward'
+  | 'loading' | 'cog' | 'gears' | 'login' | 'sign-in' | 'logout'
+  | 'sign-out' | 'map-pin' | 'marker' | 'mobile' | 'like' | 'dislike'
+  | 'comment' | 'message' | 'chat' | 'ai' | 'magic' | 'printer'
+  | 'accessibility' | 'trash-can' | 'delete' | 'pencil' | 'notification'
+  | 'dots' | 'cart' | 'bag' | 'card' | 'cash' | 'money' | 'delivery'
+  | 'shipping' | 'shop' | 'discount' | 'sale' | 'bolt' | 'lightning'
+  | 'arrow-back' | 'arrow-forward'
+
+/** The glyphs that answer to `filled` — see `IconProps.filled`. */
+export type FillableIcon =
+  | 'alert-triangle' | 'bell' | 'bookmark' | 'check-circle' | 'chevron-down'
+  | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'folder' | 'heart'
+  | 'help' | 'info' | 'star' | 'x-circle'
 
 /**
  * Any icon name. The union is there for completion; `registerIcons()`
@@ -103,6 +118,14 @@ export interface IconProps extends BaseProps {
   label?: string
   /** Rotate it continuously, for `spinner`. */
   spin?: boolean
+  /**
+   * Paint the glyph rather than outline it — `FillableIcon`, or
+   * `fillableIcons()` at runtime. Glyphs whose mark sits inside the
+   * shape (`check-circle`, `info`) knock it back out; a chevron fills to
+   * a solid triangle. On a glyph with no filled form it is ignored and
+   * the icon stays outlined.
+   */
+  filled?: boolean
 }
 
 /**
@@ -121,11 +144,23 @@ export function icon(props?: IconProps, ...children: Child[]): string
  * of the `<svg>`, drawn on the same 24x24 grid and left unfilled so
  * `currentColor` reaches it. `null` drops a registration, restoring the
  * built-in it was covering.
+ *
+ * Pass `{ markup, fillable: true }` when the drawing is one closed
+ * silhouette and painting that same path is the filled form, or
+ * `{ markup, filled }` to give it a second drawing instead.
  */
-export function registerIcons(glyphs?: Record<string, string | null>): void
+export function registerIcons(
+  glyphs?: Record<
+    string,
+    string | { markup: string; fillable?: boolean; filled?: string } | null
+  >,
+): void
 
 /** Every icon name, built-ins and registered alike, sorted. Aliases excluded. */
 export function iconNames(): string[]
+
+/** The glyphs that answer to `filled`, sorted. */
+export function fillableIcons(): string[]
 
 /** Whether a name resolves to a glyph, following aliases. */
 export function hasIcon(name?: unknown): boolean
