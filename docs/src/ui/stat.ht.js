@@ -42,13 +42,13 @@ export default () =>
     label: 'Deploys',
     value: '128',
     color: 'primary',
-    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 4 14h6l-1 7 9-11h-6z"/></svg>',
+    icon: icon('zap'),
   }),
   stat({
     label: 'Contributors',
     value: '17',
     color: 'primary',
-    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3.1-6 7-6s7 2.5 7 6"/></svg>',
+    icon: icon('user'),
   }),
 )`, { align: 'stretch' }),
 

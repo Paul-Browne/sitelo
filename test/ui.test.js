@@ -979,6 +979,135 @@ test('themeScript() is self-contained and survives storage being blocked', () =>
 });
 
 /* ------------------------------------------------------------------ *
+ * Icons
+ * ------------------------------------------------------------------ */
+
+test('icon() renders an inline svg that inherits colour and size', () => {
+  const html = ui.icon('check');
+
+  assert.match(html, /^<svg /);
+  assert.match(html, /viewBox="0 0 24 24"/);
+  assert.match(html, /stroke="currentColor"/);
+  assert.match(html, /class="su-icon"/);
+});
+
+test('icon() is hidden from assistive tech unless it is given a label', () => {
+  assert.match(ui.icon('check'), /aria-hidden="true"/);
+
+  const labelled = ui.icon('trash', { label: 'Delete' });
+
+  assert.match(labelled, /role="img"/);
+  assert.match(labelled, /aria-label="Delete"/);
+  assert.ok(!labelled.includes('aria-hidden'));
+});
+
+test('icon() takes the name as an argument or a prop', () => {
+  assert.equal(ui.icon('check'), ui.icon({ name: 'check' }));
+});
+
+test('icon() resolves aliases to the drawing they name', () => {
+  assert.equal(ui.icon('danger'), ui.icon('x-circle'));
+  assert.equal(ui.icon('x'), ui.icon('close'));
+  assert.equal(ui.icon('gear'), ui.icon('settings'));
+});
+
+test('icon() renders nothing for a name it does not have', () => {
+  assert.equal(ui.icon('no-such-icon'), '');
+  assert.equal(ui.icon(), '');
+  assert.equal(ui.icon({}), '');
+});
+
+test('icon() maps size tokens to classes and lengths to a custom property', () => {
+  assert.match(ui.icon('check', { size: 'sm' }), /class="su-icon su-icon--sm"/);
+  assert.match(ui.icon('check', { size: 'lg' }), /class="su-icon su-icon--lg"/);
+
+  // md is the default, so it earns no class of its own
+  assert.match(ui.icon('check', { size: 'md' }), /class="su-icon"/);
+  assert.match(ui.icon('check', { size: '2rem' }), /style="--su-icon-size: 2rem"/);
+});
+
+test('icon({ spin }) marks the icon for the keyframes in the sheet', () => {
+  assert.match(ui.icon('spinner', { spin: true }), /su-icon--spin/);
+  assert.match(ui.stylesheet({ minify: false }), /@keyframes su-icon-spin/);
+});
+
+test('icon() passes unknown props through and lets them override the defaults', () => {
+  const html = ui.icon('check', { 'stroke-width': 3, 'data-testid': 'tick' });
+
+  assert.match(html, /data-testid="tick"/);
+  assert.match(html, /stroke-width="3"/);
+  assert.ok(!html.includes('stroke-width="1.8"'));
+});
+
+test('icon() escapes quotes in attribute values', () => {
+  assert.match(ui.icon('check', { label: 'a "quoted" name' }), /aria-label="a &#34;quoted&#34; name"/);
+});
+
+test('every glyph is well-formed and draws inside the 24x24 grid', () => {
+  const names = ui.iconNames();
+
+  assert.ok(names.length >= 60, `${names.length} icons`);
+
+  for (const name of names) {
+    const html = ui.icon(name);
+
+    assert.match(html, /^<svg [^>]+><\/svg>$|^<svg [^>]+>.+<\/svg>$/, `${name} is one element`);
+    assert.ok(html.length > 60, `${name} draws something`);
+
+    // Balanced tags, and nothing that would need a fill to be visible.
+    const inner = html.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
+
+    assert.ok(!inner.includes('<svg'), `${name} does not nest an svg`);
+    assert.equal(
+      (inner.match(/<(circle|path|rect|ellipse|polyline|polygon|line)\b/g) ?? []).length,
+      (inner.match(/\/>/g) ?? []).length,
+      `${name} self-closes every shape`,
+    );
+  }
+});
+
+test('iconNames() lists each drawing once and leaves aliases out', () => {
+  const names = ui.iconNames();
+
+  assert.deepEqual(names, [...new Set(names)].sort());
+  assert.ok(names.includes('x-circle'));
+  assert.ok(!names.includes('danger'), 'aliases are not listed');
+});
+
+test('hasIcon() follows aliases and rejects non-strings', () => {
+  assert.equal(ui.hasIcon('check'), true);
+  assert.equal(ui.hasIcon('danger'), true);
+  assert.equal(ui.hasIcon('nope'), false);
+  assert.equal(ui.hasIcon(undefined), false);
+  assert.equal(ui.hasIcon(42), false);
+});
+
+test('registerIcons() adds glyphs and can replace a built-in', () => {
+  ui.registerIcons({ 'test-logo': '<path d="M4 20 12 4l8 16z"/>' });
+
+  assert.ok(ui.hasIcon('test-logo'));
+  assert.match(ui.icon('test-logo'), /<path d="M4 20 12 4l8 16z"\/>/);
+  assert.ok(ui.iconNames().includes('test-logo'));
+
+  // Non-string values are ignored rather than rendering "undefined".
+  ui.registerIcons({ bad: 42 });
+  assert.equal(ui.hasIcon('bad'), false);
+
+  ui.registerIcons({ 'test-logo': null });
+  assert.equal(ui.hasIcon('test-logo'), false);
+});
+
+test('registerIcons() overrides a built-in, and null puts it back', () => {
+  const original = ui.icon('check');
+
+  ui.registerIcons({ check: '<path d="M0 0"/>' });
+  assert.notEqual(ui.icon('check'), original);
+
+  ui.registerIcons({ check: null });
+  assert.equal(ui.icon('check'), original);
+});
+
+/* ------------------------------------------------------------------ *
  * Public surface
  * ------------------------------------------------------------------ */
 

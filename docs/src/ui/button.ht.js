@@ -85,11 +85,11 @@ export default () =>
       ),
       demo(`stack({ direction: 'row', gap: 'md', wrap: true },
   button({
-    startIcon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 4v12M4 10h12"/></svg>',
+    startIcon: icon('plus'),
   }, 'New page'),
   button({
     variant: 'outline',
-    endIcon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg>',
+    endIcon: icon('arrow-right'),
   }, 'Continue'),
 )`),
 
@@ -101,9 +101,9 @@ export default () =>
         ' is required — it becomes the accessible name that the icon itself cannot provide, and the tooltip on hover.',
       ),
       demo(`stack({ direction: 'row', gap: 'md' },
-  iconButton({ label: 'Add', icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 4v12M4 10h12"/></svg>' }),
-  iconButton({ label: 'Edit', variant: 'soft', icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m4 16 1-3 8-8 2 2-8 8z"/></svg>' }),
-  iconButton({ label: 'Delete', variant: 'ghost', color: 'danger', icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h12M8 6V4h4v2M7 6l.7 10h4.6L13 6"/></svg>' }),
+  iconButton({ label: 'Add', icon: icon('plus') }),
+  iconButton({ label: 'Edit', variant: 'soft', icon: icon('edit') }),
+  iconButton({ label: 'Delete', variant: 'ghost', color: 'danger', icon: icon('trash') }),
 )`),
 
       h2('Loading and disabled'),

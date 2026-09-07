@@ -67,7 +67,7 @@ export default () =>
       p('Children override the initials, for an icon or a single character.'),
       demo(`stack({ direction: 'row', gap: 'md', align: 'center' },
   avatar({ color: 'neutral' },
-    '<svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="7" r="3"/><path d="M4 17c0-3 2.7-5 6-5s6 2 6 5"/></svg>',
+    icon('user'),
   ),
   avatar({ color: 'primary' }, '?'),
 )`),

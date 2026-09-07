@@ -71,7 +71,7 @@ export default () =>
     align: 'end',
     label: 'More actions',
     variant: 'ghost',
-    icon: '<svg viewBox="0 0 20 20" fill="currentColor"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>',
+    icon: icon('more-horizontal'),
   },
     menuItem({ href: '#rename' }, 'Rename'),
     menuItem({ href: '#move' }, 'Move'),
@@ -84,16 +84,16 @@ export default () =>
       demo(`menu({ trigger: 'File' },
   menuItem({
     href: '#new',
-    icon: '<svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M10 4v12M4 10h12"/></svg>',
+    icon: icon('plus'),
   }, 'New page'),
   menuItem({
     href: '#open',
-    icon: '<svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M3 6h5l1.5 2H17v8H3z"/></svg>',
+    icon: icon('folder'),
   }, 'Open…'),
   menuSeparator(),
   menuItem({
     href: '#build',
-    icon: '<svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2 4 11h5l-1 7 7-9h-5z"/></svg>',
+    icon: icon('zap'),
   }, 'Build site'),
 )`),
 
@@ -119,7 +119,7 @@ export default () =>
       align: 'end',
       label: 'More',
       variant: 'ghost',
-      icon: '<svg viewBox="0 0 20 20" fill="currentColor"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>',
+      icon: icon('more-horizontal'),
     },
       menuItem({ href: '/docs' }, 'Docs'),
       menuItem({ href: '/examples' }, 'Examples'),

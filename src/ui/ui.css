@@ -461,22 +461,36 @@
 .su-container--full { --su-container-width: none; }
 
 .su-stack {
+  /* Custom properties inherit, so each stack restates its own defaults
+     here — a fallback alone would let a nested stack pick up the parent's
+     direction, gap and alignment. */
+  --su-stack-direction: column;
+  --su-stack-gap: var(--su-space-md);
+  --su-stack-align: stretch;
+  --su-stack-justify: flex-start;
+  --su-stack-wrap: nowrap;
   display: flex;
-  flex-direction: var(--su-stack-direction, column);
-  gap: var(--su-stack-gap, var(--su-space-md));
-  align-items: var(--su-stack-align, stretch);
-  justify-content: var(--su-stack-justify, flex-start);
-  flex-wrap: var(--su-stack-wrap, nowrap);
+  flex-direction: var(--su-stack-direction);
+  gap: var(--su-stack-gap);
+  align-items: var(--su-stack-align);
+  justify-content: var(--su-stack-justify);
+  flex-wrap: var(--su-stack-wrap);
 }
 
 .su-stack--row { --su-stack-direction: row; }
 .su-stack--inline { display: inline-flex; }
 
 .su-grid {
+  /* Own defaults rather than `var()` fallbacks, so a grid nested in a
+     grid does not inherit its parent's tracks, gap and alignment. */
+  --su-grid-min: 16rem;
+  --su-grid-columns: repeat(auto-fit, minmax(min(100%, var(--su-grid-min)), 1fr));
+  --su-grid-gap: var(--su-space-md);
+  --su-grid-align: stretch;
   display: grid;
-  gap: var(--su-grid-gap, var(--su-space-md));
-  grid-template-columns: var(--su-grid-columns, repeat(auto-fit, minmax(min(100%, var(--su-grid-min, 16rem)), 1fr)));
-  align-items: var(--su-grid-align, stretch);
+  gap: var(--su-grid-gap);
+  grid-template-columns: var(--su-grid-columns);
+  align-items: var(--su-grid-align);
 }
 
 .su-divider {
@@ -515,6 +529,10 @@
 }
 
 .su-card {
+  /* Restated so a card inside a card starts from the default padding
+     rather than inheriting whatever the outer card was given. The
+     sections below keep their fallback, for a body used on its own. */
+  --su-card-padding: var(--su-space-lg);
   display: flex;
   flex-direction: column;
   background: var(--su-surface);
@@ -680,6 +698,44 @@
   border-bottom-width: 2px;
   border-radius: var(--su-radius-sm);
   color: var(--su-text);
+}
+
+/* ------------------------------------------------------------------ *
+ * Icon
+ *
+ * An icon is sized in `em`, so it matches whatever text it sits beside
+ * without being told what size that is. Components that place an icon
+ * themselves — buttons, alerts, step markers — size it from their own
+ * rule, which is a descendant selector and so already outranks this.
+ * ------------------------------------------------------------------ */
+
+.su-icon {
+  width: var(--su-icon-size, 1em);
+  height: var(--su-icon-size, 1em);
+  display: inline-block;
+  vertical-align: -0.125em;
+  flex: none;
+}
+
+.su-icon--sm { --su-icon-size: 0.875em; }
+.su-icon--lg { --su-icon-size: 1.25em; }
+
+.su-icon--spin {
+  animation: su-icon-spin 0.7s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes su-icon-spin {
+  to { transform: rotate(360deg); }
+}
+
+/*
+ * A spinner that stops is a spinner that looks broken, so this slows it
+ * to a crawl rather than removing it: still obviously alive, without the
+ * fast rotation the preference is asking to avoid.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .su-icon--spin { animation-duration: 3s; }
 }
 
 /* ------------------------------------------------------------------ *
@@ -2115,7 +2171,8 @@ svg.su-theme-icon-moon {
  * ------------------------------------------------------------------ */
 
 .su-aspect {
-  aspect-ratio: var(--su-aspect, 16 / 9);
+  --su-aspect: 16 / 9;
+  aspect-ratio: var(--su-aspect);
   overflow: hidden;
   border-radius: inherit;
 }

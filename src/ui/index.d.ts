@@ -60,6 +60,77 @@ export function theme(tokens?: Record<string, unknown>, options?: ThemeOptions):
 export function themeScript(options?: { nonce?: string }): string
 
 /* -------------------------------------------------------------- *
+ * Icons
+ * -------------------------------------------------------------- */
+
+/** Every glyph in the built-in set, named for what it draws. */
+export type IconGlyph =
+  | 'alert-triangle' | 'arrow-down' | 'arrow-left' | 'arrow-right'
+  | 'arrow-up' | 'bell' | 'bold' | 'bookmark' | 'calendar' | 'check'
+  | 'check-circle' | 'chevron-down' | 'chevron-left' | 'chevron-right'
+  | 'chevron-up' | 'chevrons-left' | 'chevrons-right' | 'clock' | 'close'
+  | 'code' | 'copy' | 'database' | 'download' | 'edit' | 'external-link'
+  | 'eye' | 'eye-off' | 'file' | 'filter' | 'folder' | 'globe' | 'heart'
+  | 'help' | 'home' | 'image' | 'info' | 'italic' | 'layers' | 'link'
+  | 'lock'
+  | 'mail' | 'menu' | 'minus' | 'moon' | 'more-horizontal'
+  | 'more-vertical' | 'package' | 'plus' | 'refresh' | 'search'
+  | 'settings' | 'spinner' | 'star' | 'sun' | 'tag' | 'terminal' | 'trash'
+  | 'unlock' | 'upload' | 'user' | 'users' | 'x-circle' | 'zap'
+
+/** Names that resolve to a glyph drawn under a different name. */
+export type IconAlias =
+  | 'x' | 'cross' | 'success' | 'warning' | 'danger' | 'error' | 'question'
+  | 'loading' | 'cog' | 'gear' | 'trash-can' | 'delete' | 'pencil'
+  | 'notification' | 'dots' | 'bolt' | 'lightning' | 'arrow-back'
+  | 'arrow-forward'
+
+/**
+ * Any icon name. The union is there for completion; `registerIcons()`
+ * means a name outside it is still valid, so the type stays open.
+ */
+export type IconName = IconGlyph | IconAlias | (string & {})
+
+export interface IconProps extends BaseProps {
+  name?: IconName
+  /** A size token, or any CSS length. Defaults to `1em`. */
+  size?: Size | (string & {})
+  /**
+   * Announce the icon as an image with this name. Without it the icon
+   * is `aria-hidden`, which is right whenever adjacent text already
+   * says what it means.
+   */
+  label?: string
+  /** Rotate it continuously, for `spinner`. */
+  spin?: boolean
+}
+
+/**
+ * One icon, as an inline `<svg>`. An unknown name renders `''`.
+ *
+ * ```js
+ * icon('check')
+ * icon('trash', { label: 'Delete' })
+ * ```
+ */
+export function icon(name?: IconName, props?: IconProps, ...children: Child[]): string
+export function icon(props?: IconProps, ...children: Child[]): string
+
+/**
+ * Add your own glyphs, or replace a built-in. The markup is the inside
+ * of the `<svg>`, drawn on the same 24x24 grid and left unfilled so
+ * `currentColor` reaches it. `null` drops a registration, restoring the
+ * built-in it was covering.
+ */
+export function registerIcons(glyphs?: Record<string, string | null>): void
+
+/** Every icon name, built-ins and registered alike, sorted. Aliases excluded. */
+export function iconNames(): string[]
+
+/** Whether a name resolves to a glyph, following aliases. */
+export function hasIcon(name?: unknown): boolean
+
+/* -------------------------------------------------------------- *
  * Client runtime
  * -------------------------------------------------------------- */
 

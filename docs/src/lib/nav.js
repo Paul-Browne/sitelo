@@ -137,6 +137,7 @@ const UI_LABELS = {
     { href: '/ui/typography', label: 'Typography' },
     { href: '/ui/prose', label: 'Prose' },
     { href: '/ui/link', label: 'Link' },
+    { href: '/ui/icons', label: 'Icons' },
     { heading: 'Inputs' },
     { href: '/ui/button', label: 'Button' },
     { href: '/ui/button-group', label: 'Button group' },

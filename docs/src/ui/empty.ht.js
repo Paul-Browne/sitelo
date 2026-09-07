@@ -28,7 +28,7 @@ export default () =>
         ', because the title already says what is going on.',
       ),
       demo(`empty({
-  icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 5h10l2 3h4v11H4z"/></svg>',
+  icon: icon('folder'),
   title: 'Nothing here',
   description: 'This folder has no pages in it.',
 })`, { align: 'stretch' }),
@@ -36,7 +36,7 @@ export default () =>
       h2('With an action'),
       p('Children become the action row.'),
       demo(`empty({
-  icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg>',
+  icon: icon('search'),
   title: 'No results for “islands”',
   description: 'Check the spelling, or browse the documentation instead.',
 },

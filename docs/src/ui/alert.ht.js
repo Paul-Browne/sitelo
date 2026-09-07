@@ -59,7 +59,7 @@ export default () =>
   alert({
     color: 'primary',
     title: 'A custom icon',
-    icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5 12.4 7.6l5.6.8-4 3.9.9 5.6L10 15.2 5.1 17.9l.9-5.6-4-3.9 5.6-.8z"/></svg>',
+    icon: icon('star'),
   }, 'Any SVG works — icons are markup, not a dependency.'),
 )`, { align: 'stretch' }),
 

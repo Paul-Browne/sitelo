@@ -44,7 +44,7 @@ export default () =>
     time: 'Just now',
     title: 'Published',
     color: 'success',
-    icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 10 3.5 3.5L15 6"/></svg>',
+    icon: icon('check', { 'stroke-width': 3.4 }),
   }),
   timelineItem({
     time: '2 minutes ago',

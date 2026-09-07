@@ -61,7 +61,7 @@ That's the whole mental model. Everything else is convenience on top.
 - **Dynamic routes** — `[slug]`, `[year]/[slug]`, catch-all `[...path]`, optional catch-all `[...path]?`
 - **Route groups** — `(admin)/users.ht.js` → `/users`
 - **Bring your own HTML** — template literals, [javascript-to-html](https://www.npmjs.com/package/javascript-to-html), or JSX/TSX
-- **sitelo-ui** — 90 components (buttons, cards, forms, tables, modals, prose, page sections) as functions returning HTML, with one small optional script
+- **sitelo-ui** — 87 components (buttons, cards, forms, tables, modals, prose, page sections) and a 63-icon set, as functions returning HTML, with one small optional script
 - **Data loading** — `data()` runs at build time, with built-in fetch caching
 - **Typed pages** — per-route param types inferred from the filename
 - **Smart asset pipeline** — JS/TS/CSS referenced by your HTML is bundled and minified; server-only code never leaks into `dist`
@@ -601,6 +601,46 @@ head(
 )
 ```
 
+### Icons
+
+`icon()` returns an inline `<svg>` from a set of 63 glyphs, drawn on one
+24x24 grid in `currentColor`, so an icon takes the colour and the font
+size of whatever it sits in:
+
+```js
+button({ color: 'danger' }, icon('trash'), 'Delete')
+iconButton({ 'aria-label': 'Close' }, icon('close'))
+text(icon('check', { size: 'sm' }), ' Done')
+```
+
+Icons are inline for the same reason `styles()` is: there is no file to
+emit, no base path to point at, and no second request before the page is
+legible. A sprite referenced with `<use>` would save on the order of a
+hundred gzipped bytes of HTML per page and cost a round trip to do it —
+repeated markup is exactly what gzip is best at, so most of what a
+sprite exists to dedupe has been deduped already.
+
+An icon is `aria-hidden` unless you give it a `label`, which is right
+whenever adjacent text already says what it means. Label it when the
+icon is the whole of the meaning:
+
+```js
+icon('trash', { label: 'Delete' })   // role="img", announced
+```
+
+Names describe the drawing rather than the job — `x-circle`, not
+`error` — because the same drawing gets used for unrelated jobs. Common
+intents are aliased, so `icon('danger')`, `icon('error')` and
+`icon('x-circle')` are the same glyph. `iconNames()` lists them all.
+
+Bring your own, or replace a built-in, with the inside of an `<svg>`
+drawn on the same grid:
+
+```js
+registerIcons({ logo: '<path d="M4 20 12 4l8 16z"/>' })
+icon('logo')
+```
+
 ### JavaScript
 
 Most components need none. Modals and drawers are `popover` elements,
@@ -656,6 +696,7 @@ import { toast, setTheme } from 'sitelo/ui/client'
 | Navigation | `breadcrumbs` `pagination` `tabs` `appBar` `appBarNav` `appBarSpacer` `appBarActions` `navLink` `themeToggle` |
 | Overlays | `modal` `drawer` `closeButton` `menu` `menuItem` `menuSeparator` `accordion` `accordionItem` `collapsible` |
 | Sections | `hero` `footer` `siteFooter` `footerColumn` `footerBottom` `stat` `statGroup` `steps` `timeline` `timelineItem` `mockup` |
+| Icons | `icon` `iconNames` `hasIcon` `registerIcons` — 63 glyphs |
 | Styling | `styles` `stylesheet` `theme` `themeScript` |
 
 The switch is `toggle`, because `switch` is a reserved word and cannot

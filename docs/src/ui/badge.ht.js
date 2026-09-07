@@ -57,7 +57,7 @@ export default () =>
       label: 'Settings',
       variant: 'soft',
       color: 'neutral',
-      icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="3"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.4 4.4l1.4 1.4M14.2 14.2l1.4 1.4M4.4 15.6l1.4-1.4M14.2 5.8l1.4-1.4"/></svg>',
+      icon: icon('settings'),
     }),
   ),
 )`),

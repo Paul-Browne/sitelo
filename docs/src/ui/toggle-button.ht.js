@@ -67,12 +67,12 @@ export default () =>
     pressed: true,
     'aria-label': 'Bold',
     title: 'Bold',
-    startIcon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h5a3 3 0 0 1 0 6H6zM6 10h6a3 3 0 0 1 0 6H6z"/></svg>',
+    startIcon: icon('bold'),
   }),
   toggleButton({
     'aria-label': 'Italic',
     title: 'Italic',
-    startIcon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4H8M12 16H8M13 4l-6 12"/></svg>',
+    startIcon: icon('italic'),
   }),
 )`),
 

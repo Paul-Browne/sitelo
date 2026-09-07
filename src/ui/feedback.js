@@ -1,20 +1,22 @@
 import { button, div, p as pEl, span } from 'javascript-to-html'
 
 import { handler } from './handlers.js'
+import { icon } from './icons.js'
 import { attrs, colorClass, cx, oneOf, parseArgs, SIZES, space } from './internal.js'
 
-/** Default glyph per alert color — plain SVG, no icon dependency. */
+/**
+ * Default glyph per alert color.
+ *
+ * `neutral` deliberately shares the informational glyph: a quiet alert
+ * is still telling you something, and there is no drawing for "no
+ * particular sentiment" that reads as anything but noise.
+ */
 const ALERT_ICONS = {
-  primary:
-    '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="M10 9v5" stroke-linecap="round"/><circle cx="10" cy="6.2" r="0.9" fill="currentColor" stroke="none"/></svg>',
-  neutral:
-    '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="M10 9v5" stroke-linecap="round"/><circle cx="10" cy="6.2" r="0.9" fill="currentColor" stroke="none"/></svg>',
-  success:
-    '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="m6.4 10.3 2.4 2.4 4.8-5.1" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  warning:
-    '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M10 2.8 18.2 17H1.8z" stroke-linejoin="round"/><path d="M10 8v3.6" stroke-linecap="round"/><circle cx="10" cy="14.2" r="0.9" fill="currentColor" stroke="none"/></svg>',
-  danger:
-    '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="m7.2 7.2 5.6 5.6M12.8 7.2l-5.6 5.6" stroke-linecap="round"/></svg>',
+  primary: icon('info'),
+  neutral: icon('info'),
+  success: icon('check-circle'),
+  warning: icon('alert-triangle'),
+  danger: icon('x-circle'),
 }
 
 const ALERT_VARIANTS = ['soft', 'outline', 'solid']

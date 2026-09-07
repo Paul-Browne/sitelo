@@ -16,6 +16,8 @@ import {
   ul,
 } from 'javascript-to-html'
 
+// Aliased: `timelineItem` takes an `icon` prop, which would shadow it.
+import { icon as iconSvg } from './icons.js'
 import { attrs, colorClass, cx, el, oneOf, parseArgs, SIZES } from './internal.js'
 
 /**
@@ -159,9 +161,12 @@ export function statGroup(...args) {
   )
 }
 
-/** The tick on a completed step. */
-const STEP_TICK =
-  '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7"/></svg>'
+/*
+ * The tick on a completed step. Bolder than the set's 1.8, because the
+ * marker renders it at 0.85rem — at that size the default weight is a
+ * hairline on a filled circle.
+ */
+const STEP_TICK = iconSvg('check', { 'stroke-width': 3.4 })
 
 /**
  * A numbered flow, with the steps behind you marked done.

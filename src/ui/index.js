@@ -33,6 +33,7 @@
 import * as dataDisplay from './data-display.js'
 import * as feedback from './feedback.js'
 import * as handlers from './handlers.js'
+import * as icons from './icons.js'
 import * as inputs from './inputs.js'
 import * as layout from './layout.js'
 import * as navigation from './navigation.js'
@@ -44,6 +45,7 @@ import * as typography from './typography.js'
 export * from './data-display.js'
 export * from './feedback.js'
 export { configureUiClient } from './handlers.js'
+export * from './icons.js'
 export * from './inputs.js'
 export * from './layout.js'
 export * from './navigation.js'
@@ -56,6 +58,7 @@ export * from './typography.js'
 export default {
   configureUiClient: handlers.configureUiClient,
   ...styleApi,
+  ...icons,
   ...layout,
   ...typography,
   ...inputs,

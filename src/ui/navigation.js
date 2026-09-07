@@ -1,6 +1,7 @@
 import { a, button as buttonEl, div, header, li, nav, ol, span } from 'javascript-to-html'
 
 import { handler, tablistKeydown } from './handlers.js'
+import { icon } from './icons.js'
 import { attrs, colorClass, cx, el, parseArgs } from './internal.js'
 
 /**
@@ -311,11 +312,20 @@ export function navLink(...args) {
   )
 }
 
-const SUN_ICON =
-  '<svg class="su-theme-icon su-theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.2v2.2M12 19.6v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.2 12h2.2M19.6 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg>'
+/*
+ * Stroke-width 2 rather than the set's 1.8: these render at 1.15em on a
+ * toggle, small enough that the default weight goes spindly next to the
+ * button's own text.
+ */
+const SUN_ICON = icon('sun', {
+  class: 'su-theme-icon su-theme-icon-sun',
+  'stroke-width': 2,
+})
 
-const MOON_ICON =
-  '<svg class="su-theme-icon su-theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 13.1A8.6 8.6 0 1 1 10.9 3.2a6.9 6.9 0 0 0 9.9 9.9z"/></svg>'
+const MOON_ICON = icon('moon', {
+  class: 'su-theme-icon su-theme-icon-moon',
+  'stroke-width': 2,
+})
 
 /**
  * Light/dark toggle.
