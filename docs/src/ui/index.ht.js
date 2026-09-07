@@ -31,7 +31,7 @@ const GROUPS = [
       `prose({ size: 'sm', style: 'text-align: left' }, '<p><strong>A heading</strong></p><p>And a paragraph.</p>')`],
     ['/ui/link', 'Link', 'A styled anchor, with the attributes an external link needs.',
       `text({ variant: 'small' }, 'Read the ', link({ href: '/docs' }, 'docs'), '.')`],
-    ['/ui/icons', 'Icons', '91 glyphs on one grid, sized and coloured by the text around them.',
+    ['/ui/icons', 'Icons', '99 glyphs on one grid, sized and coloured by the text around them.',
       `stack({ direction: 'row', gap: 'sm', align: 'center' },
         icon('check'), icon('search'), icon('heart'), icon('zap'), icon('settings'))`],
   ]],

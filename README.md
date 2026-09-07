@@ -61,7 +61,7 @@ That's the whole mental model. Everything else is convenience on top.
 - **Dynamic routes** — `[slug]`, `[year]/[slug]`, catch-all `[...path]`, optional catch-all `[...path]?`
 - **Route groups** — `(admin)/users.ht.js` → `/users`
 - **Bring your own HTML** — template literals, [javascript-to-html](https://www.npmjs.com/package/javascript-to-html), or JSX/TSX
-- **sitelo-ui** — 87 components (buttons, cards, forms, tables, modals, prose, page sections) and a 91-icon set, as functions returning HTML, with one small optional script
+- **sitelo-ui** — 87 components (buttons, cards, forms, tables, modals, prose, page sections) and a 99-icon set, as functions returning HTML, with one small optional script
 - **Data loading** — `data()` runs at build time, with built-in fetch caching
 - **Typed pages** — per-route param types inferred from the filename
 - **Smart asset pipeline** — JS/TS/CSS referenced by your HTML is bundled and minified; server-only code never leaks into `dist`
@@ -603,7 +603,7 @@ head(
 
 ### Icons
 
-`icon()` returns an inline `<svg>` from a set of 91 glyphs, drawn on one
+`icon()` returns an inline `<svg>` from a set of 99 glyphs, drawn on one
 24x24 grid in `currentColor`, so an icon takes the colour and the font
 size of whatever it sits in:
 
@@ -659,6 +659,18 @@ Names describe the drawing rather than the job — `x-circle`, not
 `error` — because the same drawing gets used for unrelated jobs. Common
 intents are aliased, so `icon('danger')`, `icon('error')` and
 `icon('x-circle')` are the same glyph. `iconNames()` lists them all.
+
+Eight brand marks come with the set — `facebook`, `google`, `instagram`,
+`linkedin`, `tiktok`, `whatsapp`, `x-twitter` and `youtube`. They break
+two of the rules above on purpose: they are solid shapes rather than
+strokes, which is what a logo is, and their proportions are the brand's
+rather than this grid's. It is `x-twitter` and not `x`, because `x`
+already aliases `close`.
+
+The artwork is from [Simple Icons](https://simpleicons.org), which
+releases it under CC0. That covers the drawing, not the trademark — use
+these to point at the thing they name, a profile link or a share button,
+and not on a product of your own.
 
 Bring your own, or replace a built-in, with the inside of an `<svg>`
 drawn on the same grid:
@@ -723,7 +735,7 @@ import { toast, setTheme } from 'sitelo/ui/client'
 | Navigation | `breadcrumbs` `pagination` `tabs` `appBar` `appBarNav` `appBarSpacer` `appBarActions` `navLink` `themeToggle` |
 | Overlays | `modal` `drawer` `closeButton` `menu` `menuItem` `menuSeparator` `accordion` `accordionItem` `collapsible` |
 | Sections | `hero` `footer` `siteFooter` `footerColumn` `footerBottom` `stat` `statGroup` `steps` `timeline` `timelineItem` `mockup` |
-| Icons | `icon` `iconNames` `fillableIcons` `hasIcon` `registerIcons` — 91 glyphs |
+| Icons | `icon` `iconNames` `fillableIcons` `hasIcon` `registerIcons` — 99 glyphs |
 | Styling | `styles` `stylesheet` `theme` `themeScript` |
 
 The switch is `toggle`, because `switch` is a reserved word and cannot
