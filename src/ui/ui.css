@@ -1949,6 +1949,23 @@ a.su-list-item:hover,
 .su-modal--sm { --su-modal-width: 24rem; }
 .su-modal--lg { --su-modal-width: 48rem; }
 
+/*
+ * Scroll lock — the one part of an overlay the popover API leaves
+ * undone: the page behind it still scrolls under the backdrop. `:has()`
+ * is everywhere the popover API is, so this needs no script either, and
+ * `lockScroll: false` drops the class that triggers it.
+ *
+ * `scrollbar-gutter` keeps the width the scrollbar was occupying, so a
+ * page long enough to need locking does not jump sideways as the
+ * scrollbar goes. Where scrollbars overlay the content — macOS, iOS,
+ * Android — there is no gutter and nothing to compensate for.
+ */
+html:has(.su-modal--lock:popover-open),
+html:has(.su-drawer--lock:popover-open) {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
 .su-modal::backdrop,
 .su-drawer::backdrop {
   background: var(--su-overlay);

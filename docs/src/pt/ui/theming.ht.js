@@ -1,0 +1,211 @@
+import { h2, p } from 'javascript-to-html'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/pt.js'
+import { uiHead } from '../../lib/ui-demo.js'
+
+export default () =>
+  uiLayout({
+    title: 'Temas',
+    description:
+      'Pôr a folha de estilos na página, e mudar todas as cores, raios e tipos de letra a partir de uma só chamada.',
+    activeHref: '/pt/ui/theming',
+    extraHead: uiHead(),
+    children: [
+      p(
+        'Todos os componentes leem as mesmas propriedades personalizadas, por isso um tema é apenas um conjunto de sobreposições em ',
+        code(':root'),
+        ' — sem passo de construção, sem ficheiro de configuração, e sem nenhum componente a quem seja preciso avisar.',
+      ),
+
+      h2('Meter os estilos'),
+      p(
+        code('styles()'),
+        ' devolve um elemento ',
+        code('<style>'),
+        ' com a folha inteira, minificada — cerca de 7 kB com gzip. É a predefinição porque não pode faltar em ',
+        code('dist/'),
+        ' e não custa um pedido extra.',
+      ),
+      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+
+head(
+  title('O meu site'),
+  styles(),
+)`, 'javascript'),
+      p(
+        'Se preferires ligá-la uma vez e deixar o navegador guardá-la em cache entre páginas, importa o CSS a partir de um ficheiro de entrada empacotado e o Vite emite-o:',
+      ),
+      codeBlock('src/main.js', `import 'sitelo/ui/styles.css'`, 'javascript'),
+      p(
+        'Usa um ou outro, não os dois. O ',
+        code('stylesheet()'),
+        ' devolve o CSS em bruto como cadeia, para o escreveres tu em algum lado.',
+      ),
+
+      h2('Sobrepor tokens'),
+      p(
+        'O ',
+        code('theme()'),
+        ' escreve as sobreposições. As chaves são nomes de tokens em camelCase, objetos de paleta, ou propriedades personalizadas literais — e vem ',
+        code('depois'),
+        ' do ',
+        code('styles()'),
+        ', por isso ganha.',
+      ),
+      codeBlock('src/index.ht.js', `import { styles, theme } from 'sitelo/ui'
+
+head(
+  styles(),
+  theme({
+    primary: { base: '#5b5bd6', hover: '#4a4ac4', active: '#3f3fb0', fg: '#ffffff' },
+    radiusMd: '2px',
+    fontSans: '"Inter", system-ui, sans-serif',
+  }),
+)`, 'javascript'),
+      h2('Temas com âmbito'),
+      p(
+        'Um ',
+        code('selector'),
+        ' limita as sobreposições a uma subárvore em vez da página toda. É isso que os três painéis abaixo fazem — os mesmos componentes, três paletas diferentes, uma só página.',
+      ),
+      demo(`fragment(
+  theme({ primary: { base: '#5b5bd6', hover: '#4a4ac4', fg: '#ffffff', soft: '#e6e6fa', softFg: '#33338f', border: '#b9b9ee' } }, { selector: '.theme-indigo' }),
+  theme({ primary: { base: '#b0357a', hover: '#962e68', fg: '#ffffff', soft: '#fbe4f0', softFg: '#7d1f53', border: '#f0a9ce' } }, { selector: '.theme-pink' }),
+  theme({ radiusMd: '999px', radiusLg: '1.5rem' }, { selector: '.theme-round' }),
+  grid({ min: '11rem' },
+    div({ class: 'theme-indigo' },
+      card(cardBody(stack({ gap: 'sm' },
+        text({ variant: 'caption', tone: 'muted' }, 'índigo'),
+        button({ block: true }, 'Primary'),
+        button({ variant: 'soft', block: true }, 'Soft'),
+      ))),
+    ),
+    div({ class: 'theme-pink' },
+      card(cardBody(stack({ gap: 'sm' },
+        text({ variant: 'caption', tone: 'muted' }, 'rosa'),
+        button({ block: true }, 'Primary'),
+        button({ variant: 'soft', block: true }, 'Soft'),
+      ))),
+    ),
+    div({ class: 'theme-round' },
+      card(cardBody(stack({ gap: 'sm' },
+        text({ variant: 'caption', tone: 'muted' }, 'arredondado'),
+        button({ block: true }, 'Primary'),
+        button({ variant: 'soft', block: true }, 'Soft'),
+      ))),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
+      h2('Modo escuro'),
+      p(
+        'O escuro resolve-se sozinho a partir do ',
+        code('prefers-color-scheme'),
+        '. Um ',
+        code('data-theme'),
+        ' ou ',
+        code('data-su-theme'),
+        ' explícito com ',
+        code('light'),
+        ' ou ',
+        code('dark'),
+        ' em qualquer antepassado sobrepõe-se — é assim que as demonstrações deste site seguem o alternador da barra de topo.',
+      ),
+      p(
+        'Passa ',
+        code('dark'),
+        ' para sobreposições que só devem valer lá. Cobre o atributo e a media query de uma vez.',
+      ),
+      codeBlock('src/index.ht.js', `theme({
+  primary: { base: '#5b5bd6' },
+}, {
+  dark: { primary: { base: '#8f8ff0' } },
+})`, 'javascript'),
+
+      h2('O que há para sobrepor'),
+      p(
+        'Cinco paletas de nove ranhuras cada, uma escala de espaçamento, tipos de letra, raios, sombras e as cores das superfícies. Cada uma delas é uma propriedade personalizada — abre a folha de estilos, ou o inspetor do teu navegador, e estão todas em ',
+        code(':root'),
+        '.',
+      ),
+      demo(`stack({ gap: 'md' },
+  stack({ direction: 'row', gap: 'sm', wrap: true },
+    ...['primary', 'neutral', 'success', 'warning', 'danger'].map((color) =>
+      stack({ gap: 'xs', align: 'center' },
+        div({ style: 'width: 3.5rem; height: 2rem; border-radius: 0.4rem; background: var(--su-' + color + ')' }),
+        text({ variant: 'caption', tone: 'muted' }, color),
+      ),
+    ),
+  ),
+  stack({ direction: 'row', gap: 'sm', wrap: true, align: 'flex-end' },
+    ...['xs', 'sm', 'md', 'lg', 'xl'].map((step) =>
+      stack({ gap: 'xs', align: 'center' },
+        div({ style: 'width: var(--su-space-' + step + '); height: 2rem; border-radius: 0.2rem; background: var(--su-neutral)' }),
+        text({ variant: 'caption', tone: 'muted' }, step),
+      ),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
+      h2('Nomes'),
+      p(
+        'Uma chave em camelCase torna-se uma propriedade em kebab-case: ',
+        code('radiusMd'),
+        ' é ',
+        code('--su-radius-md'),
+        ', ',
+        code('fontSans'),
+        ' é ',
+        code('--su-font-sans'),
+        '. Um objeto aninhado expande-se da mesma maneira — ',
+        code('{ primary: { softFg: … } }'),
+        ' define ',
+        code('--su-primary-soft-fg'),
+        ' — e uma chave que já comece por ',
+        code('--'),
+        ' é usada exatamente como está escrita, o que é a saída de emergência para tudo o que o mapeamento não cobre.',
+      ),
+      p(
+        'Uma paleta tem nove ranhuras: ',
+        code('base'),
+        ', ',
+        code('hover'),
+        ', ',
+        code('active'),
+        ', ',
+        code('fg'),
+        ', ',
+        code('soft'),
+        ', ',
+        code('softHover'),
+        ', ',
+        code('softFg'),
+        ', ',
+        code('border'),
+        ' e ',
+        code('ring'),
+        '. Define apenas as que estiveres a mudar.',
+      ),
+
+      h2('Contraste'),
+      p(
+        'As paletas que vêm incluídas cumprem o AA das WCAG contra as superfícies em que assentam, nos dois temas, e há um teste no repositório que falha a construção se isso deixar de ser verdade. Um tema teu não está coberto por ele — confere o teu ',
+        code('fg'),
+        ' contra o teu ',
+        code('base'),
+        ' antes de o publicares.',
+      ),
+
+      h2('Props'),
+      p(code('styles()'), ' e ', code('stylesheet()'), ':'),
+      propsTable([
+        ['minify', 'boolean', 'true', 'Remove comentários e espaços.'],
+        ['nonce', 'string', '', 'Nonce de CSP para o elemento style emitido. Só no styles().'],
+      ]),
+      p(code('theme(tokens, options)'), ':'),
+      propsTable([
+        ['selector', 'string', "':root'", 'Limita as sobreposições a uma subárvore.'],
+        ['dark', 'object', '', 'Sobreposições aplicadas só no modo escuro.'],
+        ['nonce', 'string', '', 'Nonce de CSP.'],
+      ]),
+    ],
+  })

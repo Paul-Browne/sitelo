@@ -1,0 +1,128 @@
+import { a, h2, p, strong } from 'javascript-to-html'
+import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
+import { uiHead } from '../../lib/ui-demo.js'
+
+export default () =>
+  uiLayout({
+    title: 'Группа кнопок',
+    description:
+      'Кнопки, которые идут вместе, слитые в один элемент управления с общими границами и скруглёнными краями.',
+    activeHref: '/ru/ui/button-group',
+    extraHead: uiHead(),
+    children: [
+      p(
+        'Кнопки группируются обёрткой в ',
+        code('buttonGroup()'),
+        '. Они должны быть прямыми потомками: группа скругляет первую и последнюю и стягивает остальные, так что всё, что окажется между ними, ломает шов.',
+      ),
+
+      h2('Простая группа'),
+      demo(`buttonGroup({ label: 'Простая группа кнопок' },
+  button('Раз'),
+  button('Два'),
+  button('Три'),
+)`),
+
+      h2('Варианты'),
+      p(
+        'Сама группа цвета не несёт. Задавайте ',
+        code('variant'),
+        ' и ',
+        code('color'),
+        ' на кнопках и держите их одинаковыми по всей группе — именно это заставляет её читаться как один элемент управления.',
+      ),
+      demo(`stack({ gap: 'md', align: 'flex-start' },
+  buttonGroup({ label: 'Solid' },
+    button({ variant: 'solid' }, 'Раз'),
+    button({ variant: 'solid' }, 'Два'),
+    button({ variant: 'solid' }, 'Три'),
+  ),
+  buttonGroup({ label: 'Outline' },
+    button({ variant: 'outline', color: 'neutral' }, 'Раз'),
+    button({ variant: 'outline', color: 'neutral' }, 'Два'),
+    button({ variant: 'outline', color: 'neutral' }, 'Три'),
+  ),
+  buttonGroup({ label: 'Soft' },
+    button({ variant: 'soft' }, 'Раз'),
+    button({ variant: 'soft' }, 'Два'),
+    button({ variant: 'soft' }, 'Три'),
+  ),
+)`, { align: 'start' }),
+
+      h2('Размеры и цвета'),
+      demo(`stack({ gap: 'md', align: 'flex-start' },
+  buttonGroup({ label: 'Маленькая' },
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Слева'),
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'По центру'),
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Справа'),
+  ),
+  buttonGroup({ label: 'Большая' },
+    button({ size: 'lg', variant: 'soft', color: 'danger' }, 'Отмена'),
+    button({ size: 'lg', variant: 'soft', color: 'danger' }, 'Сбросить'),
+  ),
+)`, { align: 'start' }),
+
+      h2('Ссылки'),
+      p(
+        'Кнопки с ',
+        code('href'),
+        ' группируются точно так же — для ряда вещей, каждая из которых куда-то ведёт, и ни одна из них не туда, где вы сейчас.',
+      ),
+      demo(`buttonGroup({ label: 'Поделиться' },
+  button({ href: '#rss', variant: 'outline', color: 'neutral' }, 'RSS'),
+  button({ href: '#json', variant: 'outline', color: 'neutral' }, 'JSON'),
+  button({ href: '#sitemap', variant: 'outline', color: 'neutral' }, 'Sitemap'),
+)`),
+
+      h2('Группа кнопок или группа переключателей?'),
+      p(
+        'Группа кнопок — это контейнер: она соединяет то, что вы в неё положили, и не хранит состояния. Если один из элементов ',
+        strong('выбран'),
+        ' — сегментированный контрол, фильтр, раздел, в котором вы находитесь, — это ',
+        a({ href: '/ru/ui/toggle-group' }, 'группа переключателей'),
+        ', которая строит элементы из данных и сама помечает активный.',
+      ),
+      p(
+        'Правило простое: если нажатие на один делает остальные неверными — это группа переключателей. Если каждый делает своё отдельное дело — это группа кнопок.',
+      ),
+      demo(`stack({ gap: 'lg' },
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'buttonGroup — три отдельных действия'),
+    buttonGroup({ label: 'Действия со строкой' },
+      button({ variant: 'outline', color: 'neutral' }, 'Изменить'),
+      button({ variant: 'outline', color: 'neutral' }, 'Дублировать'),
+      button({ variant: 'outline', color: 'neutral' }, 'Удалить'),
+    ),
+  ),
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'toggleGroup — один выбор из трёх'),
+    toggleGroup({
+      label: 'Выравнивание текста',
+      value: 'По центру',
+      items: ['Слева', 'По центру', 'Справа'],
+    }),
+  ),
+)`, { align: 'start' }),
+
+      h2('С кнопкой-иконкой'),
+      demo(`buttonGroup({ label: 'Действия редактора' },
+  button({ variant: 'outline', color: 'neutral' }, 'Сохранить'),
+  iconButton({
+    label: 'Ещё действия',
+    variant: 'outline',
+    color: 'neutral',
+    icon: icon('more-horizontal'),
+  }),
+)`),
+
+      h2('Пропсы'),
+      propsTable([
+        ['label', 'string', '', 'Доступное имя группы; становится aria-label на role="group".'],
+      ]),
+      p(
+        'Всё остальное проваливается на обёртку. Кнопки внутри принимают собственные пропсы — см. ',
+        code('button()'),
+        '.',
+      ),
+    ],
+  })

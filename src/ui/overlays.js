@@ -34,7 +34,11 @@ import {
  * modal({ id: 'confirm', title: 'Delete this page?' }, 'This cannot be undone.')
  * ```
  *
- * @param {...any} args - `modal({ id, title, size, footer, closeLabel }, ...children)`
+ * While it is open the page behind it does not scroll — the class this
+ * renders is what the stylesheet keys that off, so it holds without a
+ * script too. `lockScroll: false` gives the background its scroll back.
+ *
+ * @param {...any} args - `modal({ id, title, size, footer, closeLabel, lockScroll }, ...children)`
  * @returns {string}
  */
 export function modal(...args) {
@@ -46,6 +50,7 @@ export function modal(...args) {
     footer,
     closable = true,
     closeLabel = 'Close',
+    lockScroll = true,
     ...rest
   } = props
 
@@ -64,7 +69,11 @@ export function modal(...args) {
       ...(title == null ? {} : { 'aria-labelledby': titleId }),
     },
     attrs(rest, {
-      class: cx('su-modal', size !== 'md' && `su-modal--${size}`),
+      class: cx(
+        'su-modal',
+        size !== 'md' && `su-modal--${size}`,
+        lockScroll && 'su-modal--lock',
+      ),
     }),
     title == null && !closable
       ? ''
@@ -98,9 +107,10 @@ export function closeButton({ target, label = 'Close', ...rest } = {}) {
 
 /**
  * Panel that slides in from the edge. Same popover mechanics as
- * {@link modal}, which is what makes it work with the script absent.
+ * {@link modal}, which is what makes it work with the script absent,
+ * and the same scroll lock on the page behind it.
  *
- * @param {...any} args - `drawer({ id, title, side, width, closeLabel }, ...children)`
+ * @param {...any} args - `drawer({ id, title, side, width, closeLabel, lockScroll }, ...children)`
  * @returns {string}
  */
 export function drawer(...args) {
@@ -112,6 +122,7 @@ export function drawer(...args) {
     width,
     closable = true,
     closeLabel = 'Close',
+    lockScroll = true,
     ...rest
   } = props
 
@@ -130,7 +141,11 @@ export function drawer(...args) {
       ...(title == null ? {} : { 'aria-labelledby': titleId }),
     },
     attrs(rest, {
-      class: cx('su-drawer', side === 'start' && 'su-drawer--start'),
+      class: cx(
+        'su-drawer',
+        side === 'start' && 'su-drawer--start',
+        lockScroll && 'su-drawer--lock',
+      ),
       style: { '--su-drawer-width': width },
     }),
     title == null && !closable

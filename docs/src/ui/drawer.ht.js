@@ -120,6 +120,15 @@ export default () =>
   ),
 )`),
 
+      h2('Background scrolling'),
+      p(
+        'The page behind an open drawer does not scroll — the same CSS-only lock ',
+        code('modal()'),
+        ' uses, with no script and nothing to initialise. Pass ',
+        code('lockScroll: false'),
+        ' to let the background scroll as usual.',
+      ),
+
       h2('Props'),
       propsTable([
         ['id', 'string', '', 'Required. What a trigger’s popovertarget points at.'],
@@ -128,6 +137,7 @@ export default () =>
         ['width', 'string', "'20rem'", 'Panel width, capped at 90vw.'],
         ['closable', 'boolean', 'true', 'Show the × in the header.'],
         ['closeLabel', 'string', "'Close'", 'Accessible name for that button.'],
+        ['lockScroll', 'boolean', 'true', 'Stop the page behind it scrolling while it is open.'],
       ]),
     ],
   })

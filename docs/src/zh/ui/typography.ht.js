@@ -1,0 +1,163 @@
+import { h2, p } from 'javascript-to-html'
+import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
+import { uiHead } from '../../lib/ui-demo.js'
+
+export default () =>
+  uiLayout({
+    title: '排版',
+    description: '会自己挑元素的字号体系，让文档大纲跟着视觉层级走。',
+    activeHref: '/zh/ui/typography',
+    extraHead: uiHead(),
+    children: [
+      p(
+        code('text()'),
+        ' 会用本库的某一档字号渲染一段文字。变体会挑一个合理的元素——',
+        code("variant: 'h2'"),
+        ' 渲染出的就是真正的 ',
+        code('<h2>'),
+        '——于是标题自然进入文档大纲，没人需要为此费神。',
+      ),
+
+      h2('变体'),
+      demo(`stack({ gap: 'sm' },
+  text({ variant: 'h1' }, '标题 1'),
+  text({ variant: 'h2' }, '标题 2'),
+  text({ variant: 'h3' }, '标题 3'),
+  text({ variant: 'h4' }, '标题 4'),
+  text({ variant: 'h5' }, '标题 5'),
+  text({ variant: 'h6' }, '标题 6'),
+  text({ variant: 'lead' }, 'Lead——比正文大一档，用于标题下面那句话。'),
+  text({ variant: 'body' }, 'Body——默认值。'),
+  text({ variant: 'small' }, 'Small——仍然是完整句子的小字。'),
+  text({ variant: 'caption' }, 'Caption——那些小字注解。'),
+  text({ variant: 'overline' }, 'Overline'),
+)`, { align: 'stretch' }),
+
+      h2('标题'),
+      p(
+        code('heading()'),
+        ' 接受一个大纲 ',
+        code('level'),
+        '，并按它决定字号。',
+        code('size'),
+        ' 把这两者解耦：一个看起来像 h3 的 ',
+        code('<h1>'),
+        '，对屏幕阅读器来说仍然是 h1。',
+      ),
+      demo(`stack({ gap: 'sm' },
+  heading({ level: 2 }, '二级标题，字号也照着来'),
+  heading({ level: 2, size: 'h5' }, '二级标题，但字号像 h5'),
+)`, { align: 'stretch' }),
+
+      h2('色调'),
+      p('三档强调，从满对比一直到最轻但仍可读的灰。'),
+      demo(`stack({ gap: 'xs' },
+  text('默认——正文所用的那个颜色。'),
+  text({ tone: 'muted' }, '弱化——次要文字，读起来依然舒服。'),
+  text({ tone: 'subtle' }, '更轻——标签和元信息。'),
+)`, { align: 'stretch' }),
+
+      h2('对齐'),
+      demo(`stack({ gap: 'xs' },
+  text({ align: 'start' }, '起始对齐'),
+  text({ align: 'center' }, '居中'),
+  text({ align: 'end' }, '末尾对齐'),
+)`, { align: 'stretch' }),
+
+      h2('截断与限制行数'),
+      p(
+        code('truncate'),
+        ' 把单行截断并加省略号。',
+        code('lines'),
+        ' 则改为限制成若干行，这通常正是卡片摘要想要的。',
+      ),
+      demo(`stack({ gap: 'md' },
+  card({ variant: 'flat' }, cardBody(
+    text({ truncate: true }, '一行文字，长得远远超出容器宽度，于是被省略号截断，而不是折行。'),
+  )),
+  card({ variant: 'flat' }, cardBody(
+    text({ lines: 2, tone: 'muted' }, '限制成两行。这一段会啰嗦一阵子，好让限制真的有东西可截，然后再多说几句，一直越过第三行本该开始的位置。'),
+  )),
+)`, { align: 'stretch' }),
+
+      h2('行内代码与按键'),
+      demo(`text(
+  '运行 ', code('sitelo build'), '，或者按 ', kbd('⌘'), ' ', kbd('K'), ' 搜索。',
+)`, { align: 'stretch' }),
+      p(
+        '子元素是按 HTML 渲染的——正是这一点让本库处处都能嵌套，',
+        code('code()'),
+        ' 也不例外。所以含标签的示例需要用 ',
+        code('text'),
+        ' 属性，它会做转义：',
+      ),
+      demo(`stack({ gap: 'sm' },
+  text(code({ text: '<em>你好</em>' }), ' —— text：照原样显示'),
+  text(code('<em>你好</em>'), ' —— 子元素：当作标记解析'),
+)`, { align: 'stretch' }),
+      p(
+        '两者都有用。',
+        code('text'),
+        ' 适合代码示例，那里的标签应该被读出来而不是被构建出来。子元素适合已经做过语法高亮的输出——那里的标记本身',
+        code('就是'),
+        '重点，Prism 或 Shiki 的结果可以直接放进去。',
+      ),
+      demo(`stack({ gap: 'sm' },
+  text(code({ text: 'sitelo build --root docs' })),
+  text(code('<span style="color: var(--su-primary-soft-fg)">sitelo</span> build')),
+)`, { align: 'stretch' }),
+
+      h2('组合'),
+      p(
+        'text 接受的是子元素，而不只是一个字符串——所以链接、代码和强调都能像在 HTML 里那样嵌进去。',
+      ),
+      demo(`text({ variant: 'lead' },
+  '页面就是返回 ',
+  code('HTML'),
+  ' 的函数。可以看看',
+  link({ href: '/zh/docs/pages' }, '编写页面'),
+  '这篇指南。',
+)`, { align: 'stretch' }),
+
+      h2('换掉元素'),
+      p(
+        code('as'),
+        ' 只换元素、不改外观——适合那种不该出现在大纲里的视觉标题，或者一行文字中间的 ',
+        code('<span>'),
+        '。',
+      ),
+      demo(`stack({ gap: 'xs' },
+  text({ variant: 'h4', as: 'div' }, '看着像标题，其实是个 div'),
+  text({ variant: 'caption', as: 'p' }, '用 caption 样式的一个段落'),
+)`, { align: 'stretch' }),
+
+      h2('视觉隐藏'),
+      p(
+        code('visuallyHidden()'),
+        ' 让内容留在无障碍树里、但不出现在屏幕上——在视力正常的读者靠上下文就能明白的地方，把屏幕阅读器需要的那句说明补上。',
+      ),
+      demo(`text(
+  '构建状态：',
+  chip({ color: 'success', dot: true }, '通过'),
+  visuallyHidden('——最近一次构建在 4 分钟前成功'),
+)`, { align: 'stretch' }),
+
+      h2('属性'),
+      propsTable([
+        ['variant', "'h1'…'h6' | 'lead' | 'body' | 'small' | 'caption' | 'overline'", "'body'", '字号、字重和默认元素。'],
+        ['tone', "'default' | 'muted' | 'subtle'", "'default'", '文字的对比强度。'],
+        ['align', "'start' | 'center' | 'end'", "'start'", '文字对齐方式。'],
+        ['truncate', 'boolean', 'false', '只留一行，用省略号截断。'],
+        ['lines', 'number', '', '限制成这么多行。'],
+        ['as', 'string', '', '覆盖变体本来会选的那个元素。'],
+      ]),
+      p(
+        code('heading()'),
+        ' 接受 ',
+        code('level'),
+        '（1–6）和可选的 ',
+        code('size'),
+        '；其余都一样。',
+      ),
+    ],
+  })

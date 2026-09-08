@@ -1,0 +1,133 @@
+import { h2, p } from 'javascript-to-html'
+import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
+import { uiHead } from '../../lib/ui-demo.js'
+
+export default () =>
+  uiLayout({
+    title: '头像',
+    description: '圆圈里的一个人或一件东西——有图就用图，没图就用姓名首字母。',
+    activeHref: '/zh/ui/avatar',
+    extraHead: uiHead(),
+    children: [
+      p(
+        '给头像一个 ',
+        code('name'),
+        ' 而不给 ',
+        code('src'),
+        '，它就会画出首字母，而不是一张裂图。对于只有部分人有照片的贡献者名单来说，这个兜底很实用。',
+      ),
+
+      h2('基础头像'),
+      demo(`stack({ direction: 'row', gap: 'md', align: 'center' },
+  avatar({ name: 'Ada Lovelace' }),
+  avatar({ name: 'Grace Hopper' }),
+  avatar({ name: 'Alan Turing' }),
+)`),
+
+      h2('带图片'),
+      p(
+        '设置了 ',
+        code('src'),
+        ' 时，',
+        code('alt'),
+        ' 会回退到名字——所以头像永远不会是一张没有说明的图片。',
+      ),
+      demo(`stack({ direction: 'row', gap: 'md', align: 'center' },
+  avatar({ src: '/logo.svg', alt: 'sitelo', style: 'background: var(--su-surface-2)' }),
+  avatar({ src: '/logo.svg', name: 'sitelo', square: true, style: 'background: var(--su-surface-2)' }),
+)`),
+
+      h2('尺寸'),
+      p('字号会跟着头像一起缩放，首字母始终保持比例。'),
+      demo(`stack({ direction: 'row', gap: 'md', align: 'center' },
+  avatar({ name: '小 号', size: 'sm' }),
+  avatar({ name: '中 号', size: 'md' }),
+  avatar({ name: '大 号', size: 'lg' }),
+)`),
+
+      h2('方形'),
+      demo(`stack({ direction: 'row', gap: 'md', align: 'center' },
+  avatar({ name: '项目 A', square: true }),
+  avatar({ name: '项目 B', square: true, color: 'success' }),
+)`),
+
+      h2('颜色'),
+      p('没有图片的头像会取一个柔和的调色板底色。'),
+      demo(`stack({ direction: 'row', gap: 'md', align: 'center', wrap: true },
+  avatar({ name: 'Primary', color: 'primary' }),
+  avatar({ name: 'Neutral', color: 'neutral' }),
+  avatar({ name: 'Success', color: 'success' }),
+  avatar({ name: 'Warning', color: 'warning' }),
+  avatar({ name: 'Danger', color: 'danger' }),
+)`),
+
+      h2('图标和其他内容'),
+      p('子元素会盖过首字母，可以放一个图标或单个字符。'),
+      demo(`stack({ direction: 'row', gap: 'md', align: 'center' },
+  avatar({ color: 'neutral' },
+    icon('user'),
+  ),
+  avatar({ color: 'primary' }, '?'),
+)`),
+
+      h2('分组'),
+      p(
+        code('avatarGroup()'),
+        ' 会让子元素相互叠压，超出 ',
+        code('max'),
+        ' 的部分折叠成一个计数。',
+      ),
+      demo(`stack({ gap: 'md' },
+  avatarGroup(
+    avatar({ name: 'Ada Lovelace' }),
+    avatar({ name: 'Grace Hopper' }),
+    avatar({ name: 'Alan Turing' }),
+  ),
+  avatarGroup({ max: 3 },
+    avatar({ name: 'Ada Lovelace' }),
+    avatar({ name: 'Grace Hopper' }),
+    avatar({ name: 'Alan Turing' }),
+    avatar({ name: 'Katherine Johnson' }),
+    avatar({ name: 'Barbara Liskov' }),
+    avatar({ name: 'Margaret Hamilton' }),
+  ),
+  avatarGroup({ max: 2, size: 'sm' },
+    avatar({ name: 'Ada Lovelace', size: 'sm' }),
+    avatar({ name: 'Grace Hopper', size: 'sm' }),
+    avatar({ name: 'Alan Turing', size: 'sm' }),
+  ),
+)`, { align: 'start' }),
+
+      h2('在列表中'),
+      demo(`list(
+  listItem({
+    start: avatar({ name: 'Ada Lovelace', size: 'sm' }),
+    title: 'Ada Lovelace',
+    description: '向 main 推送了 3 个提交',
+  }),
+  listItem({
+    start: avatar({ name: 'Grace Hopper', size: 'sm', color: 'success' }),
+    title: 'Grace Hopper',
+    description: '发起了一个 pull request',
+  }),
+)`, { align: 'stretch' }),
+
+      h2('属性'),
+      propsTable([
+        ['name', 'string', '', '用于首字母、title，以及图片 alt 的兜底。'],
+        ['src', 'string', '', '用图片代替首字母。'],
+        ['alt', 'string', '', '图片的替代文字；缺省时取 name。'],
+        ['size', "'sm' | 'md' | 'lg'", "'md'", '直径，以及首字母的字号。'],
+        ['square', 'boolean', 'false', '圆角矩形，而不是圆形。'],
+        ['color', "'primary' | 'neutral' | 'success' | 'warning' | 'danger'", '', '首字母底色所用的配色。'],
+      ]),
+      p(
+        code('avatarGroup()'),
+        ' 接受 ',
+        code('max'),
+        '——显示多少个之后把其余折叠成计数——以及 ',
+        code('size'),
+        '，后者只用于那个计数。',
+      ),
+    ],
+  })

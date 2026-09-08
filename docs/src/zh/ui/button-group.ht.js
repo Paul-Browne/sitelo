@@ -1,0 +1,127 @@
+import { a, h2, p, strong } from 'javascript-to-html'
+import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
+import { uiHead } from '../../lib/ui-demo.js'
+
+export default () =>
+  uiLayout({
+    title: '按钮组',
+    description: '把本就该在一起的按钮拼成一个控件，共用边框、两端圆角。',
+    activeHref: '/zh/ui/button-group',
+    extraHead: uiHead(),
+    children: [
+      p(
+        '把按钮包进 ',
+        code('buttonGroup()'),
+        ' 就成了一组。它们必须是直接子元素：这个组会把首尾两个按钮做圆角、把其余的收拢在一起，中间夹任何东西都会把接缝弄断。',
+      ),
+
+      h2('基础按钮组'),
+      demo(`buttonGroup({ label: '基础按钮组' },
+  button('一'),
+  button('二'),
+  button('三'),
+)`),
+
+      h2('变体'),
+      p(
+        '组本身不带颜色。把 ',
+        code('variant'),
+        ' 和 ',
+        code('color'),
+        ' 设在按钮上，并让整组保持一致——正是这一点让它读起来像一个控件。',
+      ),
+      demo(`stack({ gap: 'md', align: 'flex-start' },
+  buttonGroup({ label: 'Solid' },
+    button({ variant: 'solid' }, '一'),
+    button({ variant: 'solid' }, '二'),
+    button({ variant: 'solid' }, '三'),
+  ),
+  buttonGroup({ label: 'Outline' },
+    button({ variant: 'outline', color: 'neutral' }, '一'),
+    button({ variant: 'outline', color: 'neutral' }, '二'),
+    button({ variant: 'outline', color: 'neutral' }, '三'),
+  ),
+  buttonGroup({ label: 'Soft' },
+    button({ variant: 'soft' }, '一'),
+    button({ variant: 'soft' }, '二'),
+    button({ variant: 'soft' }, '三'),
+  ),
+)`, { align: 'start' }),
+
+      h2('尺寸与颜色'),
+      demo(`stack({ gap: 'md', align: 'flex-start' },
+  buttonGroup({ label: '小号' },
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, '左对齐'),
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, '居中'),
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, '右对齐'),
+  ),
+  buttonGroup({ label: '大号' },
+    button({ size: 'lg', variant: 'soft', color: 'danger' }, '取消'),
+    button({ size: 'lg', variant: 'soft', color: 'danger' }, '丢弃'),
+  ),
+)`, { align: 'start' }),
+
+      h2('链接'),
+      p(
+        '带 ',
+        code('href'),
+        ' 的按钮分组方式完全一样——适合一排各自通往别处的入口，其中没有一个指向你正在看的页面。',
+      ),
+      demo(`buttonGroup({ label: '分享' },
+  button({ href: '#rss', variant: 'outline', color: 'neutral' }, 'RSS'),
+  button({ href: '#json', variant: 'outline', color: 'neutral' }, 'JSON'),
+  button({ href: '#sitemap', variant: 'outline', color: 'neutral' }, 'Sitemap'),
+)`),
+
+      h2('按钮组还是切换组？'),
+      p(
+        '按钮组是个容器：你放什么它就拼什么，自己不保存状态。如果其中某一项是',
+        strong('被选中'),
+        '的——分段控件、筛选器、你当前所在的分区——那应该用',
+        a({ href: '/zh/ui/toggle-group' }, '切换组'),
+        '，它会由数据生成各项，并替你标出当前项。',
+      ),
+      p(
+        '经验法则：如果按下一个会让其他几个变成「不对」，那就是切换组；如果每个各干各的，那就是按钮组。',
+      ),
+      demo(`stack({ gap: 'lg' },
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'buttonGroup——三个各自独立的操作'),
+    buttonGroup({ label: '行内操作' },
+      button({ variant: 'outline', color: 'neutral' }, '编辑'),
+      button({ variant: 'outline', color: 'neutral' }, '复制'),
+      button({ variant: 'outline', color: 'neutral' }, '删除'),
+    ),
+  ),
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'toggleGroup——三选一'),
+    toggleGroup({
+      label: '文本对齐',
+      value: '居中',
+      items: ['左对齐', '居中', '右对齐'],
+    }),
+  ),
+)`, { align: 'start' }),
+
+      h2('搭配图标按钮'),
+      demo(`buttonGroup({ label: '编辑器操作' },
+  button({ variant: 'outline', color: 'neutral' }, '保存'),
+  iconButton({
+    label: '更多操作',
+    variant: 'outline',
+    color: 'neutral',
+    icon: icon('more-horizontal'),
+  }),
+)`),
+
+      h2('属性'),
+      propsTable([
+        ['label', 'string', '', '这一组的无障碍名称；会成为 role="group" 上的 aria-label。'],
+      ]),
+      p(
+        '其余一切都会落到外层容器上。里面的按钮用各自的属性——见 ',
+        code('button()'),
+        '。',
+      ),
+    ],
+  })

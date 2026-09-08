@@ -83,9 +83,26 @@ export function preview(source) {
   return run(String(source).trim())
 }
 
+/**
+ * Column headings for {@link createUiDemo}'s props table.
+ *
+ * A page whose table is not a list of props — the parts of a card, the
+ * arguments to `toast()` — passes its own headings instead.
+ */
+const TABLE_HEADERS = {
+  en: ['Prop', 'Type', 'Default', 'Description'],
+  es: ['Prop', 'Tipo', 'Por defecto', 'Descripción'],
+  fr: ['Prop', 'Type', 'Défaut', 'Description'],
+  de: ['Prop', 'Typ', 'Standard', 'Beschreibung'],
+  ru: ['Проп', 'Тип', 'По умолчанию', 'Описание'],
+  zh: ['属性', '类型', '默认值', '说明'],
+  pt: ['Prop', 'Tipo', 'Predefinição', 'Descrição'],
+}
+
 /** Demo helpers bound to a locale. */
 export function createUiDemo(lang = DEFAULT_LOCALE) {
   const { code, codeBlock } = createCodeHelpers(lang)
+  const defaultHeaders = TABLE_HEADERS[lang] ?? TABLE_HEADERS[DEFAULT_LOCALE]
 
   /**
    * A live example above the code that produced it.
@@ -140,7 +157,7 @@ export function createUiDemo(lang = DEFAULT_LOCALE) {
    * @param {[string, string, string, string]} [options.headers]
    * @returns {string}
    */
-  function propsTable(rows, { headers = ['Prop', 'Type', 'Default', 'Description'] } = {}) {
+  function propsTable(rows, { headers = defaultHeaders } = {}) {
     return div(
       { class: 'docs-table-scroll' },
       table(

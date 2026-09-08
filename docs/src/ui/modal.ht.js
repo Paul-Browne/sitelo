@@ -117,6 +117,13 @@ export default () =>
   ),
 )`),
 
+      h2('Background scrolling'),
+      p(
+        'The page behind an open modal does not scroll. That is the one thing the popover API leaves to you, and it is done in CSS here — no script, and nothing to initialise. Pass ',
+        code('lockScroll: false'),
+        ' to let the background scroll as usual.',
+      ),
+
       h2('Browser support'),
       p(
         'The popover API is available in every current browser. In one too old to know it, the modal renders inline in the page instead of on top of it — visible and usable, just not overlaid. Nothing disappears.',
@@ -130,6 +137,7 @@ export default () =>
         ['footer', 'Child', '', 'Bottom row, on its own tinted band.'],
         ['closable', 'boolean', 'true', 'Show the × in the header.'],
         ['closeLabel', 'string', "'Close'", 'Accessible name for that button.'],
+        ['lockScroll', 'boolean', 'true', 'Stop the page behind it scrolling while it is open.'],
       ]),
       p(
         code('closeButton({ target })'),

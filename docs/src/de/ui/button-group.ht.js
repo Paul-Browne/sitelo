@@ -1,0 +1,128 @@
+import { a, h2, p, strong } from 'javascript-to-html'
+import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
+import { uiHead } from '../../lib/ui-demo.js'
+
+export default () =>
+  uiLayout({
+    title: 'Button-Gruppe',
+    description:
+      'Buttons, die zusammengehören, zu einem Steuerelement verbunden — mit geteilten Rändern und runden Enden.',
+    activeHref: '/de/ui/button-group',
+    extraHead: uiHead(),
+    children: [
+      p(
+        'Buttons werden gruppiert, indem man sie in ',
+        code('buttonGroup()'),
+        ' einwickelt. Sie müssen direkte Kinder sein: die Gruppe rundet den ersten und den letzten ab und zieht den Rest zusammen, alles dazwischen bricht also die Naht.',
+      ),
+
+      h2('Einfache Button-Gruppe'),
+      demo(`buttonGroup({ label: 'Einfache Button-Gruppe' },
+  button('Eins'),
+  button('Zwei'),
+  button('Drei'),
+)`),
+
+      h2('Varianten'),
+      p(
+        'Die Gruppe selbst trägt keine Farbe. Setze ',
+        code('variant'),
+        ' und ',
+        code('color'),
+        ' auf den Buttons und halte sie über die Gruppe hinweg gleich — genau das lässt sie als ein Steuerelement lesen.',
+      ),
+      demo(`stack({ gap: 'md', align: 'flex-start' },
+  buttonGroup({ label: 'Solid' },
+    button({ variant: 'solid' }, 'Eins'),
+    button({ variant: 'solid' }, 'Zwei'),
+    button({ variant: 'solid' }, 'Drei'),
+  ),
+  buttonGroup({ label: 'Outline' },
+    button({ variant: 'outline', color: 'neutral' }, 'Eins'),
+    button({ variant: 'outline', color: 'neutral' }, 'Zwei'),
+    button({ variant: 'outline', color: 'neutral' }, 'Drei'),
+  ),
+  buttonGroup({ label: 'Soft' },
+    button({ variant: 'soft' }, 'Eins'),
+    button({ variant: 'soft' }, 'Zwei'),
+    button({ variant: 'soft' }, 'Drei'),
+  ),
+)`, { align: 'start' }),
+
+      h2('Größen und Farben'),
+      demo(`stack({ gap: 'md', align: 'flex-start' },
+  buttonGroup({ label: 'Klein' },
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Links'),
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Mitte'),
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Rechts'),
+  ),
+  buttonGroup({ label: 'Groß' },
+    button({ size: 'lg', variant: 'soft', color: 'danger' }, 'Abbrechen'),
+    button({ size: 'lg', variant: 'soft', color: 'danger' }, 'Verwerfen'),
+  ),
+)`, { align: 'start' }),
+
+      h2('Links'),
+      p(
+        'Buttons mit einem ',
+        code('href'),
+        ' gruppieren sich genauso — für eine Reihe von Dingen, die jeweils irgendwohin führen, keines davon dorthin, wo man schon ist.',
+      ),
+      demo(`buttonGroup({ label: 'Teilen' },
+  button({ href: '#rss', variant: 'outline', color: 'neutral' }, 'RSS'),
+  button({ href: '#json', variant: 'outline', color: 'neutral' }, 'JSON'),
+  button({ href: '#sitemap', variant: 'outline', color: 'neutral' }, 'Sitemap'),
+)`),
+
+      h2('Button-Gruppe oder Toggle-Gruppe?'),
+      p(
+        'Eine Button-Gruppe ist ein Container: sie verbindet, was du hineinlegst, und hält keinen Zustand. Ist einer der Einträge ',
+        strong('ausgewählt'),
+        ' — ein segmentiertes Steuerelement, ein Filter, der Abschnitt, in dem du gerade bist —, dann ist das eine ',
+        a({ href: '/de/ui/toggle-group' }, 'Toggle-Gruppe'),
+        ', die die Einträge aus Daten baut und den aktiven für dich markiert.',
+      ),
+      p(
+        'Die Faustregel: Wenn ein Druck die anderen falsch macht, ist es eine Toggle-Gruppe. Macht jeder sein eigenes Ding, ist es eine Button-Gruppe.',
+      ),
+      demo(`stack({ gap: 'lg' },
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'buttonGroup — drei getrennte Aktionen'),
+    buttonGroup({ label: 'Zeilenaktionen' },
+      button({ variant: 'outline', color: 'neutral' }, 'Bearbeiten'),
+      button({ variant: 'outline', color: 'neutral' }, 'Duplizieren'),
+      button({ variant: 'outline', color: 'neutral' }, 'Löschen'),
+    ),
+  ),
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'toggleGroup — eine Wahl aus dreien'),
+    toggleGroup({
+      label: 'Textausrichtung',
+      value: 'Mitte',
+      items: ['Links', 'Mitte', 'Rechts'],
+    }),
+  ),
+)`, { align: 'start' }),
+
+      h2('Mit einem Icon-Button'),
+      demo(`buttonGroup({ label: 'Editor-Aktionen' },
+  button({ variant: 'outline', color: 'neutral' }, 'Speichern'),
+  iconButton({
+    label: 'Weitere Aktionen',
+    variant: 'outline',
+    color: 'neutral',
+    icon: icon('more-horizontal'),
+  }),
+)`),
+
+      h2('Props'),
+      propsTable([
+        ['label', 'string', '', 'Zugänglicher Name der Gruppe; wird zum aria-label auf role="group".'],
+      ]),
+      p(
+        'Alles Weitere fällt an den Wrapper durch. Die Buttons darin nehmen ihre eigenen Props — siehe ',
+        code('button()'),
+        '.',
+      ),
+    ],
+  })

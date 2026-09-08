@@ -724,6 +724,8 @@ export interface ModalProps extends BaseProps {
   footer?: Child
   closable?: boolean
   closeLabel?: string
+  /** Stop the page behind it scrolling while it is open. Default `true`. */
+  lockScroll?: boolean
 }
 
 export function modal(...args: Args<ModalProps>): string
@@ -736,6 +738,8 @@ export interface DrawerProps extends BaseProps {
   width?: string
   closable?: boolean
   closeLabel?: string
+  /** Stop the page behind it scrolling while it is open. Default `true`. */
+  lockScroll?: boolean
 }
 
 export function drawer(...args: Args<DrawerProps>): string

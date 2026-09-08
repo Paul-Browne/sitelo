@@ -1,0 +1,128 @@
+import { a, h2, p, strong } from 'javascript-to-html'
+import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
+import { uiHead } from '../../lib/ui-demo.js'
+
+export default () =>
+  uiLayout({
+    title: 'Groupe de boutons',
+    description:
+      'Des boutons qui vont ensemble, réunis en un seul contrôle aux bordures partagées et aux extrémités arrondies.',
+    activeHref: '/fr/ui/button-group',
+    extraHead: uiHead(),
+    children: [
+      p(
+        'On groupe des boutons en les enveloppant dans ',
+        code('buttonGroup()'),
+        '. Ils doivent être enfants directs : le groupe arrondit le premier et le dernier et resserre les autres, donc tout ce qui s’intercale casse la jointure.',
+      ),
+
+      h2('Groupe de base'),
+      demo(`buttonGroup({ label: 'Groupe de boutons de base' },
+  button('Un'),
+  button('Deux'),
+  button('Trois'),
+)`),
+
+      h2('Variantes'),
+      p(
+        'Le groupe lui-même ne porte aucune couleur. Mettez ',
+        code('variant'),
+        ' et ',
+        code('color'),
+        ' sur les boutons, et gardez-les identiques dans tout le groupe — c’est ce qui le fait lire comme un seul contrôle.',
+      ),
+      demo(`stack({ gap: 'md', align: 'flex-start' },
+  buttonGroup({ label: 'Solid' },
+    button({ variant: 'solid' }, 'Un'),
+    button({ variant: 'solid' }, 'Deux'),
+    button({ variant: 'solid' }, 'Trois'),
+  ),
+  buttonGroup({ label: 'Outline' },
+    button({ variant: 'outline', color: 'neutral' }, 'Un'),
+    button({ variant: 'outline', color: 'neutral' }, 'Deux'),
+    button({ variant: 'outline', color: 'neutral' }, 'Trois'),
+  ),
+  buttonGroup({ label: 'Soft' },
+    button({ variant: 'soft' }, 'Un'),
+    button({ variant: 'soft' }, 'Deux'),
+    button({ variant: 'soft' }, 'Trois'),
+  ),
+)`, { align: 'start' }),
+
+      h2('Tailles et couleurs'),
+      demo(`stack({ gap: 'md', align: 'flex-start' },
+  buttonGroup({ label: 'Petit' },
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Gauche'),
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Centre'),
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Droite'),
+  ),
+  buttonGroup({ label: 'Grand' },
+    button({ size: 'lg', variant: 'soft', color: 'danger' }, 'Annuler'),
+    button({ size: 'lg', variant: 'soft', color: 'danger' }, 'Abandonner'),
+  ),
+)`, { align: 'start' }),
+
+      h2('Liens'),
+      p(
+        'Les boutons avec un ',
+        code('href'),
+        ' se groupent exactement pareil — pour une rangée d’éléments qui mènent chacun ailleurs, aucun vers la page où l’on est.',
+      ),
+      demo(`buttonGroup({ label: 'Partager' },
+  button({ href: '#rss', variant: 'outline', color: 'neutral' }, 'RSS'),
+  button({ href: '#json', variant: 'outline', color: 'neutral' }, 'JSON'),
+  button({ href: '#sitemap', variant: 'outline', color: 'neutral' }, 'Sitemap'),
+)`),
+
+      h2('Groupe de boutons ou groupe de bascules ?'),
+      p(
+        'Un groupe de boutons est un conteneur : il réunit ce qu’on y met et ne porte aucun état. Si l’un des éléments est ',
+        strong('sélectionné'),
+        ' — un contrôle segmenté, un filtre, la section où l’on se trouve — c’est un ',
+        a({ href: '/fr/ui/toggle-group' }, 'groupe de bascules'),
+        ', qui construit les éléments à partir de données et marque l’actif pour vous.',
+      ),
+      p(
+        'La règle : si appuyer sur l’un rend les autres faux, c’est un groupe de bascules. Si chacun fait sa propre chose, c’est un groupe de boutons.',
+      ),
+      demo(`stack({ gap: 'lg' },
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'buttonGroup — trois actions distinctes'),
+    buttonGroup({ label: 'Actions de ligne' },
+      button({ variant: 'outline', color: 'neutral' }, 'Modifier'),
+      button({ variant: 'outline', color: 'neutral' }, 'Dupliquer'),
+      button({ variant: 'outline', color: 'neutral' }, 'Supprimer'),
+    ),
+  ),
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'toggleGroup — un choix parmi trois'),
+    toggleGroup({
+      label: 'Alignement du texte',
+      value: 'Centre',
+      items: ['Gauche', 'Centre', 'Droite'],
+    }),
+  ),
+)`, { align: 'start' }),
+
+      h2('Avec un bouton-icône'),
+      demo(`buttonGroup({ label: 'Actions de l’éditeur' },
+  button({ variant: 'outline', color: 'neutral' }, 'Enregistrer'),
+  iconButton({
+    label: 'Plus d’actions',
+    variant: 'outline',
+    color: 'neutral',
+    icon: icon('more-horizontal'),
+  }),
+)`),
+
+      h2('Props'),
+      propsTable([
+        ['label', 'string', '', 'Nom accessible du groupe ; devient aria-label sur role="group".'],
+      ]),
+      p(
+        'Tout le reste tombe sur le conteneur. Les boutons à l’intérieur prennent leurs propres props — voir ',
+        code('button()'),
+        '.',
+      ),
+    ],
+  })

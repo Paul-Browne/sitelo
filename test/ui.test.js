@@ -339,6 +339,24 @@ test('modal() uses the popover API and labels itself', () => {
   assert.match(html, /popovertarget="confirm" popovertargetaction="hide"/);
 });
 
+test('modal() locks background scroll unless told not to', () => {
+  assert.match(ui.modal({ id: 'a' }, 'x'), /class="su-modal su-modal--lock"/);
+  assert.match(
+    ui.modal({ id: 'a', size: 'lg' }, 'x'),
+    /class="su-modal su-modal--lg su-modal--lock"/,
+  );
+  assert.match(ui.modal({ id: 'a', lockScroll: false }, 'x'), /class="su-modal"/);
+});
+
+test('drawer() locks background scroll unless told not to', () => {
+  assert.match(ui.drawer({ id: 'a' }, 'x'), /class="su-drawer su-drawer--lock"/);
+  assert.match(
+    ui.drawer({ id: 'a', side: 'start' }, 'x'),
+    /class="su-drawer su-drawer--start su-drawer--lock"/,
+  );
+  assert.match(ui.drawer({ id: 'a', lockScroll: false }, 'x'), /class="su-drawer"/);
+});
+
 test('modal() and drawer() require an id', () => {
   assert.throws(() => ui.modal({}, 'x'), /needs an `id`/);
   assert.throws(() => ui.drawer({}, 'x'), /needs an `id`/);
