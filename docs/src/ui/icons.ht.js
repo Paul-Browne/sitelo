@@ -358,7 +358,7 @@ registerIcons({ check: null }) // and back to the built-in`, 'javascript'),
         '. A sprite saves on the order of a hundred gzipped bytes of HTML per page and costs a round trip to do it — repeated markup is exactly the case gzip is best at, so most of what a sprite exists to dedupe has been deduped already. Inline also means there is no file to emit, no base path to configure, and nothing that can go missing from ',
         code('dist'),
         ' — the same trade ',
-        code('styles()'),
+        code('styles({ inline: true })'),
         ' makes.',
       ),
 

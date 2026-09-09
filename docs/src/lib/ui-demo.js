@@ -20,9 +20,9 @@ import { DEFAULT_LOCALE } from './i18n.js'
 /**
  * Everything a UI page needs in its head.
  *
- * The stylesheet, and nothing else. It is inline, exactly as a reader
- * would add it to their own page, so the demos here are styled by the
- * same bytes the docs tell them to ship.
+ * The stylesheet, and nothing else — the linked form, exactly as a
+ * reader would add it to their own page, so the demos here are styled by
+ * the same file the docs tell them to ship.
  *
  * There is no script: every interactive demo on these pages renders its
  * own `import('/su/…')` into an event attribute, which is the whole

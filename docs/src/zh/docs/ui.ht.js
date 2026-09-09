@@ -29,7 +29,7 @@ const GROUPS = [
   ['导航', ['breadcrumbs', 'pagination', 'tabs', 'appBar', 'appBarNav', 'appBarSpacer', 'appBarActions', 'navLink', 'themeToggle']],
   ['浮层', ['modal', 'drawer', 'closeButton', 'menu', 'menuItem', 'menuSeparator', 'accordion', 'accordionItem', 'collapsible']],
   ['页面区块', ['hero', 'footer', 'siteFooter', 'footerColumn', 'footerBottom', 'stat', 'statGroup', 'steps', 'timeline', 'timelineItem', 'mockup']],
-  ['样式', ['styles', 'stylesheet', 'theme', 'themeScript']],
+  ['样式', ['styles', 'stylesheet', 'stylesUrl', 'theme', 'themeScript']],
 ]
 
 export default () =>
@@ -101,14 +101,19 @@ export default () =>
       h2('样式'),
       p(
         code('styles()'),
-        ' 返回一个 ',
+        ' 返回一个指向单个文件的 ',
+        code('<link>'),
+        '，浏览器会跨页面缓存它；sitelo 的插件在 dev 里提供它，构建时把它写进产物，文件名带内容哈希，可以按 ',
+        code('immutable'),
+        ' 提供。传 ',
+        code('{ inline: true }'),
+        ' 则改为返回一个装着整份样式表的 ',
         code('<style>'),
-        ' 元素，里面是压缩后的整份样式表。传输大小约 7 kB，而且不可能从 ',
+        ' 元素：传输大小约 7 kB，不用多一次请求，也不会有东西从 ',
         code('dist/'),
-        ' 里丢失——这正是它作为默认方式的原因。如果你更希望只链接一次、让浏览器跨页面缓存它，那就从被打包的入口文件里导入这份 CSS，Vite 会把它输出出来：',
+        ' 里丢失：',
       ),
-      codeBlock('src/main.js', s.linked, 'javascript'),
-      p('两种方式选一种，不要同时用。'),
+      codeBlock('src/index.ht.js', s.inline, 'javascript'),
 
       h3('主题'),
       p(

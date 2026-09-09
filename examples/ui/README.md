@@ -7,8 +7,9 @@ npm install
 npm run dev
 ```
 
-The page pulls its styles from `styles()` — an inline `<style>` in the
-head — so there is no stylesheet to copy and nothing to configure.
+The page pulls its styles from `styles()` — a `<link>` in the head, which
+sitelo's plugin serves in dev and writes into the build — so there is no
+stylesheet to copy and nothing to configure.
 
 The handful of components that need a script go and get it themselves,
 from an inline `onclick`: tabs with panels, dismissible alerts, the

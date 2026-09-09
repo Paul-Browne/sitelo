@@ -30,7 +30,7 @@ const GROUPS = [
   ['Navigation', ['breadcrumbs', 'pagination', 'tabs', 'appBar', 'appBarNav', 'appBarSpacer', 'appBarActions', 'navLink', 'themeToggle']],
   ['Overlays', ['modal', 'drawer', 'closeButton', 'menu', 'menuItem', 'menuSeparator', 'accordion', 'accordionItem', 'collapsible']],
   ['Sections', ['hero', 'footer', 'siteFooter', 'footerColumn', 'footerBottom', 'stat', 'statGroup', 'steps', 'timeline', 'timelineItem', 'mockup']],
-  ['Styling', ['styles', 'stylesheet', 'theme', 'themeScript']],
+  ['Styling', ['styles', 'stylesheet', 'stylesUrl', 'theme', 'themeScript']],
 ]
 
 export default () =>
@@ -103,13 +103,18 @@ export default () =>
       p(
         code('styles()'),
         ' returns a ',
+        code('<link>'),
+        ' to one file, which the browser caches across pages; sitelo’s plugin serves it in dev and writes it into the build, under a content-hashed name you can serve ',
+        code('immutable'),
+        '. ',
+        code('{ inline: true }'),
+        ' returns a ',
         code('<style>'),
-        ' element holding the whole sheet, minified. It is around 7 kB over the wire and cannot go missing from ',
+        ' holding the whole sheet instead — around 7 kB over the wire, no extra request, and nothing that can go missing from ',
         code('dist/'),
-        ', which is why it is the default. If you would rather link it once and let the browser cache it across pages, import the CSS from a bundled entry file instead and Vite will emit it:',
+        ':',
       ),
-      codeBlock('src/main.js', s.linked, 'javascript'),
-      p('Use one or the other, not both.'),
+      codeBlock('src/index.ht.js', s.inline, 'javascript'),
 
       h3('Theming'),
       p(

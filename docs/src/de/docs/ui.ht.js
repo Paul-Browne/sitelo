@@ -29,7 +29,7 @@ const GROUPS = [
   ['Navigation', ['breadcrumbs', 'pagination', 'tabs', 'appBar', 'appBarNav', 'appBarSpacer', 'appBarActions', 'navLink', 'themeToggle']],
   ['Overlays', ['modal', 'drawer', 'closeButton', 'menu', 'menuItem', 'menuSeparator', 'accordion', 'accordionItem', 'collapsible']],
   ['Abschnitte', ['hero', 'footer', 'siteFooter', 'footerColumn', 'footerBottom', 'stat', 'statGroup', 'steps', 'timeline', 'timelineItem', 'mockup']],
-  ['Styling', ['styles', 'stylesheet', 'theme', 'themeScript']],
+  ['Styling', ['styles', 'stylesheet', 'stylesUrl', 'theme', 'themeScript']],
 ]
 
 export default () =>
@@ -101,14 +101,19 @@ export default () =>
       h2('Styling'),
       p(
         code('styles()'),
-        ' gibt ein ',
+        ' gibt einen ',
+        code('<link>'),
+        ' auf eine Datei zurück, die der Browser seitenübergreifend cacht; sitelos Plugin liefert sie im Dev-Server aus und schreibt sie in den Build — unter einem Namen mit Inhalts-Hash, den du ',
+        code('immutable'),
+        ' ausliefern kannst. Mit ',
+        code('{ inline: true }'),
+        ' kommt stattdessen ein ',
         code('<style>'),
-        '-Element mit dem gesamten, minifizierten Stylesheet zurück. Das sind rund 7 kB über die Leitung, und es kann nicht aus ',
+        '-Element mit dem gesamten Stylesheet: rund 7 kB über die Leitung, keine zusätzliche Anfrage und nichts, was aus ',
         code('dist/'),
-        ' verschwinden — deshalb ist es der Standard. Wenn du es lieber einmal verlinkst und der Browser es seitenübergreifend cachen soll, importiere das CSS stattdessen aus einer gebündelten Einstiegsdatei; Vite gibt es dann aus:',
+        ' verschwinden kann:',
       ),
-      codeBlock('src/main.js', s.linked, 'javascript'),
-      p('Nimm das eine oder das andere, nicht beides.'),
+      codeBlock('src/index.ht.js', s.inline, 'javascript'),
 
       h3('Theming'),
       p(

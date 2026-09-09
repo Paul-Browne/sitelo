@@ -1,6 +1,6 @@
 {
   "name": "sitelo",
-  "version": "2.7.8",
+  "version": "2.7.9",
   "author": "Paul Browne",
   "type": "module",
   "license": "MIT",
@@ -60,7 +60,6 @@
       "types": "./src/ui/client.d.ts",
       "import": "./src/ui/client.js"
     },
-    "./ui/styles.css": "./src/ui/ui.css",
     "./jsx-runtime": {
       "types": "./src/jsx-runtime.d.ts",
       "import": "./src/jsx-runtime.js"

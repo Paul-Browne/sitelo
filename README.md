@@ -551,15 +551,29 @@ export default () =>
   )
 ```
 
-`styles()` returns a `<style>` element holding the whole stylesheet
-(~7 kB gzipped), so there is nothing to copy and nothing to configure.
-If you would rather link it once and let the browser cache it across
-pages, import the CSS from a bundled entry file instead:
+`styles()` returns a `<link>` to one file the browser caches across every
+page:
 
 ```js
-// src/main.js
-import 'sitelo/ui/styles.css'
+head(title('My site'), styles())
+// <link rel="stylesheet" href="/su/ui-c9428b65.css">
 ```
+
+There is nothing to copy and nothing to configure: sitelo's plugin serves
+the file in dev and writes it into the build, at the same base as the
+component runtime, under a name carrying a hash of the contents so you
+can serve it `immutable`.
+
+`{ inline: true }` puts the whole sheet in a `<style>` instead (~7 kB
+gzipped per page). That costs no round trip and cannot go missing from
+`dist/`, which is the better trade for a single page; the link buys its
+request back on the second page a visitor reads.
+
+The rest of the family hands you the pieces: `stylesheet()` is the raw
+CSS as a string — for hosting the sheet where sitelo cannot reach, or
+writing it somewhere yourself — and `stylesUrl()` the href alone, for a
+`<link>` of your own carrying `media` or `integrity`, a `rel="preload"`
+hint, or a CSP.
 
 ### Props
 
@@ -613,9 +627,9 @@ iconButton({ 'aria-label': 'Close' }, icon('close'))
 text(icon('check', { size: 'sm' }), ' Done')
 ```
 
-Icons are inline for the same reason `styles()` is: there is no file to
-emit, no base path to point at, and no second request before the page is
-legible. A sprite referenced with `<use>` would save on the order of a
+Icons are inline for the same reason `styles({ inline: true })` is: there
+is no file to emit, no base path to point at, and no second request
+before the page is legible. A sprite referenced with `<use>` would save on the order of a
 hundred gzipped bytes of HTML per page and cost a round trip to do it —
 repeated markup is exactly what gzip is best at, so most of what a
 sprite exists to dedupe has been deduped already.
@@ -760,7 +774,7 @@ attribute, the way the components reach theirs, with nothing bundled:
 | Overlays | `modal` `drawer` `closeButton` `menu` `menuItem` `menuSeparator` `accordion` `accordionItem` `collapsible` |
 | Sections | `hero` `footer` `siteFooter` `footerColumn` `footerBottom` `stat` `statGroup` `steps` `timeline` `timelineItem` `mockup` |
 | Icons | `icon` `iconNames` `fillableIcons` `hasIcon` `registerIcons` — 99 glyphs |
-| Styling | `styles` `stylesheet` `theme` `themeScript` |
+| Styling | `styles` `stylesheet` `stylesUrl` `theme` `themeScript` |
 
 The switch is `toggle`, because `switch` is a reserved word and cannot
 be an import binding — and `toggleButton` is a different thing, a button

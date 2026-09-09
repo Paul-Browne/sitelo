@@ -29,7 +29,7 @@ const GROUPS = [
   ['Navegação', ['breadcrumbs', 'pagination', 'tabs', 'appBar', 'appBarNav', 'appBarSpacer', 'appBarActions', 'navLink', 'themeToggle']],
   ['Sobreposições', ['modal', 'drawer', 'closeButton', 'menu', 'menuItem', 'menuSeparator', 'accordion', 'accordionItem', 'collapsible']],
   ['Secções', ['hero', 'footer', 'siteFooter', 'footerColumn', 'footerBottom', 'stat', 'statGroup', 'steps', 'timeline', 'timelineItem', 'mockup']],
-  ['Estilos', ['styles', 'stylesheet', 'theme', 'themeScript']],
+  ['Estilos', ['styles', 'stylesheet', 'stylesUrl', 'theme', 'themeScript']],
 ]
 
 export default () =>
@@ -100,15 +100,21 @@ export default () =>
 
       h2('Estilos'),
       p(
+        'O ',
         code('styles()'),
-        ' devolve um elemento ',
+        ' devolve um ',
+        code('<link>'),
+        ' para um único ficheiro, que o browser guarda em cache entre páginas; o plugin do sitelo serve-o em dev e escreve-o na build, com um nome que leva um hash do conteúdo e podes servir como ',
+        code('immutable'),
+        '. Com ',
+        code('{ inline: true }'),
+        ' devolve antes um ',
         code('<style>'),
-        ' com a folha completa, minificada. São cerca de 7 kB na rede e não pode desaparecer de ',
+        ' com a folha completa: cerca de 7 kB na rede, sem pedido extra e sem nada que possa desaparecer de ',
         code('dist/'),
-        ' — é por isso que é a opção por omissão. Se preferires ligá-la uma só vez e deixar o browser guardá-la em cache entre páginas, importa o CSS a partir de um ficheiro de entrada empacotado e o Vite emite-o:',
+        ':',
       ),
-      codeBlock('src/main.js', s.linked, 'javascript'),
-      p('Usa uma ou outra, não as duas.'),
+      codeBlock('src/index.ht.js', s.inline, 'javascript'),
 
       h3('Temas'),
       p(

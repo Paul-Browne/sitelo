@@ -19,26 +19,46 @@ export default () =>
       h2('Die Styles hineinbekommen'),
       p(
         code('styles()'),
-        ' gibt ein ',
-        code('<style>'),
-        '-Element mit dem gesamten Stylesheet zurück, minifiziert — rund 7 kB gzipped. Das ist der Standard, weil es in ',
-        code('dist/'),
-        ' nicht fehlen kann und keine zusätzliche Anfrage kostet.',
+        ' gibt einen ',
+        code('<link>'),
+        ' auf eine Datei zurück, die der Browser über alle Seiten der Website hinweg cacht. Es gibt nichts zu konfigurieren und nichts zu kopieren: sitelos Plugin liefert sie im Dev-Server aus und schreibt sie in den Build, auf derselben Basis wie die Komponenten-Runtime.',
       ),
       codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
 
 head(
   title('Meine Website'),
   styles(),
+)
+// <link rel="stylesheet" href="/su/ui-c9428b65.css">`, 'javascript'),
+      p(
+        'Der Name trägt einen Hash des Inhalts, du kannst sie also ',
+        code('immutable'),
+        ' ausliefern und trotzdem eine Änderung veröffentlichen. ',
+        code('{ hash: false }'),
+        ' gibt dir ein schlichtes ',
+        code('/su/ui.css'),
+        ', ',
+        code('base'),
+        ' zeigt den Link auf eine Kopie, die du selbst hostest.',
+      ),
+      p(
+        code('{ inline: true }'),
+        ' packt stattdessen die ganze Datei in ein ',
+        code('<style>'),
+        ' — rund 7 kB gzippt in jeder Seite, dafür keine zusätzliche Anfrage und nichts, was in ',
+        code('dist/'),
+        ' fehlen kann. Für eine einzelne Seite ist das der bessere Handel; der Link holt seine Anfrage ab der zweiten gelesenen Seite wieder herein.',
+      ),
+      codeBlock('src/index.ht.js', `head(
+  title('Meine Website'),
+  styles({ inline: true }),
 )`, 'javascript'),
       p(
-        'Wenn du es lieber einmal verlinkst und den Browser es seitenübergreifend cachen lässt, importiere das CSS aus einer gebündelten Einstiegsdatei — Vite gibt es dann aus:',
-      ),
-      codeBlock('src/main.js', `import 'sitelo/ui/styles.css'`, 'javascript'),
-      p(
-        'Nimm das eine oder das andere, nicht beides. ',
+        'Der Rest der Familie reicht dir die Einzelteile. ',
         code('stylesheet()'),
-        ' gibt das rohe CSS als String zurück, um es selbst irgendwohin zu schreiben.',
+        ' gibt das rohe CSS als String zurück — für eine Datei irgendwo, wo sitelo nicht hinkommt, oder um sie selbst irgendwohin zu schreiben —, und ',
+        code('stylesUrl()'),
+        ' nur die URL, für ein eigenes link-Element.',
       ),
 
       h2('Tokens überschreiben'),
@@ -195,11 +215,26 @@ head(
       ),
 
       h2('Props'),
-      p(code('styles()'), ' und ', code('stylesheet()'), ':'),
+      p(code('styles()'), ':'),
       propsTable([
-        ['minify', 'boolean', 'true', 'Kommentare und Leerraum entfernen.'],
-        ['nonce', 'string', '', 'CSP-Nonce für das erzeugte style-Element. Nur bei styles().'],
+        ['inline', 'boolean', 'false', 'Das CSS selbst ausgeben statt eines Links darauf.'],
+        ['hash', 'boolean', 'true', 'Hash des Inhalts in den Dateinamen aufnehmen. Nur verlinkt.'],
+        ['base', 'string', "'/su/'", 'Zeigt die URL woandershin; diese Kopie hostest du selbst. Nur verlinkt.'],
+        ['minify', 'boolean', 'true', 'Kommentare und Leerraum entfernen. Nur inline.'],
+        ['nonce', 'string', '', 'CSP-Nonce für das erzeugte Element.'],
       ]),
+      p(
+        code('stylesUrl()'),
+        ' nimmt ',
+        code('base'),
+        ' und ',
+        code('hash'),
+        ', ',
+        code('stylesheet()'),
+        ' nimmt ',
+        code('minify'),
+        '.',
+      ),
       p(code('theme(tokens, options)'), ':'),
       propsTable([
         ['selector', 'string', "':root'", 'Grenzt die Überschreibungen auf einen Teilbaum ein.'],

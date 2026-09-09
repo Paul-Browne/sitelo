@@ -21,25 +21,45 @@ export default () =>
       p(
         code('styles()'),
         ' returns a ',
-        code('<style>'),
-        ' element holding the whole sheet, minified — about 7 kB gzipped. It is the default because it cannot go missing from ',
-        code('dist/'),
-        ' and costs no extra request.',
+        code('<link>'),
+        ' to one file, which the browser caches across every page of the site. There is nothing to configure and nothing to copy: sitelo’s plugin serves it in dev and writes it into the build, at the same base as the component runtime.',
       ),
       codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
 
 head(
   title('My site'),
   styles(),
+)
+// <link rel="stylesheet" href="/su/ui-c9428b65.css">`, 'javascript'),
+      p(
+        'The name carries a hash of the contents, so you can serve it ',
+        code('immutable'),
+        ' and still ship a change. Pass ',
+        code('{ hash: false }'),
+        ' for a plain ',
+        code('/su/ui.css'),
+        ', or ',
+        code('base'),
+        ' to point the link at a copy you host yourself.',
+      ),
+      p(
+        code('{ inline: true }'),
+        ' puts the whole sheet in a ',
+        code('<style>'),
+        ' instead — about 7 kB gzipped in every page, but no extra request and nothing that can go missing from ',
+        code('dist/'),
+        '. That is the better trade for a single page; the link buys its request back on the second page a visitor reads.',
+      ),
+      codeBlock('src/index.ht.js', `head(
+  title('My site'),
+  styles({ inline: true }),
 )`, 'javascript'),
       p(
-        'If you would rather link it once and let the browser cache it across pages, import the CSS from a bundled entry file instead and Vite will emit it:',
-      ),
-      codeBlock('src/main.js', `import 'sitelo/ui/styles.css'`, 'javascript'),
-      p(
-        'Use one or the other, not both. ',
+        'The rest of the family hands you the pieces. ',
         code('stylesheet()'),
-        ' returns the raw CSS as a string, for writing it somewhere yourself.',
+        ' returns the raw CSS as a string — for hosting the sheet somewhere sitelo cannot reach, or writing it somewhere yourself — and ',
+        code('stylesUrl()'),
+        ' the href alone, for a link element of your own.',
       ),
 
       h2('Overriding tokens'),
@@ -196,11 +216,26 @@ head(
       ),
 
       h2('Props'),
-      p(code('styles()'), ' and ', code('stylesheet()'), ':'),
+      p(code('styles()'), ':'),
       propsTable([
-        ['minify', 'boolean', 'true', 'Strip comments and whitespace.'],
-        ['nonce', 'string', '', 'CSP nonce for the emitted style element. styles() only.'],
+        ['inline', 'boolean', 'false', 'Emit the CSS itself rather than a link to it.'],
+        ['hash', 'boolean', 'true', 'Content-hash the file name. Linked only.'],
+        ['base', 'string', "'/su/'", 'Point the URL elsewhere; that copy is yours to host. Linked only.'],
+        ['minify', 'boolean', 'true', 'Strip comments and whitespace. Inline only.'],
+        ['nonce', 'string', '', 'CSP nonce for the emitted element.'],
       ]),
+      p(
+        code('stylesUrl()'),
+        ' takes ',
+        code('base'),
+        ' and ',
+        code('hash'),
+        '; ',
+        code('stylesheet()'),
+        ' takes ',
+        code('minify'),
+        '.',
+      ),
       p(code('theme(tokens, options)'), ':'),
       propsTable([
         ['selector', 'string', "':root'", 'Scope the overrides to a subtree.'],

@@ -357,7 +357,7 @@ registerIcons({ check: null }) // et retour à celui fourni`, 'javascript'),
         '. Un sprite économise de l’ordre de cent octets gzippés de HTML par page et coûte un aller-retour pour cela — le balisage répété est justement le cas où gzip excelle, donc l’essentiel de ce qu’un sprite existe pour dédupliquer l’est déjà. En ligne, il n’y a aussi aucun fichier à émettre, aucun chemin de base à configurer, et rien qui puisse manquer dans ',
         code('dist'),
         ' — le même marché que fait ',
-        code('styles()'),
+        code('styles({ inline: true })'),
         '.',
       ),
 

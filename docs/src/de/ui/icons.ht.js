@@ -357,7 +357,7 @@ registerIcons({ check: null }) // und zurück zum mitgelieferten`, 'javascript')
         ' geholt zu werden. Ein Sprite spart in der Größenordnung von hundert gzippten HTML-Bytes pro Seite und kostet dafür einen Roundtrip — wiederholtes Markup ist genau der Fall, in dem gzip am besten ist, das meiste, wofür es ein Sprite gibt, ist also schon dedupliziert. Inline heißt außerdem: keine Datei zu erzeugen, kein Basispfad zu konfigurieren und nichts, das in ',
         code('dist'),
         ' fehlen kann — derselbe Handel, den ',
-        code('styles()'),
+        code('styles({ inline: true })'),
         ' eingeht.',
       ),
 

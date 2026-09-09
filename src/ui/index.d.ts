@@ -28,18 +28,33 @@ export interface BaseProps {
  * Styles
  * -------------------------------------------------------------- */
 
-export interface StyleOptions {
-  /** Strip comments and whitespace. Default `true`. */
+export interface StylesUrlOptions {
+  /** Point the URL elsewhere; a copy there is yours to host. */
+  base?: string
+  /** Content-hash the file name. Default `true`. */
+  hash?: boolean
+}
+
+export interface StyleOptions extends StylesUrlOptions {
+  /** Emit the CSS itself rather than a link to it. Default `false`. */
+  inline?: boolean
+  /** Strip comments and whitespace. Inline only. Default `true`. */
   minify?: boolean
-  /** CSP nonce for the emitted `<style>`. */
+  /** CSP nonce for the emitted element. */
   nonce?: string
 }
 
-/** The stylesheet as a `<style>` element, for `head()`. */
+/**
+ * The stylesheet for `head()` — a `<link>` sitelo's plugin serves in dev
+ * and writes into the build, or the CSS itself with `inline`.
+ */
 export function styles(options?: StyleOptions): string
 
 /** The stylesheet as raw CSS. */
 export function stylesheet(options?: { minify?: boolean }): string
+
+/** The URL the stylesheet is served from, for a `<link>` of your own. */
+export function stylesUrl(options?: StylesUrlOptions): string
 
 export interface ThemeOptions {
   /** Scope the overrides. Default `':root'`. */

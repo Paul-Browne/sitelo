@@ -19,26 +19,46 @@ export default () =>
       h2('Meter los estilos'),
       p(
         code('styles()'),
-        ' devuelve un elemento ',
-        code('<style>'),
-        ' con la hoja entera, minificada — unos 7 kB gzipeados. Es la opción por defecto porque no puede faltar en ',
-        code('dist/'),
-        ' y no cuesta ninguna petición extra.',
+        ' devuelve un ',
+        code('<link>'),
+        ' a un solo archivo, que el navegador cachea en todas las páginas del sitio. No hay nada que configurar ni nada que copiar: el plugin de sitelo lo sirve en dev y lo escribe en la build, en la misma base que el runtime de los componentes.',
       ),
       codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
 
 head(
   title('Mi sitio'),
   styles(),
+)
+// <link rel="stylesheet" href="/su/ui-c9428b65.css">`, 'javascript'),
+      p(
+        'El nombre lleva un hash del contenido, así que puedes servirlo como ',
+        code('immutable'),
+        ' y aun así publicar un cambio. Pasa ',
+        code('{ hash: false }'),
+        ' para un ',
+        code('/su/ui.css'),
+        ' sin más, o ',
+        code('base'),
+        ' para apuntar el enlace a una copia que alojes tú.',
+      ),
+      p(
+        code('{ inline: true }'),
+        ' mete la hoja entera en un ',
+        code('<style>'),
+        ': unos 7 kB en gzip en cada página, pero ni una petición extra ni nada que pueda faltar en ',
+        code('dist/'),
+        '. Es el mejor trato para una página suelta; el enlace se paga solo en la segunda página que lee una visita.',
+      ),
+      codeBlock('src/index.ht.js', `head(
+  title('Mi sitio'),
+  styles({ inline: true }),
 )`, 'javascript'),
       p(
-        'Si prefieres enlazarla una vez y dejar que el navegador la cachee entre páginas, importa el CSS desde un archivo de entrada empaquetado y Vite lo emitirá:',
-      ),
-      codeBlock('src/main.js', `import 'sitelo/ui/styles.css'`, 'javascript'),
-      p(
-        'Usa una cosa o la otra, no las dos. ',
+        'El resto de la familia te da las piezas. ',
         code('stylesheet()'),
-        ' devuelve el CSS crudo como cadena, para escribirlo tú donde quieras.',
+        ' devuelve el CSS crudo como cadena —para alojar la hoja donde sitelo no llega, o para escribirla tú donde quieras— y ',
+        code('stylesUrl()'),
+        ' solo la URL, para un elemento link propio.',
       ),
 
       h2('Anular tokens'),
@@ -195,11 +215,26 @@ head(
       ),
 
       h2('Props'),
-      p(code('styles()'), ' y ', code('stylesheet()'), ':'),
+      p(code('styles()'), ':'),
       propsTable([
-        ['minify', 'boolean', 'true', 'Quita comentarios y espacios.'],
-        ['nonce', 'string', '', 'Nonce de CSP para el elemento style emitido. Solo en styles().'],
+        ['inline', 'boolean', 'false', 'Emite el CSS en sí en vez de un enlace a él.'],
+        ['hash', 'boolean', 'true', 'Añade al nombre del archivo un hash del contenido. Solo enlazado.'],
+        ['base', 'string', "'/su/'", 'Apunta la URL a otro sitio; esa copia la alojas tú. Solo enlazado.'],
+        ['minify', 'boolean', 'true', 'Quita comentarios y espacios. Solo en línea.'],
+        ['nonce', 'string', '', 'Nonce de CSP para el elemento emitido.'],
       ]),
+      p(
+        code('stylesUrl()'),
+        ' acepta ',
+        code('base'),
+        ' y ',
+        code('hash'),
+        '; ',
+        code('stylesheet()'),
+        ' acepta ',
+        code('minify'),
+        '.',
+      ),
       p(code('theme(tokens, options)'), ':'),
       propsTable([
         ['selector', 'string', "':root'", 'Acota las anulaciones a un subárbol.'],

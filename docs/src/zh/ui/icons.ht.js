@@ -354,7 +354,7 @@ registerIcons({ check: null }) // 再换回内置的`, 'javascript'),
         ' 里取。雪碧图每页大约省下上百个 gzip 后的 HTML 字节，代价却是一次往返请求——重复的标记恰恰是 gzip 最擅长的场景，所以雪碧图想去重的东西，大半已经被去过重了。内联还意味着没有文件要产出、没有 base 路径要配置，也没有东西会从 ',
         code('dist'),
         ' 里丢失——和 ',
-        code('styles()'),
+        code('styles({ inline: true })'),
         ' 做的是同一笔交易。',
       ),
 

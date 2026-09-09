@@ -36,7 +36,8 @@ export default () =>
       meta({ name: 'description', content: 'Every component in sitelo-ui, on one page.' }),
       // Applies a stored theme choice before the first paint.
       ui.themeScript(),
-      // The whole stylesheet, inline. No file to copy, no extra request.
+      // The stylesheet, linked. Nothing to copy: sitelo's plugin serves
+      // it in dev and writes it into the build.
       ui.styles(),
       link({ rel: 'icon', href: 'data:,' }),
     ),

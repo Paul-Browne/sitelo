@@ -18,26 +18,46 @@ export default () =>
       h2('把样式放进来'),
       p(
         code('styles()'),
-        ' 返回一个装着整份样式表的 ',
-        code('<style>'),
-        ' 元素，已压缩——gzip 后大约 7 kB。它是默认做法，因为它不可能从 ',
-        code('dist/'),
-        ' 里丢失，也不多花一次请求。',
+        ' 返回一个指向单个文件的 ',
+        code('<link>'),
+        '，浏览器会在整站各页面之间缓存它。没什么要配置的，也没什么要复制的：sitelo 的插件在 dev 里提供它，构建时把它写进产物，位置和组件运行时同一个基路径。',
       ),
       codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
 
 head(
   title('我的站点'),
   styles(),
+)
+// <link rel="stylesheet" href="/su/ui-c9428b65.css">`, 'javascript'),
+      p(
+        '文件名里带着内容的哈希，所以你可以按 ',
+        code('immutable'),
+        ' 提供它，同时照样能发布改动。传 ',
+        code('{ hash: false }'),
+        ' 就得到一个朴素的 ',
+        code('/su/ui.css'),
+        '，传 ',
+        code('base'),
+        ' 则把链接指向你自己托管的那一份。',
+      ),
+      p(
+        code('{ inline: true }'),
+        ' 改为把整份样式表放进一个 ',
+        code('<style>'),
+        '：每一页多出大约 7 kB（gzip 后），但不用多一次请求，也不会有东西从 ',
+        code('dist/'),
+        ' 里漏掉。对单页来说这更划算；而访客读到第二页时，链接就把那次请求赚回来了。',
+      ),
+      codeBlock('src/index.ht.js', `head(
+  title('我的站点'),
+  styles({ inline: true }),
 )`, 'javascript'),
       p(
-        '如果你更想只链接一次、让浏览器跨页面缓存它，那就从打包的入口文件里导入这份 CSS，Vite 会把它产出出来：',
-      ),
-      codeBlock('src/main.js', `import 'sitelo/ui/styles.css'`, 'javascript'),
-      p(
-        '二选一，别两个都上。',
+        '这一族里的其余函数把零件交给你：',
         code('stylesheet()'),
-        ' 会把原始 CSS 作为字符串返回，方便你自己写到别处去。',
+        ' 返回字符串形式的原始 CSS，方便你把它放到 sitelo 够不着的地方，或是自己写到别处去；',
+        code('stylesUrl()'),
+        ' 只给出这个 URL，方便你自己写 link 元素。',
       ),
 
       h2('覆盖令牌'),
@@ -194,11 +214,26 @@ head(
       ),
 
       h2('属性'),
-      p(code('styles()'), ' 和 ', code('stylesheet()'), '：'),
+      p(code('styles()'), '：'),
       propsTable([
-        ['minify', 'boolean', 'true', '去掉注释和空白。'],
-        ['nonce', 'string', '', '给产出的 style 元素用的 CSP nonce。仅 styles() 有效。'],
+        ['inline', 'boolean', 'false', '直接产出 CSS 本身，而不是指向它的链接。'],
+        ['hash', 'boolean', 'true', '在文件名里加上内容哈希。仅链接时有效。'],
+        ['base', 'string', "'/su/'", '把 URL 指向别处；那份文件由你自己托管。仅链接时有效。'],
+        ['minify', 'boolean', 'true', '去掉注释和空白。仅内联时有效。'],
+        ['nonce', 'string', '', '给产出的元素用的 CSP nonce。'],
       ]),
+      p(
+        code('stylesUrl()'),
+        ' 接受 ',
+        code('base'),
+        ' 和 ',
+        code('hash'),
+        '；',
+        code('stylesheet()'),
+        ' 接受 ',
+        code('minify'),
+        '。',
+      ),
       p(code('theme(tokens, options)'), '：'),
       propsTable([
         ['selector', 'string', "':root'", '把这些覆盖限定在某棵子树内。'],

@@ -357,7 +357,7 @@ registerIcons({ check: null }) // y de vuelta al de serie`, 'javascript'),
         '. Un sprite ahorra del orden de cien bytes gzipeados de HTML por página y cuesta un viaje de ida y vuelta a cambio: el marcado repetido es justo el caso en el que mejor se porta gzip, así que casi todo lo que un sprite existe para deduplicar ya está deduplicado. En línea significa además que no hay archivo que emitir, ni ruta base que configurar, ni nada que pueda faltar en ',
         code('dist'),
         ' — el mismo trato que hace ',
-        code('styles()'),
+        code('styles({ inline: true })'),
         '.',
       ),
 

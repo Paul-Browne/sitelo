@@ -29,7 +29,7 @@ const GROUPS = [
   ['Navegación', ['breadcrumbs', 'pagination', 'tabs', 'appBar', 'appBarNav', 'appBarSpacer', 'appBarActions', 'navLink', 'themeToggle']],
   ['Superposiciones', ['modal', 'drawer', 'closeButton', 'menu', 'menuItem', 'menuSeparator', 'accordion', 'accordionItem', 'collapsible']],
   ['Secciones', ['hero', 'footer', 'siteFooter', 'footerColumn', 'footerBottom', 'stat', 'statGroup', 'steps', 'timeline', 'timelineItem', 'mockup']],
-  ['Estilos', ['styles', 'stylesheet', 'theme', 'themeScript']],
+  ['Estilos', ['styles', 'stylesheet', 'stylesUrl', 'theme', 'themeScript']],
 ]
 
 export default () =>
@@ -101,14 +101,19 @@ export default () =>
       h2('Estilos'),
       p(
         code('styles()'),
-        ' devuelve un elemento ',
+        ' devuelve un ',
+        code('<link>'),
+        ' a un solo archivo, que el navegador cachea entre páginas; el plugin de sitelo lo sirve en dev y lo escribe en la build, con un nombre que lleva un hash del contenido y puedes servir como ',
+        code('immutable'),
+        '. Con ',
+        code('{ inline: true }'),
+        ' devuelve en cambio un ',
         code('<style>'),
-        ' con la hoja completa, minificada. Son unos 7 kB por la red y no puede faltar en ',
+        ' con la hoja completa: unos 7 kB por la red, ni una petición extra y nada que pueda faltar en ',
         code('dist/'),
-        ', por eso es la opción por defecto. Si prefieres enlazarla una vez y que el navegador la cachee entre páginas, importa el CSS desde un archivo de entrada empaquetado y Vite lo emitirá:',
+        ':',
       ),
-      codeBlock('src/main.js', s.linked, 'javascript'),
-      p('Usa una u otra, no las dos.'),
+      codeBlock('src/index.ht.js', s.inline, 'javascript'),
 
       h3('Temas'),
       p(

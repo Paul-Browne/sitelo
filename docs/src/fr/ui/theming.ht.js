@@ -19,26 +19,46 @@ export default () =>
       h2('Mettre les styles en place'),
       p(
         code('styles()'),
-        ' renvoie un élément ',
-        code('<style>'),
-        ' contenant toute la feuille, minifiée — environ 7 ko gzippés. C’est le défaut parce qu’elle ne peut pas manquer dans ',
-        code('dist/'),
-        ' et ne coûte aucune requête supplémentaire.',
+        ' renvoie un ',
+        code('<link>'),
+        ' vers un seul fichier, que le navigateur met en cache sur toutes les pages du site. Rien à configurer, rien à copier : le plugin de sitelo le sert en dev et l’écrit dans le build, sur la même base que le runtime des composants.',
       ),
       codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
 
 head(
   title('Mon site'),
   styles(),
+)
+// <link rel="stylesheet" href="/su/ui-c9428b65.css">`, 'javascript'),
+      p(
+        'Le nom porte une empreinte du contenu : vous pouvez donc le servir en ',
+        code('immutable'),
+        ' et livrer quand même une modification. Passez ',
+        code('{ hash: false }'),
+        ' pour un simple ',
+        code('/su/ui.css'),
+        ', ou ',
+        code('base'),
+        ' pour pointer le lien vers une copie que vous hébergez.',
+      ),
+      p(
+        code('{ inline: true }'),
+        ' met plutôt la feuille entière dans un ',
+        code('<style>'),
+        ' : environ 7 ko gzippés dans chaque page, mais aucune requête supplémentaire et rien qui puisse manquer dans ',
+        code('dist/'),
+        '. C’est le meilleur compromis pour une page unique ; le lien rembourse sa requête dès la deuxième page lue.',
+      ),
+      codeBlock('src/index.ht.js', `head(
+  title('Mon site'),
+  styles({ inline: true }),
 )`, 'javascript'),
       p(
-        'Si vous préférez la lier une fois et laisser le navigateur la mettre en cache d’une page à l’autre, importez le CSS depuis un fichier d’entrée empaqueté et Vite l’émettra :',
-      ),
-      codeBlock('src/main.js', `import 'sitelo/ui/styles.css'`, 'javascript'),
-      p(
-        'Prenez l’un ou l’autre, pas les deux. ',
+        'Le reste de la famille vous donne les pièces. ',
         code('stylesheet()'),
-        ' renvoie le CSS brut sous forme de chaîne, pour l’écrire vous-même quelque part.',
+        ' renvoie le CSS brut sous forme de chaîne — pour héberger la feuille là où sitelo n’a pas la main, ou l’écrire vous-même quelque part — et ',
+        code('stylesUrl()'),
+        ' l’URL seule, pour un élément link à vous.',
       ),
 
       h2('Surcharger des jetons'),
@@ -195,11 +215,26 @@ head(
       ),
 
       h2('Props'),
-      p(code('styles()'), ' et ', code('stylesheet()'), ' :'),
+      p(code('styles()'), ' :'),
       propsTable([
-        ['minify', 'boolean', 'true', 'Retire commentaires et espaces.'],
-        ['nonce', 'string', '', 'Nonce CSP pour l’élément style émis. styles() uniquement.'],
+        ['inline', 'boolean', 'false', 'Émet le CSS lui-même plutôt qu’un lien vers lui.'],
+        ['hash', 'boolean', 'true', 'Ajoute au nom de fichier une empreinte du contenu. Lien uniquement.'],
+        ['base', 'string', "'/su/'", 'Pointe l’URL ailleurs ; cette copie est à vous d’héberger. Lien uniquement.'],
+        ['minify', 'boolean', 'true', 'Retire commentaires et espaces. En ligne uniquement.'],
+        ['nonce', 'string', '', 'Nonce CSP pour l’élément émis.'],
       ]),
+      p(
+        code('stylesUrl()'),
+        ' prend ',
+        code('base'),
+        ' et ',
+        code('hash'),
+        ' ; ',
+        code('stylesheet()'),
+        ' prend ',
+        code('minify'),
+        '.',
+      ),
       p(code('theme(tokens, options)'), ' :'),
       propsTable([
         ['selector', 'string', "':root'", 'Limite les surcharges à un sous-arbre.'],

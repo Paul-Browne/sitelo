@@ -29,7 +29,7 @@ const GROUPS = [
   ['Navigation', ['breadcrumbs', 'pagination', 'tabs', 'appBar', 'appBarNav', 'appBarSpacer', 'appBarActions', 'navLink', 'themeToggle']],
   ['Superpositions', ['modal', 'drawer', 'closeButton', 'menu', 'menuItem', 'menuSeparator', 'accordion', 'accordionItem', 'collapsible']],
   ['Sections', ['hero', 'footer', 'siteFooter', 'footerColumn', 'footerBottom', 'stat', 'statGroup', 'steps', 'timeline', 'timelineItem', 'mockup']],
-  ['Styles', ['styles', 'stylesheet', 'theme', 'themeScript']],
+  ['Styles', ['styles', 'stylesheet', 'stylesUrl', 'theme', 'themeScript']],
 ]
 
 export default () =>
@@ -101,14 +101,19 @@ export default () =>
       h2('Styles'),
       p(
         code('styles()'),
-        ' renvoie un élément ',
+        ' renvoie un ',
+        code('<link>'),
+        ' vers un seul fichier, que le navigateur met en cache d’une page à l’autre ; le plugin de sitelo le sert en dev et l’écrit dans le build, sous un nom porteur d’une empreinte du contenu que vous pouvez servir en ',
+        code('immutable'),
+        '. Avec ',
+        code('{ inline: true }'),
+        ', il renvoie plutôt un ',
         code('<style>'),
-        ' contenant toute la feuille, minifiée. Cela représente environ 7 ko sur le réseau et ne peut pas disparaître de ',
+        ' contenant toute la feuille : environ 7 ko sur le réseau, aucune requête supplémentaire, et rien qui puisse disparaître de ',
         code('dist/'),
-        ' : c’est pourquoi c’est le comportement par défaut. Si vous préférez la lier une seule fois et laisser le navigateur la mettre en cache d’une page à l’autre, importez le CSS depuis un fichier d’entrée groupé et Vite l’émettra :',
+        ' :',
       ),
-      codeBlock('src/main.js', s.linked, 'javascript'),
-      p('Utilisez l’un ou l’autre, pas les deux.'),
+      codeBlock('src/index.ht.js', s.inline, 'javascript'),
 
       h3('Thèmes'),
       p(

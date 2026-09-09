@@ -1,11 +1,18 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { mkdtempSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import {
+  mkdtempSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
 import { uiClientPrefix, uiRuntime } from '../src/ui/plugin.js';
 import { configureUiClient, RUNTIME_MODULES } from '../src/ui/handlers.js';
+import { styles, stylesheet, stylesUrl } from '../src/ui/styles.js';
 
 /** A throwaway outDir holding one page. */
 function siteWith(html) {
@@ -256,4 +263,138 @@ test('a module that imports nothing still brings nothing along', () => {
   const html = `<button onclick="import('/su/alert.js').then(m=>m.dismiss(this))">x</button>`;
 
   assert.deepEqual(copiedFor(html), ['alert.js']);
+});
+
+/* ------------------------------------------------------------------ *
+ * Stylesheet
+ * ------------------------------------------------------------------ */
+
+test('the build writes the sheet a page links, under the same base', () => {
+  const name = stylesUrl().split('/').pop();
+
+  assert.deepEqual(
+    copiedFor(`<link rel="stylesheet" href="/su/${name}">`),
+    [name],
+  );
+});
+
+test('the sheet written is the one the link points at', () => {
+  const { root, outDir } = siteWith(
+    '<link rel="stylesheet" href="/su/ui.css">',
+  );
+  const plugin = uiRuntime();
+
+  plugin.configResolved({ root, build: { outDir } });
+  plugin.writeBundle();
+
+  // Unhashed on purpose: writing the hashed name instead would leave the
+  // page asking for a file that is not there.
+  assert.equal(readFileSync(path.join(outDir, 'su', 'ui.css'), 'utf8'), stylesheet());
+});
+
+test('a link shown in a code sample does not write a sheet', () => {
+  const html =
+    '<pre class="code"><code>&lt;link rel="stylesheet" href="/su/ui.css"&gt;</code></pre>';
+  const { root, outDir } = siteWith(html);
+  const plugin = uiRuntime();
+
+  plugin.configResolved({ root, build: { outDir } });
+  plugin.writeBundle();
+
+  assert.ok(!readdirSync(outDir).includes('su'), 'nothing was written');
+});
+
+test('a link to somebody else’s stylesheet is left alone', () => {
+  const html = [
+    '<link rel="stylesheet" href="https://fonts.example/inter.css">',
+    '<link rel="stylesheet" href="/site.css">',
+    '<link rel="preload" as="style" href="/su/ui.css">',
+  ].join('');
+  const { root, outDir } = siteWith(html);
+  const plugin = uiRuntime();
+
+  plugin.configResolved({ root, build: { outDir } });
+  plugin.writeBundle();
+
+  assert.ok(!readdirSync(outDir).includes('su'), 'nothing was written');
+});
+
+test('dev serves the sheet, hashed or not', () => {
+  for (const name of ['ui.css', stylesUrl().split('/').pop(), 'ui-0000000000.css']) {
+    const { headers, body, passed } = request(`/su/${name}`);
+
+    assert.ok(!passed, `/su/${name} is handled`);
+    assert.equal(headers['Content-Type'], 'text/css; charset=utf-8');
+    assert.equal(body, stylesheet());
+  }
+});
+
+test('dev passes a css name the link cannot have produced through', () => {
+  for (const url of ['/su/site.css', '/su/ui-xyz.css', '/su/nested/ui.css']) {
+    assert.ok(request(url).passed, `${url} falls through to Vite`);
+  }
+});
+
+test('styles() points at the base the plugin serves', () => {
+  const before = process.env.SITELO_UI_BASE;
+
+  try {
+    makePlugin({ base: '/assets/su/' });
+
+    const name = stylesUrl().split('/').pop();
+
+    assert.equal(
+      styles(),
+      `<link rel="stylesheet" href="/assets/su/${name}">`,
+    );
+    assert.deepEqual(
+      copiedFor(`<link rel="stylesheet" href="/assets/su/${name}">`, {
+        base: '/assets/su/',
+      }),
+      [name],
+    );
+  } finally {
+    restoreEnv(before);
+  }
+});
+
+test('stylesUrl() is the href styles() carries', () => {
+  // A preload hint or a CSP built from one and a link built from the
+  // other have to name the same file.
+  assert.equal(styles(), `<link rel="stylesheet" href="${stylesUrl()}">`);
+
+  for (const options of [
+    { hash: false },
+    { base: '/assets/su/' },
+    { base: 'https://cdn.example/ui' },
+    { base: 'https://cdn.example/ui/', hash: false },
+  ]) {
+    assert.equal(
+      styles(options),
+      `<link rel="stylesheet" href="${stylesUrl(options)}">`,
+      JSON.stringify(options),
+    );
+  }
+
+  assert.equal(stylesUrl({ base: '/assets/su' }), stylesUrl({ base: '/assets/su/' }));
+  assert.equal(stylesUrl({ hash: false }), '/su/ui.css');
+});
+
+test('the linked name changes with the sheet, so it can be cached forever', async () => {
+  const source = new URL('../src/ui/ui.css', import.meta.url);
+  const original = readFileSync(source, 'utf8');
+  const before = stylesUrl();
+
+  assert.match(before, /^\/su\/ui-[0-9a-f]{8}\.css$/);
+  assert.equal(stylesUrl(), before, 'stable while the sheet is');
+
+  try {
+    // A second apart, because the read is cached on the file's mtime.
+    await new Promise((resolve) => setTimeout(resolve, 1100));
+    writeFileSync(source, `${original}\n.su-canary{color:red}\n`);
+
+    assert.notEqual(stylesUrl(), before, 'and moves when it changes');
+  } finally {
+    writeFileSync(source, original);
+  }
 });

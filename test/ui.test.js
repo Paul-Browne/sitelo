@@ -979,12 +979,22 @@ test('stylesheet() picks up an edit to ui.css instead of serving a stale copy', 
   assert.ok(!ui.stylesheet().includes('--su-canary-token'), 'and so is the revert');
 });
 
-test('styles() emits a style element that cannot close itself early', () => {
-  const html = ui.styles();
+test('styles() links the sheet, and inlines it when asked', () => {
+  assert.match(ui.styles(), /^<link rel="stylesheet" href="\/su\/ui-[0-9a-f]{8}\.css">$/);
+  assert.match(ui.styles({ inline: true }), /^<style data-sitelo-ui="">/);
+});
 
-  assert.match(html, /^<style data-sitelo-ui="">/);
+test('the inlined sheet cannot close its own style element early', () => {
+  const html = ui.styles({ inline: true });
+
   assert.match(html, /<\/style>$/);
   assert.equal(html.match(/<\/style>/g).length, 1);
+});
+
+test('a nonce reaches whichever element styles() emits', () => {
+  // A host with a strict CSP sets one, and CSP3 honours it on both.
+  assert.match(ui.styles({ nonce: 'abc123' }), /^<link [^>]*nonce="abc123">$/);
+  assert.match(ui.styles({ inline: true, nonce: 'abc123' }), /^<style [^>]*nonce="abc123">/);
 });
 
 test('theme() maps camelCase keys and palette objects to custom properties', () => {

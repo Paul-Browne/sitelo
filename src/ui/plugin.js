@@ -7,6 +7,10 @@
  * is the other half of the deal: it answers `/su/*.js` in dev, and on a
  * build copies across exactly the modules the generated HTML asks for.
  *
+ * The stylesheet `styles()` links is served from the same place and on
+ * the same terms — a `<link>` is markup rather than an import, so it
+ * needs the same treatment the runtime modules get.
+ *
  * It is part of sitelo's default plugin, so a normal project gets this
  * without configuring anything.
  */
@@ -20,6 +24,7 @@ import {
   RUNTIME_MODULES,
   uiClientBase,
 } from './handlers.js';
+import { stylesheet } from './styles.js';
 
 const RUNTIME_DIR = fileURLToPath(new URL('./runtime/', import.meta.url));
 
@@ -46,6 +51,31 @@ function normalize(base) {
  */
 function eventAttributes(html) {
   return [...html.matchAll(/\son[a-z]+="([^"]*)"/g)].map(([, value]) => value);
+}
+
+/** What `styles()` can ask for, hashed or not. */
+const CSS_NAME = /^ui(?:-[0-9a-f]+)?\.css$/;
+
+/**
+ * The `href` of every stylesheet `<link>` in a page.
+ *
+ * Element by element rather than a scan for the URL, for the reason
+ * {@link eventAttributes} gives: a page that *shows* the tag in a code
+ * sample has it as escaped text, and only a real element can be one the
+ * browser will go and fetch.
+ */
+function stylesheetHrefs(html) {
+  const found = [];
+
+  for (const [tag] of html.matchAll(/<link\b[^>]*>/gi)) {
+    if (!/\brel="?stylesheet"?/i.test(tag)) continue;
+
+    const href = tag.match(/\shref="([^"]*)"/i);
+
+    if (href) found.push(href[1]);
+  }
+
+  return found;
 }
 
 /**
@@ -173,7 +203,21 @@ export function uiRuntime({ base } = {}) {
 
         if (external || !url.startsWith(prefix)) return next();
 
-        const name = url.slice(prefix.length).replace(/\.js$/, '');
+        const file = url.slice(prefix.length);
+
+        /*
+         * Any hash, not only the current one: the sheet is read fresh
+         * here, so a page still holding the name from before an edit is
+         * served the CSS that edit produced rather than a 404.
+         */
+        if (CSS_NAME.test(file)) {
+          res.setHeader('Content-Type', 'text/css; charset=utf-8');
+          res.setHeader('Cache-Control', 'no-cache');
+          res.end(stylesheet());
+          return;
+        }
+
+        const name = file.replace(/\.js$/, '');
 
         // Anything else under the prefix is the site's own business, and
         // the name check is what keeps this off the rest of the disk.
@@ -196,16 +240,33 @@ export function uiRuntime({ base } = {}) {
       if (external || !outDir || !fs.existsSync(outDir)) return;
 
       const wanted = new Set();
+      const sheets = new Set();
 
       for (const file of htmlFiles(outDir)) {
-        for (const value of eventAttributes(fs.readFileSync(file, 'utf8'))) {
+        const html = fs.readFileSync(file, 'utf8');
+
+        for (const value of eventAttributes(html)) {
           for (const name of RUNTIME_MODULES) {
             if (value.includes(`${prefix}${name}.js`)) wanted.add(name);
           }
         }
+
+        /*
+         * The name the page asks for, not the one `stylesUrl()` would
+         * hand back now: a site is free to link the sheet unhashed, and
+         * writing anything other than what the markup points at would
+         * leave the page asking for a file that is not there.
+         */
+        for (const href of stylesheetHrefs(html)) {
+          if (!href.startsWith(prefix)) continue;
+
+          const name = href.slice(prefix.length);
+
+          if (CSS_NAME.test(name)) sheets.add(name);
+        }
       }
 
-      if (!wanted.size) return;
+      if (!wanted.size && !sheets.size) return;
 
       const dir = path.join(outDir, prefix.slice(1));
 
@@ -216,6 +277,10 @@ export function uiRuntime({ base } = {}) {
           path.join(RUNTIME_DIR, `${name}.js`),
           path.join(dir, `${name}.js`),
         );
+      }
+
+      for (const name of sheets) {
+        fs.writeFileSync(path.join(dir, name), stylesheet());
       }
     },
   };

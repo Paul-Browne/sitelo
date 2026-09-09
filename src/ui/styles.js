@@ -1,5 +1,8 @@
+import { createHash } from 'node:crypto'
 import { readFileSync, statSync } from 'node:fs'
-import { style } from 'javascript-to-html'
+import { link, style } from 'javascript-to-html'
+
+import { uiClientBase } from './handlers.js'
 
 const CSS_URL = new URL('./ui.css', import.meta.url)
 
@@ -36,8 +39,8 @@ function minifyCss(css) {
  * The sitelo-ui stylesheet as a string.
  *
  * Use this when you would rather write the CSS somewhere yourself — a
- * file in `public/`, an existing bundle — than inline it. Most pages
- * want {@link styles} instead.
+ * file in `public/`, an existing bundle — than have sitelo emit it.
+ * Most pages want {@link styles} instead.
  *
  * @param {object} [options]
  * @param {boolean} [options.minify=true]
@@ -62,23 +65,107 @@ export function stylesheet({ minify = true } = {}) {
 }
 
 /**
- * The stylesheet as a `<style>` element, for dropping straight into
- * `head()`.
+ * The file name the sheet is served under.
  *
- * Inline rather than linked on purpose: it is a single small sheet, it
- * cannot go missing from `dist`, and it costs no extra request on a
- * static page. If you would rather link it, import
- * `sitelo/ui/styles.css` from a bundled entry file instead and let Vite
- * emit it.
+ * The hash is of the bytes {@link stylesheet} returns, so the file it
+ * names can be served `immutable` and still change when the package
+ * does.
  *
  * @param {object} [options]
- * @param {boolean} [options.minify=true]
- * @param {string} [options.nonce] - CSP nonce, if your host sets one.
+ * @param {boolean} [options.hash=true] - false for a plain `ui.css`,
+ *   when something else already versions the URL.
  * @returns {string}
  */
-export function styles({ minify = true, nonce } = {}) {
+function fileName({ hash = true } = {}) {
+  if (!hash) return 'ui.css'
+
+  const css = stylesheet()
+
+  /*
+   * `stylesheet()` hands back its cached string, so the identity check
+   * is enough to know the digest still describes it — and it keeps a
+   * build of a few hundred pages to one hash rather than one per page.
+   */
+  if (css !== digest.css) {
+    digest.css = css
+    digest.value = createHash('sha256').update(css).digest('hex').slice(0, 8)
+  }
+
+  return `ui-${digest.value}.css`
+}
+
+/** Memoised {@link fileName} digest, keyed on the string it describes. */
+const digest = { css: null, value: '' }
+
+/**
+ * The URL the stylesheet is served from.
+ *
+ * What {@link styles} puts in its `href`, on its own — for a `<link>`
+ * of your own carrying `media` or `integrity`, a `rel="preload"` hint, a
+ * `style-src` in a CSP, a service worker's precache list.
+ *
+ * @param {object} [options]
+ * @param {string} [options.base]
+ * @param {boolean} [options.hash=true]
+ * @returns {string}
+ */
+export function stylesUrl({ base, hash = true } = {}) {
+  const root = base ?? uiClientBase()
+
+  return `${root.endsWith('/') ? root : `${root}/`}${fileName({ hash })}`
+}
+
+/**
+ * The stylesheet, ready to drop into `head()`.
+ *
+ * ```js
+ * head(title('My site'), styles())
+ * // <link rel="stylesheet" href="/su/ui-c9428b65.css">
+ * ```
+ *
+ * A `<link>` by default: one file the browser caches across every page
+ * of the site. There is nothing to configure and nothing to copy —
+ * sitelo's plugin serves it in dev and writes it into the build, at the
+ * same base as the component runtime, so `configureUiClient({ base })`
+ * moves both together.
+ *
+ * `inline` puts the whole sheet in a `<style>` instead. That costs no
+ * round trip and cannot go missing from `dist`, which is the better
+ * trade for a single page; the link buys its request back on the second
+ * page a visitor reads, which is most sites.
+ *
+ * @param {object} [options]
+ * @param {boolean} [options.inline=false] - emit the CSS itself rather
+ *   than a link to it.
+ * @param {string} [options.base] - point the link somewhere else. Only
+ *   the runtime's base is one the plugin writes to, so a copy at any
+ *   other is yours to put there, with {@link stylesheet} for the bytes.
+ *   Linked only.
+ * @param {boolean} [options.hash=true] - linked only.
+ * @param {boolean} [options.minify=true] - inline only.
+ * @param {string} [options.nonce] - CSP nonce, if your host sets one.
+ * @returns {string}
+ * @see {@link stylesUrl} for the href alone.
+ */
+export function styles({
+  inline = false,
+  base,
+  hash = true,
+  minify = true,
+  nonce,
+} = {}) {
+  const attributes = nonce ? { nonce } : {}
+
+  if (!inline) {
+    return link({
+      rel: 'stylesheet',
+      href: stylesUrl({ base, hash }),
+      ...attributes,
+    })
+  }
+
   return style(
-    { 'data-sitelo-ui': '', ...(nonce ? { nonce } : {}) },
+    { 'data-sitelo-ui': '', ...attributes },
     stylesheet({ minify }),
   )
 }

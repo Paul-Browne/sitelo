@@ -29,7 +29,7 @@ const GROUPS = [
   ['Навигация', ['breadcrumbs', 'pagination', 'tabs', 'appBar', 'appBarNav', 'appBarSpacer', 'appBarActions', 'navLink', 'themeToggle']],
   ['Оверлеи', ['modal', 'drawer', 'closeButton', 'menu', 'menuItem', 'menuSeparator', 'accordion', 'accordionItem', 'collapsible']],
   ['Секции', ['hero', 'footer', 'siteFooter', 'footerColumn', 'footerBottom', 'stat', 'statGroup', 'steps', 'timeline', 'timelineItem', 'mockup']],
-  ['Стили', ['styles', 'stylesheet', 'theme', 'themeScript']],
+  ['Стили', ['styles', 'stylesheet', 'stylesUrl', 'theme', 'themeScript']],
 ]
 
 export default () =>
@@ -101,14 +101,19 @@ export default () =>
       h2('Стили'),
       p(
         code('styles()'),
-        ' возвращает элемент ',
+        ' возвращает ',
+        code('<link>'),
+        ' на один файл, который браузер кэширует между страницами; плагин sitelo отдаёт его в dev и записывает в сборку под именем с хешем содержимого, которое можно отдавать с ',
+        code('immutable'),
+        '. С ',
+        code('{ inline: true }'),
+        ' он вместо этого возвращает ',
         code('<style>'),
-        ' со всей таблицей стилей, минифицированной. Это примерно 7 кБ по сети, и она не может потеряться в ',
+        ' со всей таблицей стилей: примерно 7 кБ по сети, ни одного лишнего запроса и ничего, что могло бы потеряться в ',
         code('dist/'),
-        ' — поэтому так по умолчанию. Если хотите подключить её один раз и позволить браузеру кэшировать её между страницами, импортируйте CSS из собираемого входного файла, и Vite его выпустит:',
+        ':',
       ),
-      codeBlock('src/main.js', s.linked, 'javascript'),
-      p('Используйте что-то одно, не оба способа сразу.'),
+      codeBlock('src/index.ht.js', s.inline, 'javascript'),
 
       h3('Темы'),
       p(

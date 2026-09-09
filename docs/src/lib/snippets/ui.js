@@ -14,7 +14,7 @@ const T = {
     fileBased: 'File based',
     becomesAbout: 'src/about.ht.js becomes /about.',
     readMore: 'Read more',
-    linkedComment: 'src/main.js — bundled by Vite, cached across pages',
+    inlineComment: 'the whole sheet in the page — no request at all',
     themingComment: 'After styles(), so these win.',
     themeScriptComment: 'applies the stored choice before the first paint',
     anywhereComment: '…anywhere in the body',
@@ -49,7 +49,7 @@ const T = {
     fileBased: 'Basado en archivos',
     becomesAbout: 'src/about.ht.js pasa a ser /about.',
     readMore: 'Leer más',
-    linkedComment: 'src/main.js — empaquetado por Vite, cacheado entre páginas',
+    inlineComment: 'la hoja entera en la página, sin ninguna petición',
     themingComment: 'Después de styles(), para que estos ganen.',
     themeScriptComment: 'aplica la elección guardada antes del primer pintado',
     anywhereComment: '…en cualquier parte del body',
@@ -84,7 +84,7 @@ const T = {
     fileBased: 'Basé sur les fichiers',
     becomesAbout: 'src/about.ht.js devient /about.',
     readMore: 'En savoir plus',
-    linkedComment: 'src/main.js — inclus dans le bundle par Vite, mis en cache entre les pages',
+    inlineComment: 'la feuille entière dans la page, sans aucune requête',
     themingComment: 'Après styles(), pour que ces valeurs l’emportent.',
     themeScriptComment: 'applique le choix enregistré avant le premier rendu',
     anywhereComment: '…n’importe où dans le body',
@@ -119,7 +119,7 @@ const T = {
     fileBased: 'Dateibasiert',
     becomesAbout: 'src/about.ht.js wird zu /about.',
     readMore: 'Mehr erfahren',
-    linkedComment: 'src/main.js — von Vite gebündelt, seitenübergreifend gecacht',
+    inlineComment: 'die ganze Datei in der Seite — gar keine Anfrage',
     themingComment: 'Nach styles(), damit diese Werte gewinnen.',
     themeScriptComment: 'wendet die gespeicherte Wahl vor dem ersten Rendern an',
     anywhereComment: '…irgendwo im body',
@@ -154,7 +154,7 @@ const T = {
     fileBased: 'На основе файлов',
     becomesAbout: 'src/about.ht.js становится /about.',
     readMore: 'Подробнее',
-    linkedComment: 'src/main.js — собирается Vite и кэшируется между страницами',
+    inlineComment: 'вся таблица прямо в странице — ни одного запроса',
     themingComment: 'После styles(), чтобы победили эти значения.',
     themeScriptComment: 'применяет сохранённый выбор до первой отрисовки',
     anywhereComment: '…где угодно в body',
@@ -189,7 +189,7 @@ const T = {
     fileBased: '基于文件',
     becomesAbout: 'src/about.ht.js 对应 /about。',
     readMore: '了解更多',
-    linkedComment: 'src/main.js —— 由 Vite 打包，跨页面缓存',
+    inlineComment: '整份样式表就在页面里——一次请求都不用',
     themingComment: '放在 styles() 之后，这些值才会生效。',
     themeScriptComment: '在首次绘制前应用已保存的选择',
     anywhereComment: '……body 中的任意位置',
@@ -224,7 +224,7 @@ const T = {
     fileBased: 'Baseado em ficheiros',
     becomesAbout: 'src/about.ht.js passa a ser /about.',
     readMore: 'Saber mais',
-    linkedComment: 'src/main.js — empacotado pelo Vite, em cache entre páginas',
+    inlineComment: 'a folha inteira na página, sem pedido nenhum',
     themingComment: 'Depois de styles(), para que estes prevaleçam.',
     themeScriptComment: 'aplica a escolha guardada antes da primeira pintura',
     anywhereComment: '…em qualquer sítio do body',
@@ -288,8 +288,12 @@ ui.card(
   ui.cardFooter({ divided: true }, ui.button({ size: 'sm' }, '${t.readMore}')),
 )`,
 
-    linked: `// ${t.linkedComment}
-import 'sitelo/ui/styles.css'`,
+    inline: `import { styles } from 'sitelo/ui'
+
+head(
+  // ${t.inlineComment}
+  styles({ inline: true }),
+)`,
 
     theming: `import { styles, theme } from 'sitelo/ui'
 

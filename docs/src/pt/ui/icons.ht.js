@@ -357,7 +357,7 @@ registerIcons({ check: null }) // e de volta ao incluído`, 'javascript'),
         '. Um sprite poupa qualquer coisa como uma centena de bytes gzipados de HTML por página e custa uma ida e volta à rede para isso — marcação repetida é justamente o caso em que o gzip é melhor, por isso quase tudo o que um sprite existe para desduplicar já foi desduplicado. Inline significa ainda que não há ficheiro para emitir, nem caminho base para configurar, nem nada que possa faltar em ',
         code('dist'),
         ' — a mesma troca que o ',
-        code('styles()'),
+        code('styles({ inline: true })'),
         ' faz.',
       ),
 
