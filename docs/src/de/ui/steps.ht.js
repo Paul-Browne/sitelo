@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/de.js'
 import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
@@ -80,6 +80,21 @@ export default () =>
   current: 1,
   items: ['Bauen', 'Hochladen', 'Cache invalidieren'],
 })`, { align: 'stretch' }),
+
+      h2('Den Ablauf weiterschalten'),
+      p(
+        'Der Zustand sind drei Klassennamen und ein ',
+        code('aria-current'),
+        ', verteilt über alle Schritte. ',
+        code('setStep()'),
+        ' bewegt sie zusammen — ein Assistent, der im Browser weiterschaltet, ist ein Aufruf statt einer Schleife.',
+      ),
+      p('Ein Index hinter dem letzten Schritt lässt alle abgeschlossen zurück — so sieht ein fertiger Ablauf aus. Oder aus einem Event-Attribut heraus, ohne irgendetwas zu bündeln:'),
+      codeBlock('Irgendwo', `button({ onclick: "import('/su/steps.js').then(m=>m.set('checkout',2))" }, 'Next')`, 'javascript'),
+      p('Oder aus deinem eigenen Modul, wenn ohnehin schon eines läuft:'),
+      codeBlock('src/main.js', `import { setStep } from 'sitelo/ui/client'
+
+setStep('checkout', 2)`, 'javascript'),
 
       h2('Props'),
       propsTable([

@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/es.js'
 import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
@@ -70,6 +70,21 @@ export default () =>
       demo(`badge({ content: 4, label: '4 mensajes sin leer' },
   button({ variant: 'soft', color: 'neutral' }, 'Bandeja de entrada'),
 )`),
+
+      h2('Cambiar el recuento'),
+      p(
+        'Un recuento es el número de una página con más probabilidad de cambiar mientras está abierta. ',
+        code('setBadge()'),
+        ' lo recorta a ',
+        code('max'),
+        ' igual que hizo el servidor, mantiene con él el texto anunciado, y saca del árbol de accesibilidad una insignia vaciada — que es como desaparece una insignia.',
+      ),
+      p('El texto anunciado es la prosa del sitio, así que pásalo siempre que la insignia tenga uno:'),
+      codeBlock('En cualquier parte', `button({ onclick: "import('/su/badge.js').then(m=>m.set('inbox',0))" }, 'Mark all read')`, 'javascript'),
+      p('O desde tu propio módulo, cuando ya haya uno en marcha:'),
+      codeBlock('src/main.js', `import { setBadge } from 'sitelo/ui/client'
+
+setBadge('inbox', 7, { label: '7 unread messages' })`, 'javascript'),
 
       h2('Props'),
       propsTable([

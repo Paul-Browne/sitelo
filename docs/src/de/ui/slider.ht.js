@@ -31,7 +31,7 @@ export default () =>
         code('showValue'),
         ' setzt neben die Schiene ein ',
         code('<output>'),
-        ' mit dem Wert, mit dem die Seite gebaut wurde. Es mit dem Griff im Gleichschritt zu halten ist eine Zeile eigenes Skript — diese Bibliothek liefert dafür keines, und eine Zahl, die still veraltet, wäre schlimmer als gar keine Zahl.',
+        ' mit dem Wert, mit dem die Seite gebaut wurde, und das Input holt sich beim ersten Ziehen seinen eigenen Handler, sodass die Zahl dem Griff folgt. Es gibt nichts zu importieren: eine Zahl, die still veraltet, wäre schlimmer als gar keine Zahl, also bleibt diese nicht dir überlassen.',
       ),
       demo(`sliderField({
   label: 'Bildqualität',
@@ -42,11 +42,6 @@ export default () =>
   showValue: true,
   help: 'Höher heißt größer und langsamer im Build.',
 })`, { align: 'stretch' }),
-      codeBlock('src/main.js', `for (const range of document.querySelectorAll('.su-slider')) {
-  const output = range.parentElement.querySelector('output')
-
-  if (output) range.addEventListener('input', () => { output.value = range.value })
-}`, 'javascript'),
 
       h2('Farben'),
       demo(`stack({ gap: 'lg' },

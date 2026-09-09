@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/ru.js'
 import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
@@ -70,6 +70,21 @@ export default () =>
       demo(`badge({ content: 4, label: '4 непрочитанных сообщения' },
   button({ variant: 'soft', color: 'neutral' }, 'Входящие'),
 )`),
+
+      h2('Менять счётчик'),
+      p(
+        'Счётчик — это то число на странице, которое скорее всего изменится, пока она открыта. ',
+        code('setBadge()'),
+        ' обрезает его по ',
+        code('max'),
+        ', как это сделал сервер, ведёт вместе с ним объявляемый текст и убирает опустевший бейдж из дерева доступности — так бейдж и исчезает.',
+      ),
+      p('Объявляемый текст — это проза сайта, поэтому передавайте его всякий раз, когда он у бейджа есть:'),
+      codeBlock('Где угодно', `button({ onclick: "import('/su/badge.js').then(m=>m.set('inbox',0))" }, 'Mark all read')`, 'javascript'),
+      p('Или из вашего собственного модуля, если он и так уже работает:'),
+      codeBlock('src/main.js', `import { setBadge } from 'sitelo/ui/client'
+
+setBadge('inbox', 7, { label: '7 unread messages' })`, 'javascript'),
 
       h2('Пропсы'),
       propsTable([

@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/ru.js'
 import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
@@ -63,16 +63,65 @@ export default () =>
         align: 'stretch',
       }),
 
+      h2('Двигать её из браузера'),
+      p(
+        'Полоса — это HTML, отрисованный на сервере: процент лежит в пользовательском свойстве на заливке, а число — в ',
+        code('aria-valuenow'),
+        ', и ничто на странице не меняет ни то, ни другое само по себе. Дайте полосе ',
+        code('id'),
+        ', и ',
+        code('setProgress'),
+        ' сдвинет всё сразу — заливку, объявляемое значение и процент рядом с подписью.',
+      ),
+      codeBlock('src/main.js', `import { setProgress } from 'sitelo/ui/client'
+
+const request = new XMLHttpRequest()
+
+request.upload.addEventListener('progress', (event) => {
+  setProgress('upload', event.loaded, { max: event.total })
+})`, 'javascript'),
+      p(
+        'Максимум запоминается, так что дальше достаточно передавать значение. Или дотянитесь до модуля так же, как это делают компоненты, и обойдитесь без бандла вовсе:',
+      ),
+      codeBlock('Где угодно', `button({ onclick: "import('/su/progress.js').then(m=>m.set('upload',100))" }, 'Завершить')`, 'javascript'),
+      p(
+        'Передача ',
+        code('null'),
+        ' — или чего угодно, что не является конечным числом — возвращает полосу к неопределённой анимации, поэтому работу, переставшую сообщать числа, не нужно выделять в отдельный случай. ',
+        code('getProgress()'),
+        ' читает текущее значение обратно, в собственной шкале полосы.',
+      ),
+
+      h2('Попробуйте'),
+      p('Эта страница загружает рантайм, так что кнопки ниже действительно двигают полосу.'),
+      demo(`stack({ gap: 'md' },
+  progress({ id: 'demo-progress', value: 0, label: 'Загрузка', showValue: true }),
+  stack({ direction: 'row', gap: 'sm', wrap: true },
+    button({ size: 'sm', variant: 'outline', onclick: "import('/su/progress.js').then(m=>m.set('demo-progress',0))" }, 'Сброс'),
+    button({ size: 'sm', variant: 'outline', onclick: "import('/su/progress.js').then(m=>m.set('demo-progress',35))" }, '35%'),
+    button({ size: 'sm', variant: 'outline', onclick: "import('/su/progress.js').then(m=>m.set('demo-progress',80))" }, '80%'),
+    button({ size: 'sm', variant: 'outline', onclick: "import('/su/progress.js').then(m=>m.set('demo-progress',100))" }, 'Готово'),
+    button({ size: 'sm', variant: 'ghost', onclick: "import('/su/progress.js').then(m=>m.set('demo-progress',null))" }, 'Неизвестно'),
+  ),
+)`, { align: 'stretch' }),
+      p(
+        'Полоса без подписи тоже сдвинется, но останется ',
+        code('aria-hidden'),
+        ' — её намеренно отрисовали без имени, и объявить ей значение сейчас значило бы поместить в дерево доступности progressbar без имени.',
+      ),
+
       h2('Спиннер'),
       p(
-        'Спиннер задаётся в ',
+        'Отдельного компонента-спиннера нет — спиннер это иконка, а вращает её ',
+        code('spin'),
+        '. Как и любая иконка, он задаётся в ',
         code('em'),
         ', поэтому подходит к любому соседнему тексту, и размер ему называть не нужно.',
       ),
       demo(`stack({ direction: 'row', gap: 'lg', align: 'center' },
-  spinner({ size: 'sm' }),
-  spinner(),
-  spinner({ size: 'lg' }),
+  icon('spinner', { spin: true, size: 'sm' }),
+  icon('spinner', { spin: true }),
+  icon('spinner', { spin: true, size: 'lg' }),
 )`),
 
       h2('Спиннер в контексте'),
@@ -83,7 +132,7 @@ export default () =>
       ),
       demo(`stack({ gap: 'md' },
   stack({ direction: 'row', gap: 'sm', align: 'center' },
-    spinner({ label: 'Загрузка' }),
+    icon('spinner', { spin: true, label: 'Загрузка' }),
     text({ variant: 'small', tone: 'muted' }, 'Получаем последнюю сборку…'),
   ),
   stack({ direction: 'row', gap: 'sm' },
@@ -102,10 +151,18 @@ export default () =>
         ['showValue', 'boolean', 'false', 'Показывать проценты рядом с подписью.'],
         ['height', 'Space', "'0.5rem'", 'Толщина полосы.'],
       ]),
-      p(code('spinner()'), ':'),
+      p(code('setProgress()'), ' из ', code('sitelo/ui/client'), ':'),
       propsTable([
-        ['size', "'sm' | 'md' | 'lg'", "'md'", 'Диаметр. Средний задан в em, чтобы совпадать с соседним текстом.'],
-        ['label', 'string', '', 'Доступное имя. Без него спиннер скрыт от скринридеров.'],
+        ['target', 'Element | string', '', 'Полоса или её id. Если элемента с таким id нет, строка пробуется как селектор.'],
+        ['value', 'number | null', '', 'Куда её сдвинуть. null возвращает её к неопределённой анимации.'],
+        ['options.max', 'number', '100', 'Что считается завершённым. Запоминается для последующих вызовов.'],
       ]),
+      p(
+        'Своих пропсов у спиннера нет — это ',
+        code("icon('spinner', { spin: true })"),
+        ', и он принимает то же, что и ',
+        code('icon()'),
+        '.',
+      ),
     ],
   })

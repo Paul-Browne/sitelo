@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
 import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
@@ -79,6 +79,21 @@ export default () =>
   current: 1,
   items: ['构建', '上传', '刷新缓存'],
 })`, { align: 'stretch' }),
+
+      h2('让流程往前走'),
+      p(
+        '状态就是三个类名加一个 ',
+        code('aria-current'),
+        '，分散在每一步上。',
+        code('setStep()'),
+        ' 会把它们一起挪动，所以在浏览器里推进的向导只是一次调用，而不是一个循环。',
+      ),
+      p('索引越过最后一步，就把每一步都留在完成状态——一个走完的流程正是这个样子。或者直接写在事件属性里，什么都不用打包：'),
+      codeBlock('任意位置', `button({ onclick: "import('/su/steps.js').then(m=>m.set('checkout',2))" }, 'Next')`, 'javascript'),
+      p('或者从你自己的模块里调用——如果本来就有一个在跑的话：'),
+      codeBlock('src/main.js', `import { setStep } from 'sitelo/ui/client'
+
+setStep('checkout', 2)`, 'javascript'),
 
       h2('属性'),
       propsTable([

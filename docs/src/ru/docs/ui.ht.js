@@ -25,7 +25,7 @@ const GROUPS = [
   ['Типографика', ['text', 'heading', 'link', 'code', 'inlineCode', 'kbd', 'visuallyHidden', 'prose']],
   ['Поля ввода', ['button', 'iconButton', 'buttonGroup', 'field', 'input', 'textarea', 'select', 'textField', 'textareaField', 'selectField', 'checkbox', 'radio', 'toggle', 'choiceGroup', 'slider', 'sliderField', 'toggleButton', 'toggleGroup']],
   ['Отображение данных', ['avatar', 'avatarGroup', 'badge', 'chip', 'tooltip', 'table', 'list', 'listItem', 'figure']],
-  ['Обратная связь', ['alert', 'progress', 'spinner', 'skeleton', 'toasts', 'empty']],
+  ['Обратная связь', ['alert', 'progress', 'skeleton', 'toasts', 'empty']],
   ['Навигация', ['breadcrumbs', 'pagination', 'tabs', 'appBar', 'appBarNav', 'appBarSpacer', 'appBarActions', 'navLink', 'themeToggle']],
   ['Оверлеи', ['modal', 'drawer', 'closeButton', 'menu', 'menuItem', 'menuSeparator', 'accordion', 'accordionItem', 'collapsible']],
   ['Секции', ['hero', 'footer', 'siteFooter', 'footerColumn', 'footerBottom', 'stat', 'statGroup', 'steps', 'timeline', 'timelineItem', 'mockup']],

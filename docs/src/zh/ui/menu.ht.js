@@ -1,6 +1,6 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
+import { preview, uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -104,9 +104,12 @@ export default () =>
         '——适合在页面上发生的操作，而不是跳转。',
       ),
       demo(`menu({ trigger: '导出', variant: 'soft', color: 'primary' },
-  menuItem({ onclick: "window.siteloUiToast && window.siteloUiToast('已导出为 JSON。', 'success')" }, '导出为 JSON'),
-  menuItem({ onclick: "window.siteloUiToast && window.siteloUiToast('已导出为 CSV。', 'success')" }, '导出为 CSV'),
+  menuItem({ onclick: "import('/su/toast.js').then(m=>m.toast('已导出为 JSON。',{color:'success'}))" }, '导出为 JSON'),
+  menuItem({ onclick: "import('/su/toast.js').then(m=>m.toast('已导出为 CSV。',{color:'success'}))" }, '导出为 CSV'),
 )`),
+      // The demo above raises toasts; this is the region they land in.
+      // Fixed-position, so it renders here but appears in the corner.
+      preview('toasts()'),
 
       h2('在应用栏中'),
       demo(`appBar({ brand: 'sitelo' },

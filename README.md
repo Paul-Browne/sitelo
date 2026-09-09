@@ -687,10 +687,11 @@ so the browser handles opening, the backdrop, click-outside and Escape.
 Accordions are `<details name>`, menus are `<details>`, tooltips are
 CSS.
 
-Four things want a script — tabs whose panels swap in place, the close
+Five things want a script — tabs whose panels swap in place, the close
 button on a dismissible alert, closing a menu on an outside click or
-Escape, and the theme toggle — and each one goes and gets its own. The
-import is the event attribute:
+Escape, the theme toggle, and the `<output>` on a slider that shows its
+value — and each one goes and gets its own. The import is the event
+attribute:
 
 ```html
 <!-- rendered by alert({ dismissible: true }) -->
@@ -715,13 +716,36 @@ Deploying under a sub-path, or hosting the modules elsewhere:
 sitelo({ uiClient: { base: '/assets/su/' } })
 ```
 
-`toast()` is the exception, because nothing on the page triggers it for
-you. Import it, along with the theme helpers, from a bundled entry:
+The rest are things nothing on the page triggers for you: state that is
+the site's, changing because the site says so. Import those, along with
+the theme helpers, from a bundled entry:
 
 ```js
 // src/main.js
-import { toast, setTheme } from 'sitelo/ui/client'
+import { setBadge, setPressed, setProgress, setStep, toast } from 'sitelo/ui/client'
+
+request.upload.addEventListener('progress', (event) => {
+  setProgress('upload', event.loaded, { max: event.total })
+})
 ```
+
+Each takes the element or the `id` you gave it, and moves everything the
+server rendered together — the drawing, the announced value, and the
+text beside it:
+
+| Call | What it changes |
+| --- | --- |
+| `toast(message)` | Appends to the region `toasts()` rendered. |
+| `setProgress(bar, value)` | The fill, `aria-valuenow`, and the percentage by the label. `null` returns it to the indeterminate animation. |
+| `setBadge(badge, count)` | The count, clamped to `max+`, with the announced text; an emptied badge leaves the accessibility tree. |
+| `setPressed(button, on?)` | `aria-pressed`, letting go of the siblings in a single-choice `toggleGroup()`. Omit `on` to flip it. |
+| `setStep(flow, index)` | Every step at once — complete, current, upcoming — and the one `aria-current`. |
+| `setTheme(value)` | The theme, remembered in `localStorage`. |
+
+Each has a reader beside it — `getBadge`, `getPressed`, `getProgress`,
+`getStep`, `getTheme` — and each is also reachable from an event
+attribute, the way the components reach theirs, with nothing bundled:
+`import('/su/progress.js').then(m=>m.set('upload',100))`.
 
 ### What is in it
 
@@ -731,7 +755,7 @@ import { toast, setTheme } from 'sitelo/ui/client'
 | Typography | `text` `heading` `link` `code` `kbd` `visuallyHidden` `prose` |
 | Inputs | `button` `iconButton` `buttonGroup` `field` `input` `textarea` `select` `slider` `textField` `textareaField` `selectField` `sliderField` `checkbox` `radio` `toggle` `toggleButton` `toggleGroup` `choiceGroup` |
 | Data display | `avatar` `avatarGroup` `badge` `chip` `tooltip` `table` `list` `listItem` `figure` |
-| Feedback | `alert` `empty` `progress` `spinner` `skeleton` `toasts` |
+| Feedback | `alert` `empty` `progress` `skeleton` `toasts` |
 | Navigation | `breadcrumbs` `pagination` `tabs` `appBar` `appBarNav` `appBarSpacer` `appBarActions` `navLink` `themeToggle` |
 | Overlays | `modal` `drawer` `closeButton` `menu` `menuItem` `menuSeparator` `accordion` `accordionItem` `collapsible` |
 | Sections | `hero` `footer` `siteFooter` `footerColumn` `footerBottom` `stat` `statGroup` `steps` `timeline` `timelineItem` `mockup` |

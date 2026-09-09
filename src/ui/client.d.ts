@@ -6,7 +6,7 @@
  * page drives rather than a click.
  *
  * ```js
- * import { toast, setTheme } from 'sitelo/ui/client'
+ * import { toast, setProgress, setTheme } from 'sitelo/ui/client'
  * ```
  */
 
@@ -30,3 +30,70 @@ export interface ToastOptions {
  * Returns `null` when that region is not on the page.
  */
 export function toast(message: string, options?: ToastOptions): HTMLElement | null
+
+export interface SetProgressOptions {
+  /** What value counts as complete. Remembered for later calls. */
+  max?: number
+}
+
+/**
+ * Move a `progress()` bar, addressed by element or by `id`.
+ *
+ * `null` — or any value that is not a finite number — returns it to the
+ * indeterminate animation. Returns `null` when there is no such bar on
+ * the page.
+ */
+export function setProgress(
+  target: Element | string,
+  value?: number | null,
+  options?: SetProgressOptions,
+): Element | null
+
+/** What a bar is showing, on its own scale; `null` when indeterminate. */
+export function getProgress(target: Element | string): number | null
+
+export interface SetBadgeOptions {
+  /** Where a count turns into `max+`. Remembered for later calls. */
+  max?: number
+  /** The announced text, which is prose only the site can write. */
+  label?: string
+}
+
+/**
+ * Set the count on a `badge()`, addressed by element or by `id`.
+ *
+ * `null` empties it, which is how a badge disappears. Returns `null`
+ * when there is no such badge on the page.
+ */
+export function setBadge(
+  target: Element | string,
+  content?: number | string | null,
+  options?: SetBadgeOptions,
+): Element | null
+
+/** The count a badge is showing; a clamped one reads back as `'99+'`. */
+export function getBadge(target: Element | string): number | string | null
+
+/**
+ * Press a `toggleButton()`, or let go of it. Omit `on` to flip it.
+ *
+ * Inside a single-choice `toggleGroup()` this lets go of the siblings.
+ * Returns the state it ended in, or `null` for no such button.
+ */
+export function setPressed(target: Element | string, on?: boolean): boolean | null
+
+/**
+ * Whether a toggle button is pressed. Given a `toggleGroup()` it answers
+ * with the pressed buttons' values instead.
+ */
+export function getPressed(target: Element | string): boolean | string[] | null
+
+/**
+ * Mark step `index` of a `steps()` flow as the one in progress, moving
+ * the ones before it to complete. Returns the index applied, or `null`
+ * when there is no such flow.
+ */
+export function setStep(target: Element | string, index: number): number | null
+
+/** The index of the step in progress, or the count once all are done. */
+export function getStep(target: Element | string): number | null

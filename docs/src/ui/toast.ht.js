@@ -33,42 +33,40 @@ body(
   toasts(),
 )`, 'javascript'),
       p(
-        'This is the one part of the runtime nothing on the page triggers for you, so it is the one part you import yourself:',
+        'This is the one part of the runtime nothing on the page triggers for you, so it is the one part you reach yourself — from an event attribute, with nothing bundled:',
       ),
+      codeBlock('Anywhere', `button({ onclick: "import('/su/toast.js').then(m=>m.toast('Saved.',{color:'success'}))" }, 'Save')`, 'javascript'),
+      p('Or from your own module, when there is already one running:'),
       codeBlock('src/main.js', `import { toast } from 'sitelo/ui/client'
 
-document.querySelector('#save').addEventListener('click', () => {
-  toast('Saved.', { color: 'success' })
-})`, 'javascript'),
-      p('Or reach it the way the components do, and skip the bundle entirely:'),
-      codeBlock('Anywhere', `button({ onclick: "import('/su/toast.js').then(m=>m.toast('Saved.'))" }, 'Save')`, 'javascript'),
+toast('Saved.', { color: 'success' })`, 'javascript'),
 
       h2('Try it'),
       p(
         'This page renders a ',
         code('toasts()'),
-        ' region and loads the runtime, so the buttons below really do produce toasts — bottom right.',
+        ' region and the buttons below fetch the runtime themselves, so they really do produce toasts — bottom right. Nothing is loaded until you press one.',
       ),
       demo(`stack({ direction: 'row', gap: 'sm', wrap: true },
   button({
     variant: 'soft',
     color: 'success',
-    onclick: "window.siteloUiToast && window.siteloUiToast('Saved.', 'success')",
+    onclick: "import('/su/toast.js').then(m=>m.toast('Saved.',{color:'success'}))",
   }, 'Success'),
   button({
     variant: 'soft',
     color: 'warning',
-    onclick: "window.siteloUiToast && window.siteloUiToast('Two pages have no meta description.', 'warning')",
+    onclick: "import('/su/toast.js').then(m=>m.toast('Two pages have no meta description.',{color:'warning'}))",
   }, 'Warning'),
   button({
     variant: 'soft',
     color: 'danger',
-    onclick: "window.siteloUiToast && window.siteloUiToast('The build failed. Check the link report.', 'danger')",
+    onclick: "import('/su/toast.js').then(m=>m.toast('The build failed. Check the link report.',{color:'danger'}))",
   }, 'Danger'),
   button({
     variant: 'soft',
     color: 'neutral',
-    onclick: "window.siteloUiToast && window.siteloUiToast('This one stays until you close it.', 'neutral', 0)",
+    onclick: "import('/su/toast.js').then(m=>m.toast('This one stays until you close it.',{color:'neutral',duration:0}))",
   }, 'Until dismissed'),
 )`),
       // The live region this page's buttons append into. Fixed-position,

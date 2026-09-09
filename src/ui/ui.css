@@ -426,7 +426,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .su-spinner,
   .su-progress-bar--indeterminate .su-progress-fill,
   .su-skeleton {
     animation: none;
@@ -1615,25 +1614,6 @@ a.su-list-item:hover,
   font-size: var(--su-text-xs);
   color: var(--su-text-muted);
   margin-bottom: 0.3rem;
-}
-
-.su-spinner {
-  display: inline-block;
-  width: var(--su-spinner-size, 1.15em);
-  height: var(--su-spinner-size, 1.15em);
-  border: 2px solid currentColor;
-  border-top-color: transparent;
-  border-radius: var(--su-radius-full);
-  opacity: 0.85;
-  animation: su-spin 0.7s linear infinite;
-  flex: none;
-}
-
-.su-spinner--sm { --su-spinner-size: 0.9rem; }
-.su-spinner--lg { --su-spinner-size: 2rem; border-width: 3px; }
-
-@keyframes su-spin {
-  to { transform: rotate(360deg); }
 }
 
 .su-skeleton {
@@ -2911,10 +2891,23 @@ svg.su-theme-icon-moon {
   font-variant-numeric: tabular-nums;
 }
 
+/*
+ * Every marker holds both its number and its tick; which one shows is
+ * the step's state. Keeping both in the HTML is what lets a flow be
+ * advanced from script without anything having to redraw a glyph.
+ */
 .su-step-marker svg {
   width: 0.85rem;
   height: 0.85rem;
+  display: none;
+}
+
+.su-step--complete .su-step-marker svg {
   display: block;
+}
+
+.su-step--complete .su-step-number {
+  display: none;
 }
 
 .su-step--complete .su-step-marker {

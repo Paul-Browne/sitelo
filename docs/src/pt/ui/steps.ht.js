@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/pt.js'
 import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
@@ -80,6 +80,21 @@ export default () =>
   current: 1,
   items: ['Construir', 'Carregar', 'Invalidar a cache'],
 })`, { align: 'stretch' }),
+
+      h2('Avançar o fluxo'),
+      p(
+        'O estado são três nomes de classe e um ',
+        code('aria-current'),
+        ', espalhados por todos os passos. ',
+        code('setStep()'),
+        ' move-os em conjunto, por isso um assistente que avança no browser é uma chamada e não um ciclo.',
+      ),
+      p('Um índice para lá do último passo deixa-os todos completos, que é o aspeto de um fluxo terminado. Ou a partir de um atributo de evento, sem nada no bundle:'),
+      codeBlock('Em qualquer sítio', `button({ onclick: "import('/su/steps.js').then(m=>m.set('checkout',2))" }, 'Next')`, 'javascript'),
+      p('Ou a partir do teu próprio módulo, quando já houver um a correr:'),
+      codeBlock('src/main.js', `import { setStep } from 'sitelo/ui/client'
+
+setStep('checkout', 2)`, 'javascript'),
 
       h2('Props'),
       propsTable([

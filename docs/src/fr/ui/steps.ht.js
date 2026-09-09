@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/fr.js'
 import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
@@ -80,6 +80,21 @@ export default () =>
   current: 1,
   items: ['Construire', 'Téléverser', 'Invalider le cache'],
 })`, { align: 'stretch' }),
+
+      h2('Faire avancer le parcours'),
+      p(
+        'L’état, ce sont trois noms de classe et un ',
+        code('aria-current'),
+        ', répartis sur toutes les étapes. ',
+        code('setStep()'),
+        ' les déplace ensemble : un assistant qui avance dans le navigateur tient en un appel, pas en une boucle.',
+      ),
+      p('Un index au-delà de la dernière étape les laisse toutes terminées — c’est à quoi ressemble un parcours achevé. Ou depuis un attribut d’événement, sans rien dans le bundle :'),
+      codeBlock('N’importe où', `button({ onclick: "import('/su/steps.js').then(m=>m.set('checkout',2))" }, 'Next')`, 'javascript'),
+      p('Ou depuis votre propre module, quand il y en a déjà un qui tourne :'),
+      codeBlock('src/main.js', `import { setStep } from 'sitelo/ui/client'
+
+setStep('checkout', 2)`, 'javascript'),
 
       h2('Props'),
       propsTable([

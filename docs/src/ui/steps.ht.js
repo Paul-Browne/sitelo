@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code } from '../lib/code.js'
+import { code, codeBlock } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
 import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
 
@@ -81,6 +81,21 @@ export default () =>
   current: 1,
   items: ['Build', 'Upload', 'Invalidate cache'],
 })`, { align: 'stretch' }),
+
+      h2('Advancing the flow'),
+      p(
+        'The state is three class names and one ',
+        code('aria-current'),
+        ', spread across every step. ',
+        code('setStep()'),
+        ' moves them together, so a wizard that advances in the browser is one call rather than a loop.',
+      ),
+      p('An index past the last step leaves every one of them complete, which is what a finished flow looks like. Or from an event attribute, with nothing bundled:'),
+      codeBlock('Anywhere', `button({ onclick: "import('/su/steps.js').then(m=>m.set('checkout',2))" }, 'Next')`, 'javascript'),
+      p('Or from your own module, when there is already one running:'),
+      codeBlock('src/main.js', `import { setStep } from 'sitelo/ui/client'
+
+setStep('checkout', 2)`, 'javascript'),
 
       h2('Props'),
       propsTable([

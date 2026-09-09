@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/de.js'
 import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
@@ -70,6 +70,21 @@ export default () =>
       demo(`badge({ content: 4, label: '4 ungelesene Nachrichten' },
   button({ variant: 'soft', color: 'neutral' }, 'Posteingang'),
 )`),
+
+      h2('Die Zahl ändern'),
+      p(
+        'Eine Zahl ist das, was sich auf einer offenen Seite am ehesten ändert. ',
+        code('setBadge()'),
+        ' deckelt sie bei ',
+        code('max'),
+        ', so wie es der Server tat, führt den angesagten Text mit, und nimmt ein geleertes Badge aus dem Accessibility-Baum — so verschwindet ein Badge.',
+      ),
+      p('Der angesagte Text ist die Prosa der Seite — gib ihn mit, sobald das Badge einen hat:'),
+      codeBlock('Irgendwo', `button({ onclick: "import('/su/badge.js').then(m=>m.set('inbox',0))" }, 'Mark all read')`, 'javascript'),
+      p('Oder aus deinem eigenen Modul, wenn ohnehin schon eines läuft:'),
+      codeBlock('src/main.js', `import { setBadge } from 'sitelo/ui/client'
+
+setBadge('inbox', 7, { label: '7 unread messages' })`, 'javascript'),
 
       h2('Props'),
       propsTable([

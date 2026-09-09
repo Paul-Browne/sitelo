@@ -1,6 +1,6 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
+import { preview, uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -105,9 +105,12 @@ export default () =>
         ' — para uma ação que acontece na página em vez de uma navegação.',
       ),
       demo(`menu({ trigger: 'Exportar', variant: 'soft', color: 'primary' },
-  menuItem({ onclick: "window.siteloUiToast && window.siteloUiToast('Exportado como JSON.', 'success')" }, 'Como JSON'),
-  menuItem({ onclick: "window.siteloUiToast && window.siteloUiToast('Exportado como CSV.', 'success')" }, 'Como CSV'),
+  menuItem({ onclick: "import('/su/toast.js').then(m=>m.toast('Exportado como JSON.',{color:'success'}))" }, 'Como JSON'),
+  menuItem({ onclick: "import('/su/toast.js').then(m=>m.toast('Exportado como CSV.',{color:'success'}))" }, 'Como CSV'),
 )`),
+      // The demo above raises toasts; this is the region they land in.
+      // Fixed-position, so it renders here but appears in the corner.
+      preview('toasts()'),
 
       h2('Numa barra da aplicação'),
       demo(`appBar({ brand: 'sitelo' },

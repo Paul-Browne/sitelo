@@ -31,7 +31,7 @@ export default () =>
         code('showValue'),
         ' ставит рядом с дорожкой ',
         code('<output>'),
-        ' со значением, с которым собиралась страница. Держать его в ногу с бегунком — это одна строчка вашего собственного скрипта: библиотека для этого ничего не отгружает, а число, которое тихо устареет, было бы хуже, чем никакого числа.',
+        ' со значением, с которым собиралась страница, а сам инпут при первом же перетаскивании подтягивает свой обработчик — так что число идёт за бегунком. Импортировать нечего: число, которое тихо устареет, было бы хуже, чем никакого числа, поэтому это на вас не оставили.',
       ),
       demo(`sliderField({
   label: 'Качество изображения',
@@ -42,11 +42,6 @@ export default () =>
   showValue: true,
   help: 'Чем выше, тем больше вес и медленнее сборка.',
 })`, { align: 'stretch' }),
-      codeBlock('src/main.js', `for (const range of document.querySelectorAll('.su-slider')) {
-  const output = range.parentElement.querySelector('output')
-
-  if (output) range.addEventListener('input', () => { output.value = range.value })
-}`, 'javascript'),
 
       h2('Цвета'),
       demo(`stack({ gap: 'lg' },

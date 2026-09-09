@@ -16,7 +16,7 @@ export default () =>
         ' — un site qui se contente de suivre le système d’exploitation n’a besoin de rien de cette page. La bascule sert à laisser un lecteur passer outre.',
       ),
       p(
-        'C’est l’un des quatre composants qui réclament un script, parce que le choix vit dans ',
+        'C’est l’un des cinq composants qui réclament un script, parce que le choix vit dans ',
         code('localStorage'),
         ' et que seul un script peut le lire. Le bouton va chercher ce script lui-même, au premier appui.',
       ),

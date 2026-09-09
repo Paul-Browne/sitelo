@@ -32,7 +32,7 @@ export default () =>
         code('showValue'),
         ' puts an ',
         code('<output>'),
-        ' beside the track carrying the value the page was built with. Keeping it in step with the thumb is one line of your own script — this library ships none for it, and a number that silently goes stale would be worse than no number at all.',
+        ' beside the track carrying the value the page was built with, and the input fetches its own handler on the first drag, so the number follows the thumb. There is nothing to import: a value that silently went stale would be worse than no value at all, so this one is not left to you.',
       ),
       demo(`sliderField({
   label: 'Image quality',
@@ -43,11 +43,6 @@ export default () =>
   showValue: true,
   help: 'Higher is larger and slower to build.',
 })`, { align: 'stretch' }),
-      codeBlock('src/main.js', `for (const range of document.querySelectorAll('.su-slider')) {
-  const output = range.parentElement.querySelector('output')
-
-  if (output) range.addEventListener('input', () => { output.value = range.value })
-}`, 'javascript'),
 
       h2('Colors'),
       demo(`stack({ gap: 'lg' },

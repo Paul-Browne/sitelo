@@ -117,7 +117,7 @@ const DOC_LABELS = {
  *
  * Grouped, so the sections of the component reference survive into the
  * navigation. A `heading` entry is a label, not a link, and `js` marks the
- * four components that fetch a runtime module of their own.
+ * five components that fetch a runtime module of their own.
  *
  * The group headings match the reference table on `/docs/ui` in each
  * language, so a reader meets the same names in both places.

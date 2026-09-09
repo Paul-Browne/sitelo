@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
 import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
@@ -69,6 +69,21 @@ export default () =>
       demo(`badge({ content: 4, label: '4 条未读消息' },
   button({ variant: 'soft', color: 'neutral' }, '收件箱'),
 )`),
+
+      h2('改变计数'),
+      p(
+        '计数是一个页面打开着时最可能变化的数字。',
+        code('setBadge()'),
+        ' 会像服务端那样把它压到 ',
+        code('max'),
+        '，把播报文本一起带上，并且把清空后的徽标移出无障碍树——徽标就是这样消失的。',
+      ),
+      p('播报文本是站点自己的措辞，所以徽标只要有它，就把它一起传进去：'),
+      codeBlock('任意位置', `button({ onclick: "import('/su/badge.js').then(m=>m.set('inbox',0))" }, 'Mark all read')`, 'javascript'),
+      p('或者从你自己的模块里调用——如果本来就有一个在跑的话：'),
+      codeBlock('src/main.js', `import { setBadge } from 'sitelo/ui/client'
+
+setBadge('inbox', 7, { label: '7 unread messages' })`, 'javascript'),
 
       h2('属性'),
       propsTable([

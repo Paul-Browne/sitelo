@@ -17,9 +17,11 @@ export default () =>
         '. Bold in a text editor, a filter that is applied, a panel that is showing.',
       ),
       p(
-        'There is no hidden input and no script behind it: on a static page a toggle button ',
-        code('shows'),
-        ' a state rather than changing one. Add your own listener, or reach for ',
+        'There is no hidden input behind it: ',
+        code('aria-pressed'),
+        ' is the whole state, so a server-rendered toggle shows a setting and ',
+        code('setPressed()'),
+        ' is what changes it. Reach for ',
         code('checkbox()'),
         ' when it belongs in a form and ',
         code('toggle()'),
@@ -84,18 +86,19 @@ export default () =>
 
       h2('Making it do something'),
       p(
-        'One listener flips the attribute; the styling follows it.',
+        'One call flips the attribute; the styling follows it. Inside a single-choice ',
+        code('toggleGroup()'),
+        ' it lets go of the siblings too.',
       ),
-      codeBlock('src/main.js', `for (const button of document.querySelectorAll('[aria-pressed]')) {
-  button.addEventListener('click', () => {
-    const on = button.getAttribute('aria-pressed') === 'true'
-    button.setAttribute('aria-pressed', String(!on))
-  })
-}`, 'javascript'),
+      codeBlock('Anywhere', `toggleButton({ onclick: "import('/su/pressed.js').then(m=>m.set(this))" }, 'Bold')`, 'javascript'),
+      p('Or from your own module, when there is already one running:'),
+      codeBlock('src/main.js', `import { setPressed } from 'sitelo/ui/client'
+
+setPressed('bold')`, 'javascript'),
 
       h2('Props'),
       propsTable([
-        ['pressed', 'boolean', 'false', 'Sets aria-pressed. There is no script behind it.'],
+        ['pressed', 'boolean', 'false', 'Sets aria-pressed. setPressed() changes it afterwards.'],
         ['variant', "'outline' | 'ghost' | 'soft'", "'outline'", 'How the unpressed button looks.'],
         ['size', "'sm' | 'md' | 'lg'", "'md'", 'Same scale as button().'],
         ['disabled', 'boolean', 'false', 'Disables the button.'],

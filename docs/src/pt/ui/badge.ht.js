@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/pt.js'
 import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
@@ -70,6 +70,21 @@ export default () =>
       demo(`badge({ content: 4, label: '4 mensagens por ler' },
   button({ variant: 'soft', color: 'neutral' }, 'Caixa de entrada'),
 )`),
+
+      h2('Mudar a contagem'),
+      p(
+        'Uma contagem é o número de uma página com maior probabilidade de mudar enquanto ela está aberta. ',
+        code('setBadge()'),
+        ' corta-a em ',
+        code('max'),
+        ' tal como o servidor fez, mantém o texto anunciado com ela, e tira da árvore de acessibilidade um emblema esvaziado — é assim que um emblema desaparece.',
+      ),
+      p('O texto anunciado é a prosa do site, por isso passa-o sempre que o emblema tiver um:'),
+      codeBlock('Em qualquer sítio', `button({ onclick: "import('/su/badge.js').then(m=>m.set('inbox',0))" }, 'Mark all read')`, 'javascript'),
+      p('Ou a partir do teu próprio módulo, quando já houver um a correr:'),
+      codeBlock('src/main.js', `import { setBadge } from 'sitelo/ui/client'
+
+setBadge('inbox', 7, { label: '7 unread messages' })`, 'javascript'),
 
       h2('Props'),
       propsTable([

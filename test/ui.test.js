@@ -76,7 +76,7 @@ test('button({ loading }) marks itself busy and shows a spinner', () => {
 
   assert.match(html, /aria-busy="true"/);
   assert.match(html, /su-btn--loading/);
-  assert.match(html, /su-spinner/);
+  assert.match(html, /su-icon--spin/);
 });
 
 test('iconButton() carries an accessible name', () => {
@@ -183,7 +183,7 @@ test('a labelled badge uses hidden text, not aria-label on a bare span', () => {
 
   assert.ok(!html.includes('aria-label'));
   assert.match(html, /<span class="su-visually-hidden">4 unread messages<\/span>/);
-  assert.match(html, /<span aria-hidden="true">4<\/span>/);
+  assert.match(html, /<span data-su-badge-value="" aria-hidden="true">4<\/span>/);
 
   // An unlabelled dot carries no meaning, so it stays out of the tree.
   assert.match(ui.badge({ dot: true }, 'x'), /su-badge--dot[^>]*aria-hidden="true"/);
@@ -571,9 +571,14 @@ test('steps() marks what is done, what is current, and what is next', () => {
 
   // a tick reads faster than a number for something already done, and it
   // is drawn rather than typed so its weight matches the digits beside it
-  assert.match(html, /su-step-marker" aria-hidden="true"><svg/);
+  assert.match(html, /su-step-marker" aria-hidden="true"><span class="su-step-number">1<\/span><svg/);
   assert.ok(!html.includes('✓'), 'no glyph tick');
-  assert.match(html, /su-step-marker" aria-hidden="true">2</);
+
+  // Every marker carries both, and the stylesheet picks one — which is
+  // what lets `/su/steps.js` advance a flow by changing class names.
+  assert.equal((html.match(/su-step-number/g) || []).length, 3);
+  assert.equal((html.match(/<svg/g) || []).length, 3);
+  assert.match(html, /su-step--current"[^>]*>[\s\S]*?<span class="su-step-number">2<\/span>/);
 
   // first step: nothing complete yet
   assert.ok(!ui.steps({ current: 0, items: ['a', 'b'] }).includes('su-step--complete'));

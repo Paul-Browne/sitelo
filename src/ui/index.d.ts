@@ -616,8 +616,6 @@ export interface ProgressProps extends BaseProps {
 export function progress(props?: ProgressProps): string
 export const progressBar: typeof progress
 
-export function spinner(props?: BaseProps & { size?: Size; label?: string }): string
-
 export interface SkeletonProps extends BaseProps {
   variant?: 'rect' | 'text' | 'circle'
   width?: string

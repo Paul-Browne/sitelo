@@ -17,7 +17,9 @@ export default () =>
       p(
         '它背后既没有隐藏的 input，也没有脚本：在静态页面上，切换按钮是在',
         code('展示'),
-        '一个状态，而不是改变它。你可以自己挂监听器；如果它属于表单，请改用 ',
+        '一个状态，而不是改变它——改变它的是 ',
+        code('setPressed()'),
+        '。如果它属于表单，请改用 ',
         code('checkbox()'),
         '；如果它是列表里的一项设置，请用 ',
         code('toggle()'),
@@ -82,18 +84,19 @@ export default () =>
 
       h2('让它真的做点事'),
       p(
-        '一个监听器把属性翻过来，样式自然跟上。',
+        '一次调用把属性翻过来，样式自然跟上。在单选的 ',
+        code('toggleGroup()'),
+        ' 里，它还会顺手松开兄弟按钮。',
       ),
-      codeBlock('src/main.js', `for (const button of document.querySelectorAll('[aria-pressed]')) {
-  button.addEventListener('click', () => {
-    const on = button.getAttribute('aria-pressed') === 'true'
-    button.setAttribute('aria-pressed', String(!on))
-  })
-}`, 'javascript'),
+      codeBlock('任意位置', `toggleButton({ onclick: "import('/su/pressed.js').then(m=>m.set(this))" }, 'Bold')`, 'javascript'),
+      p('或者从你自己的模块里调用——如果本来就有一个在跑的话：'),
+      codeBlock('src/main.js', `import { setPressed } from 'sitelo/ui/client'
+
+setPressed('bold')`, 'javascript'),
 
       h2('属性'),
       propsTable([
-        ['pressed', 'boolean', 'false', '设置 aria-pressed。背后没有任何脚本。'],
+        ['pressed', 'boolean', 'false', '设置 aria-pressed。之后由 setPressed() 来改。'],
         ['variant', "'outline' | 'ghost' | 'soft'", "'outline'", '未按下时按钮的样子。'],
         ['size', "'sm' | 'md' | 'lg'", "'md'", '和 button() 同一套尺度。'],
         ['disabled', 'boolean', 'false', '禁用该按钮。'],

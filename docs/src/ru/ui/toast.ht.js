@@ -32,42 +32,40 @@ body(
   toasts(),
 )`, 'javascript'),
       p(
-        'Это единственная часть рантайма, которую за вас ничто на странице не запускает, — а значит, единственная, которую вы импортируете сами:',
+        'Это единственная часть рантайма, которую за вас ничто на странице не запускает, — а значит, единственная, до которой вы дотягиваетесь сами: прямо из атрибута события, без единого байта в бандле:',
       ),
+      codeBlock('Где угодно', `button({ onclick: "import('/su/toast.js').then(m=>m.toast('Сохранено.',{color:'success'}))" }, 'Сохранить')`, 'javascript'),
+      p('Или из вашего собственного модуля, если он и так уже работает:'),
       codeBlock('src/main.js', `import { toast } from 'sitelo/ui/client'
 
-document.querySelector('#save').addEventListener('click', () => {
-  toast('Сохранено.', { color: 'success' })
-})`, 'javascript'),
-      p('Или дотянитесь до него так же, как это делают компоненты, и вовсе обойдитесь без бандла:'),
-      codeBlock('Где угодно', `button({ onclick: "import('/su/toast.js').then(m=>m.toast('Сохранено.'))" }, 'Сохранить')`, 'javascript'),
+toast('Сохранено.', { color: 'success' })`, 'javascript'),
 
       h2('Попробуйте'),
       p(
         'Эта страница рисует область ',
         code('toasts()'),
-        ' и загружает рантайм, поэтому кнопки ниже действительно порождают тосты — справа внизу.',
+        ', а кнопки ниже сами подтягивают рантайм, поэтому действительно порождают тосты — справа внизу. Пока вы не нажмёте, не загружается ничего.',
       ),
       demo(`stack({ direction: 'row', gap: 'sm', wrap: true },
   button({
     variant: 'soft',
     color: 'success',
-    onclick: "window.siteloUiToast && window.siteloUiToast('Сохранено.', 'success')",
+    onclick: "import('/su/toast.js').then(m=>m.toast('Сохранено.',{color:'success'}))",
   }, 'Success'),
   button({
     variant: 'soft',
     color: 'warning',
-    onclick: "window.siteloUiToast && window.siteloUiToast('У двух страниц нет meta description.', 'warning')",
+    onclick: "import('/su/toast.js').then(m=>m.toast('У двух страниц нет meta description.',{color:'warning'}))",
   }, 'Warning'),
   button({
     variant: 'soft',
     color: 'danger',
-    onclick: "window.siteloUiToast && window.siteloUiToast('Сборка упала. Посмотрите отчёт по ссылкам.', 'danger')",
+    onclick: "import('/su/toast.js').then(m=>m.toast('Сборка упала. Посмотрите отчёт по ссылкам.',{color:'danger'}))",
   }, 'Danger'),
   button({
     variant: 'soft',
     color: 'neutral',
-    onclick: "window.siteloUiToast && window.siteloUiToast('Этот останется, пока вы его не закроете.', 'neutral', 0)",
+    onclick: "import('/su/toast.js').then(m=>m.toast('Этот останется, пока вы его не закроете.',{color:'neutral',duration:0}))",
   }, 'До закрытия'),
 )`),
       // Живая область, в которую добавляют кнопки этой страницы. Она

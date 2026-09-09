@@ -19,7 +19,18 @@
 export const DEFAULT_UI_CLIENT_BASE = '/su/'
 
 /** Every module under `runtime/`, which is what the plugin will serve. */
-export const RUNTIME_MODULES = ['alert', 'menu', 'tabs', 'theme', 'toast']
+export const RUNTIME_MODULES = [
+  'alert',
+  'badge',
+  'menu',
+  'pressed',
+  'progress',
+  'slider',
+  'steps',
+  'tabs',
+  'theme',
+  'toast',
+]
 
 /** Set by {@link configureUiClient}; falls back to the environment. */
 let configured

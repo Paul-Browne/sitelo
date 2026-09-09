@@ -32,42 +32,40 @@ body(
   toasts(),
 )`, 'javascript'),
       p(
-        'Esta es la única parte del runtime que nada de la página dispara por ti, así que es la única que importas tú:',
+        'Esta es la única parte del runtime que nada de la página dispara por ti, así que es la única que alcanzas tú — desde un atributo de evento, sin nada en el bundle:',
       ),
+      codeBlock('En cualquier parte', `button({ onclick: "import('/su/toast.js').then(m=>m.toast('Guardado.',{color:'success'}))" }, 'Guardar')`, 'javascript'),
+      p('O desde tu propio módulo, cuando ya haya uno en marcha:'),
       codeBlock('src/main.js', `import { toast } from 'sitelo/ui/client'
 
-document.querySelector('#save').addEventListener('click', () => {
-  toast('Guardado.', { color: 'success' })
-})`, 'javascript'),
-      p('O llega a él como hacen los componentes, y sáltate el bundle del todo:'),
-      codeBlock('En cualquier parte', `button({ onclick: "import('/su/toast.js').then(m=>m.toast('Guardado.'))" }, 'Guardar')`, 'javascript'),
+toast('Guardado.', { color: 'success' })`, 'javascript'),
 
       h2('Pruébalo'),
       p(
         'Esta página dibuja una región ',
         code('toasts()'),
-        ' y carga el runtime, así que los botones de abajo producen toasts de verdad — abajo a la derecha.',
+        ' y los botones de abajo van a buscar el runtime ellos mismos, así que producen toasts de verdad — abajo a la derecha. No se carga nada hasta que pulsas uno.',
       ),
       demo(`stack({ direction: 'row', gap: 'sm', wrap: true },
   button({
     variant: 'soft',
     color: 'success',
-    onclick: "window.siteloUiToast && window.siteloUiToast('Guardado.', 'success')",
+    onclick: "import('/su/toast.js').then(m=>m.toast('Guardado.',{color:'success'}))",
   }, 'Success'),
   button({
     variant: 'soft',
     color: 'warning',
-    onclick: "window.siteloUiToast && window.siteloUiToast('Dos páginas no tienen meta descripción.', 'warning')",
+    onclick: "import('/su/toast.js').then(m=>m.toast('Dos páginas no tienen meta descripción.',{color:'warning'}))",
   }, 'Warning'),
   button({
     variant: 'soft',
     color: 'danger',
-    onclick: "window.siteloUiToast && window.siteloUiToast('La compilación falló. Mira el informe de enlaces.', 'danger')",
+    onclick: "import('/su/toast.js').then(m=>m.toast('La compilación falló. Mira el informe de enlaces.',{color:'danger'}))",
   }, 'Danger'),
   button({
     variant: 'soft',
     color: 'neutral',
-    onclick: "window.siteloUiToast && window.siteloUiToast('Este se queda hasta que lo cierres.', 'neutral', 0)",
+    onclick: "import('/su/toast.js').then(m=>m.toast('Este se queda hasta que lo cierres.',{color:'neutral',duration:0}))",
   }, 'Hasta que se cierre'),
 )`),
       // La zona viva a la que añaden los botones de esta página. Es de

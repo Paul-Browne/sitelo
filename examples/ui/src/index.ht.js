@@ -313,7 +313,10 @@ export default () =>
                 ui.cardBody(
                   ui.stack(
                     { gap: 'sm' },
-                    row(ui.spinner({ label: 'Loading' }), ui.text({ variant: 'small', tone: 'muted' }, 'Loading…')),
+                    row(
+                      ui.icon('spinner', { spin: true, label: 'Loading' }),
+                      ui.text({ variant: 'small', tone: 'muted' }, 'Loading…'),
+                    ),
                     ui.skeleton({ lines: 3 }),
                   ),
                 ),

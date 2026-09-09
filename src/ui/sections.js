@@ -195,7 +195,12 @@ export function steps(props = {}) {
         // A tick reads faster than a number for something already done.
         // Drawn rather than typed: the glyph's weight and baseline do
         // not match the digits beside it in every font.
-        state === 'complete' ? STEP_TICK : String(index + 1),
+        //
+        // Both are rendered and the stylesheet picks one, so a flow that
+        // advances in the browser is three class names — `/su/steps.js`
+        // never has to know how a completed step is drawn.
+        span({ class: 'su-step-number' }, String(index + 1)),
+        STEP_TICK,
       ),
       div(
         { class: 'su-step-content' },

@@ -2,7 +2,7 @@ import { button, div, p as pEl, span } from 'javascript-to-html'
 
 import { handler } from './handlers.js'
 import { icon } from './icons.js'
-import { attrs, colorClass, cx, oneOf, parseArgs, SIZES, space } from './internal.js'
+import { attrs, colorClass, cx, oneOf, parseArgs, space } from './internal.js'
 
 /**
  * Default glyph per alert color.
@@ -119,14 +119,21 @@ export function progress(props = {}) {
       : div(
           { class: 'su-progress-label' },
           span(label == null ? '' : label),
-          showValue && !indeterminate ? span(`${Math.round(pct)}%`) : '',
+          /*
+           * The span is rendered whenever `showValue` is on, empty while
+           * the bar is indeterminate: `/su/progress.js` fills it in, and
+           * it cannot fill in something that is not there.
+           */
+          showValue
+            ? span({ 'data-su-progress-value': '' }, indeterminate ? '' : `${Math.round(pct)}%`)
+            : '',
         ),
     div(
       {
         /*
          * A progressbar with no accessible name tells a screen reader
          * nothing, and is invalid besides — so an unlabelled bar is
-         * decoration, and says so. Same rule `spinner()` follows.
+         * decoration, and says so. Same rule `icon()` follows.
          */
         ...(label == null
           ? { 'aria-hidden': 'true' }
@@ -145,6 +152,13 @@ export function progress(props = {}) {
           'su-progress-bar',
           indeterminate && 'su-progress-bar--indeterminate',
         ),
+        /*
+         * An unlabelled bar announces no `aria-valuemax`, and a labelled
+         * indeterminate one announces nothing either — so a scale that is
+         * not the default is written down here, where `set()` can find it
+         * without being told the maximum again on every call.
+         */
+        ...(scale === 100 ? {} : { 'data-su-progress-max': scale }),
         ...(height ? { style: `--su-progress-height: ${space(height)}` } : {}),
       },
       span({
@@ -156,23 +170,6 @@ export function progress(props = {}) {
 }
 
 export { progress as progressBar }
-
-/**
- * Spinning ring, sized in `em` so it matches the text it sits beside.
- *
- * @param {object} [props] - `{ size, label }`
- * @returns {string}
- */
-export function spinner(props = {}) {
-  const { size = 'md', label, ...rest } = props
-
-  return span(
-    { role: 'status', ...(label ? { 'aria-label': String(label) } : { 'aria-hidden': 'true' }) },
-    attrs(rest, {
-      class: cx('su-spinner', size !== 'md' && `su-spinner--${oneOf(size, SIZES, 'md')}`),
-    }),
-  )
-}
 
 /**
  * Placeholder block for content that has not arrived.

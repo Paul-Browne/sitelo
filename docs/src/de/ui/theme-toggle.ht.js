@@ -16,7 +16,7 @@ export default () =>
         ' auf — eine Website, die zufrieden dem Betriebssystem folgt, braucht von dieser Seite nichts. Der Umschalter ist dafür da, eine Leserin das überstimmen zu lassen.',
       ),
       p(
-        'Er ist eine der vier Komponenten, die ein Skript brauchen, denn die Wahl liegt im ',
+        'Er ist eine der fünf Komponenten, die ein Skript brauchen, denn die Wahl liegt im ',
         code('localStorage'),
         ' und nur ein Skript kann sie lesen. Der Button holt sich dieses Skript beim ersten Druck selbst.',
       ),

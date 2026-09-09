@@ -16,7 +16,7 @@ export default () =>
         ': un sitio contento con seguir al sistema operativo no necesita nada de esta página. El conmutador está para dejar que el lector lo sobrescriba.',
       ),
       p(
-        'Es uno de los cuatro componentes que necesitan script, porque la elección vive en ',
+        'Es uno de los cinco componentes que necesitan script, porque la elección vive en ',
         code('localStorage'),
         ' y solo un script puede leerla. El botón se descarga ese script él mismo, en la primera pulsación.',
       ),

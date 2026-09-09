@@ -16,7 +16,7 @@ export default () =>
         ' — um site que se contenta em seguir o sistema operativo não precisa de nada desta página. O alternador serve para deixar o leitor sobrepor-se a isso.',
       ),
       p(
-        'É um dos quatro componentes que precisam de script, porque a escolha vive no ',
+        'É um dos cinco componentes que precisam de script, porque a escolha vive no ',
         code('localStorage'),
         ' e só um script a consegue ler. O botão vai buscar esse script sozinho, ao primeiro toque.',
       ),

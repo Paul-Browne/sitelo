@@ -25,7 +25,7 @@ const GROUPS = [
   ['Tipografía', ['text', 'heading', 'link', 'code', 'inlineCode', 'kbd', 'visuallyHidden', 'prose']],
   ['Entradas', ['button', 'iconButton', 'buttonGroup', 'field', 'input', 'textarea', 'select', 'textField', 'textareaField', 'selectField', 'checkbox', 'radio', 'toggle', 'choiceGroup', 'slider', 'sliderField', 'toggleButton', 'toggleGroup']],
   ['Visualización de datos', ['avatar', 'avatarGroup', 'badge', 'chip', 'tooltip', 'table', 'list', 'listItem', 'figure']],
-  ['Feedback', ['alert', 'progress', 'spinner', 'skeleton', 'toasts', 'empty']],
+  ['Feedback', ['alert', 'progress', 'skeleton', 'toasts', 'empty']],
   ['Navegación', ['breadcrumbs', 'pagination', 'tabs', 'appBar', 'appBarNav', 'appBarSpacer', 'appBarActions', 'navLink', 'themeToggle']],
   ['Superposiciones', ['modal', 'drawer', 'closeButton', 'menu', 'menuItem', 'menuSeparator', 'accordion', 'accordionItem', 'collapsible']],
   ['Secciones', ['hero', 'footer', 'siteFooter', 'footerColumn', 'footerBottom', 'stat', 'statGroup', 'steps', 'timeline', 'timelineItem', 'mockup']],

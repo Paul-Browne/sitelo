@@ -31,42 +31,40 @@ body(
   toasts(),
 )`, 'javascript'),
       p(
-        '这是运行时里唯一没有任何页面元素替你触发的部分，所以也是唯一需要你自己导入的部分：',
+        '这是运行时里唯一没有任何页面元素替你触发的部分，所以也是唯一需要你自己去取的部分——直接写在事件属性里，什么都不用打包：',
       ),
+      codeBlock('任意位置', `button({ onclick: "import('/su/toast.js').then(m=>m.toast('已保存。',{color:'success'}))" }, '保存')`, 'javascript'),
+      p('或者从你自己的模块里调用——如果本来就有一个在跑的话：'),
       codeBlock('src/main.js', `import { toast } from 'sitelo/ui/client'
 
-document.querySelector('#save').addEventListener('click', () => {
-  toast('已保存。', { color: 'success' })
-})`, 'javascript'),
-      p('或者像其他组件那样去取它，把打包这一步整个跳过：'),
-      codeBlock('任意位置', `button({ onclick: "import('/su/toast.js').then(m=>m.toast('已保存。'))" }, '保存')`, 'javascript'),
+toast('已保存。', { color: 'success' })`, 'javascript'),
 
       h2('试一试'),
       p(
         '本页渲染了一块 ',
         code('toasts()'),
-        ' 区域并加载了运行时，所以下面这些按钮真的会弹出提示——在右下角。',
+        ' 区域，下面这些按钮会自己去取运行时，所以它们真的会弹出提示——在右下角。在你按下之前，什么都不会被加载。',
       ),
       demo(`stack({ direction: 'row', gap: 'sm', wrap: true },
   button({
     variant: 'soft',
     color: 'success',
-    onclick: "window.siteloUiToast && window.siteloUiToast('已保存。', 'success')",
+    onclick: "import('/su/toast.js').then(m=>m.toast('已保存。',{color:'success'}))",
   }, 'Success'),
   button({
     variant: 'soft',
     color: 'warning',
-    onclick: "window.siteloUiToast && window.siteloUiToast('有两个页面没有 meta description。', 'warning')",
+    onclick: "import('/su/toast.js').then(m=>m.toast('有两个页面没有 meta description。',{color:'warning'}))",
   }, 'Warning'),
   button({
     variant: 'soft',
     color: 'danger',
-    onclick: "window.siteloUiToast && window.siteloUiToast('构建失败了。看看链接检查报告。', 'danger')",
+    onclick: "import('/su/toast.js').then(m=>m.toast('构建失败了。看看链接检查报告。',{color:'danger'}))",
   }, 'Danger'),
   button({
     variant: 'soft',
     color: 'neutral',
-    onclick: "window.siteloUiToast && window.siteloUiToast('这条会一直留着，直到你关掉它。', 'neutral', 0)",
+    onclick: "import('/su/toast.js').then(m=>m.toast('这条会一直留着，直到你关掉它。',{color:'neutral',duration:0}))",
   }, '直到手动关闭'),
 )`),
       // 本页按钮往里追加内容的那块实时区域。它是固定定位的，所以在这里

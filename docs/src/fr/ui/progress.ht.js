@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/fr.js'
 import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
@@ -63,16 +63,65 @@ export default () =>
         align: 'stretch',
       }),
 
+      h2('La faire avancer depuis le navigateur'),
+      p(
+        'Une barre est du HTML rendu côté serveur : le pourcentage est une propriété personnalisée sur le remplissage et un nombre dans ',
+        code('aria-valuenow'),
+        ', et rien dans la page ne change l’un ou l’autre tout seul. Donnez un ',
+        code('id'),
+        ' à la barre et ',
+        code('setProgress'),
+        ' déplace les deux ensemble — le remplissage, la valeur annoncée et le pourcentage à côté du libellé.',
+      ),
+      codeBlock('src/main.js', `import { setProgress } from 'sitelo/ui/client'
+
+const request = new XMLHttpRequest()
+
+request.upload.addEventListener('progress', (event) => {
+  setProgress('upload', event.loaded, { max: event.total })
+})`, 'javascript'),
+      p(
+        'Le maximum est retenu, donc les appels suivants ne sont qu’une valeur. Ou atteignez le module comme le font les composants, et faites l’impasse sur le bundle :',
+      ),
+      codeBlock('N’importe où', `button({ onclick: "import('/su/progress.js').then(m=>m.set('upload',100))" }, 'Terminer')`, 'javascript'),
+      p(
+        'Passer ',
+        code('null'),
+        ' — ou tout ce qui n’est pas un nombre fini — rend la barre à l’animation indéterminée, si bien qu’un travail qui cesse de donner des chiffres n’a pas besoin d’un cas à part. ',
+        code('getProgress()'),
+        ' relit la valeur courante, sur l’échelle propre à la barre.',
+      ),
+
+      h2('Essayez'),
+      p('Cette page charge le runtime : les boutons ci-dessous font réellement bouger la barre.'),
+      demo(`stack({ gap: 'md' },
+  progress({ id: 'demo-progress', value: 0, label: 'Envoi en cours', showValue: true }),
+  stack({ direction: 'row', gap: 'sm', wrap: true },
+    button({ size: 'sm', variant: 'outline', onclick: "import('/su/progress.js').then(m=>m.set('demo-progress',0))" }, 'Réinitialiser'),
+    button({ size: 'sm', variant: 'outline', onclick: "import('/su/progress.js').then(m=>m.set('demo-progress',35))" }, '35%'),
+    button({ size: 'sm', variant: 'outline', onclick: "import('/su/progress.js').then(m=>m.set('demo-progress',80))" }, '80%'),
+    button({ size: 'sm', variant: 'outline', onclick: "import('/su/progress.js').then(m=>m.set('demo-progress',100))" }, 'Terminé'),
+    button({ size: 'sm', variant: 'ghost', onclick: "import('/su/progress.js').then(m=>m.set('demo-progress',null))" }, 'Inconnu'),
+  ),
+)`, { align: 'stretch' }),
+      p(
+        'Une barre sans libellé bouge aussi, mais elle reste ',
+        code('aria-hidden'),
+        ' — elle a été rendue sans nom exprès, et lui annoncer une valeur maintenant placerait dans l’arbre d’accessibilité un progressbar sans nom.',
+      ),
+
       h2('Spinner'),
       p(
-        'Un spinner est dimensionné en ',
+        'Il n’y a pas de composant spinner — le spinner est une icône, et ',
+        code('spin'),
+        ' est ce qui la fait tourner. Comme toute icône, elle est dimensionnée en ',
         code('em'),
-        ' : il s’accorde au texte qu’il côtoie sans qu’on lui donne une taille.',
+        ' : elle s’accorde au texte qu’elle côtoie sans qu’on lui donne une taille.',
       ),
       demo(`stack({ direction: 'row', gap: 'lg', align: 'center' },
-  spinner({ size: 'sm' }),
-  spinner(),
-  spinner({ size: 'lg' }),
+  icon('spinner', { spin: true, size: 'sm' }),
+  icon('spinner', { spin: true }),
+  icon('spinner', { spin: true, size: 'lg' }),
 )`),
 
       h2('Le spinner en contexte'),
@@ -83,7 +132,7 @@ export default () =>
       ),
       demo(`stack({ gap: 'md' },
   stack({ direction: 'row', gap: 'sm', align: 'center' },
-    spinner({ label: 'Chargement' }),
+    icon('spinner', { spin: true, label: 'Chargement' }),
     text({ variant: 'small', tone: 'muted' }, 'Récupération du dernier build…'),
   ),
   stack({ direction: 'row', gap: 'sm' },
@@ -102,10 +151,18 @@ export default () =>
         ['showValue', 'boolean', 'false', 'Afficher le pourcentage à côté du libellé.'],
         ['height', 'Space', "'0.5rem'", 'Épaisseur de la barre.'],
       ]),
-      p(code('spinner()'), ' :'),
+      p(code('setProgress()'), ' depuis ', code('sitelo/ui/client'), ' :'),
       propsTable([
-        ['size', "'sm' | 'md' | 'lg'", "'md'", 'Diamètre. Le moyen est dimensionné en em, pour s’accorder au texte voisin.'],
-        ['label', 'string', '', 'Nom accessible. Sans lui, le spinner est masqué aux lecteurs d’écran.'],
+        ['target', 'Element | string', '', 'La barre, ou l’id d’une barre. Si aucun élément ne porte cet id, la chaîne est essayée comme sélecteur.'],
+        ['value', 'number | null', '', 'Où la placer. null la rend à l’animation indéterminée.'],
+        ['options.max', 'number', '100', 'Ce qui compte comme terminé. Retenu pour les appels suivants.'],
       ]),
+      p(
+        'Le spinner n’a pas de props à lui — c’est ',
+        code("icon('spinner', { spin: true })"),
+        ', et il prend ce que prend ',
+        code('icon()'),
+        '.',
+      ),
     ],
   })

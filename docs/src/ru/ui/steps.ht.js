@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/ru.js'
 import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
@@ -80,6 +80,21 @@ export default () =>
   current: 1,
   items: ['Сборка', 'Загрузка', 'Сброс кэша'],
 })`, { align: 'stretch' }),
+
+      h2('Продвигать поток'),
+      p(
+        'Состояние — это три имени класса и один ',
+        code('aria-current'),
+        ', разбросанные по всем шагам. ',
+        code('setStep()'),
+        ' двигает их вместе, так что мастер, который идёт вперёд в браузере, — это один вызов, а не цикл.',
+      ),
+      p('Индекс за последним шагом оставляет завершёнными все — так и выглядит законченный поток. Или прямо из атрибута события, без единого байта в бандле:'),
+      codeBlock('Где угодно', `button({ onclick: "import('/su/steps.js').then(m=>m.set('checkout',2))" }, 'Next')`, 'javascript'),
+      p('Или из вашего собственного модуля, если он и так уже работает:'),
+      codeBlock('src/main.js', `import { setStep } from 'sitelo/ui/client'
+
+setStep('checkout', 2)`, 'javascript'),
 
       h2('Пропсы'),
       propsTable([

@@ -30,7 +30,7 @@ export default () =>
         code('showValue'),
         ' 会在轨道旁放一个 ',
         code('<output>'),
-        '，里面是构建时的那个值。想让它跟着滑钮走，只需你自己写一行脚本——本库不为此附带任何脚本，而一个悄悄过期的数字比没有数字更糟。',
+        '，里面是构建时的那个值；第一次拖动时，input 会自己去取它的处理模块，于是数字就跟着滑钮走。没有什么要导入的——一个悄悄过期的数字比没有数字更糟，所以这件事没留给你。',
       ),
       demo(`sliderField({
   label: '图片质量',
@@ -41,11 +41,6 @@ export default () =>
   showValue: true,
   help: '数值越高，文件越大，构建也越慢。',
 })`, { align: 'stretch' }),
-      codeBlock('src/main.js', `for (const range of document.querySelectorAll('.su-slider')) {
-  const output = range.parentElement.querySelector('output')
-
-  if (output) range.addEventListener('input', () => { output.value = range.value })
-}`, 'javascript'),
 
       h2('颜色'),
       demo(`stack({ gap: 'lg' },

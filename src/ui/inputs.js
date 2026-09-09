@@ -11,7 +11,8 @@ import {
   textarea as textareaEl,
 } from 'javascript-to-html'
 
-import { spinner } from './feedback.js'
+import { handler } from './handlers.js'
+import { icon as glyph } from './icons.js'
 import {
   attrs,
   BUTTON_VARIANTS,
@@ -61,7 +62,7 @@ export function button(...args) {
   }
 
   const leading = loading
-    ? span({ class: 'su-btn-icon' }, spinner({ size: 'sm' }))
+    ? span({ class: 'su-btn-icon' }, glyph('spinner', { spin: true }))
     : startIcon
       ? span({ class: 'su-btn-icon' }, startIcon)
       : ''
@@ -523,18 +524,20 @@ export function slider(props = {}) {
       ...(value == null ? {} : { value }),
       ...(id ? { id } : {}),
       ...(invalid ? { 'aria-invalid': 'true' } : {}),
+      /*
+       * A shown value that does not follow the thumb is worse than no
+       * value at all, so the input fetches its own handler on the first
+       * drag — the same deal the dismissible alert makes. Without the
+       * module the output stays the number the server rendered, which
+       * is where a slider with no script always stood.
+       */
+      ...(showValue ? { oninput: handler('slider', 'sync(this)') } : {}),
     },
     attrs(rest, { class: cx('su-slider', colorClass(color)) }),
   )
 
   if (!showValue) return control
 
-  /*
-   * The output carries the value the page was built with. Keeping it in
-   * step with the thumb is one line of your own script — this library
-   * ships no JavaScript for it, and a stale number would be worse than
-   * none.
-   */
   return div(
     { class: 'su-slider-row' },
     control,
@@ -642,6 +645,12 @@ export function toggleGroup(...args) {
     {
       role: 'group',
       ...(label ? { 'aria-label': String(label) } : {}),
+      /*
+       * One `value` meant one choice, an array meant several. Recorded
+       * here because `/su/pressed.js` has to know which it is before it
+       * can decide whether pressing one lets go of the rest.
+       */
+      ...(Array.isArray(value) ? { 'data-su-multiple': '' } : {}),
     },
     attrs(rest, { class: 'su-btn-group su-toggle-group' }),
     ...rendered,

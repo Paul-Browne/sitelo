@@ -16,9 +16,11 @@ export default () =>
         '. Fett in einem Texteditor, ein aktiver Filter, ein gerade sichtbares Panel.',
       ),
       p(
-        'Es steckt kein verstecktes Input und kein Skript dahinter: auf einer statischen Seite ',
-        code('zeigt'),
-        ' ein Toggle-Button einen Zustand, statt ihn zu ändern. Häng deinen eigenen Listener an, oder greif zu ',
+        'Es steckt kein verstecktes Input dahinter: ',
+        code('aria-pressed'),
+        ' ist der ganze Zustand, ein serverseitig gerenderter Toggle zeigt also eine Einstellung, und ',
+        code('setPressed()'),
+        ' ist das, was sie ändert. Greif zu ',
         code('checkbox()'),
         ', wenn es in ein Formular gehört, und zu ',
         code('toggle()'),
@@ -83,18 +85,19 @@ export default () =>
 
       h2('Ihn etwas tun lassen'),
       p(
-        'Ein Listener kippt das Attribut; die Gestaltung folgt ihm.',
+        'Ein Aufruf kippt das Attribut; die Gestaltung folgt ihm. In einer ',
+        code('toggleGroup()'),
+        ' mit nur einer Wahl lässt er zugleich die Geschwister los.',
       ),
-      codeBlock('src/main.js', `for (const button of document.querySelectorAll('[aria-pressed]')) {
-  button.addEventListener('click', () => {
-    const on = button.getAttribute('aria-pressed') === 'true'
-    button.setAttribute('aria-pressed', String(!on))
-  })
-}`, 'javascript'),
+      codeBlock('Irgendwo', `toggleButton({ onclick: "import('/su/pressed.js').then(m=>m.set(this))" }, 'Bold')`, 'javascript'),
+      p('Oder aus deinem eigenen Modul, wenn ohnehin schon eines läuft:'),
+      codeBlock('src/main.js', `import { setPressed } from 'sitelo/ui/client'
+
+setPressed('bold')`, 'javascript'),
 
       h2('Props'),
       propsTable([
-        ['pressed', 'boolean', 'false', 'Setzt aria-pressed. Ein Skript steckt nicht dahinter.'],
+        ['pressed', 'boolean', 'false', 'Setzt aria-pressed. Danach ändert es setPressed().'],
         ['variant', "'outline' | 'ghost' | 'soft'", "'outline'", 'Wie der nicht gedrückte Button aussieht.'],
         ['size', "'sm' | 'md' | 'lg'", "'md'", 'Dieselbe Skala wie bei button().'],
         ['disabled', 'boolean', 'false', 'Deaktiviert den Button.'],

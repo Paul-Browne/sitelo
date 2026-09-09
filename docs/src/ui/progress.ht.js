@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code } from '../lib/code.js'
+import { code, codeBlock } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
 import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
 
@@ -64,16 +64,65 @@ export default () =>
         align: 'stretch',
       }),
 
+      h2('Moving it from the browser'),
+      p(
+        'A bar is server-rendered HTML: the percentage is a custom property on the fill and a number in ',
+        code('aria-valuenow'),
+        ', and nothing on the page changes either on its own. Give the bar an ',
+        code('id'),
+        ' and ',
+        code('setProgress'),
+        ' moves both together — the fill, the announced value, and the percentage beside the label.',
+      ),
+      codeBlock('src/main.js', `import { setProgress } from 'sitelo/ui/client'
+
+const request = new XMLHttpRequest()
+
+request.upload.addEventListener('progress', (event) => {
+  setProgress('upload', event.loaded, { max: event.total })
+})`, 'javascript'),
+      p(
+        'The maximum is remembered, so later calls are just a value. Or reach the module the way the components reach theirs, and skip the bundle entirely:',
+      ),
+      codeBlock('Anywhere', `button({ onclick: "import('/su/progress.js').then(m=>m.set('upload',100))" }, 'Finish')`, 'javascript'),
+      p(
+        'Passing ',
+        code('null'),
+        ' — or anything that is not a finite number — hands the bar back to the indeterminate animation, so work that stops reporting numbers does not have to be special-cased. ',
+        code('getProgress()'),
+        ' reads the current value back, on the bar’s own scale.',
+      ),
+
+      h2('Try it'),
+      p('This page loads the runtime, so the buttons below really do move the bar.'),
+      demo(`stack({ gap: 'md' },
+  progress({ id: 'demo-progress', value: 0, label: 'Uploading', showValue: true }),
+  stack({ direction: 'row', gap: 'sm', wrap: true },
+    button({ size: 'sm', variant: 'outline', onclick: "import('/su/progress.js').then(m=>m.set('demo-progress',0))" }, 'Reset'),
+    button({ size: 'sm', variant: 'outline', onclick: "import('/su/progress.js').then(m=>m.set('demo-progress',35))" }, '35%'),
+    button({ size: 'sm', variant: 'outline', onclick: "import('/su/progress.js').then(m=>m.set('demo-progress',80))" }, '80%'),
+    button({ size: 'sm', variant: 'outline', onclick: "import('/su/progress.js').then(m=>m.set('demo-progress',100))" }, 'Done'),
+    button({ size: 'sm', variant: 'ghost', onclick: "import('/su/progress.js').then(m=>m.set('demo-progress',null))" }, 'Unknown'),
+  ),
+)`, { align: 'stretch' }),
+      p(
+        'An unlabelled bar is moved too, but it stays ',
+        code('aria-hidden'),
+        ' — it was rendered without a name on purpose, and announcing a value on it now would put a nameless progressbar in the accessibility tree.',
+      ),
+
       h2('Spinner'),
       p(
-        'A spinner is sized in ',
+        'There is no spinner component — the spinner is an icon, and ',
+        code('spin'),
+        ' is what turns it. Like every icon it is sized in ',
         code('em'),
         ', so it matches whatever text it sits beside without being told a size.',
       ),
       demo(`stack({ direction: 'row', gap: 'lg', align: 'center' },
-  spinner({ size: 'sm' }),
-  spinner(),
-  spinner({ size: 'lg' }),
+  icon('spinner', { spin: true, size: 'sm' }),
+  icon('spinner', { spin: true }),
+  icon('spinner', { spin: true, size: 'lg' }),
 )`),
 
       h2('Spinner in context'),
@@ -84,7 +133,7 @@ export default () =>
       ),
       demo(`stack({ gap: 'md' },
   stack({ direction: 'row', gap: 'sm', align: 'center' },
-    spinner({ label: 'Loading' }),
+    icon('spinner', { spin: true, label: 'Loading' }),
     text({ variant: 'small', tone: 'muted' }, 'Fetching the latest build…'),
   ),
   stack({ direction: 'row', gap: 'sm' },
@@ -103,10 +152,18 @@ export default () =>
         ['showValue', 'boolean', 'false', 'Show the percentage beside the label.'],
         ['height', 'Space', "'0.5rem'", 'Bar thickness.'],
       ]),
-      p(code('spinner()'), ':'),
+      p(code('setProgress()'), ' from ', code('sitelo/ui/client'), ':'),
       propsTable([
-        ['size', "'sm' | 'md' | 'lg'", "'md'", 'Diameter. Medium is sized in em, to match the text beside it.'],
-        ['label', 'string', '', 'Accessible name. Without one the spinner is hidden from screen readers.'],
+        ['target', 'Element | string', '', 'The bar, or the id of one. A selector is tried if no element has that id.'],
+        ['value', 'number | null', '', 'Where to move it. null returns it to the indeterminate animation.'],
+        ['options.max', 'number', '100', 'What counts as complete. Remembered for the calls after it.'],
       ]),
+      p(
+        'The spinner has no props of its own — it is ',
+        code("icon('spinner', { spin: true })"),
+        ', and takes whatever ',
+        code('icon()'),
+        ' takes.',
+      ),
     ],
   })

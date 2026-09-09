@@ -31,7 +31,7 @@ export default () =>
         code('showValue'),
         ' põe um ',
         code('<output>'),
-        ' ao lado da calha com o valor com que a página foi construída. Mantê-lo a par do puxador é uma linha de script teu — esta biblioteca não envia nenhum para isso, e um número que ficasse desatualizado em silêncio seria pior do que número nenhum.',
+        ' ao lado da calha com o valor com que a página foi construída, e o input vai buscar o seu próprio handler no primeiro arrasto, por isso o número segue o puxador. Não há nada a importar: um número que ficasse desatualizado em silêncio seria pior do que número nenhum, por isso este não fica para ti.',
       ),
       demo(`sliderField({
   label: 'Qualidade da imagem',
@@ -42,11 +42,6 @@ export default () =>
   showValue: true,
   help: 'Mais alto é maior e mais lento a construir.',
 })`, { align: 'stretch' }),
-      codeBlock('src/main.js', `for (const range of document.querySelectorAll('.su-slider')) {
-  const output = range.parentElement.querySelector('output')
-
-  if (output) range.addEventListener('input', () => { output.value = range.value })
-}`, 'javascript'),
 
       h2('Cores'),
       demo(`stack({ gap: 'lg' },

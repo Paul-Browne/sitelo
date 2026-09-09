@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code } from '../lib/code.js'
+import { code, codeBlock } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
 import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
 
@@ -71,6 +71,21 @@ export default () =>
       demo(`badge({ content: 4, label: '4 unread messages' },
   button({ variant: 'soft', color: 'neutral' }, 'Inbox'),
 )`),
+
+      h2('Changing the count'),
+      p(
+        'A count is the number on a page most likely to change while it is open. ',
+        code('setBadge()'),
+        ' clamps it to ',
+        code('max'),
+        ' the way the server did, keeps the announced text with it, and drops an emptied badge out of the accessibility tree — which is how a badge disappears.',
+      ),
+      p('The announced text is the site’s prose, so pass it whenever the badge has one:'),
+      codeBlock('Anywhere', `button({ onclick: "import('/su/badge.js').then(m=>m.set('inbox',0))" }, 'Mark all read')`, 'javascript'),
+      p('Or from your own module, when there is already one running:'),
+      codeBlock('src/main.js', `import { setBadge } from 'sitelo/ui/client'
+
+setBadge('inbox', 7, { label: '7 unread messages' })`, 'javascript'),
 
       h2('Props'),
       propsTable([

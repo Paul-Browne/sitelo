@@ -108,8 +108,14 @@ export function badge(...args) {
       {
         class: cx('su-badge', dot && 'su-badge--dot', colorClass(color, 'danger')),
         ...(!label && (dot || display === '') ? { 'aria-hidden': 'true' } : {}),
+        // A count that is not the default clamp is written down for
+        // `/su/badge.js`, which otherwise has no way to know where a
+        // number it is given turns into `max+`.
+        ...(Number(max) === 99 ? {} : { 'data-su-badge-max': max }),
       },
-      label ? span({ 'aria-hidden': 'true' }, display) : display,
+      // Always a span, never a bare text node: it is what the runtime
+      // writes the new count into, and it has to be there to be found.
+      span({ 'data-su-badge-value': '', ...(label ? { 'aria-hidden': 'true' } : {}) }, display),
       label ? span({ class: 'su-visually-hidden' }, label) : '',
     ),
   )

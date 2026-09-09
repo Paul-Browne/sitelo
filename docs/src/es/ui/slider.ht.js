@@ -31,7 +31,7 @@ export default () =>
         code('showValue'),
         ' pone un ',
         code('<output>'),
-        ' junto al carril con el valor con el que se compiló la página. Mantenerlo al día con el pulgar es una línea de tu propio script: esta biblioteca no envía ninguno para eso, y un número que se quedara obsoleto en silencio sería peor que no tener número.',
+        ' junto al carril con el valor con el que se compiló la página, y el input va a buscar su propio handler en el primer arrastre, así que el número sigue al pulgar. No hay nada que importar: un número que se quedara obsoleto en silencio sería peor que no tener número, así que este no se te deja a ti.',
       ),
       demo(`sliderField({
   label: 'Calidad de imagen',
@@ -42,11 +42,6 @@ export default () =>
   showValue: true,
   help: 'Más alto pesa más y hace la compilación más lenta.',
 })`, { align: 'stretch' }),
-      codeBlock('src/main.js', `for (const range of document.querySelectorAll('.su-slider')) {
-  const output = range.parentElement.querySelector('output')
-
-  if (output) range.addEventListener('input', () => { output.value = range.value })
-}`, 'javascript'),
 
       h2('Colores'),
       demo(`stack({ gap: 'lg' },

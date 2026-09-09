@@ -17,7 +17,7 @@ export default () =>
         ' on its own — a site that is happy following the operating system needs nothing on this page. The toggle is for letting a reader override that.',
       ),
       p(
-        'It is one of the four components that need a script, because the choice lives in ',
+        'It is one of the five components that need a script, because the choice lives in ',
         code('localStorage'),
         ' and only a script can read it. The button fetches that script itself, on the first press.',
       ),

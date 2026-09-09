@@ -31,7 +31,7 @@ export default () =>
         code('showValue'),
         ' place un ',
         code('<output>'),
-        ' à côté de la piste, portant la valeur avec laquelle la page a été construite. Le tenir en phase avec le curseur, c’est une ligne de votre propre script — cette bibliothèque n’en embarque aucune pour ça, et un nombre qui se périmerait en silence serait pire que pas de nombre du tout.',
+        ' à côté de la piste, portant la valeur avec laquelle la page a été construite, et l’input va chercher son propre gestionnaire au premier glissement : le nombre suit donc le curseur. Rien à importer — un nombre qui se périmerait en silence serait pire que pas de nombre du tout, alors celui-là ne vous est pas laissé.',
       ),
       demo(`sliderField({
   label: 'Qualité d’image',
@@ -42,11 +42,6 @@ export default () =>
   showValue: true,
   help: 'Plus haut, c’est plus lourd et plus lent à construire.',
 })`, { align: 'stretch' }),
-      codeBlock('src/main.js', `for (const range of document.querySelectorAll('.su-slider')) {
-  const output = range.parentElement.querySelector('output')
-
-  if (output) range.addEventListener('input', () => { output.value = range.value })
-}`, 'javascript'),
 
       h2('Couleurs'),
       demo(`stack({ gap: 'lg' },

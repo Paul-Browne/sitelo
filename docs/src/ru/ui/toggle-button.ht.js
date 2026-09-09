@@ -16,9 +16,11 @@ export default () =>
         '. Полужирный в текстовом редакторе, применённый фильтр, открытая панель.',
       ),
       p(
-        'Ни скрытого инпута, ни скрипта за ней нет: на статической странице кнопка-переключатель ',
-        code('показывает'),
-        ' состояние, а не меняет его. Навесьте свой обработчик — или возьмите ',
+        'Скрытого инпута за ней нет: ',
+        code('aria-pressed'),
+        ' — это и есть всё состояние, поэтому отрисованный на сервере переключатель показывает настройку, а меняет её ',
+        code('setPressed()'),
+        '. Возьмите ',
         code('checkbox()'),
         ', если место элемента в форме, и ',
         code('toggle()'),
@@ -83,18 +85,19 @@ export default () =>
 
       h2('Заставить её что-то делать'),
       p(
-        'Один обработчик переворачивает атрибут; оформление следует за ним.',
+        'Один вызов переворачивает атрибут; оформление следует за ним. Внутри ',
+        code('toggleGroup()'),
+        ' с одним выбором он заодно отпускает соседей.',
       ),
-      codeBlock('src/main.js', `for (const button of document.querySelectorAll('[aria-pressed]')) {
-  button.addEventListener('click', () => {
-    const on = button.getAttribute('aria-pressed') === 'true'
-    button.setAttribute('aria-pressed', String(!on))
-  })
-}`, 'javascript'),
+      codeBlock('Где угодно', `toggleButton({ onclick: "import('/su/pressed.js').then(m=>m.set(this))" }, 'Bold')`, 'javascript'),
+      p('Или из вашего собственного модуля, если он и так уже работает:'),
+      codeBlock('src/main.js', `import { setPressed } from 'sitelo/ui/client'
+
+setPressed('bold')`, 'javascript'),
 
       h2('Пропсы'),
       propsTable([
-        ['pressed', 'boolean', 'false', 'Выставляет aria-pressed. Скрипта за этим нет.'],
+        ['pressed', 'boolean', 'false', 'Выставляет aria-pressed. Дальше его меняет setPressed().'],
         ['variant', "'outline' | 'ghost' | 'soft'", "'outline'", 'Как выглядит ненажатая кнопка.'],
         ['size', "'sm' | 'md' | 'lg'", "'md'", 'Та же шкала, что и у button().'],
         ['disabled', 'boolean', 'false', 'Отключает кнопку.'],

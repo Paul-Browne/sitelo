@@ -16,9 +16,11 @@ export default () =>
         '. Le gras dans un éditeur de texte, un filtre appliqué, un panneau affiché.',
       ),
       p(
-        'Il n’y a ni input caché ni script derrière : sur une page statique, un bouton bascule ',
-        code('montre'),
-        ' un état plutôt qu’il n’en change un. Ajoutez votre propre écouteur, ou prenez ',
+        'Il n’y a pas d’input caché derrière : ',
+        code('aria-pressed'),
+        ' est tout l’état, donc une bascule rendue côté serveur montre un réglage, et ',
+        code('setPressed()'),
+        ' est ce qui le change. Prenez ',
         code('checkbox()'),
         ' quand cela appartient à un formulaire, et ',
         code('toggle()'),
@@ -83,18 +85,19 @@ export default () =>
 
       h2('Lui faire faire quelque chose'),
       p(
-        'Un seul écouteur retourne l’attribut ; le style suit.',
+        'Un appel retourne l’attribut ; le style suit. Dans un ',
+        code('toggleGroup()'),
+        ' à choix unique, il relâche aussi ses voisins.',
       ),
-      codeBlock('src/main.js', `for (const button of document.querySelectorAll('[aria-pressed]')) {
-  button.addEventListener('click', () => {
-    const on = button.getAttribute('aria-pressed') === 'true'
-    button.setAttribute('aria-pressed', String(!on))
-  })
-}`, 'javascript'),
+      codeBlock('N’importe où', `toggleButton({ onclick: "import('/su/pressed.js').then(m=>m.set(this))" }, 'Bold')`, 'javascript'),
+      p('Ou depuis votre propre module, quand il y en a déjà un qui tourne :'),
+      codeBlock('src/main.js', `import { setPressed } from 'sitelo/ui/client'
+
+setPressed('bold')`, 'javascript'),
 
       h2('Props'),
       propsTable([
-        ['pressed', 'boolean', 'false', 'Pose aria-pressed. Il n’y a aucun script derrière.'],
+        ['pressed', 'boolean', 'false', 'Pose aria-pressed. Ensuite, setPressed() le change.'],
         ['variant', "'outline' | 'ghost' | 'soft'", "'outline'", 'L’allure du bouton non enfoncé.'],
         ['size', "'sm' | 'md' | 'lg'", "'md'", 'La même échelle que button().'],
         ['disabled', 'boolean', 'false', 'Désactive le bouton.'],

@@ -3,7 +3,6 @@ import {
   div,
   em,
   fragment,
-  script,
   span,
   strong,
   table,
@@ -21,14 +20,17 @@ import { DEFAULT_LOCALE } from './i18n.js'
 /**
  * Everything a UI page needs in its head.
  *
- * The stylesheet is inline, exactly as a reader would add it to their
- * own page — so the demos here are styled by the same bytes the docs
- * tell them to ship. The script is sitelo-ui's optional runtime, which
- * only four components ask for; it is loaded here so those demos are
- * genuinely interactive rather than pictures of themselves.
+ * The stylesheet, and nothing else. It is inline, exactly as a reader
+ * would add it to their own page, so the demos here are styled by the
+ * same bytes the docs tell them to ship.
+ *
+ * There is no script: every interactive demo on these pages renders its
+ * own `import('/su/…')` into an event attribute, which is the whole
+ * point the pages are making. A page that had to load a bundle to show
+ * that off would be arguing against itself.
  */
 export function uiHead() {
-  return [ui.styles(), script({ type: 'module', src: '/ui-client.js' })]
+  return ui.styles()
 }
 
 /*

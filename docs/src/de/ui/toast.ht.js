@@ -32,42 +32,40 @@ body(
   toasts(),
 )`, 'javascript'),
       p(
-        'Das ist der eine Teil des Runtimes, den nichts auf der Seite für dich auslöst — also der eine Teil, den du selbst importierst:',
+        'Das ist der eine Teil des Runtimes, den nichts auf der Seite für dich auslöst — also der eine Teil, den du selbst erreichst, aus einem Event-Attribut heraus und ohne irgendetwas zu bündeln:',
       ),
+      codeBlock('Irgendwo', `button({ onclick: "import('/su/toast.js').then(m=>m.toast('Gespeichert.',{color:'success'}))" }, 'Speichern')`, 'javascript'),
+      p('Oder aus deinem eigenen Modul, wenn ohnehin schon eines läuft:'),
       codeBlock('src/main.js', `import { toast } from 'sitelo/ui/client'
 
-document.querySelector('#save').addEventListener('click', () => {
-  toast('Gespeichert.', { color: 'success' })
-})`, 'javascript'),
-      p('Oder erreiche ihn so, wie es die Komponenten tun, und überspring das Bundle ganz:'),
-      codeBlock('Irgendwo', `button({ onclick: "import('/su/toast.js').then(m=>m.toast('Gespeichert.'))" }, 'Speichern')`, 'javascript'),
+toast('Gespeichert.', { color: 'success' })`, 'javascript'),
 
       h2('Probier es aus'),
       p(
         'Diese Seite rendert einen ',
         code('toasts()'),
-        '-Bereich und lädt das Runtime, die Buttons unten erzeugen also echte Toasts — unten rechts.',
+        '-Bereich, und die Buttons unten holen sich das Runtime selbst — sie erzeugen also echte Toasts, unten rechts. Geladen wird nichts, bis du einen drückst.',
       ),
       demo(`stack({ direction: 'row', gap: 'sm', wrap: true },
   button({
     variant: 'soft',
     color: 'success',
-    onclick: "window.siteloUiToast && window.siteloUiToast('Gespeichert.', 'success')",
+    onclick: "import('/su/toast.js').then(m=>m.toast('Gespeichert.',{color:'success'}))",
   }, 'Success'),
   button({
     variant: 'soft',
     color: 'warning',
-    onclick: "window.siteloUiToast && window.siteloUiToast('Zwei Seiten haben keine Meta-Beschreibung.', 'warning')",
+    onclick: "import('/su/toast.js').then(m=>m.toast('Zwei Seiten haben keine Meta-Beschreibung.',{color:'warning'}))",
   }, 'Warning'),
   button({
     variant: 'soft',
     color: 'danger',
-    onclick: "window.siteloUiToast && window.siteloUiToast('Der Build ist fehlgeschlagen. Sieh in den Linkbericht.', 'danger')",
+    onclick: "import('/su/toast.js').then(m=>m.toast('Der Build ist fehlgeschlagen. Sieh in den Linkbericht.',{color:'danger'}))",
   }, 'Danger'),
   button({
     variant: 'soft',
     color: 'neutral',
-    onclick: "window.siteloUiToast && window.siteloUiToast('Dieser bleibt, bis du ihn schließt.', 'neutral', 0)",
+    onclick: "import('/su/toast.js').then(m=>m.toast('Dieser bleibt, bis du ihn schließt.',{color:'neutral',duration:0}))",
   }, 'Bis zum Schließen'),
 )`),
       // Die Live-Region, in die die Buttons dieser Seite anhängen. Sie ist
