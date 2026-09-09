@@ -24,45 +24,20 @@
  * attribute — and that id is the handle everything here takes.
  */
 
-/** Resolve a target: an element, an id, or failing that a selector. */
-function find(target) {
-  if (target == null) return null
-  if (typeof target !== 'string') return target
-
-  const byId = document.getElementById(target)
-
-  if (byId) return byId
-
-  /*
-   * An id that matched nothing is tried as a selector, because `set('#a')`
-   * and `set('.su-progress')` are both things a caller will reasonably
-   * write. A string that is neither throws rather than returning null,
-   * so the fallback has to be guarded.
-   */
-  try {
-    return document.querySelector(target)
-  } catch {
-    return null
-  }
-}
+import { limit, part } from './helpers.js'
 
 /**
  * The pieces of one bar: the element the value is announced on, the one
  * it is drawn on, and the label span that spells it out.
  */
 function parts(target) {
-  const node = find(target)
-
-  if (!node) return null
-
-  const bar = node.classList?.contains('su-progress-bar')
-    ? node
-    : node.querySelector?.('.su-progress-bar')
+  const bar = part(target, 'su-progress-bar')
 
   if (!bar) return null
 
-  // Aiming at the bar itself is allowed, so the wrapper may be above it.
-  const root = node === bar ? (node.closest?.('.su-progress') ?? node) : node
+  // Aiming at the bar itself is allowed, so the wrapper may be above it —
+  // and when the caller aimed at the wrapper, this walks back to the same one.
+  const root = bar.closest?.('.su-progress') ?? bar
 
   return {
     bar,
@@ -71,25 +46,13 @@ function parts(target) {
   }
 }
 
-/**
- * What counts as complete, in the order the answer is most likely to be
- * right: what this call said, what a previous one recorded, what the
- * server announced, and 100.
- */
+/** What counts as complete on this bar, however it came to be known. */
 function scaleOf(bar, max) {
-  for (const candidate of [
+  return limit(
     max,
-    bar.getAttribute('data-su-progress-max'),
-    bar.getAttribute('aria-valuemax'),
-  ]) {
-    const numeric = Number(candidate)
-
-    if (candidate != null && candidate !== '' && Number.isFinite(numeric) && numeric > 0) {
-      return numeric
-    }
-  }
-
-  return 100
+    [bar.getAttribute('data-su-progress-max'), bar.getAttribute('aria-valuemax')],
+    100,
+  )
 }
 
 /**

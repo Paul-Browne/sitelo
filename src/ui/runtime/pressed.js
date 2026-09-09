@@ -27,21 +27,7 @@
  * browser owns its state.
  */
 
-/** Resolve a target: an element, an id, or failing that a selector. */
-function find(target) {
-  if (target == null) return null
-  if (typeof target !== 'string') return target
-
-  const byId = document.getElementById(target)
-
-  if (byId) return byId
-
-  try {
-    return document.querySelector(target)
-  } catch {
-    return null
-  }
-}
+import { find } from './helpers.js'
 
 /**
  * Press a toggle button, or let go of it.

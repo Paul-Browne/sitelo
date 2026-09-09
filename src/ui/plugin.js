@@ -48,6 +48,49 @@ function eventAttributes(html) {
   return [...html.matchAll(/\son[a-z]+="([^"]*)"/g)].map(([, value]) => value);
 }
 
+/**
+ * The runtime modules `name` imports, and what those import in turn.
+ *
+ * An event attribute can only name the module it calls into; a module
+ * that shares code with its neighbours pulls the rest in itself, and
+ * copying the named one alone would leave the browser asking for a file
+ * that is not there. Restricted to {@link RUNTIME_MODULES} for the same
+ * reason the dev middleware is: a name is not a path.
+ *
+ * Anchored to the start of a line, so an `import` written out inside a
+ * doc comment's example is not mistaken for one the module makes — the
+ * same distinction {@link eventAttributes} draws between a handler and
+ * a code sample that shows one.
+ *
+ * @param {Iterable<string>} named
+ * @returns {Set<string>}
+ */
+function withImports(named) {
+  const found = new Set();
+  const pending = [...named];
+
+  while (pending.length) {
+    const name = pending.pop();
+
+    if (found.has(name)) continue;
+
+    found.add(name);
+
+    const source = fs.readFileSync(
+      path.join(RUNTIME_DIR, `${name}.js`),
+      'utf8',
+    );
+
+    for (const [, dependency] of source.matchAll(
+      /^(?:import|export)\s[^\n]*?from '\.\/([\w-]+)\.js'/gm,
+    )) {
+      if (RUNTIME_MODULES.includes(dependency)) pending.push(dependency);
+    }
+  }
+
+  return found;
+}
+
 /** Every `.html` file under `dir`, as absolute paths. */
 function htmlFiles(dir) {
   const found = [];
@@ -168,7 +211,7 @@ export function uiRuntime({ base } = {}) {
 
       fs.mkdirSync(dir, { recursive: true });
 
-      for (const name of wanted) {
+      for (const name of withImports(wanted)) {
         fs.copyFileSync(
           path.join(RUNTIME_DIR, `${name}.js`),
           path.join(dir, `${name}.js`),

@@ -232,3 +232,28 @@ test('uiClientPrefix reads a base published to the environment', () => {
     restoreEnv(before);
   }
 });
+
+test('the build copies what a module imports, which no attribute names', () => {
+  // An event attribute can only name the module it calls into. A module
+  // that shares code with its neighbours pulls the rest in itself, and
+  // copying the named one alone would leave the browser asking for a
+  // file that is not on disk.
+  const html = `<button onclick="import('/su/badge.js').then(m=>m.set('x',1))">n</button>`;
+
+  assert.deepEqual(copiedFor(html), ['badge.js', 'helpers.js']);
+});
+
+test('a shared dependency is copied once, however many modules want it', () => {
+  const html = [
+    `<button onclick="import('/su/badge.js').then(m=>m.set('x',1))">n</button>`,
+    `<button onclick="import('/su/steps.js').then(m=>m.set('y',1))">n</button>`,
+  ].join('');
+
+  assert.deepEqual(copiedFor(html), ['badge.js', 'helpers.js', 'steps.js']);
+});
+
+test('a module that imports nothing still brings nothing along', () => {
+  const html = `<button onclick="import('/su/alert.js').then(m=>m.dismiss(this))">x</button>`;
+
+  assert.deepEqual(copiedFor(html), ['alert.js']);
+});

@@ -702,12 +702,12 @@ attribute:
 ```
 
 So there is nothing to add to an entry file. sitelo's plugin serves
-those modules from `/su/` in dev and copies the ones your pages
-reference into the build; each is well under a kilobyte, none is
-fetched before the first interaction, and every component renders
-correctly until it is — panel tabs show the panel the server marked
-active, menus open and close on their own, the dismiss button does
-nothing.
+those modules from `/su/` in dev, and copies the ones your pages
+reference — plus the handful of lines they share between them — into
+the build; each is well under a kilobyte, none is fetched before the
+first interaction, and every component renders correctly until it is —
+panel tabs show the panel the server marked active, menus open and
+close on their own, the dismiss button does nothing.
 
 Deploying under a sub-path, or hosting the modules elsewhere:
 

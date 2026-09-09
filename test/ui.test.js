@@ -697,15 +697,33 @@ test('RUNTIME_MODULES lists exactly what is in runtime/', () => {
   assert.deepEqual([...RUNTIME_MODULES].sort(), onDisk);
 });
 
-test('runtime modules stand alone', () => {
-  // They are copied into the build one file at a time, by name — an
-  // import between them would resolve to a file that was never copied.
+test('runtime modules import only their own neighbours', () => {
+  // The plugin copies a named module and follows its imports, so it can
+  // only resolve what lives beside it. A bare specifier or a path out of
+  // `runtime/` would resolve to a file that was never copied.
   for (const name of RUNTIME_MODULES) {
-    assert.ok(
-      !/^\s*import\s/m.test(runtimeSource(name)),
-      `${name}.js imports nothing`,
-    );
+    // Anchored, so the `import` shown inside a doc comment's example is
+    // not mistaken for one the module actually makes.
+    for (const [, specifier] of runtimeSource(name).matchAll(/^(?:import|export)\s[^\n]*?from '([^']+)'/gm)) {
+      const neighbour = specifier.match(/^\.\/([\w-]+)\.js$/);
+
+      assert.ok(neighbour, `${name}.js imports "${specifier}", which is not a neighbour`);
+      assert.ok(
+        RUNTIME_MODULES.includes(neighbour[1]),
+        `${name}.js imports "${specifier}", which the plugin will not copy`,
+      );
+    }
   }
+});
+
+test('a module nothing names is still reachable, or it is dead weight', () => {
+  // `helpers` is the one module no event attribute can name. It earns
+  // its place by being imported; if it ever is not, it should go.
+  const importers = RUNTIME_MODULES.filter((name) =>
+    runtimeSource(name).includes("from './helpers.js'"),
+  );
+
+  assert.ok(importers.length > 1, 'helpers.js is shared, not a home for one caller');
 });
 
 test('configureUiClient() moves every handler to the new base', () => {

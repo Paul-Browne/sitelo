@@ -21,29 +21,11 @@
  * ```
  */
 
-/** Resolve a target: an element, an id, or failing that a selector. */
-function find(target) {
-  if (target == null) return null
-  if (typeof target !== 'string') return target
-
-  const byId = document.getElementById(target)
-
-  if (byId) return byId
-
-  try {
-    return document.querySelector(target)
-  } catch {
-    return null
-  }
-}
+import { limit, part } from './helpers.js'
 
 /** The badge itself, wherever the caller aimed — root, badge, or id. */
 function parts(target) {
-  const node = find(target)
-
-  if (!node) return null
-
-  const badge = node.classList?.contains('su-badge') ? node : node.querySelector?.('.su-badge')
+  const badge = part(target, 'su-badge')
 
   if (!badge) return null
 
@@ -104,8 +86,7 @@ export function set(target, content, { max, label } = {}) {
 
   const { badge, value } = found
   const numeric = Number(content)
-  const limit = Number(max ?? badge.getAttribute('data-su-badge-max') ?? 99)
-  const ceiling = Number.isFinite(limit) ? limit : 99
+  const ceiling = limit(max, [badge.getAttribute('data-su-badge-max')], 99)
 
   const display =
     Number.isFinite(numeric) && content !== '' && numeric > ceiling

@@ -18,10 +18,17 @@
 /** Where the plugin serves `runtime/` from unless told otherwise. */
 export const DEFAULT_UI_CLIENT_BASE = '/su/'
 
-/** Every module under `runtime/`, which is what the plugin will serve. */
+/**
+ * Every module under `runtime/`, which is what the plugin will serve.
+ *
+ * Not all of them are things a handler names: `helpers` is imported by
+ * the ones that are, and rides along because the plugin follows those
+ * imports when it copies.
+ */
 export const RUNTIME_MODULES = [
   'alert',
   'badge',
+  'helpers',
   'menu',
   'pressed',
   'progress',

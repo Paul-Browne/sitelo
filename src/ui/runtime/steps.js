@@ -24,31 +24,13 @@
  * know how a completed step is drawn.
  */
 
+import { part } from './helpers.js'
+
 const STATES = ['su-step--complete', 'su-step--current', 'su-step--upcoming']
-
-/** Resolve a target: an element, an id, or failing that a selector. */
-function find(target) {
-  if (target == null) return null
-  if (typeof target !== 'string') return target
-
-  const byId = document.getElementById(target)
-
-  if (byId) return byId
-
-  try {
-    return document.querySelector(target)
-  } catch {
-    return null
-  }
-}
 
 /** The steps of one flow, in order. */
 function items(target) {
-  const node = find(target)
-
-  if (!node) return null
-
-  const list = node.classList?.contains('su-steps') ? node : node.querySelector?.('.su-steps')
+  const list = part(target, 'su-steps')
 
   return list ? [...list.querySelectorAll('.su-step')] : null
 }
