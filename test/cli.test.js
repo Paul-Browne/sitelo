@@ -97,6 +97,75 @@ test('sitelo.config.js vite options are applied', async (t) => {
   assert.equal(fs.existsSync(path.join(distDir, 'index.html')), false);
 });
 
+test('rolldown plugin timings are off by default and re-enablable', async (t) => {
+  const configPath = path.join(fixtureDir, 'sitelo.config.js');
+  const originalConfig = fs.readFileSync(configPath, 'utf8');
+  const probePath = path.join(fixtureDir, 'checks-probe.mjs');
+  const outPath = path.join(fixtureDir, 'checks.json');
+
+  const cleanup = () => {
+    fs.writeFileSync(configPath, originalConfig);
+    fs.rmSync(probePath, { force: true });
+    fs.rmSync(outPath, { force: true });
+    fs.rmSync(distDir, { recursive: true, force: true });
+    fs.rmSync(path.join(fixtureDir, '.sitelo'), {
+      recursive: true,
+      force: true,
+    });
+  };
+
+  cleanup();
+  t.after(cleanup);
+
+  // The warning itself only fires on a build slow enough to trip rolldown's
+  // own threshold, which this fixture never is. So assert on the option Vite
+  // resolves — that is the thing sitelo controls.
+  fs.writeFileSync(
+    probePath,
+    `import fs from 'node:fs';
+
+export const probe = (out) => ({
+  name: 'checks-probe',
+  configResolved(config) {
+    fs.writeFileSync(
+      out,
+      JSON.stringify(config.build.rollupOptions.checks ?? null),
+    );
+  },
+});
+`,
+  );
+
+  const configWith = (overrides) =>
+    `import { probe } from './checks-probe.mjs';
+
+export default {
+  site: 'https://example.com',
+  vite: {
+    plugins: [probe(${JSON.stringify(outPath)})],
+    ${overrides}
+  },
+}
+`;
+
+  fs.writeFileSync(configPath, configWith(''));
+  await runBuild(fixtureDir);
+  assert.deepEqual(JSON.parse(fs.readFileSync(outPath, 'utf8')), {
+    pluginTimings: false,
+  });
+
+  fs.writeFileSync(
+    configPath,
+    configWith('build: { rollupOptions: { checks: { pluginTimings: true } } },'),
+  );
+  await runBuild(fixtureDir);
+  assert.deepEqual(
+    JSON.parse(fs.readFileSync(outPath, 'utf8')),
+    { pluginTimings: true },
+    'sitelo.config.js `vite` should override the sitelo default',
+  );
+});
+
 test('sitelo build with pagefind: true indexes and syncs to public/', async (t) => {
   const configPath = path.join(fixtureDir, 'sitelo.config.js');
   const originalConfig = fs.readFileSync(configPath, 'utf8');

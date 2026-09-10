@@ -145,6 +145,15 @@ export default () =>
         code('--port'),
         ') priment sur les deux.',
       ),
+      p(
+        'Les builds sitelo définissent ',
+        code('build.rollupOptions.checks.pluginTimings: false'),
+        '. Sinon Rolldown signale que les hooks de plugin dominent le build, ce qui sur un site sitelo est toujours vrai — générer les pages, c’est le build — et il nomme donc le même plugin à chaque exécution. Passez-le à ',
+        code('true'),
+        ' sous ',
+        code('vite'),
+        ' pour profiler vos propres plugins.',
+      ),
       h2('Si vous avez déjà un vite.config.js'),
       p(
         'Toujours pris en charge — soit des options Vite uniquement, soit un contrôle complet du plugin :',

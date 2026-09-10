@@ -155,6 +155,15 @@ export default () =>
         code('--port'),
         ') tienen prioridad sobre ambas.',
       ),
+      p(
+        'Las compilaciones de sitelo ponen ',
+        code('build.rollupOptions.checks.pluginTimings: false'),
+        '. Si no, Rolldown avisa de que los hooks de plugin dominan la compilación, algo que en un sitio sitelo siempre es cierto — generar las páginas es la compilación — y acaba nombrando el mismo plugin en cada ejecución. Ponlo en ',
+        code('true'),
+        ' bajo ',
+        code('vite'),
+        ' para perfilar tus propios plugins.',
+      ),
       h2('Si ya tienes un vite.config.js'),
       p(
         'Sigue siendo compatible — o solo opciones de Vite, o control total del plugin:',

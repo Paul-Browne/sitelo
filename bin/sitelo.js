@@ -647,8 +647,22 @@ function buildInlineConfig(cli, command, viteFromSitelo = {}) {
     });
   }
 
-  // sitelo.config.js `vite` first; explicit CLI flags override.
-  return mergeConfig(viteFromSitelo, cliLayer);
+  /*
+   * Rolldown reports when plugin hooks dominate a build. In sitelo they
+   * always do — vite-plugin-html-pages generating every page *is* the build
+   * — so the report names the same plugin on every run and never becomes a
+   * finding. Sitelo's own phase timings (`vite 2.5s | pagefind 1.9s`) cover
+   * the same ground without the noise.
+   *
+   * A defaults layer, not a fixed value: anyone profiling their own plugins
+   * turns it back on with `vite.build.rollupOptions.checks.pluginTimings`.
+   */
+  const siteloDefaults = {
+    build: { rollupOptions: { checks: { pluginTimings: false } } },
+  };
+
+  // sitelo defaults first, then sitelo.config.js `vite`; CLI flags override.
+  return mergeConfig(mergeConfig(siteloDefaults, viteFromSitelo), cliLayer);
 }
 
 async function runDev(cli) {

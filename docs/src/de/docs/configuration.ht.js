@@ -145,6 +145,15 @@ export default () =>
         code('--port'),
         ') haben Vorrang vor beidem.',
       ),
+      p(
+        'sitelo-Builds setzen ',
+        code('build.rollupOptions.checks.pluginTimings: false'),
+        '. Sonst meldet Rolldown, dass Plugin-Hooks den Build dominieren — auf einer sitelo-Seite trifft das immer zu, denn das Erzeugen der Seiten ist der Build — und nennt bei jedem Lauf dasselbe Plugin. Zum Profilen eigener Plugins unter ',
+        code('vite'),
+        ' auf ',
+        code('true'),
+        ' setzen.',
+      ),
       h2('Vorhandene vite.config.js'),
       p(
         'Wird weiterhin unterstützt — entweder nur Vite-Optionen oder volle Kontrolle über das Plugin:',
