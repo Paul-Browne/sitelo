@@ -87,6 +87,22 @@ export function alert(...args) {
  * because a progressbar role with no name is both useless to a screen
  * reader and invalid. Exported as both `progress` and `progressBar`.
  *
+ * A `<span>` in a `<div>` rather than a native `<progress>`, which
+ * makes this the odd one out in a library that takes `<details>`,
+ * `popover` and a real range input wherever it can. Determinate, a
+ * native bar styles up identically. Indeterminate, it has nothing to
+ * show: styling one at all means `appearance: none`, that takes the
+ * platform's animation with it, `::-webkit-progress-value` is not
+ * rendered while there is no value, and the element's own content is
+ * legacy fallback no browser draws — so there is nowhere to put a
+ * stripe of our own. It would be the platform's look or a dead track,
+ * and no way to stand the animation down under
+ * `prefers-reduced-motion`. Two elements buy the state back.
+ *
+ * The bill for that is the `role` and `aria-value*` attributes written
+ * out below, and the runtime that keeps them in step — all of which a
+ * native element would carry for free and could never drift from.
+ *
  * @param {object} [props] - `{ value, max, color, label, showValue, height }`
  * @returns {string}
  */
