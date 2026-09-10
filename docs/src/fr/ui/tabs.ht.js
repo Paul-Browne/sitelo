@@ -6,7 +6,7 @@ export default () =>
   uiLayout({
     title: 'Onglets',
     description:
-      'Deux formes : des liens, une page par onglet ; ou des panneaux qui s’échangent sur place.',
+      'Trois formes : des liens, une page par onglet ; des panneaux qui s’échangent sur place ; ou des panneaux pilotés par l’URL.',
     activeHref: '/fr/ui/tabs',
     extraHead: uiHead(),
     children: [
@@ -17,27 +17,33 @@ export default () =>
         code('aria-current'),
         ' sur l’onglet actif. Donnez à chaque élément un ',
         code('panel'),
-        ' et ils deviennent une vraie tablist dont les panneaux s’échangent sur place.',
+        ' et ils deviennent un groupe de boutons radio dont les panneaux s’échangent sur place, toujours sans script.',
       ),
       p(
         'Sur un site statique, la forme en liens est généralement la bonne : elle donne une URL à chaque vue et survit à un JavaScript désactivé. Prenez les panneaux quand le contenu est petit et que basculer ne devrait pas coûter une navigation.',
       ),
 
       h2('Onglets en liens'),
-      p('Aucun script. L’onglet actif est celui que vous marquez.'),
+      p(
+        'Ce sont bien des liens : cliquer navigue. Le soulignement vient d’',
+        code('active'),
+        ' ou de ',
+        code('value'),
+        ' à la construction, pas du clic — chaque page marque donc son propre onglet. Un onglet-lien ne réagit pas tout seul à l’URL : pour cela, basculez sur place avec les panneaux ci-dessous.',
+      ),
       demo(`tabs({
   items: [
-    { label: 'Vue d’ensemble', href: '#overview', active: true },
-    { label: 'Installation', href: '#installation' },
-    { label: 'API', href: '#api' },
+    { label: 'Fil d’Ariane', href: '/fr/ui/breadcrumbs' },
+    { label: 'Onglets', href: '/fr/ui/tabs', active: true },
+    { label: 'Pagination', href: '/fr/ui/pagination' },
   ],
 })`, { align: 'stretch' }),
 
       h2('Onglets à panneaux'),
       p(
-        'Chaque onglet importe son gestionnaire au premier clic — ',
-        code("onclick=\"import('/su/tabs.js').then(m=>m.select(this))\""),
-        ' — donc ceux-ci basculent vraiment, touches fléchées comprises, sans que cette page n’importe quoi que ce soit. Tant que ce module n’est pas arrivé, le panneau que le serveur a marqué actif est tout simplement celui qui s’affiche.',
+        'L’onglet est un ',
+        code('<label>'),
+        ' pour un bouton radio que la feuille de styles garde hors de vue, et le panneau qui suit le radio coché est celui que le CSS affiche. Cette page n’importe rien : basculer, et se déplacer aux flèches entre les onglets, un groupe de boutons radio le fait déjà.',
       ),
       demo(`tabs({
   value: 'install',
@@ -45,6 +51,27 @@ export default () =>
     { id: 'install', label: 'Installer', panel: card({ variant: 'flat' }, cardBody(code('npm install sitelo javascript-to-html'))) },
     { id: 'use', label: 'Utiliser', panel: card({ variant: 'flat' }, cardBody(code("import * as ui from 'sitelo/ui'"))) },
     { id: 'build', label: 'Construire', panel: card({ variant: 'flat' }, cardBody(code('sitelo build'))) },
+  ],
+})`, { align: 'stretch' }),
+
+      h2('Onglets partageables'),
+      p(
+        'Donnez en plus aux éléments à panneau un ',
+        code('href'),
+        ' de fragment et les radios cèdent la place à des liens : l’URL nomme l’onglet, ',
+        code(':target'),
+        ' le désigne, le panneau qui le suit s’affiche, et le choix survit à un rechargement, à un lien partagé et au bouton retour. L’id est sur l’onglet et non sur le panneau, car le navigateur amène en haut de la fenêtre ce que l’URL nomme : sur le panneau, il pousserait les onglets hors de l’écran où vous venez de cliquer. Un seul élément par document peut être ',
+        code(':target'),
+        ', cette forme est donc faite pour un seul jeu d’onglets par page. Le défilement, lui, ne s’annule pas : suivre un fragment, c’est déplacer la fenêtre. On choisit seulement vers quoi elle va et où elle s’arrête — d’où l’id sur l’onglet et son ',
+        code('scroll-margin-block-start'),
+        ', réglé par la prop ',
+        code('scrollMargin'),
+        ' : donnez à un en-tête collant au moins sa propre hauteur.',
+      ),
+      demo(`tabs({
+  items: [
+    { id: 'setup', label: 'Installer', href: '#tab-setup', panel: card({ variant: 'flat' }, cardBody(text({ variant: 'small' }, 'Ce panneau est #tab-setup : copiez l’URL, il revient.'))) },
+    { id: 'deploy', label: 'Déployer', href: '#tab-deploy', panel: card({ variant: 'flat' }, cardBody(text({ variant: 'small' }, 'Et celui-ci est #tab-deploy.'))) },
   ],
 })`, { align: 'stretch' }),
 
@@ -77,7 +104,7 @@ export default () =>
 )`, { align: 'stretch' }),
 
       h2('Beaucoup d’onglets'),
-      p('La liste d’onglets défile horizontalement au lieu de passer à la ligne : la rangée garde donc sa forme sur un téléphone.'),
+      p('La liste d’onglets défile horizontalement au lieu de passer à la ligne : la rangée garde donc sa forme sur un téléphone. Les onglets à panneaux passent à la ligne, eux : chaque panneau doit suivre son propre onglet, il ne reste donc aucune rangée à faire défiler.'),
       demo(`tabs({
   items: [
     'Vue d’ensemble', 'Routage', 'Données', 'Ressources', 'Images', 'Îlots', 'TypeScript', 'CLI', 'Déploiement',
@@ -95,15 +122,15 @@ export default () =>
 
       h2('Accessibilité'),
       p(
-        'La forme à panneaux rend une vraie ',
-        code('role="tablist"'),
-        ' avec ',
+        'La forme à panneaux est un vrai groupe de boutons radio : les onglets sont des ',
+        code('<label>'),
+        ' pour des radios qui partagent un ',
+        code('name'),
+        ', un lecteur d’écran annonce donc lequel sur combien est choisi, et les flèches, Origine et Fin marchent sans rien charger. La forme partageable, elle, n’est que des liens et ne porte pas d’',
+        code('aria-current'),
+        ' : il serait écrit une fois et faux dès le premier clic. Ce n’est délibérément pas une tablist ARIA — ',
         code('aria-selected'),
-        ', ',
-        code('aria-controls'),
-        ' et un ',
-        code('tabindex'),
-        ' tournant. Le script ajoute le déplacement aux flèches, Origine et Fin. La forme en liens n’est délibérément pas une tablist — des liens qui naviguent sont des liens, et leur donner une sémantique d’onglet mentirait sur ce qu’ils font.',
+        ' est écrit une fois, sur le serveur, et le CSS ne peut pas le garder vrai au fil des clics. La forme en liens n’est pas une tablist non plus : des liens qui naviguent sont des liens, et leur donner une sémantique d’onglet mentirait sur ce qu’ils font.',
       ),
 
       h2('Props'),
@@ -112,7 +139,10 @@ export default () =>
         ['value', 'string', '', 'Id de l’élément actif. À défaut, active, puis le premier.'],
         ['variant', "'underline' | 'pills'", "'underline'", 'Comment l’onglet actif est marqué.'],
         ['color', "'primary' | 'neutral' | 'success' | 'warning' | 'danger'", "'primary'", 'Couleur de l’onglet actif.'],
-        ['label', 'string', "'Tabs'", 'Nom accessible de la tablist. Forme à panneaux uniquement.'],
+        ['label', 'string', "'Tabs'", 'Nom accessible du groupe. Forme à panneaux uniquement.'],
+        ['name', 'string', 'id du premier élément', 'Nom du groupe de radios. Utile seulement si une page porte deux jeux d’onglets à panneaux.'],
+        ['href', 'string', '', 'Sur un élément : une page à lier ou, avec panel, le fragment qui le nomme.'],
+        ['scrollMargin', 'Space', "'md'", 'À quelle distance au-dessus de l’onglet la fenêtre s’arrête. Forme :target uniquement.'],
       ]),
     ],
   })

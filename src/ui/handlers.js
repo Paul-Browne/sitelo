@@ -34,7 +34,6 @@ export const RUNTIME_MODULES = [
   'progress',
   'slider',
   'steps',
-  'tabs',
   'theme',
   'toast',
 ]
@@ -100,18 +99,4 @@ export function handler(module, call) {
   const url = `${uiClientBase()}${module}.js`.replaceAll('\\', '\\\\').replaceAll("'", "\\'")
 
   return `import('${url}').then(m=>m.${call})`
-}
-
-/**
- * Keys the tablist handles, tested in the attribute so that
- * `preventDefault()` happens before the module has loaded.
- *
- * Awaiting the import first would let ArrowDown scroll the page out
- * from under the tab it is about to move focus to.
- */
-const TABLIST_KEYS = "/^(Arrow(Left|Right|Up|Down)|Home|End)$/"
-
-/** The `onkeydown` for a tablist: roving focus, without the scroll. */
-export function tablistKeydown() {
-  return `if(${TABLIST_KEYS}.test(event.key)){event.preventDefault();${handler('tabs', 'key(event.target,event.key)')}}`
 }

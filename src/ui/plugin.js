@@ -1,7 +1,7 @@
 /**
  * Serves the files that sitelo-ui's inline event handlers import.
  *
- * The components render `import('/su/tabs.js')` into their own event
+ * The components render `import('/su/menu.js')` into their own event
  * attributes, and an attribute is a string — Vite never sees it, so
  * nothing in the bundler graph will put that file anywhere. This plugin
  * is the other half of the deal: it answers `/su/*.js` in dev, and on a

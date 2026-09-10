@@ -312,7 +312,7 @@ test('tabs() renders links when items have hrefs', () => {
   assert.match(html, /<a class="su-tab" href="\/docs" aria-current="page">/);
 });
 
-test('tabs() renders a tablist when items have panels', () => {
+test('tabs() renders a radio group when items have panels', () => {
   const html = ui.tabs({
     items: [
       { id: 'a', label: 'A', panel: '<p>a</p>' },
@@ -321,10 +321,84 @@ test('tabs() renders a tablist when items have panels', () => {
     value: 'b',
   });
 
-  assert.match(html, /role="tablist"/);
-  assert.match(html, /id="b-tab"[^>]*aria-selected="true"/);
-  assert.match(html, /id="a-panel"[^>]*hidden/);
-  assert.ok(!/id="b-panel"[^>]*hidden/.test(html));
+  assert.match(html, /role="group"/);
+  assert.match(html, /id="b-tab"[^>]*checked/);
+  assert.ok(!/id="a-tab"[^>]*checked/.test(html));
+  assert.ok(!html.includes('import('), 'panel tabs need no script');
+});
+
+test('tabs() drives the panels from the URL when the hrefs are fragments', () => {
+  const html = ui.tabs({
+    items: [
+      { id: 'install', label: 'A', href: '#install', panel: 'PA' },
+      { id: 'use', label: 'B', href: '#use', panel: 'PB' },
+    ],
+  });
+
+  assert.match(html, /class="su-tabs su-tabs--panels su-tabs--target/);
+  assert.ok(!html.includes('<input'), 'links replace the radios');
+  /*
+   * The id is on the tab, not on the panel: the browser scrolls what the
+   * URL names to the top, and naming the panel would put the tabs above
+   * the fold. The panel is whatever follows.
+   */
+  assert.match(html, /<a class="su-tab su-tab--default" id="install" href="#install">/);
+  assert.match(
+    html,
+    /id="install" href="#install">A<\/a><section class="su-tabpanel su-tabpanel--default" id="install-panel" aria-labelledby="install"/,
+  );
+  // aria-current would be written once and be wrong after the first click.
+  assert.ok(!html.includes('aria-current'));
+});
+
+test('tabs({ scrollMargin }) sets where the window stops above a tab', () => {
+  const items = [
+    { id: 'a', label: 'A', href: '#a', panel: 'PA' },
+    { id: 'b', label: 'B', href: '#b', panel: 'PB' },
+  ];
+
+  assert.match(
+    ui.tabs({ scrollMargin: '2xl', items }),
+    /style="--su-tab-scroll-margin: var\(--su-space-2xl\)"/,
+  );
+  assert.match(ui.tabs({ scrollMargin: '4.5rem', items }), /--su-tab-scroll-margin: 4\.5rem/);
+  // Left out, the stylesheet's own default stands.
+  assert.ok(!ui.tabs({ items }).includes('--su-tab-scroll-margin'));
+});
+
+test('tabs() ignores a bare # when deciding on the :target form', () => {
+  const html = ui.tabs({
+    items: [
+      { id: 'a', label: 'A', href: '#', panel: 'PA' },
+      { id: 'b', label: 'B', href: '#', panel: 'PB' },
+    ],
+  });
+
+  assert.ok(!html.includes('su-tabs--target'), 'a bare # names no tab');
+  assert.match(html, /<input class="su-tab-input"/);
+});
+
+test('tabs() only takes the :target form when every panelled tab has a fragment', () => {
+  const html = ui.tabs({
+    items: [
+      { id: 'a', label: 'A', href: '#a', panel: 'PA' },
+      { id: 'b', label: 'B', panel: 'PB' },
+    ],
+  });
+
+  assert.ok(!html.includes('su-tabs--target'));
+  assert.match(html, /<input class="su-tab-input"/);
+});
+
+test('tabs() gives each set of panel tabs its own radio group', () => {
+  // Two sets sharing a name would be one group: checking a tab in the
+  // second would let go of the first, blanking it.
+  const a = ui.tabs({ items: [{ id: 'one', label: 'A', panel: 'x' }] });
+  const b = ui.tabs({ items: [{ id: 'two', label: 'B', panel: 'y' }] });
+
+  assert.match(a, /name="su-one"/);
+  assert.match(b, /name="su-two"/);
+  assert.match(ui.tabs({ name: 'mine', items: [{ label: 'A', panel: 'x' }] }), /name="mine"/);
 });
 
 /* ------------------------------------------------------------------ *
@@ -635,7 +709,6 @@ function handlersIn(html) {
 
 /** One rendering of each component that wires itself to a module. */
 const WIRED = [
-  ['tabs', ui.tabs({ items: [{ id: 'a', label: 'A', panel: 'x' }] })],
   ['alert', ui.alert({ dismissible: true }, 'x')],
   ['themeToggle', ui.themeToggle()],
   ['menu', ui.menu({ trigger: 'x' }, ui.menuItem('y'))],
@@ -760,9 +833,9 @@ test('the dismiss fallback selector matches something a component renders', () =
   );
 });
 
-test('each tab points at a panel that exists, and one panel is visible', () => {
-  // The client resolves aria-controls with getElementById; a mismatch
-  // would leave every panel hidden.
+test('each tab points at a panel that exists, and one is checked', () => {
+  // The stylesheet shows the panel that follows a checked radio, so the
+  // order of the three — radio, label, panel — is what has to hold.
   const html = ui.tabs({
     value: 'b',
     items: [
@@ -773,15 +846,17 @@ test('each tab points at a panel that exists, and one panel is visible', () => {
   });
 
   const controls = [...html.matchAll(/aria-controls="([^"]+)"/g)].map((m) => m[1]);
-  const panelIds = [...html.matchAll(/id="([^"]+)" role="tabpanel"/g)].map((m) => m[1]);
+  const panelIds = [...html.matchAll(/<section class="su-tabpanel" id="([^"]+)"/g)].map((m) => m[1]);
 
   assert.equal(controls.length, 3);
   assert.deepEqual(controls, panelIds);
 
-  const panels = [...html.matchAll(/role="tabpanel"[^>]*>/g)].map((m) => m[0]);
-
-  assert.equal(panels.filter((p) => !p.includes('hidden')).length, 1, 'exactly one visible panel');
-  assert.equal((html.match(/aria-selected="true"/g) || []).length, 1, 'exactly one selected tab');
+  assert.equal((html.match(/checked/g) || []).length, 1, 'exactly one checked tab');
+  assert.match(
+    html,
+    /id="b-tab"[^>]*checked><label class="su-tab" id="b-label" for="b-tab">B<\/label><section class="su-tabpanel" id="b-panel"/,
+    'the checked radio is followed by its label and then its panel',
+  );
 });
 
 test('menu() is a details element that works without script', () => {

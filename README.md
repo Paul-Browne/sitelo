@@ -699,13 +699,17 @@ icon('logo')
 Most components need none. Modals and drawers are `popover` elements,
 so the browser handles opening, the backdrop, click-outside and Escape.
 Accordions are `<details name>`, menus are `<details>`, tooltips are
-CSS.
+CSS, and tabs whose panels swap in place are a radio group — the tab is
+a `<label>`, the panel that follows the checked radio is the one CSS
+shows, and arrow keys move between them because a radio group already
+does. Give those items a fragment `href` as well and the radios become
+links, with `:target` picking the tab and the panel after it, so the
+choice is in the URL and the back button works.
 
-Five things want a script — tabs whose panels swap in place, the close
-button on a dismissible alert, closing a menu on an outside click or
-Escape, the theme toggle, and the `<output>` on a slider that shows its
-value — and each one goes and gets its own. The import is the event
-attribute:
+Four things want a script — the close button on a dismissible alert,
+closing a menu on an outside click or Escape, the theme toggle, and the
+`<output>` on a slider that shows its value — and each one goes and
+gets its own. The import is the event attribute:
 
 ```html
 <!-- rendered by alert({ dismissible: true }) -->
@@ -720,8 +724,7 @@ those modules from `/su/` in dev, and copies the ones your pages
 reference — plus the handful of lines they share between them — into
 the build; each is well under a kilobyte, none is fetched before the
 first interaction, and every component renders correctly until it is —
-panel tabs show the panel the server marked active, menus open and
-close on their own, the dismiss button does nothing.
+menus open and close on their own, the dismiss button does nothing.
 
 Deploying under a sub-path, or hosting the modules elsewhere:
 

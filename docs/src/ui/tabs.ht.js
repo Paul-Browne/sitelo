@@ -7,7 +7,7 @@ export default () =>
   uiLayout({
     title: 'Tabs',
     description:
-      'Two shapes: links, one page per tab; or panels that swap in place.',
+      'Three shapes: links, one page per tab; panels that swap in place; or panels the URL drives.',
     activeHref: '/ui/tabs',
     extraHead: uiHead(),
     children: [
@@ -18,27 +18,33 @@ export default () =>
         code('aria-current'),
         ' on the active one. Give each item a ',
         code('panel'),
-        ' and they become a real tablist whose panels swap in place.',
+        ' and they become a radio group whose panels swap in place, still with no script.',
       ),
       p(
         'On a static site the link form is usually right: it gives each view a URL, and it survives JavaScript being off. Reach for panels when the content is small and switching should not cost a navigation.',
       ),
 
       h2('Link tabs'),
-      p('No script at all. The active tab is whichever one you mark.'),
+      p(
+        'These really are links — click one and it navigates. The underline comes from ',
+        code('active'),
+        ' or ',
+        code('value'),
+        ' at build time, not from the click, so each page marks its own tab. Nothing about a link tab reacts to the URL on its own: for that, switch in place with panels below.',
+      ),
       demo(`tabs({
   items: [
-    { label: 'Overview', href: '#overview', active: true },
-    { label: 'Installation', href: '#installation' },
-    { label: 'API', href: '#api' },
+    { label: 'Breadcrumbs', href: '/ui/breadcrumbs' },
+    { label: 'Tabs', href: '/ui/tabs', active: true },
+    { label: 'Pagination', href: '/ui/pagination' },
   ],
 })`, { align: 'stretch' }),
 
       h2('Panel tabs'),
       p(
-        'Each tab imports its handler on the first click — ',
-        code("onclick=\"import('/su/tabs.js').then(m=>m.select(this))\""),
-        ' — so these really switch, arrow keys included, with nothing imported on this page. Until that module lands, the panel the server marked active is simply the one that shows.',
+        'The tab is a ',
+        code('<label>'),
+        ' for a radio the stylesheet keeps out of sight, and the panel that follows the checked radio is the one CSS shows. Nothing is imported on this page: switching, and the arrow keys that move between the tabs, are things a radio group already does.',
       ),
       demo(`tabs({
   value: 'install',
@@ -46,6 +52,27 @@ export default () =>
     { id: 'install', label: 'Install', panel: card({ variant: 'flat' }, cardBody(code('npm install sitelo javascript-to-html'))) },
     { id: 'use', label: 'Use', panel: card({ variant: 'flat' }, cardBody(code("import * as ui from 'sitelo/ui'"))) },
     { id: 'build', label: 'Build', panel: card({ variant: 'flat' }, cardBody(code('sitelo build'))) },
+  ],
+})`, { align: 'stretch' }),
+
+      h2('Deep-linkable tabs'),
+      p(
+        'Give the panelled items a fragment ',
+        code('href'),
+        ' as well and the radios give way to links: the URL names the tab, ',
+        code(':target'),
+        ' picks it out, the panel that follows it shows, and the choice survives a reload, a shared link and the back button. The id is on the tab and not on the panel because the browser scrolls whatever the URL names to the top of the window — naming the panel would scroll the tabs off the screen you just clicked them on. Only one element in a document can be ',
+        code(':target'),
+        ', so this form is for one set of tabs on a page. The scroll itself cannot be called off: following a fragment moves the window by definition. All a page can do is choose what gets scrolled to and where it lands, which is what the id on the tab and its ',
+        code('scroll-margin-block-start'),
+        ' are for — set it with the ',
+        code('scrollMargin'),
+        ' prop, and give a sticky header at least its own height.',
+      ),
+      demo(`tabs({
+  items: [
+    { id: 'setup', label: 'Setup', href: '#tab-setup', panel: card({ variant: 'flat' }, cardBody(text({ variant: 'small' }, 'This panel is #tab-setup — copy the URL and it comes back.'))) },
+    { id: 'deploy', label: 'Deploy', href: '#tab-deploy', panel: card({ variant: 'flat' }, cardBody(text({ variant: 'small' }, 'And this one is #tab-deploy.'))) },
   ],
 })`, { align: 'stretch' }),
 
@@ -78,7 +105,7 @@ export default () =>
 )`, { align: 'stretch' }),
 
       h2('Many tabs'),
-      p('The tab list scrolls horizontally rather than wrapping, so the row keeps its shape on a phone.'),
+      p('The tab list scrolls horizontally rather than wrapping, so the row keeps its shape on a phone. Panel tabs wrap instead — each panel has to follow its own tab, which leaves no row element to scroll.'),
       demo(`tabs({
   items: [
     'Overview', 'Routing', 'Data', 'Assets', 'Images', 'Islands', 'TypeScript', 'CLI', 'Deployment',
@@ -96,15 +123,15 @@ export default () =>
 
       h2('Accessibility'),
       p(
-        'The panel form renders a proper ',
-        code('role="tablist"'),
-        ' with ',
+        'The panel form is a real radio group: the tabs are ',
+        code('<label>'),
+        ' elements for radios sharing a ',
+        code('name'),
+        ', so a screen reader announces which of how many is chosen, and arrow keys, Home and End work with nothing loaded. The deep-linkable form is plain links instead, and carries no ',
+        code('aria-current'),
+        ' — it would be written once and be wrong after the first click. It is deliberately not an ARIA tablist — ',
         code('aria-selected'),
-        ', ',
-        code('aria-controls'),
-        ' and roving ',
-        code('tabindex'),
-        '. The script adds arrow-key movement, Home and End. The link form is deliberately not a tablist — links that navigate are links, and giving them tab semantics would lie about what they do.',
+        ' is written once, on the server, and CSS cannot keep it true as you click. The link form is not a tablist either: links that navigate are links, and giving them tab semantics would lie about what they do.',
       ),
 
       h2('Props'),
@@ -113,7 +140,10 @@ export default () =>
         ['value', 'string', '', 'Id of the active item. Falls back to active, then the first.'],
         ['variant', "'underline' | 'pills'", "'underline'", 'How the active tab is marked.'],
         ['color', "'primary' | 'neutral' | 'success' | 'warning' | 'danger'", "'primary'", 'Colour of the active tab.'],
-        ['label', 'string', "'Tabs'", 'Accessible name for the tablist. Panel form only.'],
+        ['label', 'string', "'Tabs'", 'Accessible name for the group. Panel form only.'],
+        ['name', 'string', "first item's id", 'The radio group name. Only two sets of panel tabs on one page need it.'],
+        ['href', 'string', '', 'On an item: a page to link to, or — alongside panel — the fragment that names it.'],
+        ['scrollMargin', 'Space', "'lg'", 'How far above the tab the window stops. :target form only.'],
       ]),
     ],
   })

@@ -6,11 +6,11 @@
  * and type are all custom properties on `:root`: override them with
  * `theme()` from `sitelo/ui`, or by hand, and every component follows.
  *
- * `:root` also carries two inherited declarations that a component cannot
+ * `:root` also carries three inherited declarations that a component cannot
  * set for itself, because the browser reads them off the document element:
- * `color-scheme` and `text-size-adjust`. Both are explained where they are
- * declared below, and both reach the rest of the page — override either on
- * `:root` if that is not what you want.
+ * `color-scheme`, `text-size-adjust` and `scroll-behavior`. Each is
+ * explained where it is declared below, and all three reach the rest of the
+ * page — override them on `:root` if that is not what you want.
  *
  * Dark mode resolves from `prefers-color-scheme` and is overridden by
  * `data-theme` / `data-su-theme` on any ancestor.
@@ -148,6 +148,15 @@
    */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+
+  /*
+   * Following a fragment — a tab in the `:target` form, a link into a long
+   * page — jumps by default, and a jump reads as a new page rather than a
+   * move within this one. Animating it keeps the reader's place. The
+   * `prefers-reduced-motion` block below puts the jump back for anyone who
+   * asked for less movement.
+   */
+  scroll-behavior: smooth;
 }
 
 /*
@@ -403,6 +412,7 @@
 .su-chip:focus-visible,
 .su-link:focus-visible,
 .su-tab:focus-visible,
+.su-tab-input:focus-visible + .su-tab,
 .su-page-link:focus-visible,
 .su-menu-item:focus-visible,
 .su-list-item-action:focus-visible,
@@ -426,6 +436,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  :root {
+    scroll-behavior: auto;
+  }
+
   .su-progress-bar--indeterminate .su-progress-fill,
   .su-skeleton {
     animation: none;
@@ -1765,6 +1779,19 @@ a.su-list-item:hover,
   gap: var(--su-space-md);
 }
 
+/*
+ * Panel tabs are one wrapping row rather than a column of two parts.
+ * Each panel has to follow its own radio for `:checked + .su-tab +
+ * .su-tabpanel` to reach it, so tabs and panels are siblings and
+ * `order` puts them back into the shape a tab strip has: every tab on
+ * the first line, the panel that is showing on its own line below.
+ */
+.su-tabs--panels {
+  flex-flow: row wrap;
+  align-items: flex-end;
+  gap: 0;
+}
+
 .su-tablist {
   display: flex;
   align-items: center;
@@ -1799,10 +1826,87 @@ a.su-list-item:hover,
   color: var(--su-text);
 }
 
-.su-tab[aria-selected='true'],
-.su-tab[aria-current='page'] {
+/*
+ * The radio itself is never seen — but it is what has focus, so it
+ * cannot be `display: none` or `visibility: hidden`, which would take
+ * it out of the tab order and with it the arrow keys this component
+ * gets for free. Zero-sized and transparent keeps it reachable.
+ */
+.su-tab-input {
+  order: 1;
+  flex: 0 0 auto;
+  appearance: none;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+}
+
+.su-tabs--panels > .su-tab {
+  order: 1;
+}
+
+/* The row has no `gap` to space it, because the radios sit in it too. */
+.su-tab-input:not(:first-of-type) + .su-tab {
+  margin-inline-start: var(--su-space-xs);
+}
+
+.su-tab-input:disabled + .su-tab,
+.su-tab[aria-disabled='true'] {
+  color: var(--su-text-subtle);
+  cursor: not-allowed;
+}
+
+.su-tab[aria-current='page'],
+.su-tab-input:checked + .su-tab {
   color: var(--su-c, var(--su-primary));
   border-bottom-color: var(--su-c, var(--su-primary));
+}
+
+.su-tabs--panels > .su-tabpanel {
+  order: 2;
+  display: none;
+  width: 100%;
+  padding-top: var(--su-space-md);
+  /* Nothing wraps the tabs, so the line under them is this one. */
+  border-top: var(--su-border-width) solid var(--su-border);
+}
+
+.su-tab-input:checked + .su-tab + .su-tabpanel {
+  display: block;
+}
+
+/*
+ * The `:target` form: the URL names the tab, so the tabs are links and
+ * the history is the state. The id is on the tab and not on the panel
+ * because the browser scrolls whatever the URL names to the top of the
+ * window; naming the panel would scroll the tabs off the screen you
+ * just clicked them on. The panel is simply what comes next.
+ *
+ * Only one element in a document can be `:target`, so a second set of
+ * these on the same page falls back to its default as soon as the first
+ * is picked — hence one set per page.
+ */
+.su-tabs--target > .su-tab:target + .su-tabpanel,
+.su-tabs--target:not(:has(> .su-tab:target)) > .su-tabpanel--default {
+  display: block;
+}
+
+.su-tabs--target > .su-tab:target,
+.su-tabs--target:not(:has(> .su-tab:target)) > .su-tab--default {
+  color: var(--su-c, var(--su-primary));
+  border-bottom-color: var(--su-c, var(--su-primary));
+}
+
+/*
+ * Landing flush against the top edge reads as a page change, so the
+ * window stops a little short. `scrollMargin` raises it — a sticky
+ * header needs at least its own height here.
+ */
+.su-tabs--target > .su-tab {
+  scroll-margin-block-start: var(--su-tab-scroll-margin, var(--su-space-lg));
 }
 
 .su-tabs--pills .su-tablist {
@@ -1816,10 +1920,16 @@ a.su-list-item:hover,
   margin-bottom: 0;
 }
 
-.su-tabs--pills .su-tab[aria-selected='true'],
-.su-tabs--pills .su-tab[aria-current='page'] {
+.su-tabs--pills .su-tab[aria-current='page'],
+.su-tabs--pills .su-tab-input:checked + .su-tab,
+.su-tabs--pills.su-tabs--target > .su-tab:target,
+.su-tabs--pills.su-tabs--target:not(:has(> .su-tab:target)) > .su-tab--default {
   background: var(--su-c-soft, var(--su-primary-soft));
   color: var(--su-c-soft-fg, var(--su-primary-soft-fg));
+}
+
+.su-tabs--pills.su-tabs--panels > .su-tabpanel {
+  border-top: 0;
 }
 
 .su-appbar {

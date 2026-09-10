@@ -1,8 +1,20 @@
-import { a, button as buttonEl, div, header, li, nav, ol, span } from 'javascript-to-html'
+import {
+  a,
+  button as buttonEl,
+  div,
+  header,
+  input,
+  label as labelEl,
+  li,
+  nav,
+  ol,
+  section,
+  span,
+} from 'javascript-to-html'
 
-import { handler, tablistKeydown } from './handlers.js'
+import { handler } from './handlers.js'
 import { icon } from './icons.js'
-import { attrs, colorClass, cx, el, parseArgs } from './internal.js'
+import { attrs, colorClass, cx, el, parseArgs, space } from './internal.js'
 
 /**
  * Trail of ancestors ending at the current page.
@@ -141,13 +153,30 @@ export function pagination(props = {}) {
 /**
  * Tabs, in either of the two shapes a static site actually needs.
  *
- * Give each item an `href` and they are links — one page per tab, no
- * script, `aria-current` on the active one. Give each item a `panel`
- * and they become a real tablist whose panels swap in place; that form
- * needs `sitelo/ui/client`, and with the script absent the active panel
- * is simply the one that shows.
+ * Give each item an `href` and they are links — one page per tab,
+ * `aria-current` on the active one. Give each item a `panel` and they
+ * become a radio group whose panels swap in place: the label a click
+ * lands on checks a radio the stylesheet keeps out of sight, and the
+ * panel that follows that radio is the one CSS shows. No script — and
+ * arrow keys move between the tabs because a radio group already does.
  *
- * @param {...any} args - `tabs({ items, value, variant, color, label }, ...children)`
+ * Give the panelled items a fragment `href` as well and the radios give
+ * way to links: the URL names the tab, `:target` picks it out, and the
+ * choice can be linked to and walked back through history. The id goes
+ * on the tab rather than on the panel it shows, because the browser
+ * scrolls whatever the URL names to the top of the window — naming the
+ * panel would push the tabs off the screen you just clicked them on.
+ * One element per document can be `:target`, so this form is for one
+ * set of tabs on a page rather than several.
+ *
+ * The two layouts differ for that reason. Links alone sit in a
+ * `.su-tablist` row that scrolls sideways when there are many of them;
+ * panels cannot, because each one has to follow its own tab for
+ * `:checked + .su-tab + .su-tabpanel` — and for `.su-tab:has(+
+ * .su-tabpanel:target)` — to reach it, so a long row of them wraps
+ * instead.
+ *
+ * @param {...any} args - `tabs({ items, value, variant, color, label, name, scrollMargin }, ...children)`
  * @returns {string}
  */
 export function tabs(...args) {
@@ -158,6 +187,8 @@ export function tabs(...args) {
     variant = 'underline',
     color = 'primary',
     label = 'Tabs',
+    name,
+    scrollMargin,
     ...rest
   } = props
 
@@ -168,81 +199,126 @@ export function tabs(...args) {
   })
 
   const panelled = normalized.some((item) => item.panel != null)
+  /*
+   * Every panelled item has to carry a fragment for this form, not just
+   * one: a set where half the tabs move the URL and half do not has no
+   * state a browser could keep.
+   */
+  const targeted =
+    panelled &&
+    normalized.every((item) => {
+      const href = String(item.href ?? '')
+
+      /* A bare `#` names nothing, so it cannot pick out a tab. */
+      return href.startsWith('#') && href.length > 1
+    })
   const active =
     normalized.find((item) => item.id === value) ??
     normalized.find((item) => item.active) ??
     normalized[0]
 
-  const tablist = div(
-    {
-      class: 'su-tablist',
-      ...(panelled
-        ? {
-            role: 'tablist',
-            'aria-label': String(label),
-            /*
-             * Roving focus is a property of the list, not of one tab, so
-             * this is the one handler the component delegates: it reads
-             * `event.target` rather than `this`.
-             */
-            onkeydown: tablistKeydown(),
-          }
-        : {}),
-    },
-    ...normalized.map((item) => {
-      const selected = item === active
-
-      if (!panelled) {
-        return a(
-          {
-            class: 'su-tab',
-            href: item.href ?? '#',
-            ...(selected ? { 'aria-current': 'page' } : {}),
-          },
-          item.label,
-        )
-      }
-
-      return buttonEl(
-        {
-          type: 'button',
-          class: 'su-tab',
-          role: 'tab',
-          id: `${item.id}-tab`,
-          'aria-controls': `${item.id}-panel`,
-          'aria-selected': selected ? 'true' : 'false',
-          tabindex: selected ? 0 : -1,
-          ...(item.disabled
-            ? { disabled: true }
-            : { onclick: handler('tabs', 'select(this)') }),
-        },
-        item.label,
-      )
-    }),
+  const className = cx(
+    'su-tabs',
+    panelled && 'su-tabs--panels',
+    targeted && 'su-tabs--target',
+    variant === 'pills' && 'su-tabs--pills',
+    colorClass(color),
   )
 
-  const panels = panelled
-    ? normalized.map((item) =>
-        div(
-          {
-            id: `${item.id}-panel`,
-            role: 'tabpanel',
-            'aria-labelledby': `${item.id}-tab`,
-            tabindex: 0,
-            class: 'su-tabpanel',
-            ...(item === active ? {} : { hidden: true }),
-          },
-          item.panel ?? '',
+  if (!panelled) {
+    return div(
+      attrs(rest, { class: className }),
+      div(
+        { class: 'su-tablist' },
+        ...normalized.map((item) =>
+          a(
+            {
+              class: 'su-tab',
+              href: item.href ?? '#',
+              ...(item === active ? { 'aria-current': 'page' } : {}),
+            },
+            item.label,
+          ),
         ),
-      )
-    : []
+      ),
+      ...children,
+    )
+  }
+
+  if (targeted) {
+    /*
+     * No `aria-current` here. It would be written once and be wrong the
+     * moment you picked another tab, and CSS cannot correct it — the
+     * same reason this component is not an ARIA tablist. The tab that
+     * is current is the one the URL names.
+     */
+    return div(
+      attrs(
+        { role: 'group', 'aria-label': String(label), ...rest },
+        {
+          class: className,
+          /*
+           * How far above the tab the window stops. A site whose header
+           * is sticky needs at least its height here, or the tab it just
+           * scrolled to arrives underneath it.
+           */
+          style: { '--su-tab-scroll-margin': space(scrollMargin) },
+        },
+      ),
+      ...normalized.flatMap((item) => {
+        const fragment = item.href.slice(1)
+
+        return [
+          a(
+            {
+              class: cx('su-tab', item === active && 'su-tab--default'),
+              id: fragment,
+              /* A link with nowhere to go: not clickable, not focusable. */
+              ...(item.disabled ? { 'aria-disabled': 'true' } : { href: item.href }),
+            },
+            item.label,
+          ),
+          section(
+            {
+              class: cx('su-tabpanel', item === active && 'su-tabpanel--default'),
+              id: `${item.id}-panel`,
+              'aria-labelledby': fragment,
+            },
+            item.panel ?? '',
+          ),
+        ]
+      }),
+      ...children,
+    )
+  }
+
+  /*
+   * What makes the radios one group, and what keeps two sets of tabs on
+   * the same page from becoming one. It is derived from the first id so
+   * that the same page builds to the same HTML; a page that gives its
+   * items ids — and the ids are in the markup either way — gets
+   * distinct groups without asking for them.
+   */
+  const group = String(name ?? `su-${normalized[0]?.id ?? 'tabs'}`)
 
   return div(
-    attrs(rest, {
-      class: cx('su-tabs', variant === 'pills' && 'su-tabs--pills', colorClass(color)),
-    }),
-    tablist,
-    ...panels,
+    attrs({ role: 'group', 'aria-label': String(label), ...rest }, { class: className }),
+    ...normalized.flatMap((item) => [
+      input({
+        class: 'su-tab-input',
+        type: 'radio',
+        name: group,
+        id: `${item.id}-tab`,
+        'aria-controls': `${item.id}-panel`,
+        ...(item === active ? { checked: true } : {}),
+        ...(item.disabled ? { disabled: true } : {}),
+      }),
+      labelEl({ class: 'su-tab', id: `${item.id}-label`, for: `${item.id}-tab` }, item.label),
+      section(
+        { class: 'su-tabpanel', id: `${item.id}-panel`, 'aria-labelledby': `${item.id}-label` },
+        item.panel ?? '',
+      ),
+    ]),
     ...children,
   )
 }

@@ -160,11 +160,11 @@ test('dev passes everything else through', () => {
 
 test('a query string still resolves to the module', () => {
   // Vite appends `?t=…` on reload, and the browser would then 404.
-  assert.ok(!request('/su/tabs.js?t=123').passed);
+  assert.ok(!request('/su/menu.js?t=123').passed);
 });
 
 test('an absolute base leaves the dev server alone', () => {
-  assert.ok(request('/su/tabs.js', { base: 'https://cdn.example/su/' }).passed);
+  assert.ok(request('/su/menu.js', { base: 'https://cdn.example/su/' }).passed);
 });
 
 test('the plugin follows configureUiClient(), not just its own option', () => {
@@ -184,7 +184,7 @@ test('the plugin follows configureUiClient(), not just its own option', () => {
     let handled = true;
 
     middleware(
-      { url: '/assets/su/tabs.js' },
+      { url: '/assets/su/menu.js' },
       { setHeader: () => {}, end: () => {} },
       () => { handled = false; },
     );

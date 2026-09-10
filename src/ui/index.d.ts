@@ -688,9 +688,12 @@ export function pagination(props?: PaginationProps): string
 export interface TabItem {
   id?: string
   label?: Child
-  /** Link form: one page per tab, no script. */
+  /**
+   * Link form: one page per tab. Alongside `panel`, a fragment — the id
+   * the tab itself takes, and what `:target` matches when it is picked.
+   */
   href?: string
-  /** Panel form: swaps in place; needs `sitelo/ui/client`. */
+  /** Panel form: swaps in place, on CSS alone. */
   panel?: Child
   active?: boolean
   disabled?: boolean
@@ -702,7 +705,20 @@ export interface TabsProps extends BaseProps {
   value?: string
   variant?: 'underline' | 'pills'
   color?: Color
+  /** Accessible name for the group. Panel form only. */
   label?: string
+  /**
+   * The radio group's `name`. Defaults to the first item's id, which
+   * only needs overriding if two sets of panel tabs on one page would
+   * otherwise share it.
+   */
+  name?: string
+  /**
+   * How far above the tab the window stops when a fragment takes it
+   * there — `scroll-margin-block-start`, defaulting to `'lg'`. Give a
+   * sticky header at least its own height. `:target` form only.
+   */
+  scrollMargin?: Space
 }
 
 export function tabs(...args: Args<TabsProps>): string
