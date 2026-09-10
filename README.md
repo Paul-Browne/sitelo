@@ -739,7 +739,7 @@ the theme helpers, from a bundled entry:
 
 ```js
 // src/main.js
-import { setBadge, setPressed, setProgress, setStep, toast } from 'sitelo/ui/client'
+import { setBadge, setPressed, setProgress, setSlider, setStep, toast } from 'sitelo/ui/client'
 
 request.upload.addEventListener('progress', (event) => {
   setProgress('upload', event.loaded, { max: event.total })
@@ -750,18 +750,21 @@ Each takes the element or the `id` you gave it, and moves everything the
 server rendered together — the drawing, the announced value, and the
 text beside it:
 
-| Call | What it changes |
-| --- | --- |
-| `toast(message)` | Appends to the region `toasts()` rendered. |
-| `setProgress(bar, value)` | The fill, `aria-valuenow`, and the percentage by the label. `null` returns it to the indeterminate animation. |
-| `setBadge(badge, count)` | The count, clamped to `max+`, with the announced text; an emptied badge leaves the accessibility tree. |
-| `setPressed(button, on?)` | `aria-pressed`, letting go of the siblings in a single-choice `toggleGroup()`. Omit `on` to flip it. |
-| `setStep(flow, index)` | Every step at once — complete, current, upcoming — and the one `aria-current`. |
-| `setTheme(value)` | The theme, remembered in `localStorage`. |
+| Call | What it changes | Reads back |
+| --- | --- | --- |
+| `toast(message)` | Appends to the region `toasts()` rendered. | — |
+| `setProgress(bar, value)` | The fill, `aria-valuenow`, and the percentage by the label. `null` returns it to the indeterminate animation. | `getProgress(bar)` — the value on the bar's own scale, `null` while it is indeterminate. |
+| `setBadge(badge, count)` | The count, clamped to `max+`, with the announced text; an emptied badge leaves the accessibility tree. | `getBadge(badge)` — the count; a clamped one reads back as `'99+'`. |
+| `setPressed(button, on?)` | `aria-pressed`, letting go of the siblings in a single-choice `toggleGroup()`. Omit `on` to flip it. | `getPressed(button)` — `true` or `false`, or a group's pressed values. |
+| `setSlider(slider, value)` | The thumb and the `<output>` beside it, then `input` and `change` so a page listening for the drag hears it. Clamped to `min`/`max` and snapped to `step`. | `getSlider(slider)` — where the thumb stands. |
+| `setStep(flow, index)` | Every step at once — complete, current, upcoming — and the one `aria-current`. | `getStep(flow)` — the index in progress, or the count once they are all done. |
+| `setTheme(value)` | The theme, remembered in `localStorage`. | `getTheme()` — `'light'` or `'dark'`, resolving `prefers-color-scheme` when nothing was chosen. |
 
-Each has a reader beside it — `getBadge`, `getPressed`, `getProgress`,
-`getStep`, `getTheme` — and each is also reachable from an event
-attribute, the way the components reach theirs, with nothing bundled:
+Every reader that takes a target answers `null` when the page has no
+such element, so it doubles as the check for whether the thing is there
+at all — `getTheme()` is the exception, since a page always has a theme.
+Each is reachable from an event attribute too, the way the components
+reach theirs, with nothing bundled:
 `import('/su/progress.js').then(m=>m.set('upload',100))`.
 
 ### What is in it

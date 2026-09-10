@@ -5,7 +5,7 @@ import * as ui from '../src/ui/index.js';
 import * as badge from '../src/ui/runtime/badge.js';
 import * as pressed from '../src/ui/runtime/pressed.js';
 import { get, set } from '../src/ui/runtime/progress.js';
-import { sync } from '../src/ui/runtime/slider.js';
+import * as slider from '../src/ui/runtime/slider.js';
 import * as steps from '../src/ui/runtime/steps.js';
 
 /*
@@ -150,6 +150,18 @@ function element(name, attrs) {
       for (let at = node; at; at = at.parent) if (matches(at, selector)) return at;
 
       return null;
+    },
+
+    /*
+     * Recorded rather than delivered: what the runtime owes a page is
+     * that a move it made is announced, and the type is the whole of
+     * that promise.
+     */
+    heard: [],
+    dispatchEvent(event) {
+      node.heard.push(event.type);
+
+      return true;
     },
   };
 
@@ -335,9 +347,36 @@ test('sync() copies the thumb into the output beside it', () => {
   assert.equal(row.querySelector('.su-slider-output').textContent, '40');
 
   input.value = 75;
-  sync(input);
+  slider.sync(input);
 
   assert.equal(row.querySelector('.su-slider-output').textContent, '75');
+});
+
+test('setSlider() moves the thumb, the output and anything listening', () => {
+  const row = render(ui.slider({ value: 40, showValue: true, id: 'vol' }));
+  const input = document.getElementById('vol');
+
+  assert.equal(slider.set('vol', 75), 75);
+  assert.equal(input.value, '75');
+  assert.equal(row.querySelector('.su-slider-output').textContent, '75');
+  // A page listening for the drag has to hear the move it did not make.
+  assert.deepEqual(input.heard, ['input', 'change']);
+
+  assert.equal(slider.get('vol'), 75);
+});
+
+test('setSlider() takes the row or the input, and refuses anything else', () => {
+  const row = render(ui.slider({ value: 10, showValue: true, id: 'vol' }));
+
+  assert.equal(slider.set(row, 60), 60, 'the wrapper finds the input inside it');
+  assert.equal(slider.set(document.getElementById('vol'), 20), 20);
+
+  // Nothing to move, or nowhere to move it to.
+  assert.equal(slider.set('nope', 50), null);
+  assert.equal(slider.set('vol', Number.NaN), null);
+  assert.equal(slider.set('vol', null), null);
+  assert.equal(slider.get('vol'), 20, 'a refused call leaves it where it was');
+  assert.equal(slider.get('nope'), null);
 });
 
 /* ------------------------------------------------------------------ *

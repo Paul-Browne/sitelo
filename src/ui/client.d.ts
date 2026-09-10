@@ -71,6 +71,20 @@ export function setBadge(
   options?: SetBadgeOptions,
 ): Element | null
 
+/**
+ * Move a `slider()` to `value`, addressed by element or by `id`.
+ *
+ * The browser clamps to `min` and `max` and snaps to `step`, so the
+ * number returned is where the slider landed rather than what it was
+ * given. `input` and `change` follow, so anything listening to the
+ * slider hears a move it did not cause. Returns `null` when there is no
+ * such slider on the page.
+ */
+export function setSlider(target: Element | string, value: number): number | null
+
+/** Where a slider stands; `null` when there is no such slider. */
+export function getSlider(target: Element | string): number | null
+
 /** The count a badge is showing; a clamped one reads back as `'99+'`. */
 export function getBadge(target: Element | string): number | string | null
 
