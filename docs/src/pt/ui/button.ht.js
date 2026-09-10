@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Os botões deixam as pessoas agir. Cinco variantes, cinco cores, três tamanhos — e uma âncora sempre que navega.',
     activeHref: '/pt/ui/button',
-    extraHead: uiHead(),
     children: [
       p(
         'Um botão é aquilo em que se carrega para algo acontecer. ',

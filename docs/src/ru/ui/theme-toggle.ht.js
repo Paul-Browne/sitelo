@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Переключатель светлой и тёмной темы вместе со встроенным скриптом, из-за которого сохранённый выбор не мигает при входе.',
     activeHref: '/ru/ui/theme-toggle',
-    extraHead: uiHead(),
     children: [
       p(
         'sitelo-ui сам определяет тёмный режим по ',

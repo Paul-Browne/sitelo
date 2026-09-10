@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '容器',
     description: '居中且限宽的一栏——多数页面最外层的那层包裹。',
     activeHref: '/zh/ui/container',
-    extraHead: uiHead(),
     children: [
       p(
         '容器把内容居中、给宽度封顶让文字行保持易读，并留出一圈边距，免得在手机上有东西贴到屏幕边缘。它通常是 ',

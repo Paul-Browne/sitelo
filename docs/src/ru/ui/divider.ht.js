@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Линия между разделами, с подписью посередине или без неё.',
     activeHref: '/ru/ui/divider',
-    extraHead: uiHead(),
     children: [
       p(
         'Разделитель отделяет группы содержимого. Он рисует элемент с ',

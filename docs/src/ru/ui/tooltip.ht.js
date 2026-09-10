@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Короткая подсказка при наведении и фокусе, нарисованная целиком на CSS.',
     activeHref: '/ru/ui/tooltip',
-    extraHead: uiHead(),
     children: [
       p(
         'Текст подсказки живёт в data-атрибуте и рисуется псевдоэлементом, поэтому здесь нет скрипта, нечего позиционировать во время выполнения и ничего не остаётся в DOM. Она появляется при наведении и при фокусе с клавиатуры — за это отвечает половина правила с ',

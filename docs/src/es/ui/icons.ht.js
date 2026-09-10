@@ -2,7 +2,6 @@ import { h2, p } from 'javascript-to-html'
 import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 /** Una celda: el glifo a un tamaño legible, con el nombre que se escribe. */
 const cell = (name) =>
@@ -61,7 +60,6 @@ export default () =>
     description:
       'Un conjunto de 99 glifos sobre una misma retícula, dibujados en línea para que un icono tome el color y el tamaño del texto que lo rodea.',
     activeHref: '/es/ui/icons',
-    extraHead: uiHead(),
     children: [
       p(
         code('icon()'),

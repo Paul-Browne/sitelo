@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '主题切换',
     description: '浅色/深色开关，附带那段行内脚本，让已保存的选择在进入页面时不会闪一下。',
     activeHref: '/zh/ui/theme-toggle',
-    extraHead: uiHead(),
     children: [
       p(
         'sitelo-ui 自己就会根据 ',

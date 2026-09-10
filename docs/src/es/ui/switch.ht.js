@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un conmutador de encendido y apagado para un ajuste que surte efecto al momento: por debajo, una casilla con role="switch".',
     activeHref: '/es/ui/switch',
-    extraHead: uiHead(),
     children: [
       p(
         'Un interruptor es para un ajuste que se aplica en cuanto lo accionas. Una casilla es para una elección que confirmas después, con un botón de envío. Si tu control está en un formulario con un Guardar abajo, es una casilla.',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Fixe la forme d’une boîte, pour que rien ne bouge sur la page quand le contenu arrive.',
     activeHref: '/fr/ui/aspect-ratio',
-    extraHead: uiHead(),
     children: [
       p(
         'La hauteur se déduit de la largeur avant que quoi que ce soit ne soit chargé : une image ou une intégration qui arrive en retard ne pousse pas le reste de la page vers le bas. L’enfant remplit la boîte et se retrouve rogné plutôt que bordé de bandes noires.',

@@ -1,6 +1,6 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { preview, uiHead } from '../../lib/ui-demo.js'
+import { preview } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +8,6 @@ export default () =>
     description:
       'Ein Dropdown auf Basis von <details>, das ganz ohne Skript auf- und zugeht.',
     activeHref: '/de/ui/menu',
-    extraHead: uiHead(),
     children: [
       p(
         'Ein Menü ist ein ',

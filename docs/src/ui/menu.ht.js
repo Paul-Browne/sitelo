@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, preview, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, preview, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'A dropdown built on <details>, so it opens and closes with no script at all.',
     activeHref: '/ui/menu',
-    extraHead: uiHead(),
     children: [
       p(
         'A menu is a ',

@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'Entries in order, down a line — a changelog, a release history, an about page.',
     activeHref: '/ui/timeline',
-    extraHead: uiHead(),
     children: [
       p(
         'A timeline is an ordered list with a rule down the side. Build it from ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Una cuadrícula adaptable que mete tantas columnas como quepan: sin breakpoints, sin media queries.',
     activeHref: '/es/ui/grid',
-    extraHead: uiHead(),
     children: [
       p(
         'Sin ',

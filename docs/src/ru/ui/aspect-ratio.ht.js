@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Держит блок в заданной форме, чтобы при загрузке содержимого на странице ничего не прыгало.',
     activeHref: '/ru/ui/aspect-ratio',
-    extraHead: uiHead(),
     children: [
       p(
         'Высота известна из ширины ещё до того, как что-либо загрузилось, поэтому опоздавшая картинка или встраивание не сдвигает остальную страницу вниз. Дочерний элемент заполняет блок и обрезается, а не обрастает полями.',

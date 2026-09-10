@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Кнопка, которая остаётся нажатой: настройка, показанная кнопкой, а не флажком.',
     activeHref: '/ru/ui/toggle-button',
-    extraHead: uiHead(),
     children: [
       p(
         'Кнопка-переключатель либо включена, либо нет, и сообщает об этом через ',

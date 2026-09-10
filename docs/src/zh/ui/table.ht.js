@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '表格',
     description: '由数据生成的行与列，外面套一层滚动容器，宽表格就不会把页面撑坏。',
     activeHref: '/zh/ui/table',
-    extraHead: uiHead(),
     children: [
       p(
         '传入 ',

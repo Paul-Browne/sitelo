@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Entradas en orden a lo largo de una línea: un registro de cambios, un historial de versiones, una página «acerca de».',
     activeHref: '/es/ui/timeline',
-    extraHead: uiHead(),
     children: [
       p(
         'Una cronología es una lista ordenada con una línea al costado. Constrúyela a partir de ',

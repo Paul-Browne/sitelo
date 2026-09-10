@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Скриншот в рамке — браузер, окно, телефон или терминал.',
     activeHref: '/ru/ui/mockup',
-    extraHead: uiHead(),
     children: [
       p(
         'Чтобы показать продукт на посадочной странице или скриншот в документации. Рамка — это декорация: точки, адресная строка и вырез помечены ',

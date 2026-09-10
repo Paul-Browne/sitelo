@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Una línea entre secciones, con o sin etiqueta en el medio.',
     activeHref: '/es/ui/divider',
-    extraHead: uiHead(),
     children: [
       p(
         'Un separador separa grupos de contenido. Dibuja un elemento con ',

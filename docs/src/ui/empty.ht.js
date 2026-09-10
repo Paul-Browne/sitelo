@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'What a list looks like before it has anything in it.',
     activeHref: '/ui/empty',
-    extraHead: uiHead(),
     children: [
       p(
         'A blank space reads as a bug. An empty state says which space is blank, why, and what to do next — and it is the case most easily forgotten, because during development there is always data.',

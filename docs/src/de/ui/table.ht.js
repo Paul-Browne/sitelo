@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Zeilen und Spalten aus Daten, in einem Scroll-Container, der verhindert, dass eine breite Tabelle die Seite sprengt.',
     activeHref: '/de/ui/table',
-    extraHead: uiHead(),
     children: [
       p(
         'Übergib ',

@@ -1,6 +1,5 @@
 import { h2, h3, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Однострочный и многострочный ввод, где подпись, подсказка, сообщение об ошибке и id уже связаны за вас.',
     activeHref: '/ru/ui/text-field',
-    extraHead: uiHead(),
     children: [
       p(
         'Здесь два слоя. ',

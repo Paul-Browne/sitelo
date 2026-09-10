@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un único «ver más», sin los bordes ni la agrupación de un acordeón.',
     activeHref: '/es/ui/collapsible',
-    extraHead: uiHead(),
     children: [
       p(
         'Un plegable es un solo ',

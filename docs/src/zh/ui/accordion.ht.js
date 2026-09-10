@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '手风琴',
     description: '用浏览器原生 <details> 实现的折叠区块——包括它的互斥模式。',
     activeHref: '/zh/ui/accordion',
-    extraHead: uiHead(),
     children: [
       p(
         '每个区块都是一个 ',

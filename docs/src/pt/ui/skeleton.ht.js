@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Um marcador de lugar com a forma do conteúdo que ainda não chegou.',
     activeHref: '/pt/ui/skeleton',
-    extraHead: uiHead(),
     children: [
       p(
         'Um esqueleto ocupa o lugar do conteúdo enquanto este carrega. Num site estático isso é mais raro do que numa aplicação — o HTML já lá está — mas é normalmente o que o ',

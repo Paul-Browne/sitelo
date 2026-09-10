@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Ein Platzhalter in der Form des Inhalts, der noch nicht da ist.',
     activeHref: '/de/ui/skeleton',
-    extraHead: uiHead(),
     children: [
       p(
         'Ein Skeleton steht für Inhalt ein, während er lädt. Auf einer statischen Website ist das seltener als in einer App — das HTML ist ja schon da —, aber es ist meist genau das, was der ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Низ сайта: колонки ссылок и строка под ними.',
     activeHref: '/ru/ui/footer',
-    extraHead: uiHead(),
     children: [
       p(
         'Подвал — это самоподстраивающаяся сетка колонок плюс необязательная нижняя строка, которая всегда занимает всю ширину, сколько бы колонок ни было.',

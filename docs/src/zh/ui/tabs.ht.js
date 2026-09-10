@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '标签页',
     description: '三种形态：链接，一个标签一个页面；就地切换的面板；以及由 URL 决定的面板。',
     activeHref: '/zh/ui/tabs',
-    extraHead: uiHead(),
     children: [
       p(
         '给每一项一个 ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Uma linha ou coluna flex com um token de espaçamento no intervalo — a peça de disposição com que a maioria das páginas é construída.',
     activeHref: '/pt/ui/stack',
-    extraHead: uiHead(),
     children: [
       p(
         'A pilha põe espaço entre as coisas. É um contentor flex com uma única função, e é a resposta à maioria das perguntas do género «como afasto isto» — na vertical por predefinição, na horizontal com ',

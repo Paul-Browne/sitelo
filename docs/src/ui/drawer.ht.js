@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'A panel that comes in from the edge — same popover mechanics as a modal, different shape.',
     activeHref: '/ui/drawer',
-    extraHead: uiHead(),
     children: [
       p(
         'A drawer is a full-height panel anchored to one side. Like ',

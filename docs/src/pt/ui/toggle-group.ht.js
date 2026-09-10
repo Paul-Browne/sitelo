@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Um controlo segmentado: botões de alternância unidos num só, ou ligações em que cada segmento é a sua própria página.',
     activeHref: '/pt/ui/toggle-group',
-    extraHead: uiHead(),
     children: [
       p(
         'Um grupo de alternância é uma fila de escolhas que se lê como um único controlo. Constrói-o a partir de ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un compteur ou un point épinglé dans le coin de ce qu’il entoure.',
     activeHref: '/fr/ui/badge',
-    extraHead: uiHead(),
     children: [
       p(
         'Un badge entoure quelque chose et épingle un marqueur dans son coin supérieur : les messages non lus sur un bouton de boîte de réception, un point « en ligne » sur un avatar. Il prend en enfants ce qu’il marque.',

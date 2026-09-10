@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un contrôle segmenté : des boutons bascules réunis en un seul, ou des liens où chaque segment est sa propre page.',
     activeHref: '/fr/ui/toggle-group',
-    extraHead: uiHead(),
     children: [
       p(
         'Un groupe de bascules est une rangée de choix qui se lit comme un contrôle unique. Construisez-le à partir d’',

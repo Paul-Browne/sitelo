@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Uma captura de ecrã dentro de uma moldura — navegador, janela, telemóvel ou terminal.',
     activeHref: '/pt/ui/mockup',
-    extraHead: uiHead(),
     children: [
       p(
         'Para mostrar um produto numa página de entrada ou uma captura na documentação. A moldura é decoração: os pontos, a barra de endereço e o entalhe levam todos ',

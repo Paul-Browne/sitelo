@@ -1,6 +1,5 @@
 import { a, h2, p, strong } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Botones que van juntos, unidos en un solo control con bordes compartidos y extremos redondeados.',
     activeHref: '/es/ui/button-group',
-    extraHead: uiHead(),
     children: [
       p(
         'Los botones se agrupan envolviéndolos en ',

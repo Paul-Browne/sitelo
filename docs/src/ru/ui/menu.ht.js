@@ -1,6 +1,6 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { preview, uiHead } from '../../lib/ui-demo.js'
+import { preview } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +8,6 @@ export default () =>
     description:
       'Выпадающее меню на <details>: открывается и закрывается вообще без скрипта.',
     activeHref: '/ru/ui/menu',
-    extraHead: uiHead(),
     children: [
       p(
         'Меню — это ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Как затащить таблицу стилей на страницу и одним вызовом поменять любой цвет, скругление и шрифт.',
     activeHref: '/ru/ui/theming',
-    extraHead: uiHead(),
     children: [
       p(
         'Все компоненты читают одни и те же кастомные свойства, поэтому тема — это просто набор переопределений на ',

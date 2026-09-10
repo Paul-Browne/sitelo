@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '切换组',
     description: '分段控件：把若干切换按钮拼成一个，或者做成链接，让每一段各自对应一个页面。',
     activeHref: '/zh/ui/toggle-group',
-    extraHead: uiHead(),
     children: [
       p(
         '切换组是一排读起来像单个控件的选项。用 ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Диалог на popover API: открытие, затемнение, клик снаружи и Escape берёт на себя браузер.',
     activeHref: '/ru/ui/modal',
-    extraHead: uiHead(),
     children: [
       p(
         'Модальное окно — это элемент ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Верх посадочной страницы: заголовок, фраза и что со всем этим делать.',
     activeHref: '/ru/ui/hero',
-    extraHead: uiHead(),
     children: [
       p(
         'Hero-блок — это первое, что стоит на маркетинговой или документационной главной. Он рисует ',

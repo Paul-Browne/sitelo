@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un substitut à la forme du contenu qui n’est pas encore arrivé.',
     activeHref: '/fr/ui/skeleton',
-    extraHead: uiHead(),
     children: [
       p(
         'Un squelette tient la place du contenu pendant son chargement. Sur un site statique c’est plus rare que dans une application — le HTML est déjà là — mais c’est en général ce que devrait être le ',

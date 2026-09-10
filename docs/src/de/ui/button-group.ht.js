@@ -1,6 +1,5 @@
 import { a, h2, p, strong } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Buttons, die zusammengehören, zu einem Steuerelement verbunden — mit geteilten Rändern und runden Enden.',
     activeHref: '/de/ui/button-group',
-    extraHead: uiHead(),
     children: [
       p(
         'Buttons werden gruppiert, indem man sie in ',

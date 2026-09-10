@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Нативный select, оформленный в тон остальным полям, с опциями, собранными из данных.',
     activeHref: '/ru/ui/select',
-    extraHead: uiHead(),
     children: [
       p(
         'Это настоящий ',

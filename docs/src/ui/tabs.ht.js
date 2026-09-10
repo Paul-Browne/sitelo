@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'Three shapes: links, one page per tab; panels that swap in place; or panels the URL drives.',
     activeHref: '/ui/tabs',
-    extraHead: uiHead(),
     children: [
       p(
         'Give each item an ',

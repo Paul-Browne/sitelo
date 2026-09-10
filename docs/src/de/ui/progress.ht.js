@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Ein Balken für Arbeit mit bekanntem Ende, ein Spinner für Arbeit ohne eines.',
     activeHref: '/de/ui/progress',
-    extraHead: uiHead(),
     children: [
       p(
         'Nimm einen bestimmten Balken, wann immer du weißt, wie viel noch fehlt — nur er sagt der Leserin überhaupt etwas. Lass ',

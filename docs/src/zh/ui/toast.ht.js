@@ -1,13 +1,12 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { preview, uiHead } from '../../lib/ui-demo.js'
+import { preview } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '轻提示',
     description: '角落里一条转瞬即逝的消息，由脚本添加进页面已经渲染好的那块区域。',
     activeHref: '/zh/ui/toast',
-    extraHead: uiHead(),
     children: [
       p(
         '轻提示是这里唯一没法做成静态的组件：它是因为某件事发生了才出现的。页面用 ',

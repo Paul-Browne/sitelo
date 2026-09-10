@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Ein reagierendes Raster, das so viele Spalten einpasst, wie hineinpassen — ohne Breakpoints, ohne Media Queries.',
     activeHref: '/de/ui/grid',
-    extraHead: uiHead(),
     children: [
       p(
         'Ohne ',

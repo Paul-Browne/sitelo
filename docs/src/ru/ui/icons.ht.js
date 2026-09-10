@@ -2,7 +2,6 @@ import { h2, p } from 'javascript-to-html'
 import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 /** Одна ячейка: знак в читаемом размере и имя, которое нужно набрать. */
 const cell = (name) =>
@@ -61,7 +60,6 @@ export default () =>
     description:
       'Набор из 99 знаков на одной сетке, встроенных прямо в страницу, поэтому иконка берёт цвет и размер окружающего текста.',
     activeHref: '/ru/ui/icons',
-    extraHead: uiHead(),
     children: [
       p(
         code('icon()'),

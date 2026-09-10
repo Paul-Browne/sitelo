@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'A count or a dot pinned to the corner of whatever it wraps.',
     activeHref: '/ui/badge',
-    extraHead: uiHead(),
     children: [
       p(
         'A badge wraps something and pins a marker to its top corner: unread messages on an inbox button, an online dot on an avatar. It takes the thing it marks as children.',

@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '网格',
     description: '能塞下几列就排几列的自适应网格——不用断点，也不用媒体查询。',
     activeHref: '/zh/ui/grid',
-    extraHead: uiHead(),
     children: [
       p(
         '不给 ',

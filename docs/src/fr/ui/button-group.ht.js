@@ -1,6 +1,5 @@
 import { a, h2, p, strong } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Des boutons qui vont ensemble, réunis en un seul contrôle aux bordures partagées et aux extrémités arrondies.',
     activeHref: '/fr/ui/button-group',
-    extraHead: uiHead(),
     children: [
       p(
         'On groupe des boutons en les enveloppant dans ',

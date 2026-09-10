@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '切换按钮',
     description: '一个会保持按下状态的按钮——把设置做成按钮，而不是复选框。',
     activeHref: '/zh/ui/toggle-button',
-    extraHead: uiHead(),
     children: [
       p(
         '切换按钮不是开就是关，并用 ',

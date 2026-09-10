@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Una pista corta al pasar por encima y al recibir foco, dibujada enteramente con CSS.',
     activeHref: '/es/ui/tooltip',
-    extraHead: uiHead(),
     children: [
       p(
         'El texto del tooltip vive en un atributo de datos y lo dibuja un pseudoelemento, así que no hay script, no hay nada que posicionar en tiempo de ejecución y no queda nada en el DOM. Aparece al pasar por encima y al recibir foco de teclado, de lo que se ocupa la mitad ',

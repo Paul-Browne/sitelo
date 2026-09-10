@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Hält eine Box in fester Form, damit auf der Seite nichts springt, wenn der Inhalt lädt.',
     activeHref: '/de/ui/aspect-ratio',
-    extraHead: uiHead(),
     children: [
       p(
         'Die Höhe steht schon aus der Breite fest, bevor irgendetwas geladen ist — ein spät eintreffendes Bild oder Embed schiebt den Rest der Seite also nicht nach unten. Das Kind füllt die Box und wird beschnitten statt mit Balken versehen.',

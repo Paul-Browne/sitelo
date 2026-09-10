@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'La trace des ancêtres qui se termine à la page où vous êtes.',
     activeHref: '/fr/ui/breadcrumbs',
-    extraHead: uiHead(),
     children: [
       p(
         'Un fil d’Ariane dit où se situe une page. Le dernier élément est la page courante : il est rendu en texte simple et marqué ',

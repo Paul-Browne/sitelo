@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '页脚',
     description: '站点的底部：几列链接，下面再来一行。',
     activeHref: '/zh/ui/footer',
-    extraHead: uiHead(),
     children: [
       p(
         '页脚是一个会自动适配列数的网格，外加一行可选的底部内容——不管上面有多少列，它总是占满整个宽度。',

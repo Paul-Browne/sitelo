@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, preview, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, preview, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'A transient message in the corner, added from script into a region the page rendered.',
     activeHref: '/ui/toast',
-    extraHead: uiHead(),
     children: [
       p(
         'A toast is the one component here that cannot be static: it appears in response to something happening. The page renders an empty region with ',

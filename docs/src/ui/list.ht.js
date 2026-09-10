@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'Rows of content with an optional thing on either side — the shape most settings screens and feeds are built from.',
     activeHref: '/ui/list',
-    extraHead: uiHead(),
     children: [
       p(
         'A list is a bordered surface of rows. Each row has a title, an optional description, and slots at the start and end for an avatar, an icon or a control.',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Eine zentrierte Spalte mit begrenzter Breite — auf den meisten Seiten die äußerste Hülle.',
     activeHref: '/de/ui/container',
-    extraHead: uiHead(),
     children: [
       p(
         'Ein Container zentriert seinen Inhalt, deckelt die Breite, damit Textzeilen lesbar bleiben, und hält einen Rand frei, damit auf einem Telefon nichts den Bildschirmrand berührt. Meist ist er das Erste innerhalb von ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Цепочка предков, заканчивающаяся страницей, на которой вы находитесь.',
     activeHref: '/ru/ui/breadcrumbs',
-    extraHead: uiHead(),
     children: [
       p(
         'Хлебные крошки говорят, где расположена страница. Последний элемент — текущая страница: он рисуется обычным текстом и помечается ',

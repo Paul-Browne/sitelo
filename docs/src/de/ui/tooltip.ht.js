@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Ein kurzer Hinweis beim Überfahren und beim Fokus, vollständig in CSS gezeichnet.',
     activeHref: '/de/ui/tooltip',
-    extraHead: uiHead(),
     children: [
       p(
         'Der Tooltip-Text steckt in einem data-Attribut und wird von einem Pseudoelement gezeichnet — kein Skript, nichts, das zur Laufzeit positioniert werden müsste, und nichts, das im DOM zurückbleibt. Er erscheint beim Überfahren und beim Tastaturfokus, worum sich die ',

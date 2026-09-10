@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Eine Fläche für gruppierten Inhalt, mit Kopf, Körper, Fuß und Medien, die miteinander umgehen können.',
     activeHref: '/de/ui/card',
-    extraHead: uiHead(),
     children: [
       p(
         'Eine Karte gruppiert zusammengehörigen Inhalt auf einer eigenen Fläche. Die Teile — ',

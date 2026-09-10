@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Um interruptor claro/escuro, com o script inline que impede uma escolha guardada de piscar à entrada.',
     activeHref: '/pt/ui/theme-toggle',
-    extraHead: uiHead(),
     children: [
       p(
         'O sitelo-ui resolve o modo escuro sozinho a partir do ',

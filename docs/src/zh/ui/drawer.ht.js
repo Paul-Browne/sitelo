@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '抽屉',
     description: '从边缘滑入的面板——和模态框一样的 popover 机制，只是形状不同。',
     activeHref: '/zh/ui/drawer',
-    extraHead: uiHead(),
     children: [
       p(
         '抽屉是贴在某一侧、占满高度的面板。和 ',

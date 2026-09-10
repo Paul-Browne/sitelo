@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un diálogo construido sobre la API de popover: el navegador se encarga de abrirlo, del fondo, del clic fuera y de Escape.',
     activeHref: '/es/ui/modal',
-    extraHead: uiHead(),
     children: [
       p(
         'Un modal es un elemento ',

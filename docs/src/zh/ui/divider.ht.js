@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '分割线',
     description: '区块之间的一条线，中间可以带文字，也可以不带。',
     activeHref: '/zh/ui/divider',
-    extraHead: uiHead(),
     children: [
       p(
         '分割线用来分开成组的内容。它渲染的是带 ',

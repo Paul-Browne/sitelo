@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Flex-строка или колонка с токеном интервала в качестве промежутка — примитив раскладки, из которого собрано большинство страниц.',
     activeHref: '/ru/ui/stack',
-    extraHead: uiHead(),
     children: [
       p(
         'Стек расставляет пространство между вещами. Это flex-контейнер с единственной задачей и ответ почти на любой вопрос «как мне их раздвинуть»: по вертикали — по умолчанию, по горизонтали — через ',

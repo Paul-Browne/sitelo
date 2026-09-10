@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Styler un bloc de HTML que vous n’avez pas écrit — sortie Markdown, champ de CMS, description d’un flux RSS.',
     activeHref: '/fr/ui/prose',
-    extraHead: uiHead(),
     children: [
       p(
         'Un moteur Markdown renvoie des balises nues : ',

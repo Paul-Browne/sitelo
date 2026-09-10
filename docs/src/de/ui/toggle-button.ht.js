@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Ein Button, der gedrückt bleibt — eine Einstellung als Button statt als Checkbox.',
     activeHref: '/de/ui/toggle-button',
-    extraHead: uiHead(),
     children: [
       p(
         'Ein Toggle-Button ist an oder aus und sagt das mit ',

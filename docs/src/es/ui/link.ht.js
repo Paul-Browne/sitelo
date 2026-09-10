@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un ancla con estilo, con los atributos de seguridad que necesita un enlace externo.',
     activeHref: '/es/ui/link',
-    extraHead: uiHead(),
     children: [
       p(
         'Un enlace es un ancla con el subrayado y la paleta de la biblioteca. Se exporta con dos nombres — ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Une colonne centrée et de largeur limitée — l’enveloppe la plus extérieure de la plupart des pages.',
     activeHref: '/fr/ui/container',
-    extraHead: uiHead(),
     children: [
       p(
         'Un conteneur centre son contenu, plafonne la largeur pour que les lignes de texte restent lisibles, et garde une gouttière pour que rien ne touche le bord d’un écran de téléphone. C’est en général la première chose à l’intérieur de ',

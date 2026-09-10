@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '开关',
     description: '给「一拨就生效」的设置用的开/关控件——底下是一个带 role="switch" 的复选框。',
     activeHref: '/zh/ui/switch',
-    extraHead: uiHead(),
     children: [
       p(
         '开关适合那种一拨动就立刻生效的设置。复选框则适合稍后再用提交按钮确认的选择。如果你的控件待在一个底部有「保存」的表单里，那它应该是复选框。',

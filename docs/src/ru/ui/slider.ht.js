@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Нативный range-инпут, оформленный в тон остальным элементам управления.',
     activeHref: '/ru/ui/slider',
-    extraHead: uiHead(),
     children: [
       p(
         'Это настоящий ',

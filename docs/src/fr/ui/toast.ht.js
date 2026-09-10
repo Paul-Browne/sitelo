@@ -1,6 +1,6 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { preview, uiHead } from '../../lib/ui-demo.js'
+import { preview } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +8,6 @@ export default () =>
     description:
       'Un message éphémère dans le coin, ajouté par script dans une zone que la page a rendue.',
     activeHref: '/fr/ui/toast',
-    extraHead: uiHead(),
     children: [
       p(
         'Le toast est le seul composant ici qui ne peut pas être statique : il apparaît en réponse à un événement. La page rend une zone vide avec ',

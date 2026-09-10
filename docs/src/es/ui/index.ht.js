@@ -1,6 +1,6 @@
 import { a, div, h2, li, p, span, ul } from 'javascript-to-html'
 import { code, uiLayout } from '../../lib/es.js'
-import { preview, uiHead } from '../../lib/ui-demo.js'
+import { preview } from '../../lib/ui-demo.js'
 
 /**
  * Una tarjeta por página de componente, agrupadas exactamente igual que la
@@ -162,7 +162,6 @@ export default () =>
     description:
       'Una biblioteca de componentes para sitelo: botones, tarjetas, formularios, tablas y modales, como funciones que devuelven HTML.',
     activeHref: '/es/ui',
-    extraHead: uiHead(),
     children: [
       p(
         'sitelo-ui es una biblioteca de componentes para sitelo. Cada componente es una función que devuelve una cadena de HTML, así que se anida directamente en la página que ya estás escribiendo: sin compilador, sin runtime, sin hidratación.',

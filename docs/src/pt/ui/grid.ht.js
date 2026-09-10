@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Uma grelha adaptável que encaixa tantas colunas quantas couberem — sem pontos de rutura, sem media queries.',
     activeHref: '/pt/ui/grid',
-    extraHead: uiHead(),
     children: [
       p(
         'Sem ',

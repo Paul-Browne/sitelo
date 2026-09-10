@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Zeilen mit Inhalt und wahlweise etwas an beiden Enden — die Form, aus der die meisten Einstellungsseiten und Feeds gebaut sind.',
     activeHref: '/de/ui/list',
-    extraHead: uiHead(),
     children: [
       p(
         'Eine Liste ist eine umrandete Fläche aus Zeilen. Jede Zeile hat einen Titel, eine optionale Beschreibung und Plätze am Anfang und am Ende für einen Avatar, ein Icon oder ein Bedienelement.',

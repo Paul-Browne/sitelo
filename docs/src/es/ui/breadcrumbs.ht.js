@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'El rastro de ancestros que termina en la página en la que estás.',
     activeHref: '/es/ui/breadcrumbs',
-    extraHead: uiHead(),
     children: [
       p(
         'Las migas de pan dicen dónde se sitúa una página. El último elemento es la página actual: se dibuja como texto plano y se marca con ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Шкала кеглей, которая сама выбирает элемент, чтобы структура документа следовала за визуальной.',
     activeHref: '/ru/ui/typography',
-    extraHead: uiHead(),
     children: [
       p(
         code('text()'),

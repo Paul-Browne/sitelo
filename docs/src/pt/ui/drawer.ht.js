@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Um painel que entra pela berma — a mesma mecânica de popover de um modal, com outra forma.',
     activeHref: '/pt/ui/drawer',
-    extraHead: uiHead(),
     children: [
       p(
         'Um painel lateral ocupa toda a altura e está ancorado a um dos lados. Tal como o ',

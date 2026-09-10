@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Um percurso numerado, com os passos já dados marcados como feitos.',
     activeHref: '/pt/ui/steps',
-    extraHead: uiHead(),
     children: [
       p(
         code('current'),

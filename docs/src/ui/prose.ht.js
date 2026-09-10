@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'Style a block of HTML you did not write — Markdown output, a CMS field, an RSS description.',
     activeHref: '/ui/prose',
-    extraHead: uiHead(),
     children: [
       p(
         'A Markdown renderer hands back bare tags: ',

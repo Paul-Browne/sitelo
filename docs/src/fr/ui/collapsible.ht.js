@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un seul « voir plus », sans les bordures ni le regroupement d’un accordéon.',
     activeHref: '/fr/ui/collapsible',
-    extraHead: uiHead(),
     children: [
       p(
         'Un repliable est un unique ',

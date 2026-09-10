@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '提示',
     description: '一条关于某件事状态的消息，图标和播报角色都跟着颜色走。',
     activeHref: '/zh/ui/alert',
-    extraHead: uiHead(),
     children: [
       p(
         '提示用来告诉读者页面的情况，或者他们刚做的操作的结果。颜色同时决定图标和 ARIA 角色：',

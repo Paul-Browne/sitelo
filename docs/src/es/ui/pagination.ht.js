@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Páginas numeradas, con una ventana alrededor de la actual, como enlaces de verdad.',
     activeHref: '/es/ui/pagination',
-    extraHead: uiHead(),
     children: [
       p(
         code('href'),

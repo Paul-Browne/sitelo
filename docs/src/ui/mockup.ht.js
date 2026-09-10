@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'A screenshot in a frame — browser, window, phone or terminal.',
     activeHref: '/ui/mockup',
-    extraHead: uiHead(),
     children: [
       p(
         'For showing a product on a landing page or a screenshot in documentation. The frame is decoration: the dots, the address bar and the notch are all ',

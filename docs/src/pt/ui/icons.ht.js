@@ -2,7 +2,6 @@ import { h2, p } from 'javascript-to-html'
 import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 /** Uma célula: o símbolo a um tamanho legível, com o nome que se escreve. */
 const cell = (name) =>
@@ -61,7 +60,6 @@ export default () =>
     description:
       'Um conjunto de 99 símbolos na mesma grelha, desenhados inline para que um ícone tome a cor e o tamanho do texto à sua volta.',
     activeHref: '/pt/ui/icons',
-    extraHead: uiHead(),
     children: [
       p(
         code('icon()'),

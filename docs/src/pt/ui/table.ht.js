@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Linhas e colunas a partir de dados, num contentor com deslocamento que impede uma tabela larga de partir a página.',
     activeHref: '/pt/ui/table',
-    extraHead: uiHead(),
     children: [
       p(
         'Passa ',

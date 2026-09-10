@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Человек или предмет в кружке — картинка, если она есть, и инициалы, если её нет.',
     activeHref: '/ru/ui/avatar',
-    extraHead: uiHead(),
     children: [
       p(
         'Задайте аватару ',

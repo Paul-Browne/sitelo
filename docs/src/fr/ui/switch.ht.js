@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Une bascule marche/arrêt pour un réglage qui prend effet tout de suite — une case à cocher en dessous, avec role="switch".',
     activeHref: '/fr/ui/switch',
-    extraHead: uiHead(),
     children: [
       p(
         'Un interrupteur sert à un réglage qui s’applique dès qu’on le bascule. Une case à cocher sert à un choix que l’on confirme plus tard, avec un bouton d’envoi. Si votre contrôle est dans un formulaire avec un Enregistrer en bas, c’est une case à cocher.',

@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '数据指标',
     description: '一个值得一看的数字，附上它的含义和变动方向。',
     activeHref: '/zh/ui/stat',
-    extraHead: uiHead(),
     children: [
       p(
         '一个指标由标签、数值，以及可选的变动组成。',

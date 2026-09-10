@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '折叠面板',
     description: '单独一个「展开更多」，没有手风琴那样的边框和分组。',
     activeHref: '/zh/ui/collapsible',
-    extraHead: uiHead(),
     children: [
       p(
         '折叠面板就是单独一个 ',

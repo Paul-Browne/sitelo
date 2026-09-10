@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '复选框',
     description: '把复选框和它的标签合成一个控件——是真正的 input，用 CSS 装扮而不是替换掉。',
     activeHref: '/zh/ui/checkbox',
-    extraHead: uiHead(),
     children: [
       p(
         code('checkbox()'),

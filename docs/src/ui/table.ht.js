@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'Rows and columns from data, in a scroll container that keeps a wide table from breaking the page.',
     activeHref: '/ui/table',
-    extraHead: uiHead(),
     children: [
       p(
         'Pass ',

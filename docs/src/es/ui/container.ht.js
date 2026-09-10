@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Una columna centrada y con ancho limitado: el envoltorio más externo de casi cualquier página.',
     activeHref: '/es/ui/container',
-    extraHead: uiHead(),
     children: [
       p(
         'Un contenedor centra su contenido, limita el ancho para que las líneas de texto sigan siendo legibles y mantiene un margen para que nada toque el borde de la pantalla de un móvil. Suele ser lo primero dentro de ',

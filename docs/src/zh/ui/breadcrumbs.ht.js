@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '面包屑',
     description: '一条以当前页面收尾的层级路径。',
     activeHref: '/zh/ui/breadcrumbs',
-    extraHead: uiHead(),
     children: [
       p(
         '面包屑说明一个页面所处的位置。最后一项就是当前页面：它以纯文本呈现，并标上 ',

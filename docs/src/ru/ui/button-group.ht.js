@@ -1,6 +1,5 @@
 import { a, h2, p, strong } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Кнопки, которые идут вместе, слитые в один элемент управления с общими границами и скруглёнными краями.',
     activeHref: '/ru/ui/button-group',
-    extraHead: uiHead(),
     children: [
       p(
         'Кнопки группируются обёрткой в ',

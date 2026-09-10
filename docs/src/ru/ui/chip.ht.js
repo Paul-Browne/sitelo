@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Компактная метка — тег, статус, фильтр, счётчик.',
     activeHref: '/ru/ui/chip',
-    extraHead: uiHead(),
     children: [
       p(
         'Чипы — это маленькие кусочки метаданных: теги поста, статус сборки, категории страницы. По умолчанию они строчные, поэтому ряд из них просит ',

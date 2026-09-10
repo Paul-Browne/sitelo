@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Una persona o una cosa dentro de un círculo: una imagen cuando la hay, iniciales cuando no.',
     activeHref: '/es/ui/avatar',
-    extraHead: uiHead(),
     children: [
       p(
         'Dale a un avatar un ',

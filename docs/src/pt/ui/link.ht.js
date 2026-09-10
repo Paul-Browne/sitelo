@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Uma âncora estilizada, com os atributos de segurança que uma ligação externa precisa.',
     activeHref: '/pt/ui/link',
-    extraHead: uiHead(),
     children: [
       p(
         'Uma ligação é uma âncora com o sublinhado e a paleta da biblioteca. É exportada com dois nomes — ',

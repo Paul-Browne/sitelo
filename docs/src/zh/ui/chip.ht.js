@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '标签片',
     description: '一小块紧凑的标记——标签、状态、筛选项或计数。',
     activeHref: '/zh/ui/chip',
-    extraHead: uiHead(),
     children: [
       p(
         '标签片是些细碎的元信息：博文的标签、构建的状态、页面的分类。它默认是行内元素，所以排成一行时需要配一个带 ',

@@ -5,7 +5,6 @@ import {
   button,
   details,
   div,
-  footer,
   h1,
   head,
   header,
@@ -26,6 +25,22 @@ import {
 } from 'javascript-to-html'
 
 import { createRequire } from 'node:module'
+
+import {
+  alert as uiAlert,
+  appBar,
+  appBarNav,
+  appBarSpacer,
+  button as uiButton,
+  collapsible,
+  footer as uiFooter,
+  footerBottom,
+  navLink,
+  styles as uiStyles,
+  visuallyHidden,
+} from 'sitelo/ui'
+
+import { uiDemoDefaults, uiTheme } from './ui-theme.js'
 
 import {
   DEFAULT_LOCALE,
@@ -125,29 +140,37 @@ function themeToggle(lang, variant = 'bar') {
 function cookieBanner(lang) {
   const t = strings(lang)
 
-  return div(
+  return uiAlert(
     {
       class: 'cookie-banner',
+      color: 'neutral',
+      variant: 'solid',
+      // The banner is a notice, not an error, and nothing about it is
+      // urgent — `alert()` reserves the assertive role for danger and
+      // warning, which is the right call for a question a visitor may
+      // ignore for as long as they like.
+      icon: false,
       'data-cookie-banner': '',
-      role: 'region',
       'aria-label': t.cookieLabel,
       hidden: true,
     },
     p({ class: 'cookie-banner-text' }, t.cookieText),
     div(
       { class: 'cookie-banner-actions' },
-      button(
+      uiButton(
         {
-          class: 'cookie-btn cookie-btn-decline',
-          type: 'button',
+          variant: 'ghost',
+          color: 'neutral',
+          size: 'sm',
           'data-cookie-decline': '',
         },
         t.cookieDecline,
       ),
-      button(
+      uiButton(
         {
-          class: 'cookie-btn cookie-btn-accept',
-          type: 'button',
+          variant: 'solid',
+          color: 'primary',
+          size: 'sm',
           'data-cookie-accept': '',
         },
         t.cookieAccept,
@@ -232,66 +255,62 @@ function siteNav(activeHref = '/', lang = DEFAULT_LOCALE) {
   const onExamples = base.startsWith('/examples')
   const onAbout = base === '/about'
 
+  /*
+   * `navLink()` rather than a bare `a`: it carries the padding, the
+   * muted colour and the hover wash, and marks the current page with
+   * `aria-current="page"` — which this site's own `.is-active` class
+   * never did. The class is kept alongside it because the mobile panel
+   * styles the active row differently from the bar.
+   */
+  const link_ = ({ current, href }, label) =>
+    navLink(
+      { ...(current ? { class: 'is-active' } : {}), current, href },
+      label,
+    )
+
   const links = [
-    a(
-      {
-        ...(onDocs ? { class: 'is-active' } : {}),
-        href: localePath('/docs', lang),
-      },
-      t.navDocs,
-    ),
+    link_({ current: onDocs, href: localePath('/docs', lang) }, t.navDocs),
     hasUiSection(lang)
-      ? a(
-          {
-            ...(onUi ? { class: 'is-active' } : {}),
-            href: localePath('/ui', lang),
-          },
-          t.navUi,
-        )
+      ? link_({ current: onUi, href: localePath('/ui', lang) }, t.navUi)
       : '',
-    a(
-      {
-        ...(onExamples ? { class: 'is-active' } : {}),
-        href: localePath('/examples', lang),
-      },
+    link_(
+      { current: onExamples, href: localePath('/examples', lang) },
       t.navExamples,
     ),
-    a(
-      {
-        ...(onAbout ? { class: 'is-active' } : {}),
-        href: localePath('/about', lang),
-      },
-      t.navAbout,
-    ),
-    a(
-      {
-        href: 'https://github.com/paul-browne/sitelo',
-        rel: 'noopener',
-      },
+    link_({ current: onAbout, href: localePath('/about', lang) }, t.navAbout),
+    navLink(
+      { href: 'https://github.com/paul-browne/sitelo', rel: 'noopener' },
       'GitHub',
     ),
-    a(
-      {
-        href: 'https://www.npmjs.com/package/sitelo',
-        rel: 'noopener',
-      },
+    navLink(
+      { href: 'https://www.npmjs.com/package/sitelo', rel: 'noopener' },
       'npm',
     ),
   ]
 
-  return nav(
-    { class: 'nav' },
-    a(
-      { class: 'nav-brand', href: localePath('/', lang) },
-      img({
+  /*
+   * `as: 'nav'` because this bar already sits inside `header.topbar`,
+   * and `appBar()` renders a <header> by default — nesting one inside
+   * the other would hand a screen reader two banner landmarks for one
+   * bar.
+   */
+  return appBar(
+    {
+      as: 'nav',
+      class: 'nav',
+      href: localePath('/', lang),
+      brand: img({
         class: 'nav-logo',
         src: '/logo.svg',
         alt: 'sitelo',
         width: '120',
         height: '34',
       }),
-    ),
-    div(
+    },
+    // The bar's own spacer, rather than an `auto` margin on the brand —
+    // it is the same one line either way, and this one is the component's.
+    appBarSpacer(),
+    appBarNav(
       { class: 'nav-links' },
       ...links,
       languageSwitch(activeHref, lang),
@@ -313,8 +332,19 @@ function siteNav(activeHref = '/', lang = DEFAULT_LOCALE) {
 function siteFooter(lang = DEFAULT_LOCALE) {
   const t = strings(lang)
 
-  return footer(
-    { class: 'footer' },
+  /*
+   * `footer()` from sitelo-ui rather than a bare <footer>: it already
+   * carries the rule above it, the muted colour and the smaller type,
+   * which is every declaration this site's own `.footer` used to make.
+   * One column, because the docs footer is two stacked rows and not the
+   * link grid the component defaults to.
+   *
+   * `footerBottom()` is deliberately not used — it adds a second
+   * `border-top` for the row it separates, and with nothing above it
+   * that reads as a double rule.
+   */
+  return uiFooter(
+    { class: 'footer', columns: '1fr' },
     p(`© Paul Browne ${new Date().getFullYear()}`),
     p(
       { class: 'footer-meta' },
@@ -374,13 +404,14 @@ function sideNav({ label, items, activeHref }) {
     { class: 'docs-sidebar', 'aria-label': label },
     div({ id: 'docs-search' }),
     p({ class: 'docs-sidebar-label' }, label),
-    details(
-      { class: 'docs-sidebar-disclosure' },
-      summary(
-        { class: 'docs-sidebar-toggle' },
-        label,
-        current ? span({ class: 'docs-sidebar-current' }, current.label) : '',
-      ),
+    collapsible(
+      {
+        class: 'docs-sidebar-disclosure',
+        trigger: [
+          label,
+          current ? span({ class: 'docs-sidebar-current' }, current.label) : '',
+        ].join(''),
+      },
       nav(
         { class: 'docs-side-nav' },
         // A `heading` entry groups the links that follow it; the UI sidebar
@@ -391,7 +422,9 @@ function sideNav({ label, items, activeHref }) {
             : a(
                 {
                   href: item.href,
-                  ...(item.href === activeHref ? { class: 'is-active' } : {}),
+                  ...(item.href === activeHref
+                    ? { class: 'is-active', 'aria-current': 'page' }
+                    : {}),
                 },
                 item.label,
                 // `js` marks a component that wants the client runtime. The
@@ -402,7 +435,7 @@ function sideNav({ label, items, activeHref }) {
                   ? sup(
                       { class: 'docs-side-nav-js', title: 'Needs JavaScript' },
                       'js',
-                      span({ class: 'docs-sr-only' }, ' (needs JavaScript)'),
+                      visuallyHidden(' (needs JavaScript)'),
                     )
                   : '',
               ),
@@ -511,14 +544,21 @@ function pageShell({
       ),
       ...preload.map((p) => link({ rel: 'preload', ...p })),
       /*
-       * Before the site stylesheet on purpose. sitelo-ui declares
-       * `color-scheme` on bare `:root`, and the docs sheet does too — its
-       * dark default is the one that has to survive, so it must come last.
+       * sitelo-ui, on every page rather than only the ones documenting it.
+       * The chrome around the article — the bar, the footer, the sidebar
+       * disclosure, the tables, the cookie notice — is built from the
+       * library now, so the sheet is no longer optional here.
+       *
+       * The order of these three is load-bearing. `ui.css` first, because
+       * everything after it is an override of something it declares.
+       * `uiTheme()` next, restating sitelo-ui's tokens in terms of this
+       * site's palette. The docs sheet last: it declares `color-scheme` on
+       * `:root` and its dark default is the one that has to survive.
        * `text-size-adjust` is declared on `:root` by both sheets at the
-       * same `100%`, so their order does not matter. Nothing else collides:
-       * every other sitelo-ui rule is scoped to an `su-` class, and this
-       * site has none.
+       * same `100%`, so their order does not matter.
        */
+      uiStyles(),
+      uiTheme(),
       ...extraHead,
       link({ rel: 'stylesheet', href: '/styles.css' }),
       script(analyticsBootScript),
@@ -604,6 +644,14 @@ function tableOfContents(headings, lang) {
 
   const t = strings(lang)
 
+  /*
+   * A plain `ul` and not sitelo-ui's `list()`. The component is a
+   * vertical, ruled, one-per-row list — an inbox, a settings pane — and
+   * every declaration that makes it that (`padding: 1rem` on the item, a
+   * rule under each one) is wrong for a wrapped row of short anchors.
+   * Adopting it here would mean overriding the component in three places
+   * to get back to what four lines of CSS already do.
+   */
   return nav(
     { class: 'docs-toc', 'aria-label': t.tocLabel },
     p({ class: 'docs-toc-label' }, t.tocLabel),
@@ -762,9 +810,17 @@ export function createLayouts(lang = DEFAULT_LOCALE) {
     })
   }
 
-  function uiLayout(args) {
+  function uiLayout({ extraHead = [], ...args }) {
     return guideLayout({
       ...args,
+      /*
+       * The component pages, and only they, put sitelo-ui's own tokens
+       * back inside the demo previews — see `uiDemoDefaults`. Every other
+       * page renders the library in this site's colours, which is the
+       * whole point of the theme; a reference that did the same would be
+       * documenting the docs rather than the library.
+       */
+      extraHead: [uiDemoDefaults(), ...extraHead],
       lang,
       sidebarLabel: t.sidebarUi,
       sidebarItems: uiNav(lang),

@@ -2,7 +2,6 @@ import { h2, p } from 'javascript-to-html'
 import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 /** 一个格子：可读大小的图形，加上要敲的名字。 */
 const cell = (name) =>
@@ -58,7 +57,6 @@ export default () =>
     description:
       '同一套网格上的 99 个图形，内联渲染，因此图标会取用周围文字的颜色和大小。',
     activeHref: '/zh/ui/icons',
-    extraHead: uiHead(),
     children: [
       p(
         code('icon()'),

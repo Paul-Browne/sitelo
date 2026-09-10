@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un conmutador claro/oscuro, con el script en línea que evita el destello al entrar cuando ya hay una elección guardada.',
     activeHref: '/es/ui/theme-toggle',
-    extraHead: uiHead(),
     children: [
       p(
         'sitelo-ui resuelve el modo oscuro por su cuenta a partir de ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Одно «показать больше» без рамок и группировки аккордеона.',
     activeHref: '/ru/ui/collapsible',
-    extraHead: uiHead(),
     children: [
       p(
         'Сворачиваемый блок — это одиночный ',

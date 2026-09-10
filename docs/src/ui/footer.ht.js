@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'The bottom of a site: columns of links, and a line under them.',
     activeHref: '/ui/footer',
-    extraHead: uiHead(),
     children: [
       p(
         'A footer is a grid of columns that auto-fits, plus an optional bottom line that always spans the full width however many columns there are.',

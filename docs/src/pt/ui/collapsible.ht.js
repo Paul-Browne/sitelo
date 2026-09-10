@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Um único «ver mais», sem os contornos e o agrupamento de um acordeão.',
     activeHref: '/pt/ui/collapsible',
-    extraHead: uiHead(),
     children: [
       p(
         'Um recolhível é um único ',

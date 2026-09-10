@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Ein segmentiertes Steuerelement: Toggle-Buttons zu einem verbunden, oder Links, bei denen jedes Segment eine eigene Seite ist.',
     activeHref: '/de/ui/toggle-group',
-    extraHead: uiHead(),
     children: [
       p(
         'Eine Toggle-Gruppe ist eine Reihe von Optionen, die sich als ein einziges Steuerelement liest. Bau sie aus ',

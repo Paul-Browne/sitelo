@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Uma alternância ligado/desligado para uma definição que faz efeito de imediato — por baixo, uma caixa de seleção com role="switch".',
     activeHref: '/pt/ui/switch',
-    extraHead: uiHead(),
     children: [
       p(
         'Um interruptor serve para uma definição que se aplica assim que é mexida. Uma caixa de seleção serve para uma escolha que confirmas mais tarde, com um botão de submissão. Se o teu controlo está num formulário com um Guardar em baixo, é uma caixa de seleção.',

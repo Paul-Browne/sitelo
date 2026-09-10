@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '卡片',
     description: '承载成组内容的一块面，头部、主体、页脚和媒体区都知道怎么彼此相处。',
     activeHref: '/zh/ui/card',
-    extraHead: uiHead(),
     children: [
       p(
         '卡片把相关内容归拢到自己的一块面上。它的各部分——',

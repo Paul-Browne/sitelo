@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Uma coluna centrada e de largura limitada — o invólucro mais exterior da maioria das páginas.',
     activeHref: '/pt/ui/container',
-    extraHead: uiHead(),
     children: [
       p(
         'Um contentor centra o seu conteúdo, limita a largura para as linhas de texto continuarem legíveis, e guarda uma margem para que nada toque na berma do ecrã de um telemóvel. Costuma ser a primeira coisa dentro de ',

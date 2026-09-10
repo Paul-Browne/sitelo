@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '滑块',
     description: '原生的 range 输入，样式与其他控件保持一致。',
     activeHref: '/zh/ui/slider',
-    extraHead: uiHead(),
     children: [
       p(
         '这是一个真正的 ',

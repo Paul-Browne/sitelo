@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un panneau qui entre par le bord — mêmes mécaniques de popover qu’une modale, forme différente.',
     activeHref: '/fr/ui/drawer',
-    extraHead: uiHead(),
     children: [
       p(
         'Un tiroir est un panneau pleine hauteur ancré sur un côté. Comme ',

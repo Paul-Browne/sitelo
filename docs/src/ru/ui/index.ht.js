@@ -1,6 +1,6 @@
 import { a, div, h2, li, p, span, ul } from 'javascript-to-html'
 import { code, uiLayout } from '../../lib/ru.js'
-import { preview, uiHead } from '../../lib/ui-demo.js'
+import { preview } from '../../lib/ui-demo.js'
 
 /**
  * По карточке на страницу компонента, сгруппированы ровно так же, как
@@ -160,7 +160,6 @@ export default () =>
     description:
       'Библиотека компонентов для sitelo: кнопки, карточки, формы, таблицы и модальные окна — как функции, возвращающие HTML.',
     activeHref: '/ru/ui',
-    extraHead: uiHead(),
     children: [
       p(
         'sitelo-ui — это библиотека компонентов для sitelo. Каждый компонент — функция, возвращающая строку HTML, поэтому он вкладывается прямо в ту страницу, которую вы и так пишете: без компилятора, без рантайма, без гидратации.',

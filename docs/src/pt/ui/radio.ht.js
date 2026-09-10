@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Uma escolha entre várias, com inputs de rádio a sério a partilhar um name — com legenda e papel de grupo.',
     activeHref: '/pt/ui/radio',
-    extraHead: uiHead(),
     children: [
       p(
         'Os rádios servem para escolher exatamente uma opção de um conjunto pequeno e visível. O ',

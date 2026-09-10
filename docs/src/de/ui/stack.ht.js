@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Eine Flex-Reihe oder -Spalte mit einem Abstands-Token als Lücke — der Layout-Baustein, aus dem die meisten Seiten bestehen.',
     activeHref: '/de/ui/stack',
-    extraHead: uiHead(),
     children: [
       p(
         'Stack setzt Abstand zwischen Dinge. Es ist ein Flex-Container mit einer einzigen Aufgabe und die Antwort auf die meisten „wie kriege ich hier Abstand hin“-Fragen — senkrecht als Standard, waagerecht mit ',

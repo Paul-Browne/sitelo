@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Ein An/Aus-Schalter für eine Einstellung, die sofort greift — darunter eine Checkbox mit role="switch".',
     activeHref: '/de/ui/switch',
-    extraHead: uiHead(),
     children: [
       p(
         'Ein Schalter ist für eine Einstellung, die gilt, sobald man ihn umlegt. Eine Checkbox ist für eine Wahl, die man später bestätigt, mit einem Absenden-Button. Sitzt dein Bedienelement in einem Formular mit einem Speichern unten, ist es eine Checkbox.',

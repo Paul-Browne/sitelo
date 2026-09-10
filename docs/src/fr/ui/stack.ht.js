@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Une rangée ou une colonne flex avec un jeton d’espacement pour l’écart — la brique de mise en page dont sont faites la plupart des pages.',
     activeHref: '/fr/ui/stack',
-    extraHead: uiHead(),
     children: [
       p(
         'Stack met de l’espace entre les choses. C’est un conteneur flex avec une seule mission, et la réponse à la plupart des questions « comment j’espace ça » — verticalement par défaut, horizontalement avec ',

@@ -1,7 +1,7 @@
 import { a, div, h2, li, p, span, ul } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { preview, uiHead } from '../lib/ui-demo.js'
+import { preview } from '../lib/ui-demo.js'
 
 /**
  * One card per component page, grouped exactly as the component
@@ -162,7 +162,6 @@ export default () =>
     description:
       'A component library for sitelo: buttons, cards, forms, tables and modals, as functions that return HTML.',
     activeHref: '/ui',
-    extraHead: uiHead(),
     children: [
       p(
         'sitelo-ui is a component library for sitelo. Every component is a function that returns a string of HTML, so it nests straight into the page you are already writing — no compiler, no runtime, no hydration.',

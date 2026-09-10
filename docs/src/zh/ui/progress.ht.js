@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '进度',
     description: '知道何时结束的活儿用进度条，不知道的用加载转圈。',
     activeHref: '/zh/ui/progress',
-    extraHead: uiHead(),
     children: [
       p(
         '只要你知道还剩多少，就用确定进度条——只有它才真的告诉了读者什么。省略 ',

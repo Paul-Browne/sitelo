@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Отзывчивая сетка, вмещающая столько колонок, сколько влезет: без брейкпоинтов и медиазапросов.',
     activeHref: '/ru/ui/grid',
-    extraHead: uiHead(),
     children: [
       p(
         'Без ',

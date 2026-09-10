@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Mettre la feuille de style sur la page, et changer chaque couleur, rayon et police depuis un seul appel.',
     activeHref: '/fr/ui/theming',
-    extraHead: uiHead(),
     children: [
       p(
         'Tous les composants lisent les mêmes propriétés personnalisées : un thème n’est donc qu’un jeu de surcharges sur ',

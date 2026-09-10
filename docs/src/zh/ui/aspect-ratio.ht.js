@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '宽高比',
     description: '把一个盒子固定成某个形状，内容加载时页面上的东西就不会跳动。',
     activeHref: '/zh/ui/aspect-ratio',
-    extraHead: uiHead(),
     children: [
       p(
         '还没加载任何东西时，高度就已经由宽度定下来了，所以姗姗来迟的图片或嵌入内容不会把页面其余部分往下挤。子元素会填满盒子并被裁切，而不是留出黑边。',

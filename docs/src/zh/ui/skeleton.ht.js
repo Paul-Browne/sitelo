@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '骨架屏',
     description: '一块占位图形，形状就照着还没到位的内容来。',
     activeHref: '/zh/ui/skeleton',
-    extraHead: uiHead(),
     children: [
       p(
         '骨架屏在内容加载时先顶上它的位置。在静态站点里这比在应用里少见——HTML 本来就已经在了——但它通常正是服务端区块的 ',

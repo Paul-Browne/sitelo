@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Центрированная колонка с ограниченной шириной — самая внешняя обёртка почти на любой странице.',
     activeHref: '/ru/ui/container',
-    extraHead: uiHead(),
     children: [
       p(
         'Контейнер центрирует содержимое, ограничивает ширину, чтобы строки текста оставались читаемыми, и держит поле, чтобы на телефоне ничто не упиралось в край экрана. Обычно он идёт первым внутри ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Uma barra para trabalho com fim conhecido, um indicador giratório para o que não tem.',
     activeHref: '/pt/ui/progress',
-    extraHead: uiHead(),
     children: [
       p(
         'Usa uma barra determinada sempre que souberes quanto falta — é a única que diz alguma coisa ao leitor. Omite ',

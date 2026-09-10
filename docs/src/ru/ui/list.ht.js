@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Строки содержимого с необязательным элементом по краям — форма, из которой сделано большинство экранов настроек и лент.',
     activeHref: '/ru/ui/list',
-    extraHead: uiHead(),
     children: [
       p(
         'Список — это обведённая поверхность из строк. У каждой строки есть заголовок, необязательное описание и слоты в начале и в конце — под аватар, иконку или элемент управления.',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un input range natif, stylé pour s’accorder aux autres contrôles.',
     activeHref: '/fr/ui/slider',
-    extraHead: uiHead(),
     children: [
       p(
         'C’est un vrai ',

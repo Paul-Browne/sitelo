@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Um botão que fica carregado — uma definição mostrada como botão em vez de caixa de seleção.',
     activeHref: '/pt/ui/toggle-button',
-    extraHead: uiHead(),
     children: [
       p(
         'Um botão de alternância está ligado ou desligado, e di-lo com ',

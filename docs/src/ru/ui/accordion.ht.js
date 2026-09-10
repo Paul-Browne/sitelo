@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Сворачиваемые секции на собственном <details> браузера — включая его эксклюзивный режим.',
     activeHref: '/ru/ui/accordion',
-    extraHead: uiHead(),
     children: [
       p(
         'Каждая секция — это ',

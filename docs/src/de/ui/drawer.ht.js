@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Ein Panel, das von der Kante hereinkommt — dieselbe Popover-Mechanik wie ein Modal, andere Form.',
     activeHref: '/de/ui/drawer',
-    extraHead: uiHead(),
     children: [
       p(
         'Ein Drawer ist ein Panel über die volle Höhe, an einer Seite verankert. Wie ',

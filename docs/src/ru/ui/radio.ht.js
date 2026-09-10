@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Один выбор из нескольких — настоящие radio-инпуты с общим name, легендой и ролью группы.',
     activeHref: '/ru/ui/radio',
-    extraHead: uiHead(),
     children: [
       p(
         'Радиокнопки нужны, чтобы выбрать ровно один вариант из небольшого видимого набора. ',

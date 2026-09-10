@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '富文本',
     description: '给不是你写的那段 HTML 上样式——Markdown 的产物、CMS 字段、RSS 里的描述。',
     activeHref: '/zh/ui/prose',
-    extraHead: uiHead(),
     children: [
       p(
         'Markdown 渲染器吐回来的是光秃秃的标签：',

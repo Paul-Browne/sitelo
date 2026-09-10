@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '时间线',
     description: '沿着一条线依次排开的条目——更新日志、版本历史，或者一页「关于」。',
     activeHref: '/zh/ui/timeline',
-    extraHead: uiHead(),
     children: [
       p(
         '时间线就是一个旁边带竖线的有序列表。可以用 ',

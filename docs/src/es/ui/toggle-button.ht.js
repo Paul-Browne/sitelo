@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un botón que se queda pulsado: un ajuste mostrado como botón en vez de como casilla.',
     activeHref: '/es/ui/toggle-button',
-    extraHead: uiHead(),
     children: [
       p(
         'Un botón de alternancia está encendido o apagado, y lo dice con ',

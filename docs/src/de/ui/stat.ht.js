@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Eine Zahl, die einen Blick wert ist, samt ihrer Bedeutung und der Richtung, in die sie sich bewegt hat.',
     activeHref: '/de/ui/stat',
-    extraHead: uiHead(),
     children: [
       p(
         'Eine Kennzahl besteht aus Label, Wert und wahlweise einer Veränderung. ',

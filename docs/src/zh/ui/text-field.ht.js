@@ -1,13 +1,11 @@
 import { h2, h3, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '文本框',
     description: '单行和多行文本输入，标签、帮助文本、错误信息和各种 id 都已经替你接好。',
     activeHref: '/zh/ui/text-field',
-    extraHead: uiHead(),
     children: [
       p(
         '这里分两层。',

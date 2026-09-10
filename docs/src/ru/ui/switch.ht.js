@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Переключатель «вкл/выкл» для настройки, которая срабатывает сразу: под ним — флажок с role="switch".',
     activeHref: '/ru/ui/switch',
-    extraHead: uiHead(),
     children: [
       p(
         'Тумблер нужен для настройки, которая применяется, как только его переключили. Флажок — для выбора, который вы подтверждаете позже кнопкой отправки. Если ваш элемент стоит в форме с «Сохранить» внизу, это флажок.',

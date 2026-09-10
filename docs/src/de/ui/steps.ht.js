@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Ein nummerierter Ablauf, in dem die zurückgelegten Schritte als erledigt markiert sind.',
     activeHref: '/de/ui/steps',
-    extraHead: uiHead(),
     children: [
       p(
         code('current'),

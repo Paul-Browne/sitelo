@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un interrupteur clair/sombre, avec le script inline qui empêche un choix mémorisé de provoquer un flash à l’arrivée.',
     activeHref: '/fr/ui/theme-toggle',
-    extraHead: uiHead(),
     children: [
       p(
         'sitelo-ui résout le mode sombre tout seul à partir de ',

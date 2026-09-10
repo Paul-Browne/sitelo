@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Панель, выезжающая от края: та же механика popover, что и у модального окна, только другой формы.',
     activeHref: '/ru/ui/drawer',
-    extraHead: uiHead(),
     children: [
       p(
         'Боковая панель занимает всю высоту и прижата к одной стороне. Как и ',

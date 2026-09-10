@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Три формы: ссылки, по странице на вкладку; панели, которые подменяются на месте; или панели, которыми правит URL.',
     activeHref: '/ru/ui/tabs',
-    extraHead: uiHead(),
     children: [
       p(
         'Дайте каждому элементу ',

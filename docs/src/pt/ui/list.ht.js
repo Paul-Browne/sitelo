@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Linhas de conteúdo com algo opcional de cada lado — a forma com que a maioria dos ecrãs de definições e feeds é construída.',
     activeHref: '/pt/ui/list',
-    extraHead: uiHead(),
     children: [
       p(
         'Uma lista é uma superfície com contorno feita de linhas. Cada linha tem um título, uma descrição opcional, e espaços no início e no fim para um avatar, um ícone ou um controlo.',

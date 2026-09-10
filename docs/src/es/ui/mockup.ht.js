@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Una captura dentro de un marco: navegador, ventana, teléfono o terminal.',
     activeHref: '/es/ui/mockup',
-    extraHead: uiHead(),
     children: [
       p(
         'Para enseñar un producto en una página de aterrizaje o una captura en la documentación. El marco es decoración: los puntos, la barra de direcciones y la muesca llevan todos ',

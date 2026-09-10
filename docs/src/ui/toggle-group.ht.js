@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'A segmented control: toggle buttons joined into one, or links where each segment is its own page.',
     activeHref: '/ui/toggle-group',
-    extraHead: uiHead(),
     children: [
       p(
         'A toggle group is a row of choices that reads as a single control. Build it from ',

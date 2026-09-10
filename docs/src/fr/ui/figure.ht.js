@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Une image et sa légende, en une seule figure — avec la place réservée avant l’arrivée de l’image.',
     activeHref: '/fr/ui/figure',
-    extraHead: uiHead(),
     children: [
       p(
         'Une ',

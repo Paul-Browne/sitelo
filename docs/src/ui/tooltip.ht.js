@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'A short hint on hover and focus, drawn entirely in CSS.',
     activeHref: '/ui/tooltip',
-    extraHead: uiHead(),
     children: [
       p(
         'The tooltip text lives in a data attribute and is drawn by a pseudo-element, so there is no script, nothing to position at runtime, and nothing left behind in the DOM. It appears on hover and on keyboard focus, which the ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Ausklappbare Abschnitte mit dem browsereigenen <details> — inklusive seines exklusiven Modus.',
     activeHref: '/de/ui/accordion',
-    extraHead: uiHead(),
     children: [
       p(
         'Jeder Abschnitt ist ein ',

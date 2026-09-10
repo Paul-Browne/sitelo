@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'Getting the stylesheet onto the page, and changing every colour, radius and font from one call.',
     activeHref: '/ui/theming',
-    extraHead: uiHead(),
     children: [
       p(
         'Every component reads the same custom properties, so a theme is a set of overrides on ',

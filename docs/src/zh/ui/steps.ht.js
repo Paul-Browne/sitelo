@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '步骤',
     description: '一条带编号的流程，走过的步骤都会标成已完成。',
     activeHref: '/zh/ui/steps',
-    extraHead: uiHead(),
     children: [
       p(
         code('current'),

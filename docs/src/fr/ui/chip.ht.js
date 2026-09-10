@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Une étiquette compacte — un tag, un statut, un filtre, un compteur.',
     activeHref: '/fr/ui/chip',
-    extraHead: uiHead(),
     children: [
       p(
         'Les puces sont de petits morceaux de métadonnées : les tags d’un billet, le statut d’un build, les catégories d’une page. Elles sont en ligne par défaut, donc une rangée réclame un ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'O rasto de antepassados que termina na página onde estás.',
     activeHref: '/pt/ui/breadcrumbs',
-    extraHead: uiHead(),
     children: [
       p(
         'As migalhas dizem onde uma página assenta. O último item é a página atual: é desenhado como texto simples e marcado com ',

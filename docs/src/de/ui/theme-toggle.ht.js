@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Ein Hell/Dunkel-Schalter, samt dem Inline-Skript, das eine gespeicherte Wahl beim Eintreffen nicht aufblitzen lässt.',
     activeHref: '/de/ui/theme-toggle',
-    extraHead: uiHead(),
     children: [
       p(
         'sitelo-ui löst den Dunkelmodus von sich aus über ',

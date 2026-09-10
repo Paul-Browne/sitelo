@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Una superficie para contenido agrupado, con cabecera, cuerpo, pie y medios que saben convivir.',
     activeHref: '/es/ui/card',
-    extraHead: uiHead(),
     children: [
       p(
         'Una tarjeta agrupa contenido relacionado en su propia superficie. Las partes — ',

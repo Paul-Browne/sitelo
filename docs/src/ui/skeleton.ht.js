@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'A placeholder in the shape of the content that has not arrived yet.',
     activeHref: '/ui/skeleton',
-    extraHead: uiHead(),
     children: [
       p(
         'A skeleton stands in for content while it loads. On a static site that is rarer than in an app — the HTML is already there — but it is what an island’s ',

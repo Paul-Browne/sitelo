@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Uma indicação curta ao passar o rato e ao receber foco, desenhada inteiramente em CSS.',
     activeHref: '/pt/ui/tooltip',
-    extraHead: uiHead(),
     children: [
       p(
         'O texto da dica vive num atributo de dados e é desenhado por um pseudo-elemento, por isso não há script, nada para posicionar em tempo de execução e nada que fique para trás no DOM. Aparece ao passar o rato e ao receber foco pelo teclado, do que trata a metade ',

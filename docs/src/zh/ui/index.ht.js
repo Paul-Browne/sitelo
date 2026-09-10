@@ -1,6 +1,6 @@
 import { a, div, h2, li, p, span, ul } from 'javascript-to-html'
 import { code, uiLayout } from '../../lib/zh.js'
-import { preview, uiHead } from '../../lib/ui-demo.js'
+import { preview } from '../../lib/ui-demo.js'
 
 /**
  * 每个组件页面一张卡片，分组方式和组件参考表完全一致。
@@ -159,7 +159,6 @@ export default () =>
     description:
       '给 sitelo 用的组件库：按钮、卡片、表单、表格和模态框，全都是返回 HTML 的函数。',
     activeHref: '/zh/ui',
-    extraHead: uiHead(),
     children: [
       p(
         'sitelo-ui 是给 sitelo 用的组件库。每个组件都是一个返回 HTML 字符串的函数，因此可以直接嵌进你正在写的那个页面——没有编译器、没有运行时、也不用水合。',

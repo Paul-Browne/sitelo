@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Das untere Ende einer Website: Spalten mit Links und eine Zeile darunter.',
     activeHref: '/de/ui/footer',
-    extraHead: uiHead(),
     children: [
       p(
         'Ein Footer ist ein Raster aus Spalten, das sich selbst einpasst, plus eine optionale Schlusszeile, die immer die volle Breite einnimmt, wie viele Spalten es auch gibt.',

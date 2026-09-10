@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Uma caixa e a sua etiqueta como um só controlo — um input a sério, estilizado com CSS em vez de substituído.',
     activeHref: '/pt/ui/checkbox',
-    extraHead: uiHead(),
     children: [
       p(
         code('checkbox()'),

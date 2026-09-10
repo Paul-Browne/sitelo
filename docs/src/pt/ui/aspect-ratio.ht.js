@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Mantém uma caixa com uma forma fixa, para que nada na página se mexa quando o conteúdo carrega.',
     activeHref: '/pt/ui/aspect-ratio',
-    extraHead: uiHead(),
     children: [
       p(
         'A altura é conhecida a partir da largura antes de algo ter carregado, por isso uma imagem ou uma incorporação que chegue tarde não empurra o resto da página para baixo. O filho preenche a caixa e é recortado em vez de ficar com barras.',

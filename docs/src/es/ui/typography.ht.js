@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Una escala tipográfica que elige su propio elemento, para que el esquema del documento siga al visual.',
     activeHref: '/es/ui/typography',
-    extraHead: uiHead(),
     children: [
       p(
         code('text()'),

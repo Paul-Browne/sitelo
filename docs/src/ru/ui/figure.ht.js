@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Картинка и подпись к ней как одна иллюстрация — с местом, занятым заранее, до появления картинки.',
     activeHref: '/ru/ui/figure',
-    extraHead: uiHead(),
     children: [
       p(
         '<figure> связывает подпись с тем, что она описывает, чего абзац под картинкой не делает. Передайте ',

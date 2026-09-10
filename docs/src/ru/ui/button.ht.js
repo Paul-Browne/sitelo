@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Кнопки позволяют людям действовать. Пять вариантов, пять цветов, три размера — и ссылка всегда, когда дело в переходе.',
     activeHref: '/ru/ui/button',
-    extraHead: uiHead(),
     children: [
       p(
         'Кнопка — это то, на что человек нажимает, чтобы что-то произошло. ',

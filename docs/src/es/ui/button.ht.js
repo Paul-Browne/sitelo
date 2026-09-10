@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Los botones dejan que la gente actúe. Cinco variantes, cinco colores, tres tamaños — y un ancla siempre que navega.',
     activeHref: '/es/ui/button',
-    extraHead: uiHead(),
     children: [
       p(
         'Un botón es aquello que una persona pulsa para que ocurra algo. ',

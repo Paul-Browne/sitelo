@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un select natif, stylé pour s’accorder aux autres champs, avec des options construites à partir de données.',
     activeHref: '/fr/ui/select',
-    extraHead: uiHead(),
     children: [
       p(
         'C’est un vrai ',

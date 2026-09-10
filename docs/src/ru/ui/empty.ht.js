@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Как выглядит список до того, как в нём что-то появится.',
     activeHref: '/ru/ui/empty',
-    extraHead: uiHead(),
     children: [
       p(
         'Пустое место читается как баг. Пустое состояние говорит, какое место пусто, почему и что делать дальше, — и это тот случай, о котором забывают проще всего, ведь при разработке данные есть всегда.',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Поверхность для сгруппированного содержимого: шапка, тело, подвал и медиа, которые умеют уживаться вместе.',
     activeHref: '/ru/ui/card',
-    extraHead: uiHead(),
     children: [
       p(
         'Карточка собирает связанное содержимое на собственной поверхности. Её части — ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Três formas: ligações, uma página por separador; painéis que se trocam no lugar; ou painéis guiados pelo URL.',
     activeHref: '/pt/ui/tabs',
-    extraHead: uiHead(),
     children: [
       p(
         'Dá a cada item um ',

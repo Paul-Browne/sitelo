@@ -1,6 +1,6 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { preview, uiHead } from '../../lib/ui-demo.js'
+import { preview } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +8,6 @@ export default () =>
     description:
       'Un mensaje pasajero en la esquina, añadido desde script a una región que la página ya dibujó.',
     activeHref: '/es/ui/toast',
-    extraHead: uiHead(),
     children: [
       p(
         'El toast es el único componente de aquí que no puede ser estático: aparece como respuesta a que ocurre algo. La página dibuja una región vacía con ',

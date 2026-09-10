@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un chiffre qui mérite un regard, avec ce qu’il signifie et dans quel sens il a bougé.',
     activeHref: '/fr/ui/stat',
-    extraHead: uiHead(),
     children: [
       p(
         'Une statistique, c’est un libellé, une valeur et éventuellement une variation. ',

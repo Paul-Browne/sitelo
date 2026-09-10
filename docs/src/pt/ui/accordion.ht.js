@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Secções recolhíveis com o próprio <details> do navegador — incluindo o seu modo exclusivo.',
     activeHref: '/pt/ui/accordion',
-    extraHead: uiHead(),
     children: [
       p(
         'Cada secção é um ',

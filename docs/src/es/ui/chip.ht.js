@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Una etiqueta compacta: un tag, un estado, un filtro, un recuento.',
     activeHref: '/es/ui/chip',
-    extraHead: uiHead(),
     children: [
       p(
         'Los chips son trocitos de metadatos: las etiquetas de una entrada de blog, el estado de una compilación, las categorías de una página. Por defecto son en línea, así que una fila de ellos pide un ',

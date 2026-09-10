@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '链接',
     description: '带样式的锚点，并附上外链该有的安全属性。',
     activeHref: '/zh/ui/link',
-    extraHead: uiHead(),
     children: [
       p(
         '链接就是带上本库下划线处理和配色的锚点。它以两个名字导出——',

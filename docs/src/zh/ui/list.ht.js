@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '列表',
     description: '一行行内容，两侧可各放一样东西——大多数设置页和信息流都是这个形状。',
     activeHref: '/zh/ui/list',
-    extraHead: uiHead(),
     children: [
       p(
         '列表是由若干行组成的带边框区域。每一行有标题、可选的描述，以及行首和行尾两个位置，用来放头像、图标或控件。',

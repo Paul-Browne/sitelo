@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Une capture d’écran dans un cadre — navigateur, fenêtre, téléphone ou terminal.',
     activeHref: '/fr/ui/mockup',
-    extraHead: uiHead(),
     children: [
       p(
         'Pour montrer un produit sur une page d’accueil ou une capture dans la documentation. Le cadre est décoratif : les pastilles, la barre d’adresse et l’encoche sont toutes ',

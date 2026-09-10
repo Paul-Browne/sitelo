@@ -1,6 +1,6 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { preview, uiHead } from '../../lib/ui-demo.js'
+import { preview } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +8,6 @@ export default () =>
     description:
       'Мимолётное сообщение в углу, добавляемое скриптом в область, которую нарисовала страница.',
     activeHref: '/ru/ui/toast',
-    extraHead: uiHead(),
     children: [
       p(
         'Тост — единственный компонент здесь, который не может быть статическим: он появляется в ответ на событие. Страница рисует пустую область через ',

@@ -1,7 +1,7 @@
 import { a, h2, p, strong } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'Buttons that belong together, joined into one control with shared borders and rounded ends.',
     activeHref: '/ui/button-group',
-    extraHead: uiHead(),
     children: [
       p(
         'Buttons can be grouped by wrapping them in ',

@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '空状态',
     description: '列表在还没有任何内容时该长成什么样。',
     activeHref: '/zh/ui/empty',
-    extraHead: uiHead(),
     children: [
       p(
         '一片空白看起来就像出了 bug。空状态会说明哪块是空的、为什么空，以及接下来该做什么——而它恰恰是最容易被忘掉的场景，因为开发时永远都有数据。',

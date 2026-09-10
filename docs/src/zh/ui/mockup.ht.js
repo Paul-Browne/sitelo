@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '设备外框',
     description: '把截图放进一个框里——浏览器、窗口、手机或终端。',
     activeHref: '/zh/ui/mockup',
-    extraHead: uiHead(),
     children: [
       p(
         '用来在落地页上展示产品，或者在文档里放截图。外框只是装饰：那几个圆点、地址栏和刘海全都带 ',

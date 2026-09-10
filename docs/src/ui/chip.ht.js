@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'A compact label — a tag, a status, a filter, a count.',
     activeHref: '/ui/chip',
-    extraHead: uiHead(),
     children: [
       p(
         'Chips are small pieces of metadata: the tags on a blog post, the status of a build, the categories on a page. They are inline by default, so a row of them wants a ',

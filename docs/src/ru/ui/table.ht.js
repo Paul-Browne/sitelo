@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Строки и колонки из данных — в контейнере с прокруткой, чтобы широкая таблица не ломала страницу.',
     activeHref: '/ru/ui/table',
-    extraHead: uiHead(),
     children: [
       p(
         'Передайте ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Сегментированный контрол: кнопки-переключатели, слитые в один элемент, — или ссылки, где каждый сегмент это отдельная страница.',
     activeHref: '/ru/ui/toggle-group',
-    extraHead: uiHead(),
     children: [
       p(
         'Группа переключателей — это ряд вариантов, который читается как один элемент управления. Соберите его из ',

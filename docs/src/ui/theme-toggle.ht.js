@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'A light/dark switch, with the inline script that keeps a stored choice from flashing on the way in.',
     activeHref: '/ui/theme-toggle',
-    extraHead: uiHead(),
     children: [
       p(
         'sitelo-ui resolves dark mode from ',

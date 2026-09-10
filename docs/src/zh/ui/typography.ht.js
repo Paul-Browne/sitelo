@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '排版',
     description: '会自己挑元素的字号体系，让文档大纲跟着视觉层级走。',
     activeHref: '/zh/ui/typography',
-    extraHead: uiHead(),
     children: [
       p(
         code('text()'),

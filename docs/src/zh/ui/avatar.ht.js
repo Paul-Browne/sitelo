@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '头像',
     description: '圆圈里的一个人或一件东西——有图就用图，没图就用姓名首字母。',
     activeHref: '/zh/ui/avatar',
-    extraHead: uiHead(),
     children: [
       p(
         '给头像一个 ',

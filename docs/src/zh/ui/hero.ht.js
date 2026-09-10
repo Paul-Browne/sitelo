@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '首屏区块',
     description: '落地页最上面那块：一句标题、一句说明，以及接下来该做什么。',
     activeHref: '/zh/ui/hero',
-    extraHead: uiHead(),
     children: [
       p(
         '首屏区块是营销页或文档首页上的第一样东西。它渲染出一个内含 ',

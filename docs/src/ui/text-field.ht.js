@@ -1,7 +1,7 @@
 import { h2, h3, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'Single- and multi-line text inputs, with the label, help text, error message and ids wired together for you.',
     activeHref: '/ui/text-field',
-    extraHead: uiHead(),
     children: [
       p(
         'There are two layers here. ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Die Leiste am oberen Rand einer Website: die Marke auf der einen Seite, Navigation und Aktionen auf der anderen.',
     activeHref: '/de/ui/app-bar',
-    extraHead: uiHead(),
     children: [
       p(
         'Eine App-Bar ist ein ',

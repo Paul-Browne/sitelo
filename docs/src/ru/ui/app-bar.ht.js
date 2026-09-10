@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Полоса в верхней части сайта: марка с одной стороны, навигация и действия с другой.',
     activeHref: '/ru/ui/app-bar',
-    extraHead: uiHead(),
     children: [
       p(
         'Панель приложения — это ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un message sur l’état de quelque chose, avec une icône et un rôle d’annonce qui suivent la couleur.',
     activeHref: '/fr/ui/alert',
-    extraHead: uiHead(),
     children: [
       p(
         'Une alerte dit au lecteur quelque chose sur la page ou sur l’action qu’il vient de faire. La couleur choisit à la fois l’icône et le rôle ARIA : ',

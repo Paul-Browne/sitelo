@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Une courte indication au survol et au focus, dessinée entièrement en CSS.',
     activeHref: '/fr/ui/tooltip',
-    extraHead: uiHead(),
     children: [
       p(
         'Le texte de l’infobulle vit dans un attribut de données et est dessiné par un pseudo-élément : il n’y a donc aucun script, rien à positionner à l’exécution et rien qui traîne dans le DOM. Elle apparaît au survol et au focus clavier, dont s’occupe la moitié ',

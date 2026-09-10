@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '堆叠',
     description: '用间距令牌当作间隙的 flex 行或列——多数页面就是由这块布局基元搭起来的。',
     activeHref: '/zh/ui/stack',
-    extraHead: uiHead(),
     children: [
       p(
         '堆叠负责在东西之间留出空隙。它是一个只干一件事的 flex 容器，也是「这几个怎么隔开」这类问题的通用答案——默认竖排，加上 ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'À quoi ressemble une liste avant d’avoir quoi que ce soit dedans.',
     activeHref: '/fr/ui/empty',
-    extraHead: uiHead(),
     children: [
       p(
         'Un espace blanc se lit comme un bug. Un état vide dit quel espace est vide, pourquoi, et quoi faire ensuite — et c’est le cas qu’on oublie le plus facilement, parce qu’en développement il y a toujours des données.',

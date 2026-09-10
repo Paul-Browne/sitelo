@@ -2,7 +2,6 @@ import { h2, p } from 'javascript-to-html'
 import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 /** Eine Zelle: das Zeichen in lesbarer Größe, mit dem Namen zum Tippen. */
 const cell = (name) =>
@@ -61,7 +60,6 @@ export default () =>
     description:
       'Ein Satz von 99 Zeichen auf einem Raster, inline gerendert, sodass ein Icon Farbe und Größe des Textes ringsum annimmt.',
     activeHref: '/de/ui/icons',
-    extraHead: uiHead(),
     children: [
       p(
         code('icon()'),

@@ -1,6 +1,5 @@
 import { h2, h3, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Entradas de texto de uma ou várias linhas, com a etiqueta, o texto de ajuda, a mensagem de erro e os ids já ligados por ti.',
     activeHref: '/pt/ui/text-field',
-    extraHead: uiHead(),
     children: [
       p(
         'Há aqui duas camadas. O ',

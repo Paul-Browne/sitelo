@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '主题定制',
     description: '把样式表放到页面上，并用一次调用改掉每一种颜色、圆角和字体。',
     activeHref: '/zh/ui/theming',
-    extraHead: uiHead(),
     children: [
       p(
         '所有组件读的都是同一批自定义属性，所以所谓主题不过是一组写在 ',

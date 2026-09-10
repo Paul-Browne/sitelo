@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'O fundo de um site: colunas de ligações, e uma linha por baixo.',
     activeHref: '/pt/ui/footer',
-    extraHead: uiHead(),
     children: [
       p(
         'Um rodapé é uma grelha de colunas que se ajusta sozinha, mais uma linha final opcional que ocupa sempre toda a largura, sejam quantas forem as colunas.',

@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'A styled anchor, with the security attributes an external link needs.',
     activeHref: '/ui/link',
-    extraHead: uiHead(),
     children: [
       p(
         'A link is an anchor with the library’s underline treatment and palette. It is exported under two names — ',

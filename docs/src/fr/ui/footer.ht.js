@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Le bas d’un site : des colonnes de liens, et une ligne en dessous.',
     activeHref: '/fr/ui/footer',
-    extraHead: uiHead(),
     children: [
       p(
         'Un pied de page est une grille de colonnes qui s’auto-ajuste, plus une ligne du bas facultative qui occupe toujours toute la largeur, quel que soit le nombre de colonnes.',

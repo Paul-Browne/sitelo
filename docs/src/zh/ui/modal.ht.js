@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '模态框',
     description: '基于 popover API 的对话框——打开、遮罩、点击外部和 Esc 都交给浏览器。',
     activeHref: '/zh/ui/modal',
-    extraHead: uiHead(),
     children: [
       p(
         '模态框就是一个 ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'La parte superior de una página de aterrizaje: un titular, una frase y qué hacer al respecto.',
     activeHref: '/es/ui/hero',
-    extraHead: uiHead(),
     children: [
       p(
         'Un hero es lo primero de una portada de marketing o de documentación. Dibuja una ',

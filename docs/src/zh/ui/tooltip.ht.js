@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '提示框',
     description: '悬停和获得焦点时出现的一小段提示，完全用 CSS 画出来。',
     activeHref: '/zh/ui/tooltip',
-    extraHead: uiHead(),
     children: [
       p(
         '提示文字放在一个 data 属性里，由伪元素画出来，所以没有脚本、运行时没有什么要定位、DOM 里也不会留下残余。它在悬停和键盘聚焦时出现，后者由规则里 ',

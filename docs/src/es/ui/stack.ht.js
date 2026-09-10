@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Una fila o columna flex con un token de espaciado como hueco: la pieza de maquetación con la que se construyen casi todas las páginas.',
     activeHref: '/es/ui/stack',
-    extraHead: uiHead(),
     children: [
       p(
         'Stack pone espacio entre cosas. Es un contenedor flex con un solo cometido, y es la respuesta a casi todas las preguntas de «cómo separo esto»: en vertical por defecto, en horizontal con ',

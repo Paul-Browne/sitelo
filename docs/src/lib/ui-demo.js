@@ -1,37 +1,8 @@
-import {
-  br,
-  div,
-  em,
-  fragment,
-  span,
-  strong,
-  table,
-  tbody,
-  td,
-  th,
-  thead,
-  tr,
-} from 'javascript-to-html'
+import { br, div, em, fragment, span, strong } from 'javascript-to-html'
 import * as ui from 'sitelo/ui'
 
 import { createCodeHelpers } from './code.js'
 import { DEFAULT_LOCALE } from './i18n.js'
-
-/**
- * Everything a UI page needs in its head.
- *
- * The stylesheet, and nothing else — the linked form, exactly as a
- * reader would add it to their own page, so the demos here are styled by
- * the same file the docs tell them to ship.
- *
- * There is no script: every interactive demo on these pages renders its
- * own `import('/su/…')` into an event attribute, which is the whole
- * point the pages are making. A page that had to load a bundle to show
- * that off would be arguing against itself.
- */
-export function uiHead() {
-  return ui.styles()
-}
 
 /*
  * A few plain elements the demos need for scaffolding — a wrapper to
@@ -154,29 +125,38 @@ export function createUiDemo(lang = DEFAULT_LOCALE) {
   /**
    * An API table: name, type, default, description.
    *
+   * `table()` from sitelo/ui, which brings the frame — the rule, the
+   * radius and the horizontal scroll the widest of these needs on a
+   * phone — and its `columns` API, which puts the `code()` wrapping of
+   * a cell next to the heading it belongs under rather than three rows
+   * away in a `map`. The `docs-table` classes stay on top of it for the
+   * two things this site does differently: uppercase monospace headings,
+   * and a last column that wraps while the rest do not.
+   *
    * @param {[string, string, string, string][]} rows
    * @param {object} [options]
    * @param {[string, string, string, string]} [options.headers]
    * @returns {string}
    */
   function propsTable(rows, { headers = defaultHeaders } = {}) {
-    return div(
-      { class: 'docs-table-scroll' },
-      table(
-        { class: 'docs-table docs-table--wrap-last' },
-        thead(tr(...headers.map((heading) => th(heading)))),
-        tbody(
-          ...rows.map(([name, type, fallback, description]) =>
-            tr(
-              td(code(name)),
-              td(type ? code(type) : ''),
-              td(fallback ? code(fallback) : '—'),
-              td(escapeText(description)),
-            ),
-          ),
-        ),
-      ),
-    )
+    return ui.table({
+      class: 'docs-table docs-table--wrap-last',
+      columns: [
+        { header: headers[0], render: (row) => code(row.name) },
+        { header: headers[1], render: (row) => (row.type ? code(row.type) : '') },
+        {
+          header: headers[2],
+          render: (row) => (row.fallback ? code(row.fallback) : '—'),
+        },
+        { header: headers[3], render: (row) => escapeText(row.description) },
+      ],
+      rows: rows.map(([name, type, fallback, description]) => ({
+        name,
+        type,
+        fallback,
+        description,
+      })),
+    })
   }
 
   return { demo, propsTable }

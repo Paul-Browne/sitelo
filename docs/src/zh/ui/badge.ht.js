@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '徽标',
     description: '别在所包裹元素角上的一个计数或小圆点。',
     activeHref: '/zh/ui/badge',
-    extraHead: uiHead(),
     children: [
       p(
         '徽标包住某个元素，并在它的上角别一个记号：收件箱按钮上的未读数、头像上的在线圆点。被标记的东西作为子元素传进去。',

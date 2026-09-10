@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'A centred, width-limited column — the outermost wrapper on most pages.',
     activeHref: '/ui/container',
-    extraHead: uiHead(),
     children: [
       p(
         'A container centres its contents, caps the width so lines of text stay readable, and keeps a gutter so nothing touches the edge of a phone screen. It is usually the first thing inside ',

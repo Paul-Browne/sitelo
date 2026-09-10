@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Meter la hoja de estilos en la página, y cambiar todos los colores, radios y tipografías desde una sola llamada.',
     activeHref: '/es/ui/theming',
-    extraHead: uiHead(),
     children: [
       p(
         'Todos los componentes leen las mismas propiedades personalizadas, así que un tema no es más que un conjunto de anulaciones sobre ',

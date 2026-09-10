@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'A surface for grouped content, with a header, body, footer and media that all know how to sit together.',
     activeHref: '/ui/card',
-    extraHead: uiHead(),
     children: [
       p(
         'A card groups related content on its own surface. The parts — ',

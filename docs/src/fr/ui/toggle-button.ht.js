@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un bouton qui reste enfoncé — un réglage montré comme un bouton plutôt que comme une case à cocher.',
     activeHref: '/fr/ui/toggle-button',
-    extraHead: uiHead(),
     children: [
       p(
         'Un bouton bascule est activé ou non, et le dit avec ',

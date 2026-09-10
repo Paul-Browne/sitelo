@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '应用栏',
     description: '站点顶部的那一条：一边是品牌，另一边是导航和操作。',
     activeHref: '/zh/ui/app-bar',
-    extraHead: uiHead(),
     children: [
       p(
         '应用栏就是一个内含一行内容的 ',

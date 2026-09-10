@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'La parte de abajo de un sitio: columnas de enlaces y una línea debajo.',
     activeHref: '/es/ui/footer',
-    extraHead: uiHead(),
     children: [
       p(
         'Un pie de página es una cuadrícula de columnas que se autoajusta, más una línea inferior opcional que siempre ocupa todo el ancho, haya las columnas que haya.',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Der Kopf einer Landing-Page: eine Schlagzeile, ein Satz, und was man damit tun soll.',
     activeHref: '/de/ui/hero',
-    extraHead: uiHead(),
     children: [
       p(
         'Ein Hero ist das Erste auf einer Marketing- oder Dokumentations-Startseite. Er rendert eine ',

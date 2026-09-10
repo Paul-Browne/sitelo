@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'A flex row or column with a spacing token for the gap — the layout primitive most pages are built from.',
     activeHref: '/ui/stack',
-    extraHead: uiHead(),
     children: [
       p(
         'Stack puts space between things. It is a flex container with one job, and it is the answer to most "how do I space these out" questions — vertically by default, horizontally with ',

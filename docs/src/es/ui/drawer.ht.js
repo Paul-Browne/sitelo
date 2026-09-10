@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un panel que entra desde el borde: la misma mecánica de popover que un modal, con otra forma.',
     activeHref: '/es/ui/drawer',
-    extraHead: uiHead(),
     children: [
       p(
         'Un panel lateral ocupa toda la altura y se ancla a un lado. Igual que ',

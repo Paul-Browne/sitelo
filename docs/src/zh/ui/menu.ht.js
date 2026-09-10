@@ -1,13 +1,12 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { preview, uiHead } from '../../lib/ui-demo.js'
+import { preview } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '菜单',
     description: '基于 <details> 的下拉菜单，完全不用脚本就能开合。',
     activeHref: '/zh/ui/menu',
-    extraHead: uiHead(),
     children: [
       p(
         '菜单就是一个带样式面板的 ',

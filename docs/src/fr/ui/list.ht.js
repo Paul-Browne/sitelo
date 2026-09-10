@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Des rangées de contenu avec, de part et d’autre, un élément facultatif — la forme dont sont faits la plupart des écrans de réglages et des fils d’actualité.',
     activeHref: '/fr/ui/list',
-    extraHead: uiHead(),
     children: [
       p(
         'Une liste est une surface bordée faite de rangées. Chaque rangée a un titre, une description facultative, et des emplacements au début et à la fin pour un avatar, une icône ou un contrôle.',

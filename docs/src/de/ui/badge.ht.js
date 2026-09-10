@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Eine Zahl oder ein Punkt, an die Ecke dessen geheftet, was das Badge umschließt.',
     activeHref: '/de/ui/badge',
-    extraHead: uiHead(),
     children: [
       p(
         'Ein Badge umschließt etwas und heftet ihm oben in die Ecke eine Markierung: ungelesene Nachrichten auf einem Posteingang-Button, ein Online-Punkt auf einem Avatar. Was es markiert, bekommt es als Kinder.',

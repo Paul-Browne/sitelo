@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,7 +9,6 @@ export default () =>
     description:
       'A bar for work with a known end, a spinner for work without one.',
     activeHref: '/ui/progress',
-    extraHead: uiHead(),
     children: [
       p(
         'Use a determinate bar whenever you know how much is left — it is the only one that tells the reader anything. Omit ',

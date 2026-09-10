@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '下拉选择',
     description: '原生 select，样式与其他输入控件一致，选项由数据生成。',
     activeHref: '/zh/ui/select',
-    extraHead: uiHead(),
     children: [
       p(
         '这是真正的 ',

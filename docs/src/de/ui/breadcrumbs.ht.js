@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Die Spur der Vorfahren, die bei der Seite endet, auf der du stehst.',
     activeHref: '/de/ui/breadcrumbs',
-    extraHead: uiHead(),
     children: [
       p(
         'Breadcrumbs sagen, wo eine Seite sitzt. Der letzte Eintrag ist die aktuelle Seite: er wird als reiner Text gerendert und mit ',

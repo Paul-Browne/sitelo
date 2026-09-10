@@ -3,7 +3,7 @@ import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable, uiHead } from '../lib/ui-demo.js'
+import { demo, propsTable } from '../lib/ui-demo.js'
 
 /** One cell: the glyph at a readable size, with the name to type. */
 const cell = (name) =>
@@ -62,7 +62,6 @@ export default () =>
     description:
       'A set of 99 glyphs on one grid, rendered inline so an icon takes the colour and size of the text around it.',
     activeHref: '/ui/icons',
-    extraHead: uiHead(),
     children: [
       p(
         code('icon()'),

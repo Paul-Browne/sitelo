@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Сообщение о состоянии чего-либо: иконка и роль объявления следуют за цветом.',
     activeHref: '/ru/ui/alert',
-    extraHead: uiHead(),
     children: [
       p(
         'Уведомление сообщает читателю что-то о странице или о только что выполненном действии. Цвет выбирает сразу и иконку, и ARIA-роль: ',

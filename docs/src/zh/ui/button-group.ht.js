@@ -1,13 +1,11 @@
 import { a, h2, p, strong } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '按钮组',
     description: '把本就该在一起的按钮拼成一个控件，共用边框、两端圆角。',
     activeHref: '/zh/ui/button-group',
-    extraHead: uiHead(),
     children: [
       p(
         '把按钮包进 ',

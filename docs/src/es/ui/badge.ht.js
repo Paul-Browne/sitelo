@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Un recuento o un punto prendido en la esquina de lo que envuelve.',
     activeHref: '/es/ui/badge',
-    extraHead: uiHead(),
     children: [
       p(
         'Una insignia envuelve algo y le prende un marcador en la esquina superior: mensajes sin leer en un botón de bandeja de entrada, un punto de «en línea» en un avatar. Recibe como hijos aquello que marca.',

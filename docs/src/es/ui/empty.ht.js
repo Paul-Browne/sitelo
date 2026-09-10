@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'El aspecto de una lista antes de que tenga nada dentro.',
     activeHref: '/es/ui/empty',
-    extraHead: uiHead(),
     children: [
       p(
         'Un hueco en blanco se lee como un error. Un estado vacío dice qué hueco está en blanco, por qué y qué hacer a continuación — y es el caso que más fácilmente se olvida, porque durante el desarrollo siempre hay datos.',

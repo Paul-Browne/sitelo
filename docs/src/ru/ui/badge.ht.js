@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Счётчик или точка, приколотые к углу того, что бейдж оборачивает.',
     activeHref: '/ru/ui/badge',
-    extraHead: uiHead(),
     children: [
       p(
         'Бейдж оборачивает элемент и прикалывает метку к его верхнему углу: непрочитанные сообщения на кнопке входящих, точка «в сети» на аватаре. То, что он помечает, передаётся ему как потомки.',

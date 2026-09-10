@@ -1,6 +1,6 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { preview, uiHead } from '../../lib/ui-demo.js'
+import { preview } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +8,6 @@ export default () =>
     description:
       'Eine flüchtige Meldung in der Ecke, per Skript in einen Bereich eingefügt, den die Seite gerendert hat.',
     activeHref: '/de/ui/toast',
-    extraHead: uiHead(),
     children: [
       p(
         'Der Toast ist die eine Komponente hier, die nicht statisch sein kann: er erscheint, weil etwas passiert. Die Seite rendert mit ',

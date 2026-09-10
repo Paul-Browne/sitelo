@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Полоса для работы с известным концом и спиннер для работы без него.',
     activeHref: '/ru/ui/progress',
-    extraHead: uiHead(),
     children: [
       p(
         'Берите определённую полосу всякий раз, когда знаете, сколько осталось: только она хоть что-то сообщает читателю. Опустите ',

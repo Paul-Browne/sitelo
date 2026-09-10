@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Ein Screenshot in einem Rahmen — Browser, Fenster, Telefon oder Terminal.',
     activeHref: '/de/ui/mockup',
-    extraHead: uiHead(),
     children: [
       p(
         'Um ein Produkt auf einer Landing-Page oder einen Screenshot in der Dokumentation zu zeigen. Der Rahmen ist Dekoration: die Punkte, die Adressleiste und die Kerbe sind alle ',

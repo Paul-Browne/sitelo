@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Заглушка в форме содержимого, которое ещё не приехало.',
     activeHref: '/ru/ui/skeleton',
-    extraHead: uiHead(),
     children: [
       p(
         'Скелетон стоит вместо содержимого, пока оно грузится. На статическом сайте такое встречается реже, чем в приложении, — HTML уже на месте, — но именно им обычно и стоит быть ',

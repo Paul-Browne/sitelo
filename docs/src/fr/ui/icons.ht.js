@@ -2,7 +2,6 @@ import { h2, p } from 'javascript-to-html'
 import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/fr.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 /** Une cellule : le glyphe à une taille lisible, avec le nom à taper. */
 const cell = (name) =>
@@ -61,7 +60,6 @@ export default () =>
     description:
       'Un jeu de 99 glyphes sur une même grille, rendus en ligne pour qu’une icône prenne la couleur et la taille du texte qui l’entoure.',
     activeHref: '/fr/ui/icons',
-    extraHead: uiHead(),
     children: [
       p(
         code('icon()'),

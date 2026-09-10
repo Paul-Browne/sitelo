@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '单选组',
     description: '在几个选项里挑一个：共用一个 name 的真正 radio 输入，外加图例和分组角色。',
     activeHref: '/zh/ui/radio',
-    extraHead: uiHead(),
     children: [
       p(
         '单选按钮用来在一小组可见选项里恰好选一个。',

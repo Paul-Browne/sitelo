@@ -1,6 +1,6 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
-import { preview, uiHead } from '../../lib/ui-demo.js'
+import { preview } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +8,6 @@ export default () =>
     description:
       'Un desplegable construido sobre <details>, así que se abre y se cierra sin nada de script.',
     activeHref: '/es/ui/menu',
-    extraHead: uiHead(),
     children: [
       p(
         'Un menú es un ',

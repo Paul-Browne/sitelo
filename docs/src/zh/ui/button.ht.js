@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '按钮',
     description: '按钮让人做出操作。五种变体、五种颜色、三种尺寸——只要是跳转，就渲染成链接。',
     activeHref: '/zh/ui/button',
-    extraHead: uiHead(),
     children: [
       p(
         '按钮就是人点下去让某件事发生的那个东西。',

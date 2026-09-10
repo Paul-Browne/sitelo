@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '分页',
     description: '围绕当前页开一扇窗的页码，而且是真正的链接。',
     activeHref: '/zh/ui/pagination',
-    extraHead: uiHead(),
     children: [
       p(
         code('href'),

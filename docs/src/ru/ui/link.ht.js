@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Оформленный якорь с теми атрибутами безопасности, которые нужны внешней ссылке.',
     activeHref: '/ru/ui/link',
-    extraHead: uiHead(),
     children: [
       p(
         'Ссылка — это якорь с подчёркиванием и палитрой этой библиотеки. Она экспортируется под двумя именами — ',

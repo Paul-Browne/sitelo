@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/pt.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'O aspeto de uma lista antes de ter seja o que for lá dentro.',
     activeHref: '/pt/ui/empty',
-    extraHead: uiHead(),
     children: [
       p(
         'Um espaço em branco lê-se como um bug. Um estado vazio diz qual é o espaço vazio, porquê, e o que fazer a seguir — e é o caso mais facilmente esquecido, porque durante o desenvolvimento há sempre dados.',

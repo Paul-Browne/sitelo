@@ -1,13 +1,11 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
     title: '图注',
     description: '把图片和它的说明合成一个 figure——并在图片到达之前先把位置占好。',
     activeHref: '/zh/ui/figure',
-    extraHead: uiHead(),
     children: [
       p(
         '一个 ',

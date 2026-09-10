@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/ru.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Оформляет блок HTML, который писали не вы: вывод Markdown, поле из CMS, описание в RSS.',
     activeHref: '/ru/ui/prose',
-    extraHead: uiHead(),
     children: [
       p(
         'Markdown-рендерер возвращает голые теги: ',

@@ -1,6 +1,5 @@
 import { h2, p } from 'javascript-to-html'
 import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
-import { uiHead } from '../../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -8,7 +7,6 @@ export default () =>
     description:
       'Wie eine Liste aussieht, bevor irgendetwas darin steht.',
     activeHref: '/de/ui/empty',
-    extraHead: uiHead(),
     children: [
       p(
         'Eine leere Fläche liest sich wie ein Fehler. Ein Leerzustand sagt, welche Fläche leer ist, warum, und was als Nächstes zu tun ist — und er ist der Fall, den man am leichtesten vergisst, weil es in der Entwicklung immer Daten gibt.',
