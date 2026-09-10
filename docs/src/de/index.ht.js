@@ -50,10 +50,10 @@ const features = [
     '/de/docs/images',
   ],
   [
-    'feather',
-    'Null JavaScript, von Haus aus',
-    'Nur die Skripte, die du verlinkst, werden gebündelt — alles andere bleibt von der Seite fern, für eine schnellere Website',
-    '/de/docs/assets#null-js-von-haus-aus',
+    'components',
+    'sitelo UI',
+    'Buttons, Karten, Formulare, Tabellen und Modals — Funktionen, die HTML zurückgeben, ohne Runtime',
+    '/de/docs/ui',
   ],
   [
     'terminal',

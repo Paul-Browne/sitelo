@@ -45,10 +45,10 @@ const features = [
     '/zh/docs/images',
   ],
   [
-    'feather',
-    '默认零 JavaScript',
-    '只有你引用的脚本才会被打包 —— 其余一概不上页面，站点因此更快',
-    '/zh/docs/assets#默认零-js',
+    'components',
+    'sitelo UI',
+    '按钮、卡片、表单、表格与模态框 —— 返回 HTML 的函数，没有运行时',
+    '/zh/docs/ui',
   ],
   [
     'terminal',

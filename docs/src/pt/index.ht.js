@@ -50,10 +50,10 @@ const features = [
     '/pt/docs/images',
   ],
   [
-    'feather',
-    'Zero JavaScript, por omissão',
-    'Só os scripts que ligares são empacotados — o resto fica fora da página, para um site mais rápido',
-    '/pt/docs/assets#zero-js-por-omissao',
+    'components',
+    'sitelo UI',
+    'Botões, cartões, formulários, tabelas e modais — funções que devolvem HTML, sem runtime',
+    '/pt/docs/ui',
   ],
   [
     'terminal',

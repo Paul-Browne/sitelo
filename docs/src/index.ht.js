@@ -45,10 +45,10 @@ const features = [
     '/docs/images',
   ],
   [
-    'feather',
-    'Zero JavaScript, by default',
-    'Only the scripts you link are bundled — everything else stays off the page for a faster site',
-    '/docs/assets#zero-js-by-default',
+    'components',
+    'sitelo UI',
+    'Buttons, cards, forms, tables and modals — functions that return HTML, no runtime',
+    '/docs/ui',
   ],
   [
     'terminal',

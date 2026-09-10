@@ -50,10 +50,10 @@ const features = [
     '/fr/docs/images',
   ],
   [
-    'feather',
-    'Zéro JavaScript, par défaut',
-    'Seuls les scripts que vous liez sont empaquetés — tout le reste reste hors de la page, pour un site plus rapide',
-    '/fr/docs/assets#zero-js-par-defaut',
+    'components',
+    'sitelo UI',
+    'Boutons, cartes, formulaires, tableaux et modales — des fonctions qui renvoient du HTML, sans runtime',
+    '/fr/docs/ui',
   ],
   [
     'terminal',

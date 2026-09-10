@@ -2,11 +2,11 @@
  * Inline SVG for the landing page — shared by every locale, since none of it
  * carries text.
  *
- * All but one are sitelo-ui's own icons, asked for by name. The lighthouse is
- * not: it illustrates one feature on one page, and a shared icon set is the
- * wrong home for it. It stays local rather than going through
- * `registerIcons()`, which would put it in `iconNames()` and so on the
- * `/ui/icons` page, documenting it as part of the library.
+ * All but two are sitelo-ui's own icons, asked for by name. The lighthouse and
+ * the components grid are not: each illustrates one feature on one page, and a
+ * shared icon set is the wrong home for them. They stay local rather than going
+ * through `registerIcons()`, which would put them in `iconNames()` and so on
+ * the `/ui/icons` page, documenting them as part of the library.
  */
 import { icon } from 'sitelo/ui'
 
@@ -23,7 +23,9 @@ export const icons = {
   code: feature('code'),
   data: feature('database'),
   pipeline: feature('package'),
-  feather: feature('feather'),
+  components: featureIcon(
+    '<rect x="3.5" y="3.5" width="7" height="7" rx="1.4"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.4"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.4"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.4"/>',
+  ),
   terminal: feature('terminal'),
   search: feature('search'),
   layers: feature('layers'),
