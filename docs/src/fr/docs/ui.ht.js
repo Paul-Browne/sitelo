@@ -21,7 +21,7 @@ const s = uiSnippets('fr')
 
 /** The component reference table, one row per group. */
 const GROUPS = [
-  ['Mise en page', ['container', 'stack', 'grid', 'divider', 'card', 'cardHeader', 'cardTitle', 'cardSubtitle', 'cardMedia', 'cardBody', 'cardFooter', 'aspectRatio']],
+  ['Mise en page', ['container', 'grain', 'stack', 'grid', 'divider', 'card', 'cardHeader', 'cardTitle', 'cardSubtitle', 'cardMedia', 'cardBody', 'cardFooter', 'aspectRatio']],
   ['Typographie', ['text', 'heading', 'link', 'code', 'inlineCode', 'kbd', 'visuallyHidden', 'prose']],
   ['Champs', ['button', 'iconButton', 'buttonGroup', 'field', 'input', 'textarea', 'select', 'textField', 'textareaField', 'selectField', 'checkbox', 'radio', 'toggle', 'choiceGroup', 'slider', 'sliderField', 'toggleButton', 'toggleGroup']],
   ['Affichage de données', ['avatar', 'avatarGroup', 'badge', 'chip', 'tooltip', 'table', 'list', 'listItem', 'figure']],

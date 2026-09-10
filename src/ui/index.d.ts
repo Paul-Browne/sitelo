@@ -208,6 +208,20 @@ export interface ContainerProps extends BaseProps {
 
 export function container(...args: Args<ContainerProps>): string
 
+export interface GrainProps extends BaseProps {
+  /** How far the texture is pushed. Default `'medium'`. */
+  intensity?: 'soft' | 'medium' | 'strong'
+  /** Raw opacity for the texture, overriding `intensity` and the theme. */
+  opacity?: number | string
+  /** Size of one noise tile — smaller is finer. Default `'180px'`. */
+  scale?: string
+  /** `mix-blend-mode` for the texture, e.g. `'overlay'`. Default `'normal'`. */
+  blend?: string
+  as?: string
+}
+
+export function grain(...args: Args<GrainProps>): string
+
 export interface StackProps extends BaseProps {
   direction?: 'row' | 'column'
   gap?: Space

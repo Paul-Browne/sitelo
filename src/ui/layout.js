@@ -26,6 +26,42 @@ export function container(...args) {
   )
 }
 
+const GRAIN_INTENSITIES = ['soft', 'medium', 'strong']
+
+/**
+ * Wrapper that lays a film grain over whatever it contains.
+ *
+ * The texture is a static noise tile drawn on `::after`, so it costs
+ * one paint and never re-rasterises when the content under it changes —
+ * unlike a `filter`, which has to be recomputed whenever anything
+ * beneath it moves. It sits above the children and ignores the pointer,
+ * and it takes the box's own `border-radius`, so wrapping a rounded
+ * surface does not square its corners off.
+ *
+ * It has no width or padding of its own: put a {@link container} inside
+ * for a textured full-bleed band, or wrap a card, a hero or a section
+ * to grain just that.
+ *
+ * @param {...any} args - `grain({ intensity, opacity, scale, blend, as }, ...children)`
+ * @returns {string}
+ */
+export function grain(...args) {
+  const { props, children } = parseArgs(args)
+  const { intensity = 'medium', opacity, scale, blend, as, ...rest } = props
+
+  return el(as, div)(
+    attrs(rest, {
+      class: `su-grain su-grain--${oneOf(intensity, GRAIN_INTENSITIES, 'medium')}`,
+      style: {
+        '--su-grain-opacity': opacity,
+        '--su-grain-scale': scale,
+        '--su-grain-blend': blend,
+      },
+    }),
+    ...children,
+  )
+}
+
 /**
  * Flex row or column with a spacing token for the gap.
  *

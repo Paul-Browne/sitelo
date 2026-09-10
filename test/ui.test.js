@@ -583,6 +583,25 @@ test('aspectRatio() and figure() hold their space before the image loads', () =>
   assert.match(ui.figure({ src: '/a.jpg' }), /alt=""/);
 });
 
+test('grain() is decoration over the content, not a layer in it', () => {
+  assert.equal(ui.grain('x'), '<div class="su-grain su-grain--medium">x</div>');
+  assert.match(ui.grain({ intensity: 'strong' }, 'x'), /su-grain--strong/);
+  assert.match(ui.grain({ intensity: 'nonsense' }, 'x'), /su-grain--medium/, 'unknown intensity falls back');
+
+  assert.match(
+    ui.grain({ opacity: 0.4, scale: '90px', blend: 'overlay', as: 'section' }, 'x'),
+    /^<section class="su-grain su-grain--medium" style="--su-grain-opacity: 0.4; --su-grain-scale: 90px; --su-grain-blend: overlay">/,
+  );
+
+  const css = ui.stylesheet({ minify: false });
+
+  // The texture is painted on the wrapper itself, so nothing inside it
+  // needs a z-index and no click ever lands on the grain.
+  assert.match(css, /\.su-grain::after \{[^}]*pointer-events: none/);
+  assert.match(css, /\.su-grain::after \{[^}]*border-radius: inherit/, 'follows a rounded box');
+  assert.ok(!ui.grain('x').includes('<span'), 'no element of its own to draw the texture');
+});
+
 test('collapsible() puts nothing interactive in its summary', () => {
   const html = ui.collapsible({ trigger: 'Show more', open: true }, '<p>body</p>');
   const [, summary] = /<summary\b([\s\S]*?)<\/summary>/.exec(html);

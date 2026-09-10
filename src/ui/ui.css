@@ -75,6 +75,11 @@
   --su-text-muted: #4c5f62;
   --su-text-subtle: #627376;
   --su-overlay: rgba(9, 20, 22, 0.45);
+  /* A near-black ground takes grain more readily than paper does — the
+     same tile measures around 1.6x the perceived speckle over it — so
+     the texture carries a token of its own and dark asks for less. The
+     two land within 2% of each other in L*, at every intensity. */
+  --su-grain-opacity: 0.16;
 
   /* Palettes — light */
   /*
@@ -188,6 +193,7 @@
   --su-text-muted: #a2b3b3;
   --su-text-subtle: #7b8d8e;
   --su-overlay: rgba(0, 0, 0, 0.6);
+  --su-grain-opacity: 0.1;
 
   --su-primary: #6ea8fe;
   --su-primary-hover: #8bbcff;
@@ -259,6 +265,7 @@
     --su-text-muted: #a2b3b3;
     --su-text-subtle: #7b8d8e;
     --su-overlay: rgba(0, 0, 0, 0.6);
+    --su-grain-opacity: 0.1;
 
     --su-primary: #6ea8fe;
     --su-primary-hover: #8bbcff;
@@ -472,6 +479,68 @@
 .su-container--md { --su-container-width: 56rem; }
 .su-container--xl { --su-container-width: 88rem; }
 .su-container--full { --su-container-width: none; }
+
+/*
+ * Film grain over whatever the wrapper holds.
+ *
+ * The tile is a static SVG of fractal noise, so the texture is painted
+ * once and repeated. Running a `filter` over the live pixels instead
+ * would look much the same and cost a re-raster every time anything
+ * underneath it moved.
+ *
+ * `background-size` rather than the SVG's own dimensions is what sets
+ * the grain: the file has a viewBox and no width, so left alone it
+ * would stretch to whatever it covers and speckle a small card far
+ * more coarsely than a full-width band.
+ *
+ * `feComponentTransfer` stretches the noise's contrast around its own
+ * midpoint, and that is what lets one texture serve both themes. Raw
+ * turbulence is a narrow band of light greys: over near-black it is a
+ * bright haze, and over paper it is almost nothing, so matching the two
+ * by opacity alone would mean washing the light surface grey. Stretched,
+ * the tile has dark specks as well as light ones, and both grounds take
+ * it at roughly the same strength.
+ */
+.su-grain {
+  /* Restated rather than left to a `var()` fallback, so a grain nested
+     inside a grain starts from the defaults instead of inheriting the
+     outer one's settings. The modifiers below come later in the sheet
+     and outrank this at equal specificity. */
+  --su-grain-strength: 1;
+  --su-grain-scale: 180px;
+  --su-grain-blend: normal;
+  position: relative;
+  /* A new stacking context, so `--su-grain-blend` blends with the
+     wrapper's own content and not with whatever sits behind it. */
+  isolation: isolate;
+}
+
+.su-grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Follows a rounded box — a card, a hero — without being told. */
+  border-radius: inherit;
+  opacity: calc(var(--su-grain-opacity) * var(--su-grain-strength));
+  mix-blend-mode: var(--su-grain-blend);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='suGrain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 1 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='6' intercept='-2.5'/%3E%3CfeFuncG type='linear' slope='6' intercept='-2.5'/%3E%3CfeFuncB type='linear' slope='6' intercept='-2.5'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23suGrain)'/%3E%3C/svg%3E");
+  background-size: var(--su-grain-scale);
+  background-repeat: repeat;
+}
+
+/* `medium` is the default and deliberately has no rule — see
+ * `.su-container--sm` for why. */
+.su-grain--soft { --su-grain-strength: 0.55; }
+.su-grain--strong { --su-grain-strength: 1.8; }
+
+/* The texture is decoration and carries no information, so it goes
+   rather than fighting a forced palette for contrast. */
+@media (forced-colors: active) {
+  .su-grain::after {
+    display: none;
+  }
+}
 
 .su-stack {
   /* Custom properties inherit, so each stack restates its own defaults

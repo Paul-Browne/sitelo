@@ -771,7 +771,7 @@ reach theirs, with nothing bundled:
 
 | Group | Components |
 | --- | --- |
-| Layout | `container` `stack` `grid` `divider` `aspectRatio` `card` `cardHeader` `cardTitle` `cardSubtitle` `cardMedia` `cardBody` `cardFooter` |
+| Layout | `container` `grain` `stack` `grid` `divider` `aspectRatio` `card` `cardHeader` `cardTitle` `cardSubtitle` `cardMedia` `cardBody` `cardFooter` |
 | Typography | `text` `heading` `link` `code` `kbd` `visuallyHidden` `prose` |
 | Inputs | `button` `iconButton` `buttonGroup` `field` `input` `textarea` `select` `slider` `textField` `textareaField` `selectField` `sliderField` `checkbox` `radio` `toggle` `toggleButton` `toggleGroup` `choiceGroup` |
 | Data display | `avatar` `avatarGroup` `badge` `chip` `tooltip` `table` `list` `listItem` `figure` |
