@@ -1117,6 +1117,15 @@
   width: var(--su-check-size);
   height: var(--su-check-size);
   margin: 0;
+  /*
+   * The label sets `cursor`, but this input is what the pointer is
+   * actually over — it is laid on top of the box that is drawn — and a
+   * form control carries `cursor: default` from the UA sheet, which is a
+   * declaration and so beats anything inherited. `inherit` hands the
+   * decision back to the label, which is also why it is not `pointer`:
+   * the disabled label says `not-allowed`, and this follows it there too.
+   */
+  cursor: inherit;
 }
 
 .su-check-box {
@@ -1200,6 +1209,9 @@
   width: 2.5rem;
   height: 1.4rem;
   margin: 0;
+  /* Over the track, and the UA sheet's `default` beats inheriting —
+   * see the same declaration on `.su-check input`. */
+  cursor: inherit;
 }
 
 .su-switch-track {

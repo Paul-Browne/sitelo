@@ -145,20 +145,32 @@ const LIGHT = defaults(':root {')
 const DARK = defaults("[data-su-theme='dark'] {")
 
 /*
+ * Both boxes that show the library as it ships: the demo above the code
+ * on a component page, and the thumbnail on a gallery card on `/ui`. The
+ * gallery is the first of the two a reader meets, so it is the last
+ * place that should be showing them a green primary button.
+ */
+const SCOPES = ['.ui-demo-preview', '.ui-gallery-preview']
+
+/** The scopes as one selector list, each optionally under an ancestor. */
+const scoped = (ancestor = '') =>
+  SCOPES.map((scope) => `${ancestor}${scope}`).join(',')
+
+/*
+ * The defaults, for the pages that document them.
+ *
  * Three blocks rather than `theme()`'s own `dark` option, which composes
  * its selectors as `<scope> [data-theme='dark']` — the themed element
  * *inside* the scope. Here it is the other way round: the attribute is
  * on <html> and the scope is a div deep in the article.
  */
-const SCOPE = '.ui-demo-preview'
-
-/** The defaults, for the pages that document them. */
 export const uiDemoDefaults = () =>
   style(
     { 'data-sitelo-ui-demo': '' },
-    `${SCOPE}{${LIGHT}}` +
-      `[data-theme='dark'] ${SCOPE},[data-su-theme='dark'] ${SCOPE}{${DARK}}` +
+    `${scoped()}{${LIGHT}}` +
+      `${scoped("[data-theme='dark'] ")},` +
+      `${scoped("[data-su-theme='dark'] ")}{${DARK}}` +
       `@media (prefers-color-scheme: dark){` +
-      `:root:not([data-theme='light']):not([data-su-theme='light']) ${SCOPE}` +
+      `${scoped(":root:not([data-theme='light']):not([data-su-theme='light']) ")}` +
       `{${DARK}}}`,
   )

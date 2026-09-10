@@ -2144,9 +2144,10 @@ a.feature-card:hover h3 {
  *
  * The demos are the one place on the site that does *not* follow the
  * docs palette. Everything else renders sitelo-ui through the token map
- * in `lib/ui-theme.js`; inside `.ui-demo-preview` the library's own
- * tokens are put back, so a reader looking up what a primary button
- * looks like is shown the one they will get, not this site's green.
+ * in `lib/ui-theme.js`; inside `.ui-demo-preview` and the gallery's
+ * `.ui-gallery-preview` the library's own tokens are put back, so a
+ * reader looking up what a primary button looks like is shown the one
+ * they will get, not this site's green.
  * ------------------------------------------------------------------ */
 
 .docs-side-nav-heading {
