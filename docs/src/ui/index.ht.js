@@ -21,9 +21,6 @@ const GROUPS = [
       `div({ style: 'width: 100%' }, divider('or'))`],
     ['/ui/aspect-ratio', 'Aspect ratio', 'Hold a box at a fixed shape, so nothing shifts on load.',
       `aspectRatio({ ratio: '16 / 9', style: 'width: 6rem; background: var(--su-surface-2); border-radius: 0.4rem' }, '')`],
-    ['/ui/grain', 'Grain', 'Lay a film grain over anything, so a flat area of colour is not.',
-      `grain({ style: 'width: 100%; background: var(--su-surface-2); padding: 0.75rem; border-radius: 0.4rem' },
-        text({ variant: 'caption', align: 'center' }, 'grained'))`],
     ['/ui/card', 'Card', 'A surface for grouped content, with header, body and footer.',
       `card({ variant: 'flat', style: 'width: 100%' }, cardBody(text({ variant: 'small' }, 'A card')))`],
   ]],
@@ -192,6 +189,13 @@ export default () =>
         'The ',
         code('examples/ui'),
         ' directory in the repository renders the whole set on a single page.',
+      ),
+
+      h2('Extras'),
+      p(
+        'Not everything belongs in one stylesheet. The textured and the decorative — a film grain, to start — live under ',
+        a({ href: '/ui-extras' }, 'sitelo UI extras'),
+        ', a second entry point where each component brings a sheet of its own, so a page links only what it uses.',
       ),
     ],
   })

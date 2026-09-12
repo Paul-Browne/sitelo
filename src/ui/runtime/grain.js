@@ -1,14 +1,16 @@
 /**
  * A grain's noise: building it, and changing it from your own code.
  *
- * `grain()` draws the noise as an SVG filter in a `url()`, and this is
- * the one place that SVG is written — the component imports {@link tile}
- * from here for the build, and the browser imports it to redraw.
+ * `grain()` — from `sitelo/ui-extras` — draws the noise as an SVG filter
+ * in a `url()`, and this is the one place that SVG is written: the
+ * component imports {@link tile} from here for the build, and the
+ * browser imports it to redraw. It lives with the core runtime because
+ * this is the directory the plugin serves `/su/*.js` from.
  *
  * `set` is the half a page drives:
  *
  * ```js
- * import { setGrain } from 'sitelo/ui/client'
+ * import { setGrain } from 'sitelo/ui-extras/client'
  *
  * setGrain('hero', { type: 'turbulence', seed: 7 })
  * ```

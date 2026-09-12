@@ -1,5 +1,6 @@
 import { br, div, em, fragment, span, strong } from 'javascript-to-html'
 import * as ui from 'sitelo/ui'
+import * as extras from 'sitelo/ui-extras'
 
 import { createCodeHelpers } from './code.js'
 import { DEFAULT_LOCALE } from './i18n.js'
@@ -13,14 +14,18 @@ import { DEFAULT_LOCALE } from './i18n.js'
 const ELEMENTS = { br, div, em, fragment, span, strong }
 
 /*
- * Names the demo source can use bare. `default` is a reserved word and
- * cannot be a parameter, so it never reaches the evaluator.
+ * Names the demo source can use bare: the core components, the extras
+ * — one scope for both sections, since an extra's demo wraps core
+ * components and nothing in either collides — and the scaffolding
+ * above. `default` is a reserved word and cannot be a parameter, so it
+ * never reaches the evaluator.
  */
+const COMPONENTS = { ...ui, ...extras }
 const SCOPE = [
-  ...Object.keys(ui).filter((name) => name !== 'default'),
+  ...Object.keys(COMPONENTS).filter((name) => name !== 'default'),
   ...Object.keys(ELEMENTS),
 ]
-const VALUES = SCOPE.map((name) => ui[name] ?? ELEMENTS[name])
+const VALUES = SCOPE.map((name) => COMPONENTS[name] ?? ELEMENTS[name])
 
 /**
  * Run a demo snippet and return its HTML.
@@ -190,8 +195,8 @@ export function createUiDemo(lang = DEFAULT_LOCALE) {
   }
 
   /**
-   * The grain sandbox: every prop as a control, a grain to watch, and
-   * the call that would render it.
+   * The grain sandbox on `/ui-extras/grain`: every prop as a control, a
+   * grain to watch, and the call that would render it.
    *
    * The server draws the resting state — the theme's own opacity is not
    * known until the page loads, so `main.js` reads it off the grain and
@@ -252,7 +257,7 @@ export function createUiDemo(lang = DEFAULT_LOCALE) {
         // the preview and sets the picker, as it does the opacity.
         field('background', colorPicker({ id: 'sandbox-background', label: t.background, value: '#ffffffff' })),
       ),
-      ui.grain(
+      extras.grain(
         { id: 'grain-sandbox', class: 'ui-sandbox-preview' },
         ui.text({ variant: 'lead', align: 'center' }, t.preview),
       ),

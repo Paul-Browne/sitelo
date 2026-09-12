@@ -9,7 +9,9 @@
  *
  * The stylesheet `styles()` links is served from the same place and on
  * the same terms — a `<link>` is markup rather than an import, so it
- * needs the same treatment the runtime modules get.
+ * needs the same treatment the runtime modules get. So is each sheet an
+ * extra links — `grainStyles()` from `sitelo/ui-extras` — since those
+ * are one file per component rather than part of `ui.css`.
  *
  * It is part of sitelo's default plugin, so a normal project gets this
  * without configuring anything.
@@ -24,7 +26,7 @@ import {
   RUNTIME_MODULES,
   uiClientBase,
 } from './handlers.js';
-import { stylesheet } from './styles.js';
+import { sheetNamed } from './sheet.js';
 
 const RUNTIME_DIR = fileURLToPath(new URL('./runtime/', import.meta.url));
 
@@ -53,8 +55,27 @@ function eventAttributes(html) {
   return [...html.matchAll(/\son[a-z]+="([^"]*)"/g)].map(([, value]) => value);
 }
 
-/** What `styles()` can ask for, hashed or not. */
-const CSS_NAME = /^ui(?:-[0-9a-f]+)?\.css$/;
+/**
+ * What `styles()` — or an extra's `grainStyles()` — can ask for: the
+ * sheet's name, with or without its hash.
+ *
+ * The name is matched lazily, so `ui-fade.css` reads as the core sheet
+ * at hash `fade` rather than a sheet called `ui-fade`; a name that is
+ * not a sheet at all is caught by {@link sheetNamed} answering `null`.
+ */
+const CSS_NAME = /^([a-z][a-z0-9-]*?)(?:-[0-9a-f]+)?\.css$/;
+
+/**
+ * The sheet a file name asks for, or `null` if it is not one of ours.
+ *
+ * @param {string} file
+ * @returns {ReturnType<typeof sheetNamed>}
+ */
+function sheetFor(file) {
+  const match = CSS_NAME.exec(file);
+
+  return match ? sheetNamed(match[1]) : null;
+}
 
 /**
  * The `href` of every stylesheet `<link>` in a page.
@@ -210,10 +231,12 @@ export function uiRuntime({ base } = {}) {
          * here, so a page still holding the name from before an edit is
          * served the CSS that edit produced rather than a 404.
          */
-        if (CSS_NAME.test(file)) {
+        const sheet = sheetFor(file);
+
+        if (sheet) {
           res.setHeader('Content-Type', 'text/css; charset=utf-8');
           res.setHeader('Cache-Control', 'no-cache');
-          res.end(stylesheet());
+          res.end(sheet.stylesheet());
           return;
         }
 
@@ -240,7 +263,8 @@ export function uiRuntime({ base } = {}) {
       if (external || !outDir || !fs.existsSync(outDir)) return;
 
       const wanted = new Set();
-      const sheets = new Set();
+      /** File name → the sheet whose bytes go under it. */
+      const sheets = new Map();
 
       for (const file of htmlFiles(outDir)) {
         const html = fs.readFileSync(file, 'utf8');
@@ -261,8 +285,9 @@ export function uiRuntime({ base } = {}) {
           if (!href.startsWith(prefix)) continue;
 
           const name = href.slice(prefix.length);
+          const sheet = sheetFor(name);
 
-          if (CSS_NAME.test(name)) sheets.add(name);
+          if (sheet) sheets.set(name, sheet);
         }
       }
 
@@ -279,8 +304,8 @@ export function uiRuntime({ base } = {}) {
         );
       }
 
-      for (const name of sheets) {
-        fs.writeFileSync(path.join(dir, name), stylesheet());
+      for (const [name, sheet] of sheets) {
+        fs.writeFileSync(path.join(dir, name), sheet.stylesheet());
       }
     },
   };

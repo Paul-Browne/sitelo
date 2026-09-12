@@ -60,6 +60,14 @@
       "types": "./src/ui/client.d.ts",
       "import": "./src/ui/client.js"
     },
+    "./ui-extras": {
+      "types": "./src/ui-extras/index.d.ts",
+      "import": "./src/ui-extras/index.js"
+    },
+    "./ui-extras/client": {
+      "types": "./src/ui-extras/client.d.ts",
+      "import": "./src/ui-extras/client.js"
+    },
     "./jsx-runtime": {
       "types": "./src/jsx-runtime.d.ts",
       "import": "./src/jsx-runtime.js"

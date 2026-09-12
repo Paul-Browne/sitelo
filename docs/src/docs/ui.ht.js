@@ -22,7 +22,7 @@ const s = uiSnippets('en')
 
 /** The component reference table, one row per group. */
 const GROUPS = [
-  ['Layout', ['container', 'grain', 'stack', 'grid', 'divider', 'card', 'cardHeader', 'cardTitle', 'cardSubtitle', 'cardMedia', 'cardBody', 'cardFooter', 'aspectRatio']],
+  ['Layout', ['container', 'stack', 'grid', 'divider', 'card', 'cardHeader', 'cardTitle', 'cardSubtitle', 'cardMedia', 'cardBody', 'cardFooter', 'aspectRatio']],
   ['Typography', ['text', 'heading', 'link', 'code', 'inlineCode', 'kbd', 'visuallyHidden', 'prose']],
   ['Inputs', ['button', 'iconButton', 'buttonGroup', 'field', 'input', 'textarea', 'select', 'textField', 'textareaField', 'selectField', 'checkbox', 'radio', 'toggle', 'choiceGroup', 'slider', 'sliderField', 'toggleButton', 'toggleGroup']],
   ['Data display', ['avatar', 'avatarGroup', 'badge', 'chip', 'tooltip', 'table', 'list', 'listItem', 'figure']],
@@ -250,6 +250,21 @@ export default () =>
         code('selectField'),
         ', ',
         code('progressBar'),
+        '.',
+      ),
+
+      h2('Extras'),
+      p(
+        'A second entry point, ',
+        code('sitelo/ui-extras'),
+        ', holds the components that are not for everyone — textures and effects, a film grain to start. Each brings a stylesheet of its own, ',
+        code('grainStyles()'),
+        ' beside ',
+        code('styles()'),
+        ', so a page links only what it uses, and ',
+        code('sitelo/ui-extras/client'),
+        ' carries their page-side calls. They are catalogued at ',
+        a({ href: '/ui-extras' }, 'sitelo UI extras'),
         '.',
       ),
     ],

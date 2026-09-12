@@ -54,7 +54,7 @@ import {
   localePath,
   strings,
 } from './i18n.js'
-import { docNav, exampleNav, hasUiSection, uiNav } from './nav.js'
+import { docNav, exampleNav, hasUiSection, uiExtrasNav, uiNav } from './nav.js'
 
 const require = createRequire(import.meta.url)
 const viteVersion = require('vite/package.json').version
@@ -828,6 +828,24 @@ export function createLayouts(lang = DEFAULT_LOCALE) {
     })
   }
 
+  /*
+   * `/ui-extras` is `/ui` with a different sidebar: the same shell, the
+   * same demo tokens, and the same chrome — which is the locale's, since
+   * the bar and footer around an untranslated page are still in the
+   * visitor's language. The section itself is English only, so the
+   * sidebar labels and the title suffix are not looked up.
+   */
+  function uiExtrasLayout({ extraHead = [], ...args }) {
+    return guideLayout({
+      ...args,
+      extraHead: [uiDemoDefaults(), ...extraHead],
+      lang,
+      sidebarLabel: 'Extras',
+      sidebarItems: uiExtrasNav(),
+      titleSuffix: 'sitelo UI extras',
+    })
+  }
+
   function examplesLayout(args) {
     return guideLayout({
       ...args,
@@ -838,7 +856,7 @@ export function createLayouts(lang = DEFAULT_LOCALE) {
     })
   }
 
-  return { landingLayout, pageLayout, docsLayout, uiLayout, examplesLayout }
+  return { landingLayout, pageLayout, docsLayout, uiLayout, uiExtrasLayout, examplesLayout }
 }
 
 const en = createLayouts(DEFAULT_LOCALE)
@@ -847,4 +865,5 @@ export const landingLayout = en.landingLayout
 export const pageLayout = en.pageLayout
 export const docsLayout = en.docsLayout
 export const uiLayout = en.uiLayout
+export const uiExtrasLayout = en.uiExtrasLayout
 export const examplesLayout = en.examplesLayout

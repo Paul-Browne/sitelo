@@ -9,8 +9,7 @@
  * What is left here is the handful of things a page drives rather than
  * a click: showing a toast, moving a progress bar as work lands or a
  * slider from a button, taking a flow to its next step, changing a
- * count, pressing a toggle, redrawing a grain, or setting the theme
- * from your own code.
+ * count, pressing a toggle, or setting the theme from your own code.
  *
  * ```js
  * import { toast, setProgress, setTheme } from 'sitelo/ui/client'
@@ -22,7 +21,6 @@
  */
 
 export { get as getBadge, set as setBadge } from './runtime/badge.js'
-export { get as getGrain, set as setGrain } from './runtime/grain.js'
 export { get as getPressed, set as setPressed } from './runtime/pressed.js'
 export { get as getProgress, set as setProgress } from './runtime/progress.js'
 export { get as getSlider, set as setSlider } from './runtime/slider.js'

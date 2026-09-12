@@ -131,7 +131,6 @@ const UI_LABELS = {
     { href: '/ui/grid', label: 'Grid' },
     { href: '/ui/divider', label: 'Divider' },
     { href: '/ui/aspect-ratio', label: 'Aspect ratio' },
-    { href: '/ui/grain', label: 'Grain' },
     { href: '/ui/card', label: 'Card' },
     { heading: 'Typography' },
     { href: '/ui/typography', label: 'Typography' },
@@ -193,7 +192,6 @@ const UI_LABELS = {
     { href: '/ui/grid', label: 'Cuadrícula' },
     { href: '/ui/divider', label: 'Separador' },
     { href: '/ui/aspect-ratio', label: 'Relación de aspecto' },
-    { href: '/ui/grain', label: 'Grano' },
     { href: '/ui/card', label: 'Tarjeta' },
     { heading: 'Tipografía' },
     { href: '/ui/typography', label: 'Tipografía' },
@@ -255,7 +253,6 @@ const UI_LABELS = {
     { href: '/ui/grid', label: 'Grille' },
     { href: '/ui/divider', label: 'Séparateur' },
     { href: '/ui/aspect-ratio', label: 'Rapport d’aspect' },
-    { href: '/ui/grain', label: 'Grain' },
     { href: '/ui/card', label: 'Carte' },
     { heading: 'Typographie' },
     { href: '/ui/typography', label: 'Typographie' },
@@ -317,7 +314,6 @@ const UI_LABELS = {
     { href: '/ui/grid', label: 'Grid' },
     { href: '/ui/divider', label: 'Trenner' },
     { href: '/ui/aspect-ratio', label: 'Seitenverhältnis' },
-    { href: '/ui/grain', label: 'Filmkorn' },
     { href: '/ui/card', label: 'Karte' },
     { heading: 'Typografie' },
     { href: '/ui/typography', label: 'Typografie' },
@@ -379,7 +375,6 @@ const UI_LABELS = {
     { href: '/ui/grid', label: 'Сетка' },
     { href: '/ui/divider', label: 'Разделитель' },
     { href: '/ui/aspect-ratio', label: 'Соотношение сторон' },
-    { href: '/ui/grain', label: 'Зерно' },
     { href: '/ui/card', label: 'Карточка' },
     { heading: 'Типографика' },
     { href: '/ui/typography', label: 'Типографика' },
@@ -441,7 +436,6 @@ const UI_LABELS = {
     { href: '/ui/grid', label: '网格' },
     { href: '/ui/divider', label: '分割线' },
     { href: '/ui/aspect-ratio', label: '宽高比' },
-    { href: '/ui/grain', label: '颗粒' },
     { href: '/ui/card', label: '卡片' },
     { heading: '排版' },
     { href: '/ui/typography', label: '排版' },
@@ -503,7 +497,6 @@ const UI_LABELS = {
     { href: '/ui/grid', label: 'Grelha' },
     { href: '/ui/divider', label: 'Divisória' },
     { href: '/ui/aspect-ratio', label: 'Proporção' },
-    { href: '/ui/grain', label: 'Grão' },
     { href: '/ui/card', label: 'Cartão' },
     { heading: 'Tipografia' },
     { href: '/ui/typography', label: 'Tipografia' },
@@ -561,6 +554,17 @@ const UI_LABELS = {
 
 /** Locales that have the `/ui` section. */
 const UI_LOCALES = new Set(Object.keys(UI_LABELS))
+
+/**
+ * The `/ui-extras` sidebar. English only: the section is not translated
+ * and has no entry in the top bar — it is reached from `/ui` and from
+ * the docs, which is why there is no per-locale table here.
+ */
+const UI_EXTRAS_LABELS = [
+  { href: '/ui-extras', label: 'Overview' },
+  { heading: 'Texture' },
+  { href: '/ui-extras/grain', label: 'Grain', js: true },
+]
 
 /** @param {string} lang @returns {boolean} */
 export function hasUiSection(lang = DEFAULT_LOCALE) {
@@ -651,6 +655,10 @@ export function uiNav(lang = DEFAULT_LOCALE) {
           ...(item.js ? { js: true } : {}),
         },
   )
+}
+
+export function uiExtrasNav() {
+  return UI_EXTRAS_LABELS.map((item) => ({ ...item }))
 }
 
 export function exampleNav(lang = DEFAULT_LOCALE) {

@@ -1,15 +1,17 @@
 import { h2, p } from 'javascript-to-html'
-import { code } from '../lib/code.js'
-import { uiLayout } from '../lib/layout.js'
+import { grainStyles } from 'sitelo/ui-extras'
+import { code, codeBlock } from '../lib/code.js'
+import { uiExtrasLayout } from '../lib/layout.js'
 import { demo, grainSandbox, grainSandboxHead, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
-  uiLayout({
+  uiExtrasLayout({
     title: 'Grain',
     description:
       'A wrapper that lays a film grain over whatever it contains.',
-    activeHref: '/ui/grain',
-    extraHead: grainSandboxHead(),
+    activeHref: '/ui-extras/grain',
+    // The page's own sheet first, then what the sandbox needs.
+    extraHead: [grainStyles(), ...grainSandboxHead()],
     children: [
       p(
         'Grain takes the flatness off a large area of colour — a hero, a coloured band, a card that would otherwise read as a plain rectangle. It wraps content the way ',
@@ -18,6 +20,19 @@ export default () =>
         code('::after'),
         ', above the children and ignoring the pointer.',
       ),
+      p(
+        'It is an extra, so it comes with a stylesheet of its own. Import both from ',
+        code('sitelo/ui-extras'),
+        ' and put ',
+        code('grainStyles()'),
+        ' in the head beside ',
+        code('styles()'),
+        ':',
+      ),
+      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+import { grain, grainStyles } from 'sitelo/ui-extras'
+
+head(styles(), grainStyles())`, 'javascript'),
       p(
         'The tile is a static SVG of fractal noise, painted once. A ',
         code('filter'),
@@ -177,6 +192,21 @@ export default () =>
 
       h2('Sandbox'),
       grainSandbox(),
+
+      h2('From script'),
+      p(
+        code('setGrain()'),
+        ' from ',
+        code('sitelo/ui-extras/client'),
+        ' redraws a grain by element or by ',
+        code('id'),
+        ': only what is passed changes, and it returns what the grain is showing now — which ',
+        code('getGrain()'),
+        ' reads on its own, the theme’s opacity included. The sandbox above is nothing else.',
+      ),
+      codeBlock('src/main.js', `import { setGrain } from 'sitelo/ui-extras/client'
+
+setGrain('hero', { type: 'turbulence', seed: 7 })`, 'javascript'),
 
       h2('Props'),
       propsTable([

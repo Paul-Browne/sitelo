@@ -13,6 +13,7 @@ import path from 'node:path';
 import { uiClientPrefix, uiRuntime } from '../src/ui/plugin.js';
 import { configureUiClient, RUNTIME_MODULES } from '../src/ui/handlers.js';
 import { styles, stylesheet, stylesUrl } from '../src/ui/styles.js';
+import { grainStylesheet, grainStylesUrl } from '../src/ui-extras/index.js';
 
 /** A throwaway outDir holding one page. */
 function siteWith(html) {
@@ -330,9 +331,34 @@ test('dev serves the sheet, hashed or not', () => {
 });
 
 test('dev passes a css name the link cannot have produced through', () => {
-  for (const url of ['/su/site.css', '/su/ui-xyz.css', '/su/nested/ui.css']) {
+  for (const url of ['/su/site.css', '/su/ui-xyz.css', '/su/nested/ui.css', '/su/grain-xyz.css', '/su/../ui.css']) {
     assert.ok(request(url).passed, `${url} falls through to Vite`);
   }
+});
+
+test('an extra’s sheet is served and written on the same terms as ui.css', () => {
+  // Each extra carries its own file — grain.css for grain() — and the
+  // plugin knows it by the name in front of the hash.
+  for (const name of ['grain.css', grainStylesUrl().split('/').pop(), 'grain-0000000000.css']) {
+    const { headers, body, passed } = request(`/su/${name}`);
+
+    assert.ok(!passed, `/su/${name} is handled`);
+    assert.equal(headers['Content-Type'], 'text/css; charset=utf-8');
+    assert.equal(body, grainStylesheet());
+  }
+
+  const core = stylesUrl().split('/').pop();
+  const grain = grainStylesUrl().split('/').pop();
+  const html = `<link rel="stylesheet" href="/su/${core}"><link rel="stylesheet" href="/su/${grain}">`;
+  const { root, outDir } = siteWith(html);
+  const plugin = uiRuntime();
+
+  plugin.configResolved({ root, build: { outDir } });
+  plugin.writeBundle();
+
+  assert.deepEqual(readdirSync(path.join(outDir, 'su')).sort(), [grain, core].sort());
+  assert.equal(readFileSync(path.join(outDir, 'su', core), 'utf8'), stylesheet());
+  assert.equal(readFileSync(path.join(outDir, 'su', grain), 'utf8'), grainStylesheet(), 'each file gets its own bytes');
 });
 
 test('styles() points at the base the plugin serves', () => {

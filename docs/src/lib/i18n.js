@@ -105,7 +105,6 @@ export const TRANSLATED_PATHS = new Set([
   '/ui/grid',
   '/ui/divider',
   '/ui/aspect-ratio',
-  '/ui/grain',
   '/ui/card',
   '/ui/typography',
   '/ui/prose',

@@ -1,4 +1,4 @@
-import { getGrain, setGrain } from 'sitelo/ui/client'
+import { getGrain, setGrain } from 'sitelo/ui-extras/client'
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
@@ -422,7 +422,7 @@ function startHeroTypewriter() {
 }
 
 /**
- * The grain sandbox on `/ui/grain`: every control drives the grain
+ * The grain sandbox on `/ui-extras/grain`: every control drives the grain
  * through `setGrain`, and the code block underneath shows the call
  * that would render what is on screen.
  *

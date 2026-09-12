@@ -771,7 +771,7 @@ reach theirs, with nothing bundled:
 
 | Group | Components |
 | --- | --- |
-| Layout | `container` `grain` `stack` `grid` `divider` `aspectRatio` `card` `cardHeader` `cardTitle` `cardSubtitle` `cardMedia` `cardBody` `cardFooter` |
+| Layout | `container` `stack` `grid` `divider` `aspectRatio` `card` `cardHeader` `cardTitle` `cardSubtitle` `cardMedia` `cardBody` `cardFooter` |
 | Typography | `text` `heading` `link` `code` `kbd` `visuallyHidden` `prose` |
 | Inputs | `button` `iconButton` `buttonGroup` `field` `input` `textarea` `select` `slider` `textField` `textareaField` `selectField` `sliderField` `checkbox` `radio` `toggle` `toggleButton` `toggleGroup` `choiceGroup` |
 | Data display | `avatar` `avatarGroup` `badge` `chip` `tooltip` `table` `list` `listItem` `figure` |
@@ -794,6 +794,29 @@ Every export ships type declarations, so an editor completes `variant`,
 [sitelo.dev/ui](https://sitelo.dev/ui) is the component gallery — one
 page per component, each example rendered by the build that renders the
 page around it.
+
+### Extras
+
+Not everything belongs in one stylesheet. The components that are not
+for everyone — textures and effects, a film grain to start — live under
+a second entry point, `sitelo/ui-extras`, and each brings a sheet of its
+own, so a page links only what it uses:
+
+```js
+import { styles, container, hero } from 'sitelo/ui'
+import { grain, grainStyles } from 'sitelo/ui-extras'
+
+head(styles(), grainStyles())
+body(grain({ as: 'section' }, container(hero({ title: 'Hello' }))))
+```
+
+`grainStyles()` is `styles()` for `grain.css` — the same `inline`,
+`base`, `hash` and `nonce` options, served in dev and written into the
+build by the same plugin, from the same base. `grainStylesheet()` and
+`grainStylesUrl()` are the bytes and the href on their own. The
+page-side calls — `setGrain()` and `getGrain()` — are on
+`sitelo/ui-extras/client`, in the same shape as `sitelo/ui/client`.
+[sitelo.dev/ui-extras](https://sitelo.dev/ui-extras) catalogues them.
 
 ---
 
