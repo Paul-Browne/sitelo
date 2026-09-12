@@ -16,7 +16,7 @@ import {
   ul,
 } from 'javascript-to-html'
 
-import { attrs, colorClass, cx, el, oneOf, parseArgs, SIZES } from './internal.js'
+import { attrs, colorClass, cx, el, oneOf, parseArgs, SIZES, space } from './internal.js'
 
 /**
  * Initials, an image, or an icon in a circle.
@@ -347,5 +347,149 @@ export function figure(...args) {
       : media,
     ...children,
     caption == null ? '' : figcaption({ class: 'su-figure-caption' }, caption),
+  )
+}
+
+const CAROUSEL_ALIGN = ['start', 'center', 'end']
+
+/**
+ * Quote a value for a CSS string custom property.
+ *
+ * The label a slide carries ends up as generated content's alt text,
+ * which is a CSS string — so an apostrophe in it has to be escaped or
+ * it closes the string early. The attribute itself is already the
+ * renderer's problem: it escapes the double quotes on the way out.
+ *
+ * @param {unknown} value
+ * @returns {string}
+ */
+function cssString(value) {
+  return `'${String(value).replace(/[\\']/g, '\\$&').replace(/\s+/g, ' ')}'`
+}
+
+/**
+ * Slides in a row you scroll through, with no script at all.
+ *
+ * The component is a scroll container and a flex row that snaps, which
+ * is the part every browser already knows how to do: swiping, a
+ * trackpad, shift-wheel and the arrow keys all work on the first paint,
+ * with nothing loaded and nothing to hydrate.
+ *
+ * The dots and the arrows are not markup. They are `::scroll-marker` on
+ * each slide and `::scroll-button()` on the track — pseudo-elements the
+ * stylesheet asks for, which the browser then draws, names, wires to
+ * the scroll position and disables at the ends. That is why there is no
+ * `data-` attribute here and no module to import: the state is the
+ * scroll offset, and the browser already has it.
+ *
+ * Where an engine has not shipped those pseudo-elements the carousel is
+ * still a snapping scroller, and it keeps its scrollbar rather than
+ * hiding it, so the way through it is never taken away. What CSS cannot
+ * do at all is loop back to the first slide or advance on its own —
+ * both need a script, and neither is here.
+ *
+ * `perView` is a custom property, so a media query of your own can
+ * change it without touching the markup:
+ * `@media (min-width: 48em) { .gallery { --su-carousel-per-view: 3 } }`.
+ *
+ * @param {...any} args - `carousel({ items, perView, min, gap, align, snap, dots, arrows, color, label }, ...slides)`
+ * @returns {string}
+ */
+export function carousel(...args) {
+  const { props, children } = parseArgs(args)
+  const {
+    items,
+    perView = 1,
+    min,
+    gap = 'md',
+    align = 'start',
+    snap = 'mandatory',
+    dots = true,
+    arrows = true,
+    color = 'primary',
+    label = 'Carousel',
+    previousLabel = 'Previous slide',
+    nextLabel = 'Next slide',
+    slideLabel,
+    as,
+    ...rest
+  } = props
+
+  const entries = [...(Array.isArray(items) ? items : []), ...children]
+  const name =
+    typeof slideLabel === 'function' ? slideLabel : (index) => String(index + 1)
+
+  /*
+   * Every slide is wrapped here rather than left to the caller, because
+   * the wrapper is what carries the label its dot is named by — and a
+   * dot with no name is a tab with no name. Passing an object instead
+   * of a child is how a slide names itself something better than its
+   * number.
+   */
+  const slides = entries.map((entry, index) => {
+    const item =
+      entry != null && typeof entry === 'object' && !Array.isArray(entry)
+        ? entry
+        : { content: entry }
+    const { content, label: own, ...slideRest } = item
+
+    return div(
+      attrs(slideRest, {
+        class: 'su-carousel-slide',
+        style: {
+          '--su-carousel-label': cssString(own ?? name(index, entries.length)),
+        },
+      }),
+      content ?? '',
+    )
+  })
+
+  const count = Number(perView)
+
+  return el(as, div)(
+    attrs(rest, {
+      class: cx(
+        'su-carousel',
+        dots && 'su-carousel--dots',
+        arrows && 'su-carousel--arrows',
+        colorClass(color),
+      ),
+      style: {
+        '--su-carousel-per-view': count > 0 ? count : undefined,
+        '--su-carousel-min': min,
+        '--su-carousel-gap': space(gap),
+        '--su-carousel-align': oneOf(align, CAROUSEL_ALIGN, 'start'),
+        /*
+         * The whole `scroll-snap-type` value, not just the strictness:
+         * `x none` is not a thing you can write, so turning snapping off
+         * has to replace the axis as well.
+         */
+        '--su-carousel-snap': snap === false || snap === 'none'
+          ? 'none'
+          : snap === 'proximity'
+            ? 'x proximity'
+            : undefined,
+        // Only the arrows read these, and only their names are ours to
+        // set: the glyph is the stylesheet's, the way `‹` and `›` are
+        // pagination's.
+        '--su-carousel-previous': arrows ? cssString(previousLabel) : undefined,
+        '--su-carousel-next': arrows ? cssString(nextLabel) : undefined,
+      },
+    }),
+    div(
+      {
+        class: 'su-carousel-track',
+        /*
+         * A scrollable region needs a name and a place in the tab order,
+         * or a keyboard is the one way through it that does not work.
+         * Chrome now focuses scrollers on its own; every other engine
+         * needs this said out loud.
+         */
+        role: 'group',
+        'aria-label': String(label),
+        tabindex: '0',
+      },
+      ...slides,
+    ),
   )
 }

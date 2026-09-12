@@ -74,6 +74,10 @@ const GROUPS = [
       `list({ plain: true }, listItem({ title: 'Маршрутизация', description: 'На файлах' }))`],
     ['/ru/ui/figure', 'Иллюстрация', 'Картинка и подпись к ней как одна иллюстрация.',
       `figure({ src: '/logo.svg', alt: '', caption: 'Подпись', style: 'width: 7rem' })`],
+    ['/ru/ui/carousel', 'Карусель', 'Слайды с прилипанием — точки и стрелки рисует браузер.',
+      `div({ style: 'width: 100%' }, carousel({ perView: 2.4, gap: 'sm', arrows: false, items: ['1', '2', '3'].map((n) =>
+        aspectRatio({ ratio: '16 / 9', style: 'background: var(--su-surface-2); border-radius: 0.5rem' },
+          div({ style: 'display: grid; place-items: center; color: var(--su-text-subtle)' }, n))) }))`],
   ]],
   ['Обратная связь', [
     ['/ru/ui/alert', 'Уведомление', 'Сообщение, у которого иконка и ARIA-роль следуют за цветом.',

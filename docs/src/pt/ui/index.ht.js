@@ -74,6 +74,10 @@ const GROUPS = [
       `list({ plain: true }, listItem({ title: 'Rotas', description: 'Baseadas em ficheiros' }))`],
     ['/pt/ui/figure', 'Figura', 'Uma imagem e a sua legenda, como uma só figura.',
       `figure({ src: '/logo.svg', alt: '', caption: 'Uma legenda', style: 'width: 7rem' })`],
+    ['/pt/ui/carousel', 'Carrossel', 'Slides que encaixam, com pontos e setas desenhados pelo navegador.',
+      `div({ style: 'width: 100%' }, carousel({ perView: 2.4, gap: 'sm', arrows: false, items: ['1', '2', '3'].map((n) =>
+        aspectRatio({ ratio: '16 / 9', style: 'background: var(--su-surface-2); border-radius: 0.5rem' },
+          div({ style: 'display: grid; place-items: center; color: var(--su-text-subtle)' }, n))) }))`],
   ]],
   ['Feedback', [
     ['/pt/ui/alert', 'Alerta', 'Uma mensagem cujo ícone e papel ARIA seguem a cor.',

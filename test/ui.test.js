@@ -8,6 +8,9 @@ import defaultExport from '../src/ui/index.js';
 import { configureUiClient, RUNTIME_MODULES } from '../src/ui/handlers.js';
 import { attrs, parseArgs, space } from '../src/ui/internal.js';
 
+/** The sheet itself, for the components whose behaviour is only in it. */
+const uiCss = readFileSync(fileURLToPath(new URL('../src/ui/ui.css', import.meta.url)), 'utf8');
+
 /* ------------------------------------------------------------------ *
  * Calling convention
  * ------------------------------------------------------------------ */
@@ -212,6 +215,150 @@ test('listItem({ href }) keeps the anchor inside the <li>', () => {
     ui.listItem({ title: 'Routing', href: '/docs/routing' }),
     /^<li><a href="\/docs\/routing" class="su-list-item"/,
   );
+});
+
+
+test('carousel() wraps every slide and names its dot after its number', () => {
+  const html = ui.carousel({ items: ['<p>one</p>', '<p>two</p>'] });
+
+  assert.match(html, /<div class="su-carousel-slide" style="--su-carousel-label: '1'"><p>one<\/p><\/div>/);
+  assert.match(html, /<div class="su-carousel-slide" style="--su-carousel-label: '2'"><p>two<\/p><\/div>/);
+});
+
+test('carousel() takes slides as items, as children, or as both', () => {
+  const html = ui.carousel({ items: ['a'] }, 'b', ['c', 'd']);
+
+  assert.equal(html.match(/su-carousel-slide/g).length, 4);
+  // Children come after the items, and the numbering runs across both.
+  assert.match(html, /'4'">d</);
+});
+
+test('an item object names its own dot and keeps its own attributes', () => {
+  const html = ui.carousel({
+    items: [{ label: 'Interior', content: 'x', id: 'shot-1', 'data-shot': '1' }],
+  });
+
+  assert.match(html, /id="shot-1" data-shot="1" class="su-carousel-slide"/);
+  assert.match(html, /--su-carousel-label: 'Interior'/);
+});
+
+test('a label with an apostrophe does not end the CSS string early', () => {
+  // The label is alt text on generated content, which is a CSS string:
+  // an unescaped quote in it would close the string and break the rule.
+  const html = ui.carousel({ items: [{ label: "L'atelier", content: 'x' }] });
+
+  assert.match(html, /--su-carousel-label: 'L\\'atelier'/);
+});
+
+test('carousel({ slideLabel }) names the dots in the page’s own language', () => {
+  const html = ui.carousel({
+    slideLabel: (index, count) => `Slide ${index + 1} of ${count}`,
+    items: ['a', 'b'],
+  });
+
+  assert.match(html, /--su-carousel-label: 'Slide 1 of 2'/);
+  assert.match(html, /--su-carousel-label: 'Slide 2 of 2'/);
+});
+
+test('carousel() props become the custom properties the stylesheet reads', () => {
+  const html = ui.carousel({ perView: 3, min: '18rem', gap: 'lg', align: 'center' }, 'a');
+
+  assert.match(html, /--su-carousel-per-view: 3/);
+  assert.match(html, /--su-carousel-min: 18rem/);
+  assert.match(html, /--su-carousel-gap: var\(--su-space-lg\)/);
+  assert.match(html, /--su-carousel-align: center/);
+
+  // A nonsense alignment falls back rather than reaching the stylesheet.
+  assert.match(ui.carousel({ align: 'middle' }, 'a'), /--su-carousel-align: start/);
+  assert.ok(!ui.carousel({ perView: 0 }, 'a').includes('--su-carousel-per-view'));
+});
+
+test('carousel({ snap }) replaces the whole scroll-snap-type value', () => {
+  // `x none` is not a value, so turning snapping off has to drop the axis
+  // as well — hence the property carrying both halves.
+  assert.match(ui.carousel({ snap: false }, 'a'), /--su-carousel-snap: none/);
+  assert.match(ui.carousel({ snap: 'proximity' }, 'a'), /--su-carousel-snap: x proximity/);
+  assert.ok(!ui.carousel({ snap: 'mandatory' }, 'a').includes('--su-carousel-snap'));
+});
+
+test('carousel() asks for dots and arrows by class, and names them', () => {
+  const on = ui.carousel({ previousLabel: 'Vorheriges Bild', nextLabel: 'Nächstes Bild' }, 'a');
+
+  assert.match(on, /class="su-carousel su-carousel--dots su-carousel--arrows su-c-primary"/);
+  assert.match(on, /--su-carousel-previous: 'Vorheriges Bild'/);
+  assert.match(on, /--su-carousel-next: 'Nächstes Bild'/);
+
+  const off = ui.carousel({ dots: false, arrows: false, color: 'neutral' }, 'a');
+
+  assert.match(off, /class="su-carousel su-c-neutral"/);
+  assert.ok(!off.includes('--su-carousel-previous'), 'no arrows, no names for them');
+});
+
+test('the carousel track is a scrollable region a keyboard can reach', () => {
+  const html = ui.carousel({ label: 'Product shots' }, 'a');
+
+  assert.match(html, /<div class="su-carousel-track" role="group" aria-label="Product shots" tabindex="0">/);
+});
+
+test('carousel() is markup and nothing else — no script, no data hooks', () => {
+  const html = ui.carousel({ items: ['a', 'b', 'c'] });
+
+  assert.ok(!html.includes('<script'), 'no script tag');
+  assert.ok(!html.includes('import('), 'no runtime module to fetch');
+  assert.ok(!/ on[a-z]+=/.test(html), 'no event attribute');
+  assert.ok(!html.includes('data-su-'), 'nothing for a script to find');
+});
+
+test('every carousel class and custom property in the markup is used by the sheet', () => {
+  // The controls are pseudo-elements, so a class the stylesheet does not
+  // read is a control that never appears — and nothing in the HTML would
+  // show it. This is the check that the two halves still meet.
+  const html = ui.carousel(
+    { perView: 2, min: '20rem', snap: 'proximity', items: [{ label: 'One', content: 'x' }] },
+  );
+
+  for (const name of new Set([...html.matchAll(/class="([^"]+)"/g)].flatMap((m) => m[1].split(' ')))) {
+    if (!name.startsWith('su-carousel')) continue;
+    assert.ok(uiCss.includes(`.${name}`), `.${name} is styled`);
+  }
+
+  for (const [, property] of html.matchAll(/(--su-carousel-[a-z-]+):/g)) {
+    assert.ok(uiCss.includes(`var(${property}`), `${property} is read by the stylesheet`);
+  }
+});
+
+test('the dots and arrows stay behind @supports', () => {
+  // Every engine gets a snapping scroller; only the ones that can draw
+  // scroll markers get the chrome. A rule that leaked out of the block
+  // would be a rule older browsers parse and then cannot honour.
+  // Comments first: this section explains the pseudo-elements it guards,
+  // and prose naming them is not a rule using them.
+  const rules = uiCss.replace(/\/\*[\s\S]*?\*\//g, '');
+  const start = rules.indexOf('@supports (scroll-marker-group: after) {');
+
+  assert.ok(start > -1, 'the block is there');
+
+  let depth = 0;
+  let end = start;
+
+  for (; end < rules.length; end += 1) {
+    if (rules[end] === '{') depth += 1;
+    else if (rules[end] === '}' && (depth -= 1) === 0) break;
+  }
+
+  const outside = rules.slice(0, start) + rules.slice(end);
+
+  assert.ok(!outside.includes('::scroll-'), 'no scroll pseudo-element outside the block');
+  assert.ok(!outside.includes('scroll-marker-group:'), 'and nothing turns the group on');
+  assert.match(rules.slice(start, end), /::scroll-button\(inline-start\)/);
+  assert.match(rules.slice(start, end), /::scroll-marker:target-current/);
+});
+
+test('minifying keeps the space a nameless dot falls back to', () => {
+  // `\s+ → ' '` runs over the whole sheet, string literals included: the
+  // alt text is one space, and squeezing it to none would leave the dot
+  // named after the empty string.
+  assert.ok(ui.stylesheet().includes("var(--su-carousel-label,' ')"));
 });
 
 /* ------------------------------------------------------------------ *

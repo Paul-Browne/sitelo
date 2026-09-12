@@ -74,6 +74,10 @@ const GROUPS = [
       `list({ plain: true }, listItem({ title: 'Routage', description: 'Basé sur les fichiers' }))`],
     ['/fr/ui/figure', 'Figure', 'Une image et sa légende, en une seule figure.',
       `figure({ src: '/logo.svg', alt: '', caption: 'Une légende', style: 'width: 7rem' })`],
+    ['/fr/ui/carousel', 'Carrousel', 'Des diapositives qui s’ancrent, avec des puces et des flèches dessinées par le navigateur.',
+      `div({ style: 'width: 100%' }, carousel({ perView: 2.4, gap: 'sm', arrows: false, items: ['1', '2', '3'].map((n) =>
+        aspectRatio({ ratio: '16 / 9', style: 'background: var(--su-surface-2); border-radius: 0.5rem' },
+          div({ style: 'display: grid; place-items: center; color: var(--su-text-subtle)' }, n))) }))`],
   ]],
   ['Retour d’information', [
     ['/fr/ui/alert', 'Alerte', 'Un message dont l’icône et le rôle ARIA suivent la couleur.',

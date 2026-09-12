@@ -414,6 +414,7 @@
 .su-tab:focus-visible,
 .su-tab-input:focus-visible + .su-tab,
 .su-page-link:focus-visible,
+.su-carousel-track:focus-visible,
 .su-menu-item:focus-visible,
 .su-list-item-action:focus-visible,
 .su-collapsible-trigger:focus-visible,
@@ -436,7 +437,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root {
+  /*
+   * `scroll-behavior` is not inherited, so every scroller that asked for
+   * smooth has to be named here to take it back — the document from
+   * `:root`, and the carousel track from its own rule.
+   */
+  :root,
+  .su-carousel-track {
     scroll-behavior: auto;
   }
 
@@ -2359,6 +2366,195 @@ svg.su-theme-icon-moon {
   color: var(--su-text-muted);
   font-size: var(--su-text-sm);
   line-height: var(--su-leading-normal);
+}
+
+/* ------------------------------------------------------------------ *
+ * Carousel
+ * ------------------------------------------------------------------ */
+
+/*
+ * A carousel here is a scroll container and nothing else. The slides are
+ * a flex row that snaps, which is the part every engine already knows
+ * how to do: swiping, a trackpad, shift-wheel and the arrow keys all
+ * work on the first paint, with nothing loaded.
+ *
+ * The dots and the arrows are not markup. `::scroll-marker` on each
+ * slide and `::scroll-button()` on the track are pseudo-elements the
+ * stylesheet asks for and the browser then draws, names, wires to the
+ * scroll position and disables at the ends — so the block below adds a
+ * whole set of controls to a page whose HTML gained nothing.
+ *
+ * Both live behind `@supports`. Where an engine has not shipped them the
+ * carousel is still a snapping scroller, and it keeps its scrollbar
+ * rather than hiding it, so the way through it is never taken away.
+ */
+
+.su-carousel {
+  /*
+   * The arrows are absolutely positioned against this, not against the
+   * track: their containing block has to sit outside the scroller, or
+   * they would scroll away with the slides. It is also what keeps them
+   * out of the scroller's overflow clip.
+   */
+  position: relative;
+}
+
+.su-carousel-track {
+  display: flex;
+  gap: var(--su-carousel-gap, var(--su-space-md));
+  overflow-x: auto;
+  scroll-snap-type: var(--su-carousel-snap, x mandatory);
+  /*
+   * `scroll-behavior` is not inherited, so the smooth scrolling `:root`
+   * asks for does not reach a scroller inside the page. Said again here,
+   * and taken back again under `prefers-reduced-motion`.
+   */
+  scroll-behavior: smooth;
+  /* A swipe that runs out of slides should not turn into a page swipe. */
+  overscroll-behavior-inline: contain;
+}
+
+.su-carousel-slide {
+  flex: 0 0 auto;
+  min-width: 0;
+  /*
+   * `perView` slides to a track, minus the gaps between them. `min` is a
+   * floor rather than a media query: once the share drops below it the
+   * slides stay that wide and fewer of them fit, the way `grid`'s
+   * auto-fit behaves. Neither may exceed the track itself.
+   */
+  inline-size: min(
+    100%,
+    max(
+      var(--su-carousel-min, 0px),
+      calc(
+        (100% - (var(--su-carousel-per-view, 1) - 1) * var(--su-carousel-gap, var(--su-space-md))) /
+          var(--su-carousel-per-view, 1)
+      )
+    )
+  );
+  scroll-snap-align: var(--su-carousel-align, start);
+  /* A flick goes to the next slide, not four slides along. */
+  scroll-snap-stop: always;
+}
+
+@supports (scroll-marker-group: after) {
+  /*
+   * How much of the component's height the dots take, which is what the
+   * arrows subtract to centre themselves on the slides rather than on
+   * the slides and the dots together.
+   */
+  .su-carousel--dots {
+    --su-carousel-dots-space: 2rem;
+  }
+
+  /*
+   * The scrollbar comes off only once there are dots to replace it —
+   * a carousel with neither would be a scroller with nothing to say it
+   * scrolls.
+   */
+  .su-carousel--dots > .su-carousel-track {
+    scroll-marker-group: after;
+    scrollbar-width: none;
+  }
+
+  .su-carousel--dots > .su-carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .su-carousel-track::scroll-marker-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--su-space-sm);
+    block-size: var(--su-carousel-dots-space, 2rem);
+  }
+
+  /*
+   * Declared twice on purpose. A dot is an empty box, so the name it is
+   * announced by can only come from generated content's alt text — and
+   * an engine that has the marker but not the `/ alt` syntax would throw
+   * the whole declaration away and draw no dots at all. The plain one
+   * first means the worst case is an unnamed dot rather than none.
+   */
+  .su-carousel-slide::scroll-marker {
+    content: '';
+  }
+
+  .su-carousel-slide::scroll-marker {
+    content: '' / var(--su-carousel-label, ' ');
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: var(--su-radius-full);
+    background: var(--su-border-strong);
+    cursor: pointer;
+    transition: background var(--su-transition), scale var(--su-transition);
+  }
+
+  .su-carousel-slide::scroll-marker:hover {
+    background: var(--su-text-subtle);
+  }
+
+  /* The one the scroller is showing. The browser keeps this true. */
+  .su-carousel-slide::scroll-marker:target-current {
+    background: var(--su-c, var(--su-primary));
+    scale: 1.15;
+  }
+
+  .su-carousel-slide::scroll-marker:focus-visible {
+    outline: 2px solid var(--su-c, var(--su-primary));
+    outline-offset: 2px;
+  }
+
+  .su-carousel--arrows > .su-carousel-track::scroll-button(inline-start),
+  .su-carousel--arrows > .su-carousel-track::scroll-button(inline-end) {
+    position: absolute;
+    top: calc((100% - var(--su-carousel-dots-space, 0px)) / 2);
+    translate: 0 -50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: var(--su-border-width) solid var(--su-border);
+    border-radius: var(--su-radius-full);
+    background: var(--su-surface);
+    color: var(--su-text);
+    box-shadow: var(--su-shadow-sm);
+    font-size: var(--su-text-2xl);
+    line-height: 1;
+    cursor: pointer;
+    transition: background var(--su-transition), opacity var(--su-transition);
+  }
+
+  .su-carousel--arrows > .su-carousel-track::scroll-button(inline-start) {
+    content: '‹' / var(--su-carousel-previous, 'Previous');
+    inset-inline-start: var(--su-space-sm);
+  }
+
+  .su-carousel--arrows > .su-carousel-track::scroll-button(inline-end) {
+    content: '›' / var(--su-carousel-next, 'Next');
+    inset-inline-end: var(--su-space-sm);
+  }
+
+  .su-carousel--arrows > .su-carousel-track::scroll-button(inline-start):hover,
+  .su-carousel--arrows > .su-carousel-track::scroll-button(inline-end):hover {
+    background: var(--su-surface-hover);
+  }
+
+  /* The browser disables these at the ends — nothing here has to know. */
+  .su-carousel--arrows > .su-carousel-track::scroll-button(inline-start):disabled,
+  .su-carousel--arrows > .su-carousel-track::scroll-button(inline-end):disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .su-carousel--arrows > .su-carousel-track::scroll-button(inline-start):focus-visible,
+  .su-carousel--arrows > .su-carousel-track::scroll-button(inline-end):focus-visible {
+    outline: 2px solid var(--su-c, var(--su-primary));
+    outline-offset: 2px;
+  }
 }
 
 /* ------------------------------------------------------------------ *

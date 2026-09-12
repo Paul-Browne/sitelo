@@ -127,6 +127,7 @@ export const TRANSLATED_PATHS = new Set([
   '/ui/table',
   '/ui/list',
   '/ui/figure',
+  '/ui/carousel',
   '/ui/alert',
   '/ui/empty',
   '/ui/progress',

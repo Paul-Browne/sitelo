@@ -238,7 +238,7 @@ export default () =>
           section(
             'data',
             'Data display',
-            'Avatars, badges, chips, tooltips, tables and lists.',
+            'Avatars, badges, chips, tooltips, tables, lists and a carousel.',
             row(
               ui.avatarGroup(
                 { max: 3 },
@@ -291,6 +291,24 @@ export default () =>
                 href: '#data',
               }),
             ),
+            ui.carousel({
+              perView: 3,
+              min: '11rem',
+              label: 'Guides',
+              items: ['Routing', 'Data', 'Assets', 'Images', 'Islands', 'Search'].map((name) => ({
+                label: name,
+                content: ui.card(
+                  { variant: 'flat', style: 'height: 100%' },
+                  ui.cardBody(
+                    ui.stack(
+                      { gap: 'xs', align: 'center' },
+                      ui.text({ variant: 'overline', tone: 'muted' }, 'Guide'),
+                      ui.text({ variant: 'h6', as: 'div' }, name),
+                    ),
+                  ),
+                ),
+              })),
+            }),
           ),
 
           section(

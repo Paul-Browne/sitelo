@@ -75,6 +75,10 @@ const GROUPS = [
       `list({ plain: true }, listItem({ title: 'Rutas', description: 'Basadas en archivos' }))`],
     ['/es/ui/figure', 'Figura', 'Una imagen y su pie, como una sola figura.',
       `figure({ src: '/logo.svg', alt: '', caption: 'Un pie', style: 'width: 7rem' })`],
+    ['/es/ui/carousel', 'Carrusel', 'Diapositivas que encajan, con puntos y flechas que dibuja el navegador.',
+      `div({ style: 'width: 100%' }, carousel({ perView: 2.4, gap: 'sm', arrows: false, items: ['1', '2', '3'].map((n) =>
+        aspectRatio({ ratio: '16 / 9', style: 'background: var(--su-surface-2); border-radius: 0.5rem' },
+          div({ style: 'display: grid; place-items: center; color: var(--su-text-subtle)' }, n))) }))`],
   ]],
   ['Feedback', [
     ['/es/ui/alert', 'Alerta', 'Un mensaje cuyo icono y rol ARIA siguen a su color.',

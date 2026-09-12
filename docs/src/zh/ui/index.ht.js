@@ -74,6 +74,10 @@ const GROUPS = [
       `list({ plain: true }, listItem({ title: '路由', description: '基于文件' }))`],
     ['/zh/ui/figure', '图注', '一张图和它的说明，合成一个 figure。',
       `figure({ src: '/logo.svg', alt: '', caption: '一段说明', style: 'width: 7rem' })`],
+    ['/zh/ui/carousel', '轮播', '会吸附的幻灯片，圆点和箭头由浏览器绘制。',
+      `div({ style: 'width: 100%' }, carousel({ perView: 2.4, gap: 'sm', arrows: false, items: ['1', '2', '3'].map((n) =>
+        aspectRatio({ ratio: '16 / 9', style: 'background: var(--su-surface-2); border-radius: 0.5rem' },
+          div({ style: 'display: grid; place-items: center; color: var(--su-text-subtle)' }, n))) }))`],
   ]],
   ['反馈', [
     ['/zh/ui/alert', '提示', '图标和 ARIA 角色都跟着颜色走的一条消息。',

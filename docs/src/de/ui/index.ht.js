@@ -74,6 +74,10 @@ const GROUPS = [
       `list({ plain: true }, listItem({ title: 'Routing', description: 'Dateibasiert' }))`],
     ['/de/ui/figure', 'Abbildung', 'Ein Bild und seine Unterschrift, als eine Abbildung.',
       `figure({ src: '/logo.svg', alt: '', caption: 'Eine Unterschrift', style: 'width: 7rem' })`],
+    ['/de/ui/carousel', 'Karussell', 'Slides, die einrasten — Punkte und Pfeile zeichnet der Browser.',
+      `div({ style: 'width: 100%' }, carousel({ perView: 2.4, gap: 'sm', arrows: false, items: ['1', '2', '3'].map((n) =>
+        aspectRatio({ ratio: '16 / 9', style: 'background: var(--su-surface-2); border-radius: 0.5rem' },
+          div({ style: 'display: grid; place-items: center; color: var(--su-text-subtle)' }, n))) }))`],
   ]],
   ['Rückmeldung', [
     ['/de/ui/alert', 'Hinweis', 'Eine Meldung, deren Icon und ARIA-Rolle der Farbe folgen.',

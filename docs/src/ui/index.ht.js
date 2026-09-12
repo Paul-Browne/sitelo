@@ -75,6 +75,10 @@ const GROUPS = [
       `list({ plain: true }, listItem({ title: 'Routing', description: 'File based' }))`],
     ['/ui/figure', 'Figure', 'An image and its caption, as one figure.',
       `figure({ src: '/logo.svg', alt: '', caption: 'A caption', style: 'width: 7rem' })`],
+    ['/ui/carousel', 'Carousel', 'Slides that snap, with dots and arrows the browser draws.',
+      `div({ style: 'width: 100%' }, carousel({ perView: 2.4, gap: 'sm', arrows: false, items: ['1', '2', '3'].map((n) =>
+        aspectRatio({ ratio: '16 / 9', style: 'background: var(--su-surface-2); border-radius: 0.5rem' },
+          div({ style: 'display: grid; place-items: center; color: var(--su-text-subtle)' }, n))) }))`],
   ]],
   ['Feedback', [
     ['/ui/alert', 'Alert', 'A message whose icon and ARIA role follow its colour.',

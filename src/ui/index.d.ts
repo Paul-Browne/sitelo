@@ -601,6 +601,39 @@ export interface FigureProps extends BaseProps {
 
 export function figure(...args: Args<FigureProps>): string
 
+/** One slide: a child on its own, or a child with a name for its dot. */
+export type CarouselItem = Child | (BaseProps & { content?: Child; label?: string })
+
+export interface CarouselProps extends BaseProps {
+  /** Slides. Children are slides too, and are appended to these. */
+  items?: CarouselItem[]
+  /** How many slides fill the track. Fractional shows a sliver of the next. Default `1`. */
+  perView?: number
+  /** Floor on a slide's width, so narrow screens show fewer rather than thinner. */
+  min?: string
+  /** Between slides. Default `'md'`. */
+  gap?: Space
+  /** Where a slide comes to rest. Default `'start'`. */
+  align?: 'start' | 'center' | 'end'
+  /** Snapping strictness, or `false` to scroll freely. Default `'mandatory'`. */
+  snap?: 'mandatory' | 'proximity' | false
+  /** Dots under the track, where the browser can draw them. Default `true`. */
+  dots?: boolean
+  /** Arrows over the track, where the browser can draw them. Default `true`. */
+  arrows?: boolean
+  color?: Color
+  /** Accessible name for the scrollable region. Default `'Carousel'`. */
+  label?: string
+  /** Accessible name for the arrows. */
+  previousLabel?: string
+  nextLabel?: string
+  /** Names a slide's dot when the slide does not. Default: its number. */
+  slideLabel?: (index: number, count: number) => string
+  as?: string
+}
+
+export function carousel(...args: Args<CarouselProps>): string
+
 /* -------------------------------------------------------------- *
  * Feedback
  * -------------------------------------------------------------- */
