@@ -415,6 +415,7 @@
 .su-tab-input:focus-visible + .su-tab,
 .su-page-link:focus-visible,
 .su-carousel-track:focus-visible,
+.su-carousel-dot:focus-visible,
 .su-menu-item:focus-visible,
 .su-list-item-action:focus-visible,
 .su-collapsible-trigger:focus-visible,
@@ -2373,20 +2374,28 @@ svg.su-theme-icon-moon {
  * ------------------------------------------------------------------ */
 
 /*
- * A carousel here is a scroll container and nothing else. The slides are
- * a flex row that snaps, which is the part every engine already knows
- * how to do: swiping, a trackpad, shift-wheel and the arrow keys all
- * work on the first paint, with nothing loaded.
+ * A carousel here is a scroll container and a flex row that snaps, which
+ * is the part every engine already knows how to do: swiping, a trackpad,
+ * shift-wheel and the arrow keys all work on the first paint, with
+ * nothing loaded.
  *
- * The dots and the arrows are not markup. `::scroll-marker` on each
- * slide and `::scroll-button()` on the track are pseudo-elements the
- * stylesheet asks for and the browser then draws, names, wires to the
- * scroll position and disables at the ends — so the block below adds a
- * whole set of controls to a page whose HTML gained nothing.
+ * The controls come in two forms, and which one a visitor sees is the
+ * browser's decision rather than the page's.
  *
- * Both live behind `@supports`. Where an engine has not shipped them the
- * carousel is still a snapping scroller, and it keeps its scrollbar
- * rather than hiding it, so the way through it is never taken away.
+ * `::scroll-marker` on each slide and `::scroll-button()` on the track
+ * are pseudo-elements the stylesheet asks for and the browser then
+ * draws, names, wires to the scroll position and disables at the ends —
+ * a whole set of controls added to a page whose HTML gained nothing.
+ * They live behind `@supports` at the end of this section.
+ *
+ * Where an engine has not shipped them, `.su-carousel-dots` fills in:
+ * real links to real slide ids, rendered into the markup, which need no
+ * script either. They cannot mark the slide that is showing — `:target`
+ * follows a tap on a dot and knows nothing about a swipe — so they are
+ * styled as somewhere to go rather than as a picture of where you are.
+ * An overlay scrollbar is invisible at rest on a touch device, so these
+ * are what keeps a phone from being handed a carousel with nothing on
+ * it to say that it scrolls.
  */
 
 .su-carousel {
@@ -2436,6 +2445,63 @@ svg.su-theme-icon-moon {
   scroll-snap-align: var(--su-carousel-align, start);
   /* A flick goes to the next slide, not four slides along. */
   scroll-snap-stop: always;
+  /*
+   * A fallback dot is a link to this slide, and following a fragment
+   * moves the window as well as the track — that is what a fragment is.
+   * All a page can choose is where it lands, which is this: clear of the
+   * top edge by default, and by at least its own height for a sticky
+   * header.
+   */
+  scroll-margin-block-start: var(--su-carousel-scroll-margin, var(--su-space-lg));
+}
+
+/*
+ * The scrollbar comes off whenever there are dots to replace it, native
+ * or not. Without dots it stays: a scroller with no control and no
+ * scrollbar would be one with nothing at all to say that it scrolls.
+ */
+.su-carousel--dots > .su-carousel-track {
+  scrollbar-width: none;
+}
+
+.su-carousel--dots > .su-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.su-carousel-dots {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--su-space-sm);
+  padding-block-start: var(--su-space-sm);
+}
+
+/*
+ * 1.5rem square, though the dot drawn inside it is 0.5rem: the dot is
+ * the picture and the link is the target, and 24px is the smallest
+ * target WCAG will call big enough to hit.
+ */
+.su-carousel-dot {
+  display: grid;
+  place-items: center;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  border-radius: var(--su-radius-full);
+  text-decoration: none;
+}
+
+.su-carousel-dot::before {
+  content: '';
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
+  border-radius: var(--su-radius-full);
+  background: var(--su-border-strong);
+  transition: background var(--su-transition);
+}
+
+.su-carousel-dot:hover::before {
+  background: var(--su-text-subtle);
 }
 
 @supports (scroll-marker-group: after) {
@@ -2448,17 +2514,17 @@ svg.su-theme-icon-moon {
     --su-carousel-dots-space: 2rem;
   }
 
-  /*
-   * The scrollbar comes off only once there are dots to replace it —
-   * a carousel with neither would be a scroller with nothing to say it
-   * scrolls.
-   */
   .su-carousel--dots > .su-carousel-track {
     scroll-marker-group: after;
-    scrollbar-width: none;
   }
 
-  .su-carousel--dots > .su-carousel-track::-webkit-scrollbar {
+  /*
+   * Here the native markers are the dots, so the rendered ones go —
+   * `display: none` rather than hidden, to take the links out of the
+   * accessibility tree along with the picture. They are also the better
+   * dots: they follow a swipe, and these never could.
+   */
+  .su-carousel--dots > .su-carousel-dots {
     display: none;
   }
 

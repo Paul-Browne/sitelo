@@ -219,10 +219,10 @@ test('listItem({ href }) keeps the anchor inside the <li>', () => {
 
 
 test('carousel() wraps every slide and names its dot after its number', () => {
-  const html = ui.carousel({ items: ['<p>one</p>', '<p>two</p>'] });
+  const html = ui.carousel({ name: 'g', items: ['<p>one</p>', '<p>two</p>'] });
 
-  assert.match(html, /<div class="su-carousel-slide" style="--su-carousel-label: '1'"><p>one<\/p><\/div>/);
-  assert.match(html, /<div class="su-carousel-slide" style="--su-carousel-label: '2'"><p>two<\/p><\/div>/);
+  assert.match(html, /<div id="g-1" class="su-carousel-slide" style="--su-carousel-label: '1'"><p>one<\/p><\/div>/);
+  assert.match(html, /<div id="g-2" class="su-carousel-slide" style="--su-carousel-label: '2'"><p>two<\/p><\/div>/);
 });
 
 test('carousel() takes slides as items, as children, or as both', () => {
@@ -307,6 +307,101 @@ test('carousel() is markup and nothing else — no script, no data hooks', () =>
   assert.ok(!html.includes('import('), 'no runtime module to fetch');
   assert.ok(!/ on[a-z]+=/.test(html), 'no event attribute');
   assert.ok(!html.includes('data-su-'), 'nothing for a script to find');
+});
+
+test('the fallback dots are one real link per slide, named after it', () => {
+  // These are what a browser without `::scroll-marker` shows, so they
+  // have to work with nothing loaded: a link, an id to land on, and a
+  // name that is not the URL read out loud.
+  const html = ui.carousel({
+    name: 'shots',
+    label: 'Product shots',
+    items: [{ label: 'The kitchen', content: 'k' }, 'b'],
+  });
+
+  assert.match(html, /<nav class="su-carousel-dots" aria-label="Product shots">/);
+  assert.match(html, /<a class="su-carousel-dot" href="#shots-1" aria-label="The kitchen"><\/a>/);
+  assert.match(html, /<a class="su-carousel-dot" href="#shots-2" aria-label="2"><\/a>/);
+
+  // Every dot points at a slide that is actually in the markup.
+  for (const [, id] of html.matchAll(/class="su-carousel-dot" href="#([^"]+)"/g)) {
+    assert.match(html, new RegExp(`<div id="${id}" class="su-carousel-slide"`), `#${id} is a slide`);
+  }
+});
+
+test('a dot never claims to be the current one', () => {
+  // `:target` follows a tap on a dot and knows nothing about a swipe, so
+  // an `aria-current` written here would be wrong as soon as anyone
+  // swiped. The native markers are the ones that can track the scroll.
+  const html = ui.carousel({ items: ['a', 'b', 'c'] });
+
+  assert.ok(!html.includes('aria-current'));
+  assert.ok(!html.includes('aria-selected'));
+});
+
+test('carousel({ dots: false }) renders no dots to hide', () => {
+  const html = ui.carousel({ dots: false }, 'a');
+
+  assert.ok(!html.includes('su-carousel-dots'));
+  assert.ok(!html.includes('<nav'));
+});
+
+test('slide ids are unique per carousel without being told', () => {
+  // Two carousels on one page must not share ids, or the second one's
+  // dots would scroll the first one. The default is a digest of the
+  // slides: stable for one page, different between two carousels.
+  const one = ui.carousel({ items: ['a', 'b'] });
+  const two = ui.carousel({ items: ['c', 'd'] });
+
+  const idsOf = (html) => [...html.matchAll(/<div id="([^"]+)" class="su-carousel-slide"/g)].map((m) => m[1]);
+
+  assert.equal(idsOf(one).length, 2);
+  assert.notDeepEqual(idsOf(one), idsOf(two));
+
+  // And stable: the same slides build to the same ids every time, or
+  // every page would change on every build.
+  assert.deepEqual(idsOf(ui.carousel({ items: ['a', 'b'] })), idsOf(one));
+});
+
+test('an id or a name beats the digest, and a slide id beats both', () => {
+  assert.match(ui.carousel({ id: 'gallery', items: ['a'] }), /<div id="gallery-1"/);
+  assert.match(ui.carousel({ name: 'g', items: ['a'] }), /<div id="g-1"/);
+  assert.match(
+    ui.carousel({ name: 'g', items: [{ id: 'kitchen', content: 'k' }] }),
+    /<div id="kitchen" class="su-carousel-slide"[^>]*>k<\/div>/,
+  );
+  // The dot has to follow the slide's own id, not the one it would have had.
+  assert.match(ui.carousel({ name: 'g', items: [{ id: 'kitchen', content: 'k' }] }), /href="#kitchen"/);
+});
+
+test('carousel({ scrollMargin }) sets where the window stops above a slide', () => {
+  // Following a dot is following a fragment, so the page moves too; this
+  // is the only part of that a page gets to choose.
+  assert.match(ui.carousel({ scrollMargin: '2xl' }, 'a'), /--su-carousel-scroll-margin: var\(--su-space-2xl\)/);
+  assert.match(ui.carousel({ scrollMargin: '4.5rem' }, 'a'), /--su-carousel-scroll-margin: 4\.5rem/);
+  assert.ok(!ui.carousel({}, 'a').includes('--su-carousel-scroll-margin'));
+});
+
+test('the sheet shows one set of dots, never both', () => {
+  // The rendered dots and the native markers are alternatives. If the
+  // `@supports` block ever stopped hiding the rendered ones, every
+  // Chromium page would show two rows of dots.
+  const rules = uiCss.replace(/\/\*[\s\S]*?\*\//g, '');
+  const start = rules.indexOf('@supports (scroll-marker-group: after) {');
+
+  let depth = 0;
+  let end = start;
+
+  for (; end < rules.length; end += 1) {
+    if (rules[end] === '{') depth += 1;
+    else if (rules[end] === '}' && (depth -= 1) === 0) break;
+  }
+
+  const block = rules.slice(start, end);
+
+  assert.match(block, /\.su-carousel--dots > \.su-carousel-dots \{\s*display: none/);
+  // And outside it, the rendered dots are visible rather than hidden.
+  assert.match(rules.slice(0, start), /\.su-carousel-dots \{\s*display: flex/);
 });
 
 test('every carousel class and custom property in the markup is used by the sheet', () => {

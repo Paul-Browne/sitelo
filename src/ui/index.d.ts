@@ -601,7 +601,10 @@ export interface FigureProps extends BaseProps {
 
 export function figure(...args: Args<FigureProps>): string
 
-/** One slide: a child on its own, or a child with a name for its dot. */
+/**
+ * One slide: a child on its own, or a child with a name for its dot and
+ * an `id` of its own worth linking to.
+ */
 export type CarouselItem = Child | (BaseProps & { content?: Child; label?: string })
 
 export interface CarouselProps extends BaseProps {
@@ -617,7 +620,10 @@ export interface CarouselProps extends BaseProps {
   align?: 'start' | 'center' | 'end'
   /** Snapping strictness, or `false` to scroll freely. Default `'mandatory'`. */
   snap?: 'mandatory' | 'proximity' | false
-  /** Dots under the track, where the browser can draw them. Default `true`. */
+  /**
+   * Dots under the track. Native `::scroll-marker`s where the browser
+   * has them, otherwise one link per slide. Default `true`.
+   */
   dots?: boolean
   /** Arrows over the track, where the browser can draw them. Default `true`. */
   arrows?: boolean
@@ -629,6 +635,18 @@ export interface CarouselProps extends BaseProps {
   nextLabel?: string
   /** Names a slide's dot when the slide does not. Default: its number. */
   slideLabel?: (index: number, count: number) => string
+  /**
+   * Prefix for the slide ids the fallback dots link to. Defaults to the
+   * carousel's own `id`, and failing that to a digest of the slides —
+   * so two carousels on a page do not collide without being told.
+   */
+  name?: string
+  /**
+   * How far above a slide the window stops when a fallback dot takes it
+   * there — `scroll-margin-block-start`, defaulting to `'lg'`. Give a
+   * sticky header at least its own height.
+   */
+  scrollMargin?: Space
   as?: string
 }
 

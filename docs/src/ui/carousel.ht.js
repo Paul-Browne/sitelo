@@ -14,13 +14,16 @@ export default () =>
         'A carousel here is a scroll container and a row of slides that snap. That much every browser already knows how to do: swiping, a trackpad, shift-wheel and the arrow keys all work on the first paint, with nothing loaded and nothing to hydrate.',
       ),
       p(
-        'The dots and the arrows are not markup. They are ',
+        'Where the browser can, the dots and the arrows are not markup at all. They are ',
         code('::scroll-marker'),
         ' on each slide and ',
         code('::scroll-button()'),
-        ' on the track — pseudo-elements the stylesheet asks for, which the browser then draws, names, wires to the scroll position and disables at the ends. There is no ',
+        ' on the track — pseudo-elements the stylesheet asks for, which the browser then draws, names, wires to the scroll position, marks the current one of and disables at the ends. There is no ',
         code('data-'),
         ' attribute on this component and no module to import: the state is the scroll offset, and the browser already has it.',
+      ),
+      p(
+        'Where it cannot, a rendered row of dots takes over — one link per slide, still with no script. That form is weaker in two specific ways, both described below, but it means a phone is never handed a carousel with nothing on it to say that it scrolls.',
       ),
 
       h2('One at a time'),
@@ -114,6 +117,27 @@ export default () =>
       div({ style: 'display: grid; place-items: center; color: var(--su-text-muted)' }, name))) }),
 )`, { align: 'stretch' }),
 
+      h2('When the browser has no scroll markers'),
+      p(
+        'Then the dots are plain links, one per slide, each pointing at that slide\'s id — which is why every slide is given one. Tapping a dot scrolls the track to it with nothing loaded, and the row of them is hidden again wherever the native markers exist, so nobody sees two.',
+      ),
+      p(
+        'They cannot do two things the native markers can. Following a link to a slide is following a fragment, so the window moves to the slide as well as the track: the page scrolls. ',
+        code('scrollMargin'),
+        ' chooses how far above the slide it comes to rest — give a sticky header at least its own height. And they cannot mark which slide is showing: ',
+        code(':target'),
+        ' follows a tap on a dot but knows nothing about a swipe, and a dot that went stale the moment you swiped past it would be worse than one that never claimed. So these are somewhere to go, not a picture of where you are.',
+      ),
+      p(
+        'The ids they point at come from ',
+        code('name'),
+        ', or from the carousel\'s own ',
+        code('id'),
+        ', or — given neither — from a digest of the slides, so two carousels on one page do not collide without either being told about the other. Give an item its own ',
+        code('id'),
+        ' when a particular slide is worth linking to from elsewhere.',
+      ),
+
       h2('Naming the slides'),
       p(
         'Each dot is named after its slide, because a dot is a control and a control with no name is a button a screen reader can only call "button". By default the name is the slide\'s number. Pass an item as an object to name it something better, or ',
@@ -136,9 +160,7 @@ export default () =>
         'It does not loop back to the first slide, and it does not advance on its own. Neither is something CSS can do, so neither is here — a looping or auto-playing carousel needs a script, and this component would rather not be the reason a page loads one. Auto-advancing is worth losing anyway: it moves the thing someone is reading, out from under them.',
       ),
       p(
-        'The controls need an engine that has shipped the CSS carousel pseudo-elements. Where one has not, the ',
-        code('@supports'),
-        ' block is skipped and the carousel is still a snapping scroller with its scrollbar showing — swipe, trackpad and keys unaffected. Nothing is broken, only plainer.',
+        'It also cannot mark the current slide without the native markers, or reach one without moving the page — the two costs of the fallback, above. Swiping, the trackpad and the keys are the same either way.',
       ),
 
       h2('Accessibility'),
@@ -152,6 +174,13 @@ export default () =>
       p(
         'Where the browser draws them, the dots are exposed as a tab list and the arrows as buttons that disable themselves at each end — the browser builds all of that, so none of it can drift out of step with the slide actually showing. That is the argument for this shape over a scripted one: there is no second copy of the state to get wrong.',
       ),
+      p(
+        'The fallback dots are links, each named after its slide, and each a 24px target rather than the 8px the dot looks like. They carry no ',
+        code('aria-current'),
+        ' — it would be written once, at build time, and be wrong the moment the track was swiped. Where the native markers replace them they are ',
+        code('display: none'),
+        ', so they leave the accessibility tree with the picture rather than being read out twice.',
+      ),
 
       h2('Props'),
       propsTable([
@@ -161,13 +190,15 @@ export default () =>
         ['gap', 'Space', "'md'", 'Between slides.'],
         ['align', "'start' | 'center' | 'end'", "'start'", 'Where a slide comes to rest.'],
         ['snap', "'mandatory' | 'proximity' | false", "'mandatory'", 'How firmly the scroll settles on a slide.'],
-        ['dots', 'boolean', 'true', 'Dots under the track. Off puts the scrollbar back.'],
+        ['dots', 'boolean', 'true', 'Dots under the track — native scroll markers where the browser has them, one link per slide where it does not. Off puts the scrollbar back.'],
         ['arrows', 'boolean', 'true', 'Arrows over the track.'],
         ['color', "'primary' | 'neutral' | 'success' | 'warning' | 'danger'", "'primary'", 'Colour of the dot for the slide showing.'],
         ['label', 'string', "'Carousel'", 'Accessible name for the scrollable region.'],
         ['previousLabel', 'string', "'Previous slide'", 'Accessible name for the back arrow.'],
         ['nextLabel', 'string', "'Next slide'", 'Accessible name for the forward arrow.'],
         ['slideLabel', '(index, count) => string', 'the number', 'Names a slide that did not name itself.'],
+        ['name', 'string', 'the carousel id, else a digest', 'Prefix for the slide ids the fallback dots link to.'],
+        ['scrollMargin', 'Space', "'lg'", 'How far above a slide the window stops when a fallback dot takes it there.'],
         ['as', 'string', "'div'", 'Element to render.'],
       ]),
     ],

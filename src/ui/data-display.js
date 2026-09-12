@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto'
+
 import {
   a,
   caption as captionEl,
@@ -6,6 +8,7 @@ import {
   figure as figureEl,
   img as imgEl,
   li,
+  nav,
   span,
   table as tableEl,
   tbody,
@@ -375,24 +378,31 @@ function cssString(value) {
  * trackpad, shift-wheel and the arrow keys all work on the first paint,
  * with nothing loaded and nothing to hydrate.
  *
- * The dots and the arrows are not markup. They are `::scroll-marker` on
- * each slide and `::scroll-button()` on the track — pseudo-elements the
- * stylesheet asks for, which the browser then draws, names, wires to
- * the scroll position and disables at the ends. That is why there is no
- * `data-` attribute here and no module to import: the state is the
- * scroll offset, and the browser already has it.
+ * On top of that the browser is asked for two things a stylesheet
+ * cannot draw for itself: `::scroll-marker` on each slide and
+ * `::scroll-button()` on the track. Where an engine has them it draws
+ * the dots and the arrows, names them, wires them to the scroll
+ * position, marks the slide that is showing and disables the arrows at
+ * the ends — all of it from CSS, with no markup and no state of ours.
  *
- * Where an engine has not shipped those pseudo-elements the carousel is
- * still a snapping scroller, and it keeps its scrollbar rather than
- * hiding it, so the way through it is never taken away. What CSS cannot
- * do at all is loop back to the first slide or advance on its own —
- * both need a script, and neither is here.
+ * Where it does not, the dots below fill in: one real link per slide,
+ * pointing at its id. They work everywhere and still need no script,
+ * and they cost what a fragment costs — following one scrolls the page
+ * as well as the track, which is what `scrollMargin` is for. They also
+ * cannot show which slide is showing. `:target` follows a tap on a dot
+ * but knows nothing about a swipe, and a dot that goes stale the moment
+ * the track is swiped would be worse than a dot that never claimed — so
+ * the fallback dots are somewhere to go, not a picture of where you
+ * are.
+ *
+ * What CSS cannot do either way is loop back to the first slide or
+ * advance on its own. Both need a script, and neither is here.
  *
  * `perView` is a custom property, so a media query of your own can
  * change it without touching the markup:
  * `@media (min-width: 48em) { .gallery { --su-carousel-per-view: 3 } }`.
  *
- * @param {...any} args - `carousel({ items, perView, min, gap, align, snap, dots, arrows, color, label }, ...slides)`
+ * @param {...any} args - `carousel({ items, perView, min, gap, align, snap, dots, arrows, color, label, name, scrollMargin }, ...slides)`
  * @returns {string}
  */
 export function carousel(...args) {
@@ -411,20 +421,37 @@ export function carousel(...args) {
     previousLabel = 'Previous slide',
     nextLabel = 'Next slide',
     slideLabel,
+    name,
+    scrollMargin,
     as,
     ...rest
   } = props
 
   const entries = [...(Array.isArray(items) ? items : []), ...children]
-  const name =
+  const nameOf =
     typeof slideLabel === 'function' ? slideLabel : (index) => String(index + 1)
 
   /*
+   * What the fallback dots point at, so it has to be unique on the page.
+   * An `id` on the carousel is the readable way to set it and `name` the
+   * explicit one; failing both it is a digest of the slides, which is
+   * deterministic — the same page builds to the same HTML every time —
+   * and which differs between two carousels without either of them
+   * having to be told about the other.
+   */
+  const group = String(
+    name ??
+      rest.id ??
+      `su-c${createHash('sha256').update(JSON.stringify(entries)).digest('hex').slice(0, 6)}`,
+  )
+
+  /*
    * Every slide is wrapped here rather than left to the caller, because
-   * the wrapper is what carries the label its dot is named by — and a
-   * dot with no name is a tab with no name. Passing an object instead
+   * the wrapper is what carries the id its dot links to and the label
+   * its dot is named by — and a dot with no name is a link a screen
+   * reader can only read out as its own URL. Passing an object instead
    * of a child is how a slide names itself something better than its
-   * number.
+   * number, or takes an id of its own worth linking to.
    */
   const slides = entries.map((entry, index) => {
     const item =
@@ -432,16 +459,23 @@ export function carousel(...args) {
         ? entry
         : { content: entry }
     const { content, label: own, ...slideRest } = item
+    const id = slideRest.id ?? `${group}-${index + 1}`
+    const slideName = String(own ?? nameOf(index, entries.length))
 
-    return div(
-      attrs(slideRest, {
-        class: 'su-carousel-slide',
-        style: {
-          '--su-carousel-label': cssString(own ?? name(index, entries.length)),
-        },
-      }),
-      content ?? '',
-    )
+    return {
+      id,
+      label: slideName,
+      markup: div(
+        attrs(
+          { ...slideRest, id },
+          {
+            class: 'su-carousel-slide',
+            style: { '--su-carousel-label': cssString(slideName) },
+          },
+        ),
+        content ?? '',
+      ),
+    }
   })
 
   const count = Number(perView)
@@ -474,6 +508,7 @@ export function carousel(...args) {
         // pagination's.
         '--su-carousel-previous': arrows ? cssString(previousLabel) : undefined,
         '--su-carousel-next': arrows ? cssString(nextLabel) : undefined,
+        '--su-carousel-scroll-margin': space(scrollMargin),
       },
     }),
     div(
@@ -489,7 +524,25 @@ export function carousel(...args) {
         'aria-label': String(label),
         tabindex: '0',
       },
-      ...slides,
+      ...slides.map((slide) => slide.markup),
     ),
+    /*
+     * Hidden by the stylesheet wherever `::scroll-marker` exists, so
+     * nobody sees two rows of dots — and hidden with `display: none`,
+     * which takes the links out of the accessibility tree along with the
+     * picture, because there the native markers are the dots.
+     *
+     * No `aria-current` on any of them: it would be written here, once,
+     * and be wrong the moment the track is swiped. The same reason the
+     * tabs component leaves it off its `:target` form.
+     */
+    dots
+      ? nav(
+          { class: 'su-carousel-dots', 'aria-label': String(label) },
+          ...slides.map((slide) =>
+            a({ class: 'su-carousel-dot', href: `#${slide.id}`, 'aria-label': slide.label }),
+          ),
+        )
+      : '',
   )
 }

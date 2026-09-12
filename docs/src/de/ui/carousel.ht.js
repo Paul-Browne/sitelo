@@ -12,13 +12,16 @@ export default () =>
         'Ein Karussell ist hier ein Scroll-Container und eine Reihe Slides, die einrasten. So viel kann jeder Browser schon: Wischen, Trackpad, Shift-Mausrad und die Pfeiltasten funktionieren beim ersten Paint, ohne geladenes Skript und ohne Hydration.',
       ),
       p(
-        'Die Punkte und die Pfeile sind kein Markup. Sie sind ',
+        'Wo der Browser es kann, sind die Punkte und die Pfeile überhaupt kein Markup. Sie sind ',
         code('::scroll-marker'),
         ' an jedem Slide und ',
         code('::scroll-button()'),
-        ' an der Spur — Pseudoelemente, die das Stylesheet anfordert und die der Browser dann zeichnet, benennt, an die Scroll-Position hängt und an den Enden deaktiviert. An dieser Komponente gibt es kein ',
+        ' an der Spur — Pseudoelemente, die das Stylesheet anfordert und die der Browser dann zeichnet, benennt, an die Scroll-Position hängt, als aktuell markiert und an den Enden deaktiviert. An dieser Komponente gibt es kein ',
         code('data-'),
         '-Attribut und kein Modul zum Importieren: der Zustand ist der Scroll-Offset, und den hat der Browser bereits.',
+      ),
+      p(
+        'Wo er es nicht kann, übernimmt eine gerenderte Reihe Punkte — ein Link je Slide, weiterhin ohne Skript. Diese Form ist in zwei genau benennbaren Punkten schwächer, beide weiter unten, aber sie sorgt dafür, dass einem Telefon nie ein Karussell hingelegt wird, an dem nichts sagt, dass es scrollt.',
       ),
 
       h2('Eins nach dem anderen'),
@@ -112,7 +115,28 @@ export default () =>
       div({ style: 'display: grid; place-items: center; color: var(--su-text-muted)' }, name))) }),
 )`, { align: 'stretch' }),
 
-      h2('Die Slides benennen'),
+      h2('Wenn der Browser keine Scroll-Marker hat'),
+      p(
+        'Dann sind die Punkte schlichte Links, einer je Slide, jeder auf die Id dieses Slides — deshalb bekommt jeder Slide eine. Ein Tipp auf einen Punkt scrollt die Spur dorthin, ohne geladenes Skript, und die Reihe verschwindet wieder, wo die nativen Marker existieren, damit niemand zwei sieht.',
+      ),
+      p(
+        'Zwei Dinge können sie nicht, die die nativen Marker können. Einem Link auf einen Slide zu folgen heißt, einem Fragment zu folgen: es wandert das Fenster zum Slide und nicht nur die Spur — die Seite scrollt. ',
+        code('scrollMargin'),
+        ' wählt, wie weit über dem Slide sie zur Ruhe kommt; gib einem klebrigen Header mindestens seine eigene Höhe. Und sie können nicht markieren, welcher Slide zu sehen ist: ',
+        code(':target'),
+        ' folgt einem Tipp auf einen Punkt, weiß aber nichts von einem Wisch, und ein Punkt, der in dem Moment veraltet, in dem du weiterwischst, wäre schlimmer als einer, der nie etwas behauptet hat. Sie sind also ein Weg irgendwohin, kein Bild davon, wo du bist.',
+      ),
+      p(
+        'Die Ids, auf die sie zeigen, kommen aus ',
+        code('name'),
+        ', aus der eigenen ',
+        code('id'),
+        ' des Karussells oder — wenn beides fehlt — aus einem Digest der Slides, damit zwei Karussells auf einer Seite nicht kollidieren, ohne voneinander zu wissen. Gib einem Eintrag eine eigene ',
+        code('id'),
+        ', wenn ein bestimmter Slide es wert ist, von anderswo verlinkt zu werden.',
+      ),
+
+h2('Die Slides benennen'),
       p(
         'Jeder Punkt ist nach seinem Slide benannt, denn ein Punkt ist ein Bedienelement, und ein Bedienelement ohne Namen ist für einen Screenreader nur „Schaltfläche“. Standardmäßig ist der Name die Nummer des Slides. Übergib einen Eintrag als Objekt, um ihn besser zu benennen, oder ',
         code('slideLabel'),
@@ -134,9 +158,7 @@ export default () =>
         'Es springt nicht zum ersten Slide zurück, und es läuft nicht von allein weiter. Beides kann CSS nicht, also ist beides nicht da — ein endloses oder selbstlaufendes Karussell braucht ein Skript, und diese Komponente möchte nicht der Grund sein, aus dem eine Seite eines lädt. Das Weiterlaufen ist ohnehin gut verzichtbar: es bewegt genau das, was jemand gerade liest, unter den Augen weg.',
       ),
       p(
-        'Die Bedienelemente brauchen eine Engine, die die CSS-Karussell-Pseudoelemente ausgeliefert hat. Wo eine das nicht hat, wird der ',
-        code('@supports'),
-        '-Block übersprungen und das Karussell ist weiterhin ein einrastender Scroller mit sichtbarer Scrollbar — Wischen, Trackpad und Tasten unberührt. Kaputt ist nichts, nur schlichter.',
+        'Ohne die nativen Marker kann es außerdem den aktuellen Slide nicht markieren und keinen erreichen, ohne die Seite zu bewegen — die beiden Kosten des Fallbacks von oben. Wischen, Trackpad und Tasten sind in beiden Fällen gleich.',
       ),
 
       h2('Barrierefreiheit'),
@@ -150,6 +172,13 @@ export default () =>
       p(
         'Wo der Browser sie zeichnet, erscheinen die Punkte als Tabliste und die Pfeile als Schaltflächen, die sich an jedem Ende selbst deaktivieren — all das baut der Browser, also kann nichts davon aus dem Tritt geraten mit dem Slide, der tatsächlich zu sehen ist. Das ist das Argument für diese Form gegenüber einer geskripteten: es gibt keine zweite Kopie des Zustands, die falsch sein könnte.',
       ),
+      p(
+        'Die Fallback-Punkte sind Links, jeder nach seinem Slide benannt und jeder ein 24px großes Ziel statt der 8px, die der Punkt zu sein scheint. Sie tragen kein ',
+        code('aria-current'),
+        ' — es würde einmal beim Bauen geschrieben und wäre falsch, sobald die Spur gewischt wird. Wo die nativen Marker sie ersetzen, sind sie ',
+        code('display: none'),
+        ', verschwinden also mit dem Bild auch aus dem Accessibility-Baum, statt zweimal vorgelesen zu werden.',
+      ),
 
       h2('Props'),
       propsTable([
@@ -159,13 +188,15 @@ export default () =>
         ['gap', 'Space', "'md'", 'Zwischen den Slides.'],
         ['align', "'start' | 'center' | 'end'", "'start'", 'Wo ein Slide zur Ruhe kommt.'],
         ['snap', "'mandatory' | 'proximity' | false", "'mandatory'", 'Wie fest der Scroll auf einem Slide landet.'],
-        ['dots', 'boolean', 'true', 'Punkte unter der Spur. Aus bringt die Scrollbar zurück.'],
+        ['dots', 'boolean', 'true', 'Punkte unter der Spur — native Scroll-Marker, wo der Browser sie hat, sonst ein Link je Slide. Aus bringt die Scrollbar zurück.'],
         ['arrows', 'boolean', 'true', 'Pfeile über der Spur.'],
         ['color', "'primary' | 'neutral' | 'success' | 'warning' | 'danger'", "'primary'", 'Farbe des Punkts für den gezeigten Slide.'],
         ['label', 'string', "'Carousel'", 'Zugänglicher Name des scrollbaren Bereichs.'],
         ['previousLabel', 'string', "'Previous slide'", 'Zugänglicher Name des Pfeils zurück.'],
         ['nextLabel', 'string', "'Next slide'", 'Zugänglicher Name des Pfeils vorwärts.'],
         ['slideLabel', '(index, count) => string', 'die Nummer', 'Benennt einen Slide, der sich nicht selbst benannt hat.'],
+        ['name', 'string', 'die id des Karussells, sonst ein Digest', 'Präfix der Slide-Ids, auf die die Fallback-Punkte zeigen.'],
+        ['scrollMargin', 'Space', "'lg'", 'Wie weit über einem Slide das Fenster hält, wenn ein Fallback-Punkt dorthin führt.'],
         ['as', 'string', "'div'", 'Zu renderndes Element.'],
       ]),
     ],

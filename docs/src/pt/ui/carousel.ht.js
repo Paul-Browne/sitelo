@@ -12,13 +12,16 @@ export default () =>
         'Um carrossel, aqui, é um contentor de deslocamento e uma fila de slides que encaixam. Isso qualquer navegador já sabe fazer: deslizar, o trackpad, shift-roda e as teclas de seta funcionam na primeira pintura, sem carregar nada e sem nada para hidratar.',
       ),
       p(
-        'Os pontos e as setas não são marcação. São ',
+        'Onde o navegador consegue, os pontos e as setas não são marcação nenhuma. São ',
         code('::scroll-marker'),
         ' em cada slide e ',
         code('::scroll-button()'),
-        ' na pista — pseudo-elementos que a folha de estilos pede e que o navegador desenha, nomeia, liga à posição de deslocamento e desativa nos extremos. Este componente não tem nenhum atributo ',
+        ' na pista — pseudo-elementos que a folha de estilos pede e que o navegador desenha, nomeia, liga à posição de deslocamento, marca como atual e desativa nos extremos. Este componente não tem nenhum atributo ',
         code('data-'),
         ' nem módulo para importar: o estado é o deslocamento, e o navegador já o tem.',
+      ),
+      p(
+        'Onde não consegue, entra uma fila de pontos de verdade — uma ligação por slide, ainda sem script. Essa forma é mais fraca em duas coisas concretas, ambas mais abaixo, mas garante que a um telefone nunca se entrega um carrossel sem nada que diga que se desloca.',
       ),
 
       h2('Um de cada vez'),
@@ -112,7 +115,28 @@ export default () =>
       div({ style: 'display: grid; place-items: center; color: var(--su-text-muted)' }, name))) }),
 )`, { align: 'stretch' }),
 
-      h2('Dar nome aos slides'),
+      h2('Quando o navegador não tem marcadores de deslocamento'),
+      p(
+        'Então os pontos são ligações simples, uma por slide, cada uma a apontar para o id do seu — é por isso que cada slide recebe um. Tocar num ponto desloca a pista até ele sem carregar nada, e a fila volta a esconder-se onde os marcadores nativos existem, para que ninguém veja duas.',
+      ),
+      p(
+        'Há duas coisas que não conseguem fazer e os marcadores nativos conseguem. Seguir uma ligação para um slide é seguir um fragmento, por isso a janela move-se para o slide e não só a pista: a página desloca-se. ',
+        code('scrollMargin'),
+        ' escolhe a que altura acima do slide ela para — dê a um cabeçalho fixo pelo menos a sua própria altura. E não conseguem marcar que slide está à vista: ',
+        code(':target'),
+        ' segue o toque num ponto mas não sabe nada de um deslize, e um ponto que ficasse desatualizado no momento em que se desliza seria pior do que um que nunca afirmou nada. São, portanto, um sítio para onde ir, não um retrato de onde está.',
+      ),
+      p(
+        'Os ids para onde apontam vêm de ',
+        code('name'),
+        ', do próprio ',
+        code('id'),
+        ' do carrossel ou — não havendo nenhum — de um resumo dos slides, para que dois carrosséis numa página não colidam sem que nenhum saiba do outro. Dê a um item o seu próprio ',
+        code('id'),
+        ' quando valer a pena ligar de outro sítio a um slide em particular.',
+      ),
+
+h2('Dar nome aos slides'),
       p(
         'Cada ponto tem o nome do seu slide, porque um ponto é um controlo e um controlo sem nome é um botão a que um leitor de ecrã só pode chamar «botão». Por predefinição o nome é o número do slide. Passe um item como objeto para lhe dar um nome melhor, ou ',
         code('slideLabel'),
@@ -134,9 +158,7 @@ export default () =>
         'Não volta em ciclo ao primeiro slide e não avança sozinho. Nenhuma das duas coisas está ao alcance do CSS, por isso nenhuma está aqui — um carrossel em ciclo ou com reprodução automática precisa de um script, e este componente prefere não ser a razão pela qual uma página carrega um. Avançar sozinho é, de resto, uma perda feliz: mexe precisamente naquilo que alguém está a ler.',
       ),
       p(
-        'Os controlos precisam de um motor que já tenha lançado os pseudo-elementos de carrossel do CSS. Onde não o tenha, o bloco ',
-        code('@supports'),
-        ' é ignorado e o carrossel continua a ser um contentor que encaixa, com a barra de deslocamento à vista — deslizar, trackpad e teclas na mesma. Nada está partido, apenas mais sóbrio.',
+        'Sem os marcadores nativos também não consegue marcar o slide atual nem chegar a um sem mexer na página — os dois custos da alternativa, acima. Deslizar, o trackpad e as teclas são iguais nos dois casos.',
       ),
 
       h2('Acessibilidade'),
@@ -150,6 +172,13 @@ export default () =>
       p(
         'Onde o navegador os desenha, os pontos são expostos como uma lista de separadores e as setas como botões que se desativam sozinhos em cada extremo — tudo isso é o navegador que constrói, por isso nada disso pode ficar fora de passo com o slide que está mesmo à vista. É esse o argumento a favor desta forma face a uma com script: não há uma segunda cópia do estado para errar.',
       ),
+      p(
+        'Os pontos da alternativa são ligações, cada uma com o nome do seu slide e cada uma um alvo de 24px em vez dos 8px que o ponto parece ter. Não levam ',
+        code('aria-current'),
+        ': seria escrito uma vez, na compilação, e estaria errado no momento em que a pista fosse deslizada. Onde os marcadores nativos os substituem estão em ',
+        code('display: none'),
+        ', pelo que saem da árvore de acessibilidade junto com a imagem em vez de serem lidos duas vezes.',
+      ),
 
       h2('Props'),
       propsTable([
@@ -159,13 +188,15 @@ export default () =>
         ['gap', 'Space', "'md'", 'Entre slides.'],
         ['align', "'start' | 'center' | 'end'", "'start'", 'Onde um slide vem parar.'],
         ['snap', "'mandatory' | 'proximity' | false", "'mandatory'", 'Com que firmeza o deslocamento assenta num slide.'],
-        ['dots', 'boolean', 'true', 'Pontos por baixo da pista. Desligados devolvem a barra de deslocamento.'],
+        ['dots', 'boolean', 'true', 'Pontos por baixo da pista — marcadores de deslocamento nativos onde o navegador os tem, uma ligação por slide onde não tem. Desligados devolvem a barra de deslocamento.'],
         ['arrows', 'boolean', 'true', 'Setas por cima da pista.'],
         ['color', "'primary' | 'neutral' | 'success' | 'warning' | 'danger'", "'primary'", 'Cor do ponto do slide à vista.'],
         ['label', 'string', "'Carousel'", 'Nome acessível da região deslocável.'],
         ['previousLabel', 'string', "'Previous slide'", 'Nome acessível da seta para trás.'],
         ['nextLabel', 'string', "'Next slide'", 'Nome acessível da seta para a frente.'],
         ['slideLabel', '(index, count) => string', 'o número', 'Dá nome a um slide que não se nomeou a si próprio.'],
+        ['name', 'string', 'o id do carrossel, ou um resumo', 'Prefixo dos ids de slide para onde apontam os pontos da alternativa.'],
+        ['scrollMargin', 'Space', "'lg'", 'A que altura acima de um slide a janela para quando um ponto da alternativa leva até ele.'],
         ['as', 'string', "'div'", 'Elemento a renderizar.'],
       ]),
     ],
