@@ -1,0 +1,55 @@
+name: Publish
+
+# Publishes to npm when a version tag lands — the one `npm version`
+# creates, so a release is `npm version patch && git push --follow-tags`.
+#
+# No token: the registry trusts this workflow directly (trusted
+# publishing, set up once under the package's Publishing access on
+# npmjs.com), and npm attaches provenance on its own. The OIDC token it
+# exchanges is what `id-token: write` grants.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      # Trusted publishing needs npm 11.5 or later, which is newer than
+      # what ships inside Node.
+      - run: npm install -g npm@latest
+
+      - run: npm ci
+
+      # test.yml runs on pushes to main, not on tags, so this is the one
+      # check between the tag and the registry.
+      - run: npm test
+
+      # The tag is the version: a mismatch means the tag was made by hand,
+      # and publishing would put one number on the tag and another on npm.
+      - name: Check the tag matches package.json
+        run: |
+          expected="v$(node -p "require('./package.json').version")"
+          if [ "$GITHUB_REF_NAME" != "$expected" ]; then
+            echo "tag is $GITHUB_REF_NAME but package.json says $expected" >&2
+            exit 1
+          fi
+
+      - run: npm publish
