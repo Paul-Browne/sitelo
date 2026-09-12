@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, demo, propsTable, uiLayout } from '../../lib/es.js'
+import { code, demo, grainSandbox, grainSandboxHead, propsTable, uiLayout } from '../../lib/es.js'
 
 export default () =>
   uiLayout({
@@ -7,6 +7,7 @@ export default () =>
     description:
       'Un envoltorio que extiende un grano de película sobre lo que contenga.',
     activeHref: '/es/ui/grain',
+    extraHead: grainSandboxHead(),
     children: [
       p(
         'El grano le quita la planitud a una superficie grande de color: un héroe, una banda de color, una tarjeta que si no se leería como un rectángulo liso. Envuelve el contenido igual que ',
@@ -16,9 +17,25 @@ export default () =>
         ', por encima de los hijos y sin interceptar el puntero.',
       ),
       p(
-        'El mosaico es un SVG estático de ruido fractal, pintado una vez y repetido. Un ',
+        'El mosaico es un SVG estático de ruido fractal, pintado una vez. Un ',
         code('filter'),
         ' sobre los píxeles vivos se vería casi igual y costaría un re-rasterizado cada vez que se moviera algo por debajo.',
+      ),
+
+      p(
+        'Hay dos capas de control. ',
+        code('opacity'),
+        ' es cuánto se aprieta la textura una vez dibujada; si no se toca, la fija el tema, y ese es el valor sobre el que están equilibrados los dos temas. ',
+        code('type'),
+        ', ',
+        code('frequency'),
+        ', ',
+        code('octaves'),
+        ', ',
+        code('seed'),
+        ' y ',
+        code('color'),
+        ' son la turbulencia en sí; tocar cualquiera de ellas construye una textura para ese elemento en vez de usar la compartida de la hoja de estilos.',
       ),
 
       h2('Grano básico'),
@@ -26,28 +43,81 @@ export default () =>
   text({ variant: 'lead', align: 'center' }, 'Con textura.'),
 )`, { align: 'stretch' }),
 
-      h2('Intensidad'),
+      h2('Tipo de ruido'),
       p(
-        'Tres pasos. El tema fija la fuerza base y la intensidad la escala, porque una superficie casi negra acepta el grano con más facilidad que el papel: medido como claridad percibida, el mismo mosaico rinde alrededor de 1,6× de moteado sobre el fondo oscuro. Así que ',
-        code('medium'),
-        ' es una opacidad más baja en modo oscuro, y los dos acaban en el mismo sitio.',
+        code('fractal'),
+        ' suma el ruido tal cual y da el moteado parejo de la película. ',
+        code('turbulence'),
+        ' toma su valor absoluto, lo que deja vetas oscuras y grumos: más cerca del humo o del mármol que del grano.',
       ),
       demo(`grid({ min: '9rem' },
-  ...['soft', 'medium', 'strong'].map((intensity) =>
-    grain({ intensity, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
-      text({ variant: 'small', align: 'center' }, intensity),
+  ...['fractal', 'turbulence'].map((type) =>
+    grain({ type, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, type),
     ),
   ),
 )`, { align: 'stretch' }),
 
-      h2('Escala'),
+      h2('Frecuencia'),
       p(
-        'El tamaño de un mosaico de ruido. Más pequeño es más fino: más cerca de la película, más lejos de la arena.',
+        'Ciclos por píxel: más alto es más fino. El ruido se dibuja al tamaño de la propia caja, una unidad por píxel, así que esto se mantiene mida lo que mida la caja: una tarjeta pequeña y una banda a todo lo ancho reciben el mismo grano, y nada se repite.',
       ),
       demo(`grid({ min: '9rem' },
-  ...['60px', '180px', '420px'].map((scale) =>
-    grain({ scale, intensity: 'strong', style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
-      text({ variant: 'small', align: 'center' }, scale),
+  ...[0.2, 0.57, 1.2].map((frequency) =>
+    grain({ frequency, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, String(frequency)),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
+      h2('Octavas'),
+      p(
+        'Cuántas capas de ruido se suman, cada una más fina y más tenue que la anterior. Una sola queda lisa y pareja; más añaden detalle, y cada una le cuesta al navegador otra pasada la primera vez que dibuja el mosaico.',
+      ),
+      demo(`grid({ min: '9rem' },
+  ...[1, 3, 6].map((octaves) =>
+    grain({ octaves, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, String(octaves)),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
+      h2('Semilla'),
+      p(
+        'Qué ruido se dibuja. Vale cualquier número, el mismo da siempre el mismo patrón y no cambia nada más de la textura: útil cuando dos paneles con grano quedan uno al lado del otro y la repetición se delata.',
+      ),
+      demo(`grid({ min: '9rem' },
+  ...[0, 7, 42].map((seed) =>
+    grain({ seed, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, String(seed)),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
+      h2('Color'),
+      p(
+        'El ruido es gris por defecto. ',
+        code('color'),
+        ' lo tiñe: el valor se multiplica dentro del filtro, así que tiene que ser uno que se pueda resolver al construir la página — ',
+        code('#rgb'),
+        ', ',
+        code('#rrggbb'),
+        ' o ',
+        code('rgb()'),
+        '. Un color con nombre, ',
+        code('currentColor'),
+        ' o un ',
+        code('var()'),
+        ' no lo son, y dejan el ruido gris en vez de romper la compilación. El alfa es cuánto tinte: ',
+        code('#ff880080'),
+        ' es la mitad de ',
+        code('#ff8800'),
+        ', y alfa cero es ninguno.',
+      ),
+      demo(`grid({ min: '9rem' },
+  ...['#0a7a45', '#c05621', '#2f7fc7'].map((color) =>
+    grain({ color, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, color),
     ),
   ),
 )`, { align: 'stretch' }),
@@ -98,18 +168,24 @@ export default () =>
       ),
       demo(`grid({ min: '9rem' },
   ...['normal', 'overlay', 'soft-light'].map((blend) =>
-    grain({ blend, intensity: 'strong', style: 'background: var(--su-primary-soft); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+    grain({ blend, style: 'background: var(--su-primary-soft); padding: 1.5rem 1rem; border-radius: 0.5rem' },
       text({ variant: 'small', align: 'center' }, blend),
     ),
   ),
 )`, { align: 'stretch' }),
 
+      h2('Sandbox'),
+      grainSandbox(),
+
       h2('Props'),
       propsTable([
-        ['intensity', "'soft' | 'medium' | 'strong'", "'medium'", 'Cuánto se fuerza la textura, relativo a la base del tema.'],
-        ['opacity', 'number', '', 'Una opacidad cruda, que se impone a intensity y al tema.'],
-        ['scale', 'string', "'180px'", 'El tamaño de un mosaico de ruido.'],
+        ['opacity', 'number', '', 'Opacidad de la textura. Si no se toca, la fija el tema.'],
         ['blend', 'string', "'normal'", 'Un mix-blend-mode para la textura.'],
+        ['type', "'fractal' | 'turbulence'", "'fractal'", 'Qué turbulencia dibujar.'],
+        ['frequency', 'number', '0.57', 'Ciclos por píxel: más alto es más fino.'],
+        ['octaves', 'number', '3', 'Capas de ruido que se suman, de 1 a 8.'],
+        ['seed', 'number', '0', 'Qué ruido dibujar.'],
+        ['color', 'string', '', 'Tiñe el ruido; el alfa es cuánto. #rgb, #rrggbb, #rrggbbaa, rgb() o rgba().'],
         ['as', 'string', "'div'", 'Elemento a renderizar, p. ej. section.'],
       ]),
     ],

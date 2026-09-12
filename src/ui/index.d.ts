@@ -209,14 +209,29 @@ export interface ContainerProps extends BaseProps {
 export function container(...args: Args<ContainerProps>): string
 
 export interface GrainProps extends BaseProps {
-  /** How far the texture is pushed. Default `'medium'`. */
-  intensity?: 'soft' | 'medium' | 'strong'
-  /** Raw opacity for the texture, overriding `intensity` and the theme. */
+  /** Opacity of the texture. Left alone, the theme sets it. */
   opacity?: number | string
-  /** Size of one noise tile — smaller is finer. Default `'180px'`. */
-  scale?: string
   /** `mix-blend-mode` for the texture, e.g. `'overlay'`. Default `'normal'`. */
   blend?: string
+  /**
+   * Which turbulence to draw: `'fractal'` is film grain, `'turbulence'`
+   * is cloudier and veined. Default `'fractal'`.
+   */
+  type?: 'fractal' | 'turbulence'
+  /** Cycles per pixel — higher is finer. Default `0.57`. */
+  frequency?: number
+  /** Layers of noise summed together, 1–8. Default `3`. */
+  octaves?: number
+  /** Which noise to draw. Any number; the same one always looks the same. */
+  seed?: number
+  /**
+   * Tints the noise. Baked into the filter, so it must be a colour this
+   * can resolve — `#rgb`, `#rrggbb`, `#rrggbbaa`, `rgb()` or `rgba()`;
+   * alpha is how much of the tint, so `#ff880080` is half of `#ff8800`.
+   * Anything else (a named colour, `currentColor`, `var()`) leaves the
+   * noise grey, as do white and alpha zero.
+   */
+  color?: string
   as?: string
 }
 

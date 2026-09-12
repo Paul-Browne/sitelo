@@ -1,6 +1,7 @@
 import { a, div, h3, img as imgEl, p as pEl } from 'javascript-to-html'
 
 import { attrs, el, oneOf, parseArgs, space } from './internal.js'
+import { DEFAULTS, isDefault, tile } from './runtime/grain.js'
 
 const CONTAINER_SIZES = ['sm', 'md', 'lg', 'xl', 'full']
 
@@ -26,8 +27,6 @@ export function container(...args) {
   )
 }
 
-const GRAIN_INTENSITIES = ['soft', 'medium', 'strong']
-
 /**
  * Wrapper that lays a film grain over whatever it contains.
  *
@@ -42,20 +41,35 @@ const GRAIN_INTENSITIES = ['soft', 'medium', 'strong']
  * for a textured full-bleed band, or wrap a card, a hero or a section
  * to grain just that.
  *
- * @param {...any} args - `grain({ intensity, opacity, scale, blend, as }, ...children)`
+ * `type`, `frequency`, `octaves`, `seed` and `color` are the turbulence
+ * itself, and touching any of them builds the tile here rather than
+ * using the stylesheet's. `opacity` is how far it is pushed once drawn;
+ * left alone, the theme sets it, and that is the value the two themes
+ * are balanced on. The SVG itself is written in `runtime/grain.js`, so
+ * that `setGrain()` in the browser draws exactly what this does.
+ *
+ * @param {...any} args - `grain({ opacity, type, frequency, octaves, seed, color, blend, as }, ...children)`
  * @returns {string}
  */
 export function grain(...args) {
   const { props, children } = parseArgs(args)
-  const { intensity = 'medium', opacity, scale, blend, as, ...rest } = props
+  const { opacity, type, frequency, octaves, seed, color, blend, as, ...rest } = props
+
+  const noise = { ...DEFAULTS, color }
+
+  for (const [key, value] of Object.entries({ type, frequency, octaves, seed })) {
+    if (value != null) noise[key] = value
+  }
 
   return el(as, div)(
     attrs(rest, {
-      class: `su-grain su-grain--${oneOf(intensity, GRAIN_INTENSITIES, 'medium')}`,
+      class: 'su-grain',
       style: {
         '--su-grain-opacity': opacity,
-        '--su-grain-scale': scale,
         '--su-grain-blend': blend,
+        // Only a call that changed something pays for an image of its own;
+        // a colour the filter cannot read counts as no change.
+        '--su-grain-image': isDefault(noise) ? undefined : tile(noise),
       },
     }),
     ...children,

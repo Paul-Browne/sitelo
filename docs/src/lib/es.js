@@ -13,4 +13,4 @@ export const { code, codeBlock, pageCodeTabs } = createCodeHelpers('es')
 export const { landingLayout, pageLayout, docsLayout, uiLayout, examplesLayout } =
   createLayouts('es')
 
-export const { demo, propsTable } = createUiDemo('es')
+export const { demo, propsTable, grainSandbox, grainSandboxHead } = createUiDemo('es')

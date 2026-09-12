@@ -1,11 +1,12 @@
 import { h2, p } from 'javascript-to-html'
-import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
+import { code, demo, grainSandbox, grainSandboxHead, propsTable, uiLayout } from '../../lib/zh.js'
 
 export default () =>
   uiLayout({
     title: '颗粒',
     description: '一层包裹，把胶片颗粒铺在它装着的任何东西上。',
     activeHref: '/zh/ui/grain',
+    extraHead: grainSandboxHead(),
     children: [
       p(
         '颗粒能让一大片纯色不再发平——英雄区、一条色带、一张原本只会读成光板矩形的卡片。它包裹内容的方式和 ',
@@ -15,9 +16,25 @@ export default () =>
         ' 上，盖在子元素之上，并且不拦指针。',
       ),
       p(
-        '这块贴片是一张静态的分形噪声 SVG，画一次然后平铺。改用 ',
+        '这块贴片是一张静态的分形噪声 SVG，只画一次。改用 ',
         code('filter'),
         ' 去滤实时像素看起来差不多，但底下的东西每动一次就要重新栅格化一次。',
+      ),
+
+      p(
+        '控制分两层。',
+        code('opacity'),
+        ' 是纹理画出来之后推多重；不去动它，就由主题来定，两套主题也正是在这个值上配平的。',
+        code('type'),
+        '、',
+        code('frequency'),
+        '、',
+        code('octaves'),
+        '、',
+        code('seed'),
+        ' 和 ',
+        code('color'),
+        ' 是湍流本身；只要动其中任何一个，就会为那一个元素单独造一份纹理，而不再用样式表里那份共用的。',
       ),
 
       h2('基础颗粒'),
@@ -25,26 +42,81 @@ export default () =>
   text({ variant: 'lead', align: 'center' }, '有纹理了。'),
 )`, { align: 'stretch' }),
 
-      h2('强度'),
+      h2('噪声类型'),
       p(
-        '三档。主题定基础强度，强度再按比例缩放它——因为近黑的表面比纸面更吃颗粒：按感知明度量，同一块贴片在深色底上的斑点大约是 1.6 倍。所以深色模式下的 ',
-        code('medium'),
-        ' 是更低的不透明度，两边最后落在同一个位置。',
+        code('fractal'),
+        ' 直接把噪声加起来，出来的是胶片那种匀净的颗粒。',
+        code('turbulence'),
+        ' 取它的绝对值，于是留下暗色的纹路和团块——比起颗粒，更像烟或大理石。',
       ),
       demo(`grid({ min: '9rem' },
-  ...['soft', 'medium', 'strong'].map((intensity) =>
-    grain({ intensity, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
-      text({ variant: 'small', align: 'center' }, intensity),
+  ...['fractal', 'turbulence'].map((type) =>
+    grain({ type, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, type),
     ),
   ),
 )`, { align: 'stretch' }),
 
-      h2('尺度'),
-      p('一块噪声贴片的大小。越小越细：更靠近胶片，离沙砾更远。'),
+      h2('频率'),
+      p(
+        '每像素的周期数：越高越细。噪声按盒子自己的尺寸来画，一单位对一像素，所以不管盒子多大它都成立——小卡片和通宽色带拿到的是同样的颗粒，而且什么都不会重复。',
+      ),
       demo(`grid({ min: '9rem' },
-  ...['60px', '180px', '420px'].map((scale) =>
-    grain({ scale, intensity: 'strong', style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
-      text({ variant: 'small', align: 'center' }, scale),
+  ...[0.2, 0.57, 1.2].map((frequency) =>
+    grain({ frequency, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, String(frequency)),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
+      h2('倍频'),
+      p(
+        '叠加几层噪声，一层比一层细、一层比一层淡。只有一层是平的、匀的；多几层会多出细节，而每一层都要浏览器在第一次画贴片时多走一遍。',
+      ),
+      demo(`grid({ min: '9rem' },
+  ...[1, 3, 6].map((octaves) =>
+    grain({ octaves, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, String(octaves)),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
+      h2('种子'),
+      p(
+        '画哪一份噪声。任何数字都行，同一个数字永远给同一种图案，纹理的其他方面一点不变——两块带颗粒的面板挨在一起、重复被看出来的时候很有用。',
+      ),
+      demo(`grid({ min: '9rem' },
+  ...[0, 7, 42].map((seed) =>
+    grain({ seed, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, String(seed)),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
+      h2('颜色'),
+      p(
+        '噪声默认是灰的。',
+        code('color'),
+        ' 给它上色：这个值是在滤镜里乘进去的，所以必须是构建页面时就能解析的——',
+        code('#rgb'),
+        '、',
+        code('#rrggbb'),
+        ' 或 ',
+        code('rgb()'),
+        '。具名颜色、',
+        code('currentColor'),
+        ' 或 ',
+        code('var()'),
+        ' 都不行，遇到它们就让噪声保持灰色，而不是让构建失败。alpha 决定上多少色：',
+        code('#ff880080'),
+        ' 是 ',
+        code('#ff8800'),
+        ' 的一半，alpha 为零就是不上色。',
+      ),
+      demo(`grid({ min: '9rem' },
+  ...['#0a7a45', '#c05621', '#2f7fc7'].map((color) =>
+    grain({ color, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, color),
     ),
   ),
 )`, { align: 'stretch' }),
@@ -95,18 +167,24 @@ export default () =>
       ),
       demo(`grid({ min: '9rem' },
   ...['normal', 'overlay', 'soft-light'].map((blend) =>
-    grain({ blend, intensity: 'strong', style: 'background: var(--su-primary-soft); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+    grain({ blend, style: 'background: var(--su-primary-soft); padding: 1.5rem 1rem; border-radius: 0.5rem' },
       text({ variant: 'small', align: 'center' }, blend),
     ),
   ),
 )`, { align: 'stretch' }),
 
+      h2('试验场'),
+      grainSandbox(),
+
       h2('属性'),
       propsTable([
-        ['intensity', "'soft' | 'medium' | 'strong'", "'medium'", '纹理推到多重，相对于主题的基础值。'],
-        ['opacity', 'number', '', '直接给的不透明度，盖过 intensity 和主题。'],
-        ['scale', 'string', "'180px'", '一块噪声贴片的大小。'],
+        ['opacity', 'number', '', '纹理的不透明度。不去动它，就由主题来定。'],
         ['blend', 'string', "'normal'", '纹理用的 mix-blend-mode。'],
+        ['type', "'fractal' | 'turbulence'", "'fractal'", '画哪种湍流。'],
+        ['frequency', 'number', '0.57', '每像素的周期数，越高越细。'],
+        ['octaves', 'number', '3', '叠加几层噪声，1 到 8。'],
+        ['seed', 'number', '0', '画哪一份噪声。'],
+        ['color', 'string', '', '给噪声上色；alpha 决定上多少。认 #rgb、#rrggbb、#rrggbbaa、rgb() 或 rgba()。'],
         ['as', 'string', "'div'", '渲染成什么元素，比如 section。'],
       ]),
     ],

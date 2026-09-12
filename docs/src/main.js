@@ -1,3 +1,5 @@
+import { getGrain, setGrain } from 'sitelo/ui/client'
+
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const THEME_KEY = 'sitelo-theme'
@@ -129,6 +131,7 @@ startHeroTypewriter()
 initDocsSearch()
 closeMenusOnOutsideClick()
 initCookieConsent()
+initGrainSandbox()
 
 /** Whatever `--paper` currently resolves to, in the theme now applied. */
 function paperColor() {
@@ -416,4 +419,154 @@ function startHeroTypewriter() {
   }
 
   loop()
+}
+
+/**
+ * The grain sandbox on `/ui/grain`: every control drives the grain
+ * through `setGrain`, and the code block underneath shows the call
+ * that would render what is on screen.
+ *
+ * What is default is left out of that call, the way a page would write
+ * it. Opacity's default is the theme's, which only exists once the page
+ * has loaded — so the slider is set from the grain rather than the
+ * other way round, and follows the theme until someone moves it.
+ */
+function initGrainSandbox() {
+  const root = document.querySelector('[data-grain-sandbox]')
+  if (!root) return
+
+  const preview = root.querySelector('.su-grain')
+  const code = root.querySelector('[data-sandbox-code] code')
+  const control = (name) =>
+    root.querySelector(`[data-sandbox="${name}"] select, [data-sandbox="${name}"] input, [data-sandbox="${name}"] wa-color-picker`)
+  const controls = Object.fromEntries(
+    ['type', 'blend', 'frequency', 'octaves', 'seed', 'opacity', 'color', 'background'].map((name) => [name, control(name)]),
+  )
+
+  if (!preview || !code || Object.values(controls).some((el) => !el)) return
+
+  const DEFAULTS = { type: 'fractal', frequency: 0.57, octaves: 3, seed: 0, color: null, blend: 'normal' }
+  let opacityTouched = false
+  let backgroundTouched = false
+
+  /** Put the opacity slider where the grain is, output included. */
+  const showOpacity = (value) => {
+    controls.opacity.value = String(value)
+    const output = controls.opacity.parentElement?.querySelector('.su-slider-output')
+    if (output) output.textContent = controls.opacity.value
+  }
+
+  /** A computed `rgb(r, g, b)` as the `#rrggbb` a colour input takes. */
+  const toHex = (rgb) => {
+    const channels = rgb.match(/\d+/g)
+    return channels && channels.length >= 3
+      ? `#${channels.slice(0, 3).map((c) => Number(c).toString(16).padStart(2, '0')).join('')}`
+      : null
+  }
+
+  /*
+   * The surface behind the grain, which is what half the blend modes are
+   * really about. It starts as the theme's, read off the preview, and the
+   * picker follows the theme until someone picks.
+   */
+  const showBackground = () => {
+    const hex = toHex(getComputedStyle(preview).backgroundColor)
+    if (hex) controls.background.value = hex
+  }
+
+  /*
+   * Web Awesome themes itself from a class rather than the site's
+   * `data-theme`, so the pickers are told which side they are on.
+   */
+  const showPickerTheme = () => {
+    document.documentElement.classList.toggle('wa-dark', document.documentElement.dataset.theme === 'dark')
+  }
+
+  const token = (kind, text) => `<span class="token ${kind}">${text}</span>`
+  const punct = (text) => token('punctuation', text)
+  const literal = (value) =>
+    typeof value === 'string' ? token('string', `'${value}'`) : token('number', String(value))
+
+  /** The call as Prism would have coloured it, so the block never flickers plain. */
+  const render = (state) => {
+    const entries = Object.entries(state).filter(([key, value]) => value !== DEFAULTS[key])
+    const props = entries
+      .map(([key, value]) => `${token('literal-property property', key)}${token('operator', ':')} ${literal(value)}`)
+      .join(`${punct(',')} `)
+
+    // The background is not a grain prop — it is where the grain sits —
+    // so it goes in the call the way a page would put it: as style.
+    const style = backgroundTouched
+      ? `${token('literal-property property', 'style')}${token('operator', ':')} ${token('string', `'background: ${controls.background.value}'`)}`
+      : ''
+    const inside = [props, style].filter(Boolean).join(`${punct(',')} `)
+
+    code.innerHTML =
+      token('function', 'grain') +
+      punct('(') +
+      (inside ? `${punct('{')} ${inside} ${punct('}')}${punct(',')} ` : '') +
+      '…' +
+      punct(')')
+  }
+
+  const state = () => ({
+    type: controls.type.value,
+    frequency: Number(controls.frequency.value),
+    octaves: Number(controls.octaves.value),
+    seed: Number(controls.seed.value),
+    // `setGrain` reports null for a colour that tints nothing — white, or
+    // alpha zero — and the readout takes its word for it.
+    color: controls.color.value,
+    blend: controls.blend.value,
+  })
+
+  const apply = () => {
+    const next = state()
+    const shown = setGrain(preview, {
+      ...next,
+      ...(opacityTouched ? { opacity: Number(controls.opacity.value) } : {}),
+    })
+
+    // In the order the props are documented, opacity between colour and blend.
+    render({
+      type: next.type,
+      frequency: next.frequency,
+      octaves: next.octaves,
+      seed: next.seed,
+      // What was picked, not the coefficients it became — but only if it
+      // tinted anything at all.
+      color: shown?.color == null ? null : next.color,
+      ...(opacityTouched ? { opacity: Number(controls.opacity.value) } : {}),
+      blend: next.blend,
+    })
+  }
+
+  for (const [name, el] of Object.entries(controls)) {
+    el.addEventListener('input', () => {
+      if (name === 'opacity') opacityTouched = true
+      if (name === 'background') {
+        backgroundTouched = true
+        preview.style.background = controls.background.value
+      }
+      apply()
+    })
+  }
+
+  /* The theme's opacity, now that there is a theme — and again whenever
+   * it flips, until the slider has been moved by hand. */
+  const syncOpacity = () => {
+    const shown = getGrain(preview)
+    if (shown) showOpacity(shown.opacity)
+  }
+
+  syncOpacity()
+  showBackground()
+  showPickerTheme()
+  render(state())
+
+  new MutationObserver(() => {
+    if (!opacityTouched) syncOpacity()
+    if (!backgroundTouched) showBackground()
+    showPickerTheme()
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
 }

@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable } from '../lib/ui-demo.js'
+import { demo, grainSandbox, grainSandboxHead, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -9,6 +9,7 @@ export default () =>
     description:
       'A wrapper that lays a film grain over whatever it contains.',
     activeHref: '/ui/grain',
+    extraHead: grainSandboxHead(),
     children: [
       p(
         'Grain takes the flatness off a large area of colour — a hero, a coloured band, a card that would otherwise read as a plain rectangle. It wraps content the way ',
@@ -18,9 +19,24 @@ export default () =>
         ', above the children and ignoring the pointer.',
       ),
       p(
-        'The tile is a static SVG of fractal noise, painted once and repeated. A ',
+        'The tile is a static SVG of fractal noise, painted once. A ',
         code('filter'),
         ' over the live pixels would look much the same and cost a re-raster every time anything underneath it moved.',
+      ),
+      p(
+        'There are two layers of control. ',
+        code('opacity'),
+        ' is how hard the texture is pushed once drawn; left alone the theme sets it, and that is the value the two themes are balanced on. ',
+        code('type'),
+        ', ',
+        code('frequency'),
+        ', ',
+        code('octaves'),
+        ', ',
+        code('seed'),
+        ' and ',
+        code('color'),
+        ' are the turbulence itself; touching any of them builds a texture for that one element instead of using the shared one in the stylesheet.',
       ),
 
       h2('Basic grain'),
@@ -28,28 +44,81 @@ export default () =>
   text({ variant: 'lead', align: 'center' }, 'Textured.'),
 )`, { align: 'stretch' }),
 
-      h2('Intensity'),
+      h2('Noise type'),
       p(
-        'Three steps. The theme sets the base strength and the intensity scales it, because a near-black surface takes grain more readily than paper does — measured as perceived lightness, the same tile is about 1.6× the speckle over the dark ground. So ',
-        code('medium'),
-        ' is a lower opacity in dark mode, and the two land in the same place.',
+        code('fractal'),
+        ' sums the noise straight and gives the even speckle of film. ',
+        code('turbulence'),
+        ' takes its absolute value, which leaves dark veins and clumps — closer to smoke or marble than to grain.',
       ),
       demo(`grid({ min: '9rem' },
-  ...['soft', 'medium', 'strong'].map((intensity) =>
-    grain({ intensity, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
-      text({ variant: 'small', align: 'center' }, intensity),
+  ...['fractal', 'turbulence'].map((type) =>
+    grain({ type, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, type),
     ),
   ),
 )`, { align: 'stretch' }),
 
-      h2('Scale'),
+      h2('Frequency'),
       p(
-        'The size of one noise tile. Smaller is finer — closer to film, further from sand.',
+        'Cycles per pixel: higher is finer. The noise is drawn at the box’s own size, one unit to the pixel, so this holds whatever the box measures — a small card and a full-width band get the same grain, and nothing repeats.',
       ),
       demo(`grid({ min: '9rem' },
-  ...['60px', '180px', '420px'].map((scale) =>
-    grain({ scale, intensity: 'strong', style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
-      text({ variant: 'small', align: 'center' }, scale),
+  ...[0.2, 0.57, 1.2].map((frequency) =>
+    grain({ frequency, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, String(frequency)),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
+      h2('Octaves'),
+      p(
+        'How many layers of noise are summed, each finer and fainter than the last. One is plain and even; more adds detail, and each one costs the browser another pass when the tile is first drawn.',
+      ),
+      demo(`grid({ min: '9rem' },
+  ...[1, 3, 6].map((octaves) =>
+    grain({ octaves, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, String(octaves)),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
+      h2('Seed'),
+      p(
+        'Which noise gets drawn. Any number will do, the same one always gives the same pattern, and nothing else about the texture changes — useful when two grained panels sit side by side and the repeat gives itself away.',
+      ),
+      demo(`grid({ min: '9rem' },
+  ...[0, 7, 42].map((seed) =>
+    grain({ seed, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, String(seed)),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
+      h2('Colour'),
+      p(
+        'The noise is grey by default. ',
+        code('color'),
+        ' tints it — the value is multiplied into the texture inside the filter, so it has to be one that can be resolved when the page is built: ',
+        code('#rgb'),
+        ', ',
+        code('#rrggbb'),
+        ' or ',
+        code('rgb()'),
+        '. A named colour, ',
+        code('currentColor'),
+        ' or a ',
+        code('var()'),
+        ' cannot be, and leaves the noise grey rather than failing the build. Alpha is how much of the tint: ',
+        code('#ff880080'),
+        ' is half of ',
+        code('#ff8800'),
+        ', and alpha zero is none.',
+      ),
+      demo(`grid({ min: '9rem' },
+  ...['#0a7a45', '#c05621', '#2f7fc7'].map((color) =>
+    grain({ color, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, color),
     ),
   ),
 )`, { align: 'stretch' }),
@@ -100,18 +169,24 @@ export default () =>
       ),
       demo(`grid({ min: '9rem' },
   ...['normal', 'overlay', 'soft-light'].map((blend) =>
-    grain({ blend, intensity: 'strong', style: 'background: var(--su-primary-soft); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+    grain({ blend, style: 'background: var(--su-primary-soft); padding: 1.5rem 1rem; border-radius: 0.5rem' },
       text({ variant: 'small', align: 'center' }, blend),
     ),
   ),
 )`, { align: 'stretch' }),
 
+      h2('Sandbox'),
+      grainSandbox(),
+
       h2('Props'),
       propsTable([
-        ['intensity', "'soft' | 'medium' | 'strong'", "'medium'", 'How far the texture is pushed, relative to the theme’s base.'],
-        ['opacity', 'number', '', 'A raw opacity, overriding intensity and the theme.'],
-        ['scale', 'string', "'180px'", 'The size of one noise tile.'],
+        ['opacity', 'number', '', 'Opacity of the texture. Left alone, the theme sets it.'],
         ['blend', 'string', "'normal'", 'A mix-blend-mode for the texture.'],
+        ['type', "'fractal' | 'turbulence'", "'fractal'", 'Which turbulence to draw.'],
+        ['frequency', 'number', '0.57', 'Cycles per pixel — higher is finer.'],
+        ['octaves', 'number', '3', 'Layers of noise summed together, 1–8.'],
+        ['seed', 'number', '0', 'Which noise to draw.'],
+        ['color', 'string', '', 'Tints the noise; alpha is how much. #rgb, #rrggbb, #rrggbbaa, rgb() or rgba().'],
         ['as', 'string', "'div'", 'Element to render, e.g. section.'],
       ]),
     ],

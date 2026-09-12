@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, demo, propsTable, uiLayout } from '../../lib/de.js'
+import { code, demo, grainSandbox, grainSandboxHead, propsTable, uiLayout } from '../../lib/de.js'
 
 export default () =>
   uiLayout({
@@ -7,6 +7,7 @@ export default () =>
     description:
       'Eine Hülle, die Filmkorn über alles legt, was in ihr steckt.',
     activeHref: '/de/ui/grain',
+    extraHead: grainSandboxHead(),
     children: [
       p(
         'Korn nimmt einer großen Farbfläche die Flachheit — einem Hero, einem farbigen Band, einer Karte, die sonst wie ein glattes Rechteck wirkt. Es umschließt Inhalt genauso wie ',
@@ -16,9 +17,25 @@ export default () =>
         ' gezeichnet, über den Kindern und ohne den Zeiger abzufangen.',
       ),
       p(
-        'Die Kachel ist ein statisches SVG aus fraktalem Rauschen, einmal gezeichnet und wiederholt. Ein ',
+        'Die Kachel ist ein statisches SVG aus fraktalem Rauschen, einmal gezeichnet. Ein ',
         code('filter'),
         ' über die lebenden Pixel sähe fast gleich aus und kostete ein neues Rastern, sobald sich darunter etwas bewegt.',
+      ),
+
+      p(
+        'Es gibt zwei Ebenen der Steuerung. ',
+        code('opacity'),
+        ' bestimmt, wie stark die Textur nach dem Zeichnen aufgedreht wird; unangetastet setzt sie das Theme, und auf diesem Wert sind die beiden Themes ausbalanciert. ',
+        code('type'),
+        ', ',
+        code('frequency'),
+        ', ',
+        code('octaves'),
+        ', ',
+        code('seed'),
+        ' und ',
+        code('color'),
+        ' sind die Turbulenz selbst; sobald eines davon gesetzt wird, entsteht eine Textur für genau dieses Element statt der gemeinsamen aus dem Stylesheet.',
       ),
 
       h2('Einfaches Korn'),
@@ -26,28 +43,81 @@ export default () =>
   text({ variant: 'lead', align: 'center' }, 'Texturiert.'),
 )`, { align: 'stretch' }),
 
-      h2('Intensität'),
+      h2('Rauschart'),
       p(
-        'Drei Stufen. Das Theme setzt die Grundstärke, die Intensität skaliert sie — denn eine fast schwarze Fläche nimmt Korn bereitwilliger an als Papier: in wahrgenommener Helligkeit gemessen bringt dieselbe Kachel über dem dunklen Grund rund das 1,6-Fache an Sprenkel. ',
-        code('medium'),
-        ' ist im Dunkelmodus also eine niedrigere Deckkraft, und beide landen an derselben Stelle.',
+        code('fractal'),
+        ' summiert das Rauschen direkt und ergibt das gleichmäßige Sprenkel von Film. ',
+        code('turbulence'),
+        ' nimmt den Betrag davon, was dunkle Adern und Klumpen hinterlässt: näher an Rauch oder Marmor als an Korn.',
       ),
       demo(`grid({ min: '9rem' },
-  ...['soft', 'medium', 'strong'].map((intensity) =>
-    grain({ intensity, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
-      text({ variant: 'small', align: 'center' }, intensity),
+  ...['fractal', 'turbulence'].map((type) =>
+    grain({ type, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, type),
     ),
   ),
 )`, { align: 'stretch' }),
 
-      h2('Skalierung'),
+      h2('Frequenz'),
       p(
-        'Die Größe einer Rauschkachel. Kleiner ist feiner: näher am Film, weiter weg vom Sand.',
+        'Zyklen pro Pixel: höher ist feiner. Das Rauschen wird in der Größe der Box selbst gezeichnet, eine Einheit pro Pixel, also gilt das, was auch immer die Box misst — eine kleine Karte und ein Band über die volle Breite bekommen dasselbe Korn, und nichts wiederholt sich.',
       ),
       demo(`grid({ min: '9rem' },
-  ...['60px', '180px', '420px'].map((scale) =>
-    grain({ scale, intensity: 'strong', style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
-      text({ variant: 'small', align: 'center' }, scale),
+  ...[0.2, 0.57, 1.2].map((frequency) =>
+    grain({ frequency, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, String(frequency)),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
+      h2('Oktaven'),
+      p(
+        'Wie viele Rauschschichten aufsummiert werden, jede feiner und schwächer als die davor. Eine ist glatt und gleichmäßig; mehr bringen Detail, und jede kostet den Browser beim ersten Zeichnen der Kachel einen weiteren Durchgang.',
+      ),
+      demo(`grid({ min: '9rem' },
+  ...[1, 3, 6].map((octaves) =>
+    grain({ octaves, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, String(octaves)),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
+      h2('Seed'),
+      p(
+        'Welches Rauschen gezeichnet wird. Jede Zahl geht, dieselbe ergibt immer dasselbe Muster, und sonst ändert sich nichts an der Textur — praktisch, wenn zwei gekörnte Flächen nebeneinander liegen und sich die Wiederholung verrät.',
+      ),
+      demo(`grid({ min: '9rem' },
+  ...[0, 7, 42].map((seed) =>
+    grain({ seed, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, String(seed)),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
+      h2('Farbe'),
+      p(
+        'Das Rauschen ist standardmäßig grau. ',
+        code('color'),
+        ' färbt es ein: der Wert wird im Filter multipliziert, muss sich also beim Bauen der Seite auflösen lassen — ',
+        code('#rgb'),
+        ', ',
+        code('#rrggbb'),
+        ' oder ',
+        code('rgb()'),
+        '. Eine benannte Farbe, ',
+        code('currentColor'),
+        ' oder ein ',
+        code('var()'),
+        ' können das nicht und lassen das Rauschen grau, statt den Build scheitern zu lassen. Alpha sagt, wie viel Tönung: ',
+        code('#ff880080'),
+        ' ist die Hälfte von ',
+        code('#ff8800'),
+        ', und Alpha null ist keine.',
+      ),
+      demo(`grid({ min: '9rem' },
+  ...['#0a7a45', '#c05621', '#2f7fc7'].map((color) =>
+    grain({ color, style: 'background: var(--su-surface-2); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+      text({ variant: 'small', align: 'center' }, color),
     ),
   ),
 )`, { align: 'stretch' }),
@@ -98,18 +168,24 @@ export default () =>
       ),
       demo(`grid({ min: '9rem' },
   ...['normal', 'overlay', 'soft-light'].map((blend) =>
-    grain({ blend, intensity: 'strong', style: 'background: var(--su-primary-soft); padding: 1.5rem 1rem; border-radius: 0.5rem' },
+    grain({ blend, style: 'background: var(--su-primary-soft); padding: 1.5rem 1rem; border-radius: 0.5rem' },
       text({ variant: 'small', align: 'center' }, blend),
     ),
   ),
 )`, { align: 'stretch' }),
 
+      h2('Sandbox'),
+      grainSandbox(),
+
       h2('Props'),
       propsTable([
-        ['intensity', "'soft' | 'medium' | 'strong'", "'medium'", 'Wie weit die Textur getrieben wird, relativ zur Basis des Themes.'],
-        ['opacity', 'number', '', 'Eine rohe Deckkraft, die intensity und das Theme übergeht.'],
-        ['scale', 'string', "'180px'", 'Die Größe einer Rauschkachel.'],
+        ['opacity', 'number', '', 'Deckkraft der Textur. Unangetastet setzt sie das Theme.'],
         ['blend', 'string', "'normal'", 'Ein mix-blend-mode für die Textur.'],
+        ['type', "'fractal' | 'turbulence'", "'fractal'", 'Welche Turbulenz gezeichnet wird.'],
+        ['frequency', 'number', '0.57', 'Zyklen pro Pixel — höher ist feiner.'],
+        ['octaves', 'number', '3', 'Aufsummierte Rauschschichten, 1–8.'],
+        ['seed', 'number', '0', 'Welches Rauschen gezeichnet wird.'],
+        ['color', 'string', '', 'Färbt das Rauschen; Alpha sagt, wie stark. #rgb, #rrggbb, #rrggbbaa, rgb() oder rgba().'],
         ['as', 'string', "'div'", 'Element, das gerendert wird, z. B. section.'],
       ]),
     ],

@@ -28,6 +28,7 @@ export const DEFAULT_UI_CLIENT_BASE = '/su/'
 export const RUNTIME_MODULES = [
   'alert',
   'badge',
+  'grain',
   'helpers',
   'menu',
   'pressed',

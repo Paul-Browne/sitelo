@@ -22,7 +22,7 @@ const GROUPS = [
     ['/es/ui/aspect-ratio', 'Relación de aspecto', 'Mantén una caja con forma fija, para que nada salte al cargar.',
       `aspectRatio({ ratio: '16 / 9', style: 'width: 6rem; background: var(--su-surface-2); border-radius: 0.4rem' }, '')`],
     ['/es/ui/grain', 'Grano', 'Extiende un grano de película sobre cualquier cosa, para que una superficie plana no lo sea.',
-      `grain({ intensity: 'strong', style: 'width: 100%; background: var(--su-surface-2); padding: 0.75rem; border-radius: 0.4rem' },
+      `grain({ style: 'width: 100%; background: var(--su-surface-2); padding: 0.75rem; border-radius: 0.4rem' },
         text({ variant: 'caption', align: 'center' }, 'con grano'))`],
     ['/es/ui/card', 'Tarjeta', 'Una superficie para contenido agrupado, con cabecera, cuerpo y pie.',
       `card({ variant: 'flat', style: 'width: 100%' }, cardBody(text({ variant: 'small' }, 'Una tarjeta')))`],

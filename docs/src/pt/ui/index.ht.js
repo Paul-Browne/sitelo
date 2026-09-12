@@ -21,7 +21,7 @@ const GROUPS = [
     ['/pt/ui/aspect-ratio', 'Proporção', 'Mantém uma caixa com forma fixa, para nada saltar ao carregar.',
       `aspectRatio({ ratio: '16 / 9', style: 'width: 6rem; background: var(--su-surface-2); border-radius: 0.4rem' }, '')`],
     ['/pt/ui/grain', 'Grão', 'Estende um grão de película sobre qualquer coisa, para uma área lisa deixar de o ser.',
-      `grain({ intensity: 'strong', style: 'width: 100%; background: var(--su-surface-2); padding: 0.75rem; border-radius: 0.4rem' },
+      `grain({ style: 'width: 100%; background: var(--su-surface-2); padding: 0.75rem; border-radius: 0.4rem' },
         text({ variant: 'caption', align: 'center' }, 'com grão'))`],
     ['/pt/ui/card', 'Cartão', 'Uma superfície para conteúdo agrupado, com cabeçalho, corpo e rodapé.',
       `card({ variant: 'flat', style: 'width: 100%' }, cardBody(text({ variant: 'small' }, 'Um cartão')))`],
