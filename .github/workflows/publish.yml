@@ -26,10 +26,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # No `registry-url`: that writes an .npmrc expecting NODE_AUTH_TOKEN,
+      # and a token slot with nothing in it is enough to make npm skip the
+      # OIDC exchange and publish unauthenticated.
       - uses: actions/setup-node@v7
         with:
           node-version: 24
-          registry-url: https://registry.npmjs.org
           cache: npm
 
       # Trusted publishing needs npm 11.5 or later, which is newer than
