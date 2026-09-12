@@ -136,7 +136,7 @@ export default () =>
         ', wenn ein bestimmter Slide es wert ist, von anderswo verlinkt zu werden.',
       ),
 
-h2('Die Slides benennen'),
+      h2('Die Slides benennen'),
       p(
         'Jeder Punkt ist nach seinem Slide benannt, denn ein Punkt ist ein Bedienelement, und ein Bedienelement ohne Namen ist für einen Screenreader nur „Schaltfläche“. Standardmäßig ist der Name die Nummer des Slides. Übergib einen Eintrag als Objekt, um ihn besser zu benennen, oder ',
         code('slideLabel'),

@@ -136,7 +136,7 @@ export default () =>
         ' quando valer a pena ligar de outro sítio a um slide em particular.',
       ),
 
-h2('Dar nome aos slides'),
+      h2('Dar nome aos slides'),
       p(
         'Cada ponto tem o nome do seu slide, porque um ponto é um controlo e um controlo sem nome é um botão a que um leitor de ecrã só pode chamar «botão». Por predefinição o nome é o número do slide. Passe um item como objeto para lhe dar um nome melhor, ou ',
         code('slideLabel'),

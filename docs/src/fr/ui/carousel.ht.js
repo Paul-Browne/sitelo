@@ -136,7 +136,7 @@ export default () =>
         ' quand une diapositive précise mérite d’être liée depuis ailleurs.',
       ),
 
-h2('Nommer les diapositives'),
+      h2('Nommer les diapositives'),
       p(
         'Chaque puce porte le nom de sa diapositive, parce qu’une puce est une commande et qu’une commande sans nom est un bouton qu’un lecteur d’écran ne peut appeler que « bouton ». Par défaut, le nom est le numéro de la diapositive. Passez un élément sous forme d’objet pour le nommer mieux, ou ',
         code('slideLabel'),

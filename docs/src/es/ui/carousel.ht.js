@@ -136,7 +136,7 @@ export default () =>
         ' cuando merezca la pena enlazar a una diapositiva concreta desde otro sitio.',
       ),
 
-h2('Nombrar las diapositivas'),
+      h2('Nombrar las diapositivas'),
       p(
         'Cada punto lleva el nombre de su diapositiva, porque un punto es un control y un control sin nombre es un botón al que un lector de pantalla solo puede llamar «botón». Por defecto el nombre es el número de la diapositiva. Pasa un elemento como objeto para nombrarlo mejor, o ',
         code('slideLabel'),
