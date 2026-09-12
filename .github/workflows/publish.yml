@@ -10,6 +10,9 @@ name: Publish
 on:
   push:
     tags: ['v*']
+  # Run by hand from the Actions tab: publishes whatever version main is
+  # at, for a release whose tag run failed on the registry's side.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -47,6 +50,7 @@ jobs:
       # The tag is the version: a mismatch means the tag was made by hand,
       # and publishing would put one number on the tag and another on npm.
       - name: Check the tag matches package.json
+        if: github.ref_type == 'tag'
         run: |
           expected="v$(node -p "require('./package.json').version")"
           if [ "$GITHUB_REF_NAME" != "$expected" ]; then
@@ -54,4 +58,6 @@ jobs:
             exit 1
           fi
 
-      - run: npm publish
+      # Verbose, because a refused OIDC exchange is only explained at that
+      # level — without it a mismatch reads as a bare ENEEDAUTH.
+      - run: npm publish --loglevel verbose
