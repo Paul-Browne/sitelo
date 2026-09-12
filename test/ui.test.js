@@ -297,16 +297,48 @@ test('carousel() asks for dots and arrows by class, and names them', () => {
 test('the carousel track is a scrollable region a keyboard can reach', () => {
   const html = ui.carousel({ label: 'Product shots' }, 'a');
 
-  assert.match(html, /<div class="su-carousel-track" role="group" aria-label="Product shots" tabindex="0">/);
+  assert.match(html, /<div class="su-carousel-track" role="group" aria-label="Product shots" tabindex="0"/);
 });
 
-test('carousel() is markup and nothing else — no script, no data hooks', () => {
+test('carousel() reaches its module from attributes, never a script tag', () => {
   const html = ui.carousel({ items: ['a', 'b', 'c'] });
 
   assert.ok(!html.includes('<script'), 'no script tag');
-  assert.ok(!html.includes('import('), 'no runtime module to fetch');
-  assert.ok(!/ on[a-z]+=/.test(html), 'no event attribute');
-  assert.ok(!html.includes('data-su-'), 'nothing for a script to find');
+  assert.ok(!html.includes('data-su-'), 'no state for a script to read back');
+  assert.match(html, /onscroll="[^"]*import\('\/su\/carousel\.js'\)/);
+  // Cancelled before the import, or the browser follows the fragment
+  // while the module is still being fetched.
+  assert.match(html, /onclick="event\.preventDefault\(\);import\('\/su\/carousel\.js'\)/);
+  assert.match(html, /m=>m\.go\(this,event\),\(\)=>\{location\.hash=this\.hash\}/);
+});
+
+test('a carousel with no dots asks for no script at all', () => {
+  // The module exists to keep the dots in step with the scroll. Without
+  // dots there is nothing for it to do, so nothing should fetch it.
+  const html = ui.carousel({ dots: false }, 'a', 'b');
+
+  assert.ok(!html.includes('import('));
+  assert.ok(!/ on[a-z]+=/.test(html));
+});
+
+test('the native markers are tested for before the module is fetched', () => {
+  // Where the browser draws the dots itself the rendered ones are
+  // `display: none` and this module has nothing to mark, so the guard
+  // sits in front of the import rather than inside it — otherwise every
+  // Chromium page would fetch a module it cannot use.
+  const html = ui.carousel({ items: ['a'] });
+  const [, body] = / onscroll="([^"]*)"/.exec(html);
+
+  assert.ok(body.startsWith("CSS.supports('scroll-marker-group','after')||"), body);
+
+  // And it has to be the same condition the stylesheet switches on, or
+  // one half would hide the dots the other half is still driving.
+  const [, property, value] = /CSS\.supports\('([^']+)','([^']+)'\)/.exec(body);
+
+  assert.ok(
+    uiCss.includes(`@supports (${property}: ${value})`),
+    `${property}: ${value} is the condition ui.css uses`,
+  );
 });
 
 test('the fallback dots are one real link per slide, named after it', () => {
@@ -320,8 +352,8 @@ test('the fallback dots are one real link per slide, named after it', () => {
   });
 
   assert.match(html, /<nav class="su-carousel-dots" aria-label="Product shots">/);
-  assert.match(html, /<a class="su-carousel-dot" href="#shots-1" aria-label="The kitchen"><\/a>/);
-  assert.match(html, /<a class="su-carousel-dot" href="#shots-2" aria-label="2"><\/a>/);
+  assert.match(html, /<a class="su-carousel-dot" href="#shots-1" aria-label="The kitchen"/);
+  assert.match(html, /<a class="su-carousel-dot" href="#shots-2" aria-label="2"/);
 
   // Every dot points at a slide that is actually in the markup.
   for (const [, id] of html.matchAll(/class="su-carousel-dot" href="#([^"]+)"/g)) {
@@ -329,14 +361,16 @@ test('the fallback dots are one real link per slide, named after it', () => {
   }
 });
 
-test('a dot never claims to be the current one', () => {
-  // `:target` follows a tap on a dot and knows nothing about a swipe, so
-  // an `aria-current` written here would be wrong as soon as anyone
-  // swiped. The native markers are the ones that can track the scroll.
+test('the first dot is marked, and only the first', () => {
+  // At rest the carousel is on its first slide, so the mark is right
+  // before anything has run — and on a page where the module never
+  // arrives it is the one state that stays right. `carousel.js` moves it
+  // from the first scroll onwards.
   const html = ui.carousel({ items: ['a', 'b', 'c'] });
 
-  assert.ok(!html.includes('aria-current'));
-  assert.ok(!html.includes('aria-selected'));
+  assert.equal((html.match(/aria-current/g) ?? []).length, 1);
+  assert.match(html, /href="#[^"]+-1" aria-label="1" aria-current="true"/);
+  assert.ok(!html.includes('aria-selected'), 'a link is not a tab');
 });
 
 test('carousel({ dots: false }) renders no dots to hide', () => {
@@ -944,7 +978,7 @@ function runtimeSource(name) {
 
 /** Every `import('…/x.js').then(m=>m.call(…))` in a piece of markup. */
 function handlersIn(html) {
-  return [...html.matchAll(/import\('([^']+)'\)\.then\(m=>m\.([A-Za-z]+)\(([^)]*)\)\)/g)].map(
+  return [...html.matchAll(/import\('([^']+)'\)\.then\(m=>m\.([A-Za-z]+)\(([^)]*)\)/g)].map(
     ([whole, url, call, args]) => ({ whole, url, call, args }),
   );
 }
@@ -952,6 +986,7 @@ function handlersIn(html) {
 /** One rendering of each component that wires itself to a module. */
 const WIRED = [
   ['alert', ui.alert({ dismissible: true }, 'x')],
+  ['carousel', ui.carousel({ items: ['a', 'b'] })],
   ['themeToggle', ui.themeToggle()],
   ['menu', ui.menu({ trigger: 'x' }, ui.menuItem('y'))],
 ];

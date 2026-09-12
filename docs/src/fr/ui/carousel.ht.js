@@ -21,7 +21,7 @@ export default () =>
         ' ni module à importer : l’état, c’est le décalage de défilement, et le navigateur l’a déjà.',
       ),
       p(
-        'Là où il ne l’est pas, une rangée de puces bien réelles prend le relais — un lien par diapositive, toujours sans script. Cette forme est plus faible sur deux points précis, tous deux décrits plus bas, mais elle garantit qu’un téléphone ne se retrouve jamais avec un carrousel dont rien ne dit qu’il défile.',
+        'Là où il ne l’est pas, une rangée de puces bien réelles prend le relais : un lien par diapositive, qui fonctionne déjà seul et qui, au premier défilement ou au premier toucher, va chercher quelques centaines d’octets de script pour se comporter comme les puces natives — suivre le défilement, et déplacer la piste sans emporter la page.',
       ),
 
       h2('Une à la fois'),
@@ -117,14 +117,17 @@ export default () =>
 
       h2('Quand le navigateur n’a pas de marqueurs de défilement'),
       p(
-        'Alors les puces sont de simples liens, un par diapositive, chacun pointant vers l’id de la sienne — c’est pourquoi chaque diapositive en reçoit un. Toucher une puce fait défiler la piste jusqu’à elle sans rien charger, et la rangée se cache de nouveau là où les marqueurs natifs existent, pour que personne n’en voie deux.',
+        'Alors les puces sont de vrais liens, un par diapositive, chacun pointant vers l’id de la sienne — c’est pourquoi chaque diapositive en reçoit un. Cela fonctionne déjà sans rien charger : toucher une puce fait défiler la piste jusqu’à sa diapositive, parce que suivre un fragment, un navigateur sait le faire tout seul.',
       ),
       p(
-        'Deux choses leur échappent, que les marqueurs natifs savent faire. Suivre un lien vers une diapositive, c’est suivre un fragment : la fenêtre se déplace vers la diapositive en plus de la piste — la page défile. ',
+        'Au premier défilement ou au premier toucher, la piste et les puces vont chercher ',
+        code('/su/carousel.js'),
+        ' depuis leurs propres attributs d’événement — comme chaque composant ici va chercher son module. Sur une page que personne ne touche, rien n’est téléchargé ; là où les marqueurs natifs existent déjà, rien du tout. À partir de là, cela va dans les deux sens : les puces suivent le défilement, quoi qu’il l’ait provoqué — un balayage, le pavé tactile, les touches fléchées, une barre tirée — et toucher une puce fait défiler la piste en laissant la page où elle était.',
+      ),
+      p(
+        'C’est pour cette dernière chose que le script existe vraiment. Un fragment nu déplace la fenêtre vers la diapositive en plus de la piste, et un carrousel qui retire la page sous le doigt qui le touche n’est pas ce qu’on entendait par une puce. Le clic est annulé dans l’attribut et non à l’intérieur de l’import, car un import dynamique arrive un instant plus tard et le navigateur a déjà suivi le lien. ',
         code('scrollMargin'),
-        ' choisit à quelle hauteur au-dessus de la diapositive elle s’arrête ; donnez à un en-tête collant au moins sa propre hauteur. Et elles ne peuvent pas désigner la diapositive affichée : ',
-        code(':target'),
-        ' suit le toucher d’une puce mais ne sait rien d’un balayage, et une puce périmée dès le balayage suivant serait pire qu’une puce qui n’a jamais rien prétendu. Ce sont donc des endroits où aller, pas une image d’où vous êtes.',
+        ' est l’endroit où la fenêtre atterrit dans le seul cas restant : JavaScript coupé, où le lien n’est qu’un lien.',
       ),
       p(
         'Les ids qu’elles visent viennent de ',
@@ -153,12 +156,23 @@ export default () =>
   ],
 })`, { align: 'stretch' }),
 
+      h2('Le piloter vous-même'),
+      p(
+        'Deux fonctions pour les cas où c’est la page qui déplace le carrousel — un bouton « voir les photos », une étape d’un formulaire, un lien ailleurs sur la page :',
+      ),
+      codeBlock('src/main.js', `import { setSlide, getSlide } from 'sitelo/ui/client'
+
+setSlide('gallery', 2)  // défile jusqu’à la troisième et marque sa puce
+getSlide('gallery')     // 2`, 'javascript'),
+      p('Ou depuis un attribut d’événement, sans rien empaqueter dans la page :'),
+      codeBlock('N’importe où', `button({ onclick: "import('/su/carousel.js').then(m=>m.set('gallery',0))" }, 'Revenir au début')`, 'javascript'),
+
       h2('Ce que cela ne fait pas'),
       p(
         'Il ne reboucle pas sur la première diapositive et il n’avance pas tout seul. Ni l’un ni l’autre n’est à la portée de CSS, donc ni l’un ni l’autre n’est là — un carrousel en boucle ou en lecture automatique demande un script, et ce composant préfère ne pas être la raison pour laquelle une page en charge un. L’avance automatique est de toute façon une perte heureuse : elle déplace ce que quelqu’un est en train de lire.',
       ),
       p(
-        'Sans les marqueurs natifs, il ne peut pas non plus désigner la diapositive courante, ni en atteindre une sans bouger la page — les deux coûts de la solution de repli, ci-dessus. Le balayage, le pavé tactile et les touches sont identiques dans les deux cas.',
+        'JavaScript coupé, il ne peut pas non plus désigner la diapositive affichée une fois la piste balayée, ni en atteindre une sans déplacer la page. La première puce est marquée à la compilation, puisque au repos c’est bien la diapositive affichée ; la garder juste ensuite est la seule chose que seul le script sache faire. Le balayage, le pavé tactile et les touches fonctionnent dans les deux cas.',
       ),
 
       h2('Accessibilité'),
@@ -173,11 +187,11 @@ export default () =>
         'Là où le navigateur les dessine, les puces sont exposées comme une liste d’onglets et les flèches comme des boutons qui se désactivent seuls à chaque extrémité — tout cela, c’est le navigateur qui le construit, donc rien ne peut se désynchroniser de la diapositive réellement affichée. C’est l’argument de cette forme face à une version scriptée : il n’y a pas de seconde copie de l’état à se tromper.',
       ),
       p(
-        'Les puces de repli sont des liens, chacun nommé d’après sa diapositive et chacun une cible de 24px plutôt que les 8px que la puce semble mesurer. Elles ne portent pas d’',
+        'Les puces de repli sont des liens, chacun nommé d’après sa diapositive et chacun une cible de 24px plutôt que les 8px que la puce semble mesurer. La diapositive affichée porte ',
         code('aria-current'),
-        ' : il serait écrit une fois, à la compilation, et faux dès que la piste serait balayée. Là où les marqueurs natifs les remplacent, elles sont en ',
+        ', qui est à la fois ce qu’un lecteur d’écran annonce et ce que la feuille de style colore : un seul état à garder juste au lieu de deux qui pourraient se contredire. Il est rendu sur la première puce, puisque au repos c’est la diapositive affichée, et il suit ensuite le défilement. Là où les marqueurs natifs les remplacent, les liens sont en ',
         code('display: none'),
-        ' : elles quittent donc l’arbre d’accessibilité avec l’image, au lieu d’être annoncées deux fois.',
+        ' : ils quittent donc l’arbre d’accessibilité avec l’image, au lieu d’être annoncés deux fois.',
       ),
 
       h2('Props'),
@@ -188,7 +202,7 @@ export default () =>
         ['gap', 'Space', "'md'", 'Entre les diapositives.'],
         ['align', "'start' | 'center' | 'end'", "'start'", 'Où une diapositive vient se poser.'],
         ['snap', "'mandatory' | 'proximity' | false", "'mandatory'", 'Avec quelle fermeté le défilement se pose sur une diapositive.'],
-        ['dots', 'boolean', 'true', 'Puces sous la piste — marqueurs de défilement natifs là où le navigateur les a, un lien par diapositive ailleurs. Les couper ramène la barre de défilement.'],
+        ['dots', 'boolean', 'true', 'Puces sous la piste — marqueurs natifs là où le navigateur les a, sinon un lien par diapositive qu’un petit module vient améliorer. Les couper ramène la barre de défilement et ne demande aucun script.'],
         ['arrows', 'boolean', 'true', 'Flèches par-dessus la piste.'],
         ['color', "'primary' | 'neutral' | 'success' | 'warning' | 'danger'", "'primary'", 'Couleur de la puce de la diapositive affichée.'],
         ['label', 'string', "'Carousel'", 'Nom accessible de la région défilante.'],

@@ -21,7 +21,7 @@ export default () =>
         ' ni módulo que importar: el estado es el desplazamiento, y el navegador ya lo tiene.',
       ),
       p(
-        'Donde no puede, toma el relevo una fila de puntos de verdad — un enlace por diapositiva, todavía sin script. Esa forma es más débil en dos cosas concretas, ambas más abajo, pero garantiza que a un móvil nunca se le entregue un carrusel sin nada que diga que se desplaza.',
+        'Donde no puede, toma el relevo una fila de puntos de verdad: un enlace por diapositiva, que ya funciona por su cuenta y que en el primer desplazamiento o el primer toque pide unos cientos de bytes de script para comportarse como los puntos nativos — seguir el desplazamiento y mover la pista sin mover la página.',
       ),
 
       h2('De una en una'),
@@ -117,14 +117,17 @@ export default () =>
 
       h2('Cuando el navegador no tiene marcadores de desplazamiento'),
       p(
-        'Entonces los puntos son enlaces normales, uno por diapositiva, cada uno apuntando al id de la suya — por eso cada diapositiva recibe uno. Tocar un punto desplaza la pista hasta ella sin cargar nada, y la fila vuelve a ocultarse donde existen los marcadores nativos, para que nadie vea dos.',
+        'Entonces los puntos son enlaces de verdad, uno por diapositiva, cada uno apuntando al id de la suya — por eso cada diapositiva recibe uno. Eso ya funciona sin cargar nada: tocar uno desplaza la pista hasta su diapositiva, porque seguir un fragmento es algo que el navegador ya sabe hacer.',
       ),
       p(
-        'Hay dos cosas que no pueden hacer y los marcadores nativos sí. Seguir un enlace a una diapositiva es seguir un fragmento, así que la ventana se mueve hacia la diapositiva además de la pista: la página se desplaza. ',
+        'En el primer desplazamiento o el primer toque, la pista y los puntos piden ',
+        code('/su/carousel.js'),
+        ' desde sus propios atributos de evento — como cada componente de aquí pide su módulo. En una página que nadie toca no se descarga nada, y donde ya existen los marcadores nativos, nada en absoluto. A partir de ahí funciona en los dos sentidos: los puntos siguen al desplazamiento, lo haya movido lo que sea — un deslizamiento, el trackpad, las flechas, un arrastre de la barra — y tocar un punto desplaza la pista y deja la página donde estaba.',
+      ),
+      p(
+        'Para esto último está el script, en realidad. Un fragmento a secas mueve la ventana hacia la diapositiva además de la pista, y un carrusel que le quita la página de debajo al dedo que lo toca no es lo que nadie quiso decir con un punto. El clic se cancela en el atributo y no dentro del import, porque un import dinámico llega un instante después y para entonces el navegador ya ha seguido el enlace. ',
         code('scrollMargin'),
-        ' elige a qué altura por encima de la diapositiva se detiene — dale a una cabecera fija al menos su propia altura. Y no pueden marcar qué diapositiva se está viendo: ',
-        code(':target'),
-        ' sigue el toque en un punto pero no sabe nada de un deslizamiento, y un punto que quedara obsoleto en cuanto deslizas sería peor que uno que nunca afirmó nada. Así que son un sitio al que ir, no un retrato de dónde estás.',
+        ' es donde aterriza la ventana en el único caso que queda: sin JavaScript, donde el enlace no es más que un enlace.',
       ),
       p(
         'Los ids a los que apuntan salen de ',
@@ -153,12 +156,23 @@ export default () =>
   ],
 })`, { align: 'stretch' }),
 
+      h2('Manejarlo tú mismo'),
+      p(
+        'Dos funciones para cuando quien mueve el carrusel es la página — un botón «ver las fotos», un paso de un formulario, un enlace en otra parte:',
+      ),
+      codeBlock('src/main.js', `import { setSlide, getSlide } from 'sitelo/ui/client'
+
+setSlide('gallery', 2)  // se desplaza a la tercera y marca su punto
+getSlide('gallery')     // 2`, 'javascript'),
+      p('O desde un atributo de evento, sin nada empaquetado en la página:'),
+      codeBlock('En cualquier sitio', `button({ onclick: "import('/su/carousel.js').then(m=>m.set('gallery',0))" }, 'Volver al principio')`, 'javascript'),
+
       h2('Lo que esto no hace'),
       p(
         'No vuelve en bucle a la primera diapositiva y no avanza solo. Ninguna de las dos cosas la puede hacer CSS, así que ninguna está aquí — un carrusel en bucle o con reproducción automática necesita un script, y este componente preferiría no ser el motivo por el que una página carga uno. Avanzar solo es además una pérdida que conviene: mueve justo aquello que alguien está leyendo.',
       ),
       p(
-        'Sin los marcadores nativos tampoco puede marcar la diapositiva actual ni llegar a una sin mover la página — los dos costes del recurso de reserva, arriba. Deslizar, el trackpad y las teclas son iguales en ambos casos.',
+        'Con JavaScript desactivado tampoco puede marcar qué diapositiva se está viendo una vez deslizada la pista, ni llegar a una sin mover la página. El primer punto se marca al compilar, porque en reposo esa es la diapositiva que se ve; mantenerlo cierto después es lo único que solo el script puede hacer. Deslizar, el trackpad y las teclas funcionan en cualquier caso.',
       ),
 
       h2('Accesibilidad'),
@@ -173,9 +187,9 @@ export default () =>
         'Donde el navegador los dibuja, los puntos se exponen como una lista de pestañas y las flechas como botones que se desactivan solos en cada extremo — todo eso lo construye el navegador, así que nada de ello puede desincronizarse de la diapositiva que de verdad se está viendo. Ese es el argumento a favor de esta forma frente a una con script: no hay una segunda copia del estado que pueda equivocarse.',
       ),
       p(
-        'Los puntos de reserva son enlaces, cada uno con el nombre de su diapositiva y cada uno un objetivo de 24px en lugar de los 8px que el punto parece medir. No llevan ',
+        'Los puntos de reserva son enlaces, cada uno con el nombre de su diapositiva y cada uno un objetivo de 24px en lugar de los 8px que el punto parece medir. La diapositiva que se ve lleva ',
         code('aria-current'),
-        ': se escribiría una vez, al compilar, y sería falso en cuanto se deslizara la pista. Donde los marcadores nativos los sustituyen están en ',
+        ', que es a la vez lo que lee un lector de pantalla y lo que colorea la hoja de estilos: un solo estado que mantener cierto en lugar de dos que puedan discrepar. Se renderiza en el primer punto, ya que en reposo esa es la diapositiva que se ve, y de ahí en adelante se mueve con el desplazamiento. Donde los marcadores nativos los sustituyen, los enlaces están en ',
         code('display: none'),
         ', así que se van del árbol de accesibilidad junto con la imagen en vez de leerse dos veces.',
       ),
@@ -188,7 +202,7 @@ export default () =>
         ['gap', 'Space', "'md'", 'Entre diapositivas.'],
         ['align', "'start' | 'center' | 'end'", "'start'", 'Dónde queda una diapositiva al detenerse.'],
         ['snap', "'mandatory' | 'proximity' | false", "'mandatory'", 'Con cuánta firmeza el desplazamiento se asienta en una diapositiva.'],
-        ['dots', 'boolean', 'true', 'Puntos bajo la pista — marcadores de desplazamiento nativos donde el navegador los tiene, un enlace por diapositiva donde no. Desactivarlos devuelve la barra de desplazamiento.'],
+        ['dots', 'boolean', 'true', 'Puntos bajo la pista — marcadores nativos donde el navegador los tiene, y donde no, un enlace por diapositiva que un módulo pequeño mejora. Desactivarlos devuelve la barra de desplazamiento y no pide ningún script.'],
         ['arrows', 'boolean', 'true', 'Flechas sobre la pista.'],
         ['color', "'primary' | 'neutral' | 'success' | 'warning' | 'danger'", "'primary'", 'Color del punto de la diapositiva que se ve.'],
         ['label', 'string', "'Carousel'", 'Nombre accesible de la región desplazable.'],

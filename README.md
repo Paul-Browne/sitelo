@@ -739,7 +739,7 @@ the theme helpers, from a bundled entry:
 
 ```js
 // src/main.js
-import { setBadge, setPressed, setProgress, setSlider, setStep, toast } from 'sitelo/ui/client'
+import { setBadge, setPressed, setProgress, setSlide, setSlider, setStep, toast } from 'sitelo/ui/client'
 
 request.upload.addEventListener('progress', (event) => {
   setProgress('upload', event.loaded, { max: event.total })
@@ -757,6 +757,7 @@ text beside it:
 | `setBadge(badge, count)` | The count, clamped to `max+`, with the announced text; an emptied badge leaves the accessibility tree. | `getBadge(badge)` — the count; a clamped one reads back as `'99+'`. |
 | `setPressed(button, on?)` | `aria-pressed`, letting go of the siblings in a single-choice `toggleGroup()`. Omit `on` to flip it. | `getPressed(button)` — `true` or `false`, or a group's pressed values. |
 | `setSlider(slider, value)` | The thumb and the `<output>` beside it, then `input` and `change` so a page listening for the drag hears it. Clamped to `min`/`max` and snapped to `step`. | `getSlider(slider)` — where the thumb stands. |
+| `setSlide(carousel, index)` | Scrolls a `carousel()` to one of its slides and marks the dot for it. Where the browser draws the dots itself, it marks its own. | `getSlide(carousel)` — the index of the slide showing. |
 | `setStep(flow, index)` | Every step at once — complete, current, upcoming — and the one `aria-current`. | `getStep(flow)` — the index in progress, or the count once they are all done. |
 | `setTheme(value)` | The theme, remembered in `localStorage`. | `getTheme()` — `'light'` or `'dark'`, resolving `prefers-color-scheme` when nothing was chosen. |
 

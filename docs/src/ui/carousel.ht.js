@@ -23,7 +23,7 @@ export default () =>
         ' attribute on this component and no module to import: the state is the scroll offset, and the browser already has it.',
       ),
       p(
-        'Where it cannot, a rendered row of dots takes over — one link per slide, still with no script. That form is weaker in two specific ways, both described below, but it means a phone is never handed a carousel with nothing on it to say that it scrolls.',
+        'Where it cannot, a rendered row of dots takes over: one link per slide, which works on its own, and which reaches for a few hundred bytes of script on the first scroll or the first tap to behave the way the native dots do — following the scroll, and moving the track without moving the page.',
       ),
 
       h2('One at a time'),
@@ -119,14 +119,17 @@ export default () =>
 
       h2('When the browser has no scroll markers'),
       p(
-        'Then the dots are plain links, one per slide, each pointing at that slide\'s id — which is why every slide is given one. Tapping a dot scrolls the track to it with nothing loaded, and the row of them is hidden again wherever the native markers exist, so nobody sees two.',
+        'Then the dots are real links, one per slide, each pointing at that slide\'s id — which is why every slide is given one. That much works with nothing loaded at all: tapping one scrolls the track to its slide, because following a fragment is something a browser already does.',
       ),
       p(
-        'They cannot do two things the native markers can. Following a link to a slide is following a fragment, so the window moves to the slide as well as the track: the page scrolls. ',
+        'On the first scroll or the first tap, the track and the dots reach for ',
+        code('/su/carousel.js'),
+        ' from their own event attributes — the way every component here reaches its module, so nothing is fetched on a page nobody touches, and nothing at all where the native markers already exist. From then on it goes both ways: the dots follow the scroll, whatever moved it — a swipe, a trackpad, the arrow keys, a scrollbar drag — and tapping a dot scrolls the track and leaves the page where it was.',
+      ),
+      p(
+        'That last part is what the script is really for. A bare fragment moves the window to the slide as well as the track, and a carousel that jumps the page out from under the thumb tapping it is not what anyone meant by a dot. The click is called off in the attribute rather than inside the import, because a dynamic import settles a moment later and by then the browser has already followed the link. ',
         code('scrollMargin'),
-        ' chooses how far above the slide it comes to rest — give a sticky header at least its own height. And they cannot mark which slide is showing: ',
-        code(':target'),
-        ' follows a tap on a dot but knows nothing about a swipe, and a dot that went stale the moment you swiped past it would be worse than one that never claimed. So these are somewhere to go, not a picture of where you are.',
+        ' is where the window lands in the one case left over: JavaScript off, where the link is still just a link.',
       ),
       p(
         'The ids they point at come from ',
@@ -155,12 +158,25 @@ export default () =>
   ],
 })`, { align: 'stretch' }),
 
+      h2('Driving it yourself'),
+      p(
+        'Two functions for the times the page is what moves a carousel — a "see the photos" button, a step in a form, a link elsewhere on the page:',
+      ),
+      codeBlock('src/main.js', `import { setSlide, getSlide } from 'sitelo/ui/client'
+
+setSlide('gallery', 2)  // scrolls to the third slide, and marks its dot
+getSlide('gallery')     // 2`, 'javascript'),
+      p(
+        'Or from an event attribute, with nothing bundled into the page at all:',
+      ),
+      codeBlock('Anywhere', `button({ onclick: "import('/su/carousel.js').then(m=>m.set('gallery',0))" }, 'Back to the start')`, 'javascript'),
+
       h2('What this does not do'),
       p(
         'It does not loop back to the first slide, and it does not advance on its own. Neither is something CSS can do, so neither is here — a looping or auto-playing carousel needs a script, and this component would rather not be the reason a page loads one. Auto-advancing is worth losing anyway: it moves the thing someone is reading, out from under them.',
       ),
       p(
-        'It also cannot mark the current slide without the native markers, or reach one without moving the page — the two costs of the fallback, above. Swiping, the trackpad and the keys are the same either way.',
+        'With JavaScript off it also cannot mark which slide is showing once the track has been swiped, or reach one without moving the page. The first dot is marked at build time, because at rest that is the slide showing; keeping it true after that is the one thing only the script can do. Swiping, the trackpad and the keys work either way.',
       ),
 
       h2('Accessibility'),
@@ -175,9 +191,9 @@ export default () =>
         'Where the browser draws them, the dots are exposed as a tab list and the arrows as buttons that disable themselves at each end — the browser builds all of that, so none of it can drift out of step with the slide actually showing. That is the argument for this shape over a scripted one: there is no second copy of the state to get wrong.',
       ),
       p(
-        'The fallback dots are links, each named after its slide, and each a 24px target rather than the 8px the dot looks like. They carry no ',
+        'The fallback dots are links, each named after its slide, and each a 24px target rather than the 8px the dot looks like. The slide showing carries ',
         code('aria-current'),
-        ' — it would be written once, at build time, and be wrong the moment the track was swiped. Where the native markers replace them they are ',
+        ', which is both what a screen reader reads and what the stylesheet colours — one piece of state to keep true rather than two that could disagree. It is rendered onto the first dot, since at rest that is the slide showing, and moves with the scroll from there. Where the native markers replace them the links are ',
         code('display: none'),
         ', so they leave the accessibility tree with the picture rather than being read out twice.',
       ),
@@ -190,7 +206,7 @@ export default () =>
         ['gap', 'Space', "'md'", 'Between slides.'],
         ['align', "'start' | 'center' | 'end'", "'start'", 'Where a slide comes to rest.'],
         ['snap', "'mandatory' | 'proximity' | false", "'mandatory'", 'How firmly the scroll settles on a slide.'],
-        ['dots', 'boolean', 'true', 'Dots under the track — native scroll markers where the browser has them, one link per slide where it does not. Off puts the scrollbar back.'],
+        ['dots', 'boolean', 'true', 'Dots under the track — native scroll markers where the browser has them, one link per slide, upgraded by a small module, where it does not. Off puts the scrollbar back, and asks for no script.'],
         ['arrows', 'boolean', 'true', 'Arrows over the track.'],
         ['color', "'primary' | 'neutral' | 'success' | 'warning' | 'danger'", "'primary'", 'Colour of the dot for the slide showing.'],
         ['label', 'string', "'Carousel'", 'Accessible name for the scrollable region.'],

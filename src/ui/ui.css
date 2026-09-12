@@ -2389,13 +2389,13 @@ svg.su-theme-icon-moon {
  * They live behind `@supports` at the end of this section.
  *
  * Where an engine has not shipped them, `.su-carousel-dots` fills in:
- * real links to real slide ids, rendered into the markup, which need no
- * script either. They cannot mark the slide that is showing — `:target`
- * follows a tap on a dot and knows nothing about a swipe — so they are
- * styled as somewhere to go rather than as a picture of where you are.
- * An overlay scrollbar is invisible at rest on a touch device, so these
- * are what keeps a phone from being handed a carousel with nothing on
- * it to say that it scrolls.
+ * real links to real slide ids, rendered into the markup, which work on
+ * their own with nothing loaded and are then upgraded by
+ * `runtime/carousel.js` on the first scroll or tap — that is what keeps
+ * `[aria-current]` below true as the track is swiped. An overlay
+ * scrollbar is invisible at rest on a touch device, so these are also
+ * what keeps a phone from being handed a carousel with nothing on it to
+ * say that it scrolls.
  */
 
 .su-carousel {
@@ -2502,6 +2502,17 @@ svg.su-theme-icon-moon {
 
 .su-carousel-dot:hover::before {
   background: var(--su-text-subtle);
+}
+
+/*
+ * The slide showing. Rendered onto the first dot, then kept true by
+ * `carousel.js` as the track scrolls — `aria-current` is the state a
+ * screen reader reads as well as the one coloured here, so there is
+ * only ever one of them to be wrong.
+ */
+.su-carousel-dot[aria-current]::before {
+  background: var(--su-c, var(--su-primary));
+  scale: 1.15;
 }
 
 @supports (scroll-marker-group: after) {
@@ -3647,3 +3658,5 @@ svg.su-theme-icon-moon {
   /* A lens reads as a lens only by being barely lighter than the island. */
   background: #161c26;
 }
+
+.su-canary{color:red}

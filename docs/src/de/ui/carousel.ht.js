@@ -21,7 +21,7 @@ export default () =>
         '-Attribut und kein Modul zum Importieren: der Zustand ist der Scroll-Offset, und den hat der Browser bereits.',
       ),
       p(
-        'Wo er es nicht kann, übernimmt eine gerenderte Reihe Punkte — ein Link je Slide, weiterhin ohne Skript. Diese Form ist in zwei genau benennbaren Punkten schwächer, beide weiter unten, aber sie sorgt dafür, dass einem Telefon nie ein Karussell hingelegt wird, an dem nichts sagt, dass es scrollt.',
+        'Wo er es nicht kann, übernimmt eine gerenderte Reihe Punkte: ein Link je Slide, der für sich schon funktioniert und der beim ersten Scrollen oder beim ersten Tippen ein paar hundert Byte Skript holt, um sich wie die nativen Punkte zu verhalten — dem Scrollen zu folgen und die Spur zu bewegen, ohne die Seite mitzunehmen.',
       ),
 
       h2('Eins nach dem anderen'),
@@ -117,14 +117,17 @@ export default () =>
 
       h2('Wenn der Browser keine Scroll-Marker hat'),
       p(
-        'Dann sind die Punkte schlichte Links, einer je Slide, jeder auf die Id dieses Slides — deshalb bekommt jeder Slide eine. Ein Tipp auf einen Punkt scrollt die Spur dorthin, ohne geladenes Skript, und die Reihe verschwindet wieder, wo die nativen Marker existieren, damit niemand zwei sieht.',
+        'Dann sind die Punkte echte Links, einer je Slide, jeder auf die Id dieses Slides — deshalb bekommt jeder Slide eine. So weit funktioniert es ohne alles: ein Tipp scrollt die Spur zu seinem Slide, denn einem Fragment zu folgen kann ein Browser von sich aus.',
       ),
       p(
-        'Zwei Dinge können sie nicht, die die nativen Marker können. Einem Link auf einen Slide zu folgen heißt, einem Fragment zu folgen: es wandert das Fenster zum Slide und nicht nur die Spur — die Seite scrollt. ',
+        'Beim ersten Scrollen oder beim ersten Tippen holen die Spur und die Punkte ',
+        code('/su/carousel.js'),
+        ' — aus ihren eigenen Event-Attributen, so wie hier jede Komponente ihr Modul holt. Auf einer Seite, die niemand anfasst, wird also nichts geladen, und wo es die nativen Marker schon gibt, überhaupt nichts. Von da an geht es in beide Richtungen: die Punkte folgen dem Scrollen, ganz gleich was es bewegt hat — ein Wisch, ein Trackpad, die Pfeiltasten, eine gezogene Scrollbar — und ein Tipp auf einen Punkt scrollt die Spur und lässt die Seite, wo sie war.',
+      ),
+      p(
+        'Für das Letzte ist das Skript eigentlich da. Ein nacktes Fragment bewegt das Fenster zum Slide und nicht nur die Spur, und ein Karussell, das die Seite unter dem tippenden Finger wegzieht, ist nicht, was jemand mit einem Punkt gemeint hat. Der Klick wird im Attribut abgesagt und nicht erst im Import, weil ein dynamischer Import einen Moment später ankommt und der Browser dem Link dann längst gefolgt ist. ',
         code('scrollMargin'),
-        ' wählt, wie weit über dem Slide sie zur Ruhe kommt; gib einem klebrigen Header mindestens seine eigene Höhe. Und sie können nicht markieren, welcher Slide zu sehen ist: ',
-        code(':target'),
-        ' folgt einem Tipp auf einen Punkt, weiß aber nichts von einem Wisch, und ein Punkt, der in dem Moment veraltet, in dem du weiterwischst, wäre schlimmer als einer, der nie etwas behauptet hat. Sie sind also ein Weg irgendwohin, kein Bild davon, wo du bist.',
+        ' ist, wo das Fenster im einzig übrigen Fall landet: JavaScript aus, wo der Link eben nur ein Link ist.',
       ),
       p(
         'Die Ids, auf die sie zeigen, kommen aus ',
@@ -153,12 +156,23 @@ export default () =>
   ],
 })`, { align: 'stretch' }),
 
+      h2('Selbst steuern'),
+      p(
+        'Zwei Funktionen für die Fälle, in denen die Seite das Karussell bewegt — ein Button „Fotos ansehen“, ein Schritt in einem Formular, ein Link an anderer Stelle:',
+      ),
+      codeBlock('src/main.js', `import { setSlide, getSlide } from 'sitelo/ui/client'
+
+setSlide('gallery', 2)  // scrollt zum dritten Slide und markiert seinen Punkt
+getSlide('gallery')     // 2`, 'javascript'),
+      p('Oder aus einem Event-Attribut, ganz ohne gebündeltes Skript:'),
+      codeBlock('Irgendwo', `button({ onclick: "import('/su/carousel.js').then(m=>m.set('gallery',0))" }, 'Zurück zum Anfang')`, 'javascript'),
+
       h2('Was das hier nicht tut'),
       p(
         'Es springt nicht zum ersten Slide zurück, und es läuft nicht von allein weiter. Beides kann CSS nicht, also ist beides nicht da — ein endloses oder selbstlaufendes Karussell braucht ein Skript, und diese Komponente möchte nicht der Grund sein, aus dem eine Seite eines lädt. Das Weiterlaufen ist ohnehin gut verzichtbar: es bewegt genau das, was jemand gerade liest, unter den Augen weg.',
       ),
       p(
-        'Ohne die nativen Marker kann es außerdem den aktuellen Slide nicht markieren und keinen erreichen, ohne die Seite zu bewegen — die beiden Kosten des Fallbacks von oben. Wischen, Trackpad und Tasten sind in beiden Fällen gleich.',
+        'Mit abgeschaltetem JavaScript kann es außerdem nicht markieren, welcher Slide zu sehen ist, sobald die Spur gewischt wurde, und keinen erreichen, ohne die Seite zu bewegen. Der erste Punkt wird beim Bauen markiert, weil im Ruhezustand genau dieser Slide zu sehen ist; ihn danach richtig zu halten, ist das Einzige, was nur das Skript kann. Wischen, Trackpad und Tasten gehen in beiden Fällen.',
       ),
 
       h2('Barrierefreiheit'),
@@ -173,9 +187,9 @@ export default () =>
         'Wo der Browser sie zeichnet, erscheinen die Punkte als Tabliste und die Pfeile als Schaltflächen, die sich an jedem Ende selbst deaktivieren — all das baut der Browser, also kann nichts davon aus dem Tritt geraten mit dem Slide, der tatsächlich zu sehen ist. Das ist das Argument für diese Form gegenüber einer geskripteten: es gibt keine zweite Kopie des Zustands, die falsch sein könnte.',
       ),
       p(
-        'Die Fallback-Punkte sind Links, jeder nach seinem Slide benannt und jeder ein 24px großes Ziel statt der 8px, die der Punkt zu sein scheint. Sie tragen kein ',
+        'Die Fallback-Punkte sind Links, jeder nach seinem Slide benannt und jeder ein 24px großes Ziel statt der 8px, die der Punkt zu sein scheint. Der gezeigte Slide trägt ',
         code('aria-current'),
-        ' — es würde einmal beim Bauen geschrieben und wäre falsch, sobald die Spur gewischt wird. Wo die nativen Marker sie ersetzen, sind sie ',
+        ' — das ist zugleich, was ein Screenreader liest, und was das Stylesheet einfärbt: ein Zustand, den es richtig zu halten gilt, statt zweier, die auseinanderlaufen können. Gerendert wird er auf den ersten Punkt, denn im Ruhezustand ist das der gezeigte Slide, und von da an wandert er mit dem Scrollen. Wo die nativen Marker sie ersetzen, sind die Links ',
         code('display: none'),
         ', verschwinden also mit dem Bild auch aus dem Accessibility-Baum, statt zweimal vorgelesen zu werden.',
       ),
@@ -188,7 +202,7 @@ export default () =>
         ['gap', 'Space', "'md'", 'Zwischen den Slides.'],
         ['align', "'start' | 'center' | 'end'", "'start'", 'Wo ein Slide zur Ruhe kommt.'],
         ['snap', "'mandatory' | 'proximity' | false", "'mandatory'", 'Wie fest der Scroll auf einem Slide landet.'],
-        ['dots', 'boolean', 'true', 'Punkte unter der Spur — native Scroll-Marker, wo der Browser sie hat, sonst ein Link je Slide. Aus bringt die Scrollbar zurück.'],
+        ['dots', 'boolean', 'true', 'Punkte unter der Spur — native Scroll-Marker, wo der Browser sie hat, sonst ein Link je Slide, den ein kleines Modul aufwertet. Aus bringt die Scrollbar zurück und verlangt kein Skript.'],
         ['arrows', 'boolean', 'true', 'Pfeile über der Spur.'],
         ['color', "'primary' | 'neutral' | 'success' | 'warning' | 'danger'", "'primary'", 'Farbe des Punkts für den gezeigten Slide.'],
         ['label', 'string', "'Carousel'", 'Zugänglicher Name des scrollbaren Bereichs.'],

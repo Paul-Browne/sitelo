@@ -85,6 +85,18 @@ export function setSlider(target: Element | string, value: number): number | nul
 /** Where a slider stands; `null` when there is no such slider. */
 export function getSlider(target: Element | string): number | null
 
+/**
+ * Go to slide `index` of a carousel, counting the slides as rendered.
+ *
+ * Returns the index applied, or `null` when there is no such carousel.
+ * Where the browser draws the dots itself the scroll is all this does —
+ * the browser marks the slide showing on its own.
+ */
+export function setSlide(target: Element | string, index: number): number | null
+
+/** Which slide a carousel is showing, or `null` for no such carousel. */
+export function getSlide(target: Element | string): number | null
+
 /** The count a badge is showing; a clamped one reads back as `'99+'`. */
 export function getBadge(target: Element | string): number | string | null
 

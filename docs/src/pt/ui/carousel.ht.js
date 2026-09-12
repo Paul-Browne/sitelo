@@ -21,7 +21,7 @@ export default () =>
         ' nem módulo para importar: o estado é o deslocamento, e o navegador já o tem.',
       ),
       p(
-        'Onde não consegue, entra uma fila de pontos de verdade — uma ligação por slide, ainda sem script. Essa forma é mais fraca em duas coisas concretas, ambas mais abaixo, mas garante que a um telefone nunca se entrega um carrossel sem nada que diga que se desloca.',
+        'Onde não consegue, entra uma fila de pontos de verdade: uma ligação por slide, que já funciona sozinha e que, no primeiro deslocamento ou no primeiro toque, vai buscar algumas centenas de bytes de script para se comportar como os pontos nativos — seguir o deslocamento e mover a pista sem levar a página com ela.',
       ),
 
       h2('Um de cada vez'),
@@ -117,14 +117,17 @@ export default () =>
 
       h2('Quando o navegador não tem marcadores de deslocamento'),
       p(
-        'Então os pontos são ligações simples, uma por slide, cada uma a apontar para o id do seu — é por isso que cada slide recebe um. Tocar num ponto desloca a pista até ele sem carregar nada, e a fila volta a esconder-se onde os marcadores nativos existem, para que ninguém veja duas.',
+        'Então os pontos são ligações a sério, uma por slide, cada uma a apontar para o id do seu — é por isso que cada slide recebe um. Isso já funciona sem carregar nada: tocar num ponto desloca a pista até ao seu slide, porque seguir um fragmento é coisa que o navegador já sabe fazer.',
       ),
       p(
-        'Há duas coisas que não conseguem fazer e os marcadores nativos conseguem. Seguir uma ligação para um slide é seguir um fragmento, por isso a janela move-se para o slide e não só a pista: a página desloca-se. ',
+        'No primeiro deslocamento ou no primeiro toque, a pista e os pontos vão buscar ',
+        code('/su/carousel.js'),
+        ' a partir dos seus próprios atributos de evento — como cada componente aqui vai buscar o seu módulo. Numa página que ninguém toca não se descarrega nada, e onde os marcadores nativos já existem, nada mesmo. A partir daí funciona nos dois sentidos: os pontos seguem o deslocamento, tenha sido o que for a movê-lo — um deslize, o trackpad, as teclas de seta, um arrastar da barra — e tocar num ponto desloca a pista e deixa a página onde estava.',
+      ),
+      p(
+        'É para esta última parte que o script existe, na verdade. Um fragmento a seco move a janela para o slide além da pista, e um carrossel que tira a página debaixo do dedo que lhe toca não é o que alguém quis dizer com um ponto. O clique é cancelado no atributo e não dentro do import, porque um import dinâmico chega um instante depois e o navegador já seguiu a ligação. ',
         code('scrollMargin'),
-        ' escolhe a que altura acima do slide ela para — dê a um cabeçalho fixo pelo menos a sua própria altura. E não conseguem marcar que slide está à vista: ',
-        code(':target'),
-        ' segue o toque num ponto mas não sabe nada de um deslize, e um ponto que ficasse desatualizado no momento em que se desliza seria pior do que um que nunca afirmou nada. São, portanto, um sítio para onde ir, não um retrato de onde está.',
+        ' é onde a janela aterra no único caso que sobra: sem JavaScript, onde a ligação é apenas uma ligação.',
       ),
       p(
         'Os ids para onde apontam vêm de ',
@@ -153,12 +156,23 @@ export default () =>
   ],
 })`, { align: 'stretch' }),
 
+      h2('Conduzi-lo você mesmo'),
+      p(
+        'Duas funções para quando é a página que move o carrossel — um botão «ver as fotografias», um passo de um formulário, uma ligação noutro ponto da página:',
+      ),
+      codeBlock('src/main.js', `import { setSlide, getSlide } from 'sitelo/ui/client'
+
+setSlide('gallery', 2)  // desloca até ao terceiro e marca o ponto dele
+getSlide('gallery')     // 2`, 'javascript'),
+      p('Ou a partir de um atributo de evento, sem nada empacotado na página:'),
+      codeBlock('Em qualquer sítio', `button({ onclick: "import('/su/carousel.js').then(m=>m.set('gallery',0))" }, 'Voltar ao início')`, 'javascript'),
+
       h2('O que isto não faz'),
       p(
         'Não volta em ciclo ao primeiro slide e não avança sozinho. Nenhuma das duas coisas está ao alcance do CSS, por isso nenhuma está aqui — um carrossel em ciclo ou com reprodução automática precisa de um script, e este componente prefere não ser a razão pela qual uma página carrega um. Avançar sozinho é, de resto, uma perda feliz: mexe precisamente naquilo que alguém está a ler.',
       ),
       p(
-        'Sem os marcadores nativos também não consegue marcar o slide atual nem chegar a um sem mexer na página — os dois custos da alternativa, acima. Deslizar, o trackpad e as teclas são iguais nos dois casos.',
+        'Com o JavaScript desligado também não consegue marcar que slide está à vista depois de a pista ser deslizada, nem chegar a um sem mexer na página. O primeiro ponto é marcado na compilação, porque em repouso é esse o slide à vista; mantê-lo certo depois disso é a única coisa que só o script consegue fazer. Deslizar, o trackpad e as teclas funcionam de qualquer maneira.',
       ),
 
       h2('Acessibilidade'),
@@ -173,11 +187,11 @@ export default () =>
         'Onde o navegador os desenha, os pontos são expostos como uma lista de separadores e as setas como botões que se desativam sozinhos em cada extremo — tudo isso é o navegador que constrói, por isso nada disso pode ficar fora de passo com o slide que está mesmo à vista. É esse o argumento a favor desta forma face a uma com script: não há uma segunda cópia do estado para errar.',
       ),
       p(
-        'Os pontos da alternativa são ligações, cada uma com o nome do seu slide e cada uma um alvo de 24px em vez dos 8px que o ponto parece ter. Não levam ',
+        'Os pontos da alternativa são ligações, cada uma com o nome do seu slide e cada uma um alvo de 24px em vez dos 8px que o ponto parece ter. O slide à vista leva ',
         code('aria-current'),
-        ': seria escrito uma vez, na compilação, e estaria errado no momento em que a pista fosse deslizada. Onde os marcadores nativos os substituem estão em ',
+        ', que é ao mesmo tempo o que um leitor de ecrã lê e o que a folha de estilos colore: um só estado para manter certo em vez de dois que possam divergir. É renderizado no primeiro ponto, já que em repouso é esse o slide à vista, e daí em diante acompanha o deslocamento. Onde os marcadores nativos os substituem, as ligações estão em ',
         code('display: none'),
-        ', pelo que saem da árvore de acessibilidade junto com a imagem em vez de serem lidos duas vezes.',
+        ', pelo que saem da árvore de acessibilidade junto com a imagem em vez de serem lidas duas vezes.',
       ),
 
       h2('Props'),
@@ -188,7 +202,7 @@ export default () =>
         ['gap', 'Space', "'md'", 'Entre slides.'],
         ['align', "'start' | 'center' | 'end'", "'start'", 'Onde um slide vem parar.'],
         ['snap', "'mandatory' | 'proximity' | false", "'mandatory'", 'Com que firmeza o deslocamento assenta num slide.'],
-        ['dots', 'boolean', 'true', 'Pontos por baixo da pista — marcadores de deslocamento nativos onde o navegador os tem, uma ligação por slide onde não tem. Desligados devolvem a barra de deslocamento.'],
+        ['dots', 'boolean', 'true', 'Pontos por baixo da pista — marcadores nativos onde o navegador os tem, e onde não tem, uma ligação por slide que um módulo pequeno melhora. Desligados devolvem a barra de deslocamento e não pedem script nenhum.'],
         ['arrows', 'boolean', 'true', 'Setas por cima da pista.'],
         ['color', "'primary' | 'neutral' | 'success' | 'warning' | 'danger'", "'primary'", 'Cor do ponto do slide à vista.'],
         ['label', 'string', "'Carousel'", 'Nome acessível da região deslocável.'],

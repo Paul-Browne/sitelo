@@ -19,6 +19,7 @@ import {
   ul,
 } from 'javascript-to-html'
 
+import { handler } from './handlers.js'
 import { attrs, colorClass, cx, el, oneOf, parseArgs, SIZES, space } from './internal.js'
 
 /**
@@ -355,6 +356,15 @@ export function figure(...args) {
 
 const CAROUSEL_ALIGN = ['start', 'center', 'end']
 
+/*
+ * The test that decides whether the browser draws the dots itself. It is
+ * the same condition as `@supports (scroll-marker-group: after)` in
+ * `ui.css`, and it sits in front of the import so that a browser with
+ * the native markers never fetches a module it has no use for — the
+ * handler costs a `CSS.supports()` call and nothing else.
+ */
+const CAROUSEL_NATIVE = "CSS.supports('scroll-marker-group','after')"
+
 /**
  * Quote a value for a CSS string custom property.
  *
@@ -386,17 +396,18 @@ function cssString(value) {
  * the ends — all of it from CSS, with no markup and no state of ours.
  *
  * Where it does not, the dots below fill in: one real link per slide,
- * pointing at its id. They work everywhere and still need no script,
- * and they cost what a fragment costs — following one scrolls the page
- * as well as the track, which is what `scrollMargin` is for. They also
- * cannot show which slide is showing. `:target` follows a tap on a dot
- * but knows nothing about a swipe, and a dot that goes stale the moment
- * the track is swiped would be worse than a dot that never claimed — so
- * the fallback dots are somewhere to go, not a picture of where you
- * are.
+ * pointing at its id, which works on its own with nothing loaded. On
+ * the first scroll or the first tap they reach for `/su/carousel.js`
+ * and start behaving properly instead — the dots follow the scroll, and
+ * tapping one scrolls the track without taking the page with it, which
+ * a bare fragment cannot help doing. The link is what happens if that
+ * module never arrives, and `scrollMargin` is where the window lands
+ * when it doesn't.
  *
- * What CSS cannot do either way is loop back to the first slide or
- * advance on its own. Both need a script, and neither is here.
+ * What neither form does is loop back to the first slide or advance on
+ * its own. Auto-advancing moves what someone is reading out from under
+ * them, and looping cannot be done without cloning slides, so a page
+ * that wants either should say so itself.
  *
  * `perView` is a custom property, so a media query of your own can
  * change it without touching the markup:
@@ -523,6 +534,14 @@ export function carousel(...args) {
         role: 'group',
         'aria-label': String(label),
         tabindex: '0',
+        /*
+         * Every way a carousel can move ends in a scroll event — a
+         * swipe, a trackpad, the arrow keys, a scrollbar drag, a
+         * fragment on the way in — so this one attribute is the whole
+         * of "the dots follow the scroll". The module is fetched once
+         * and comes from the cache on every event after.
+         */
+        ...(dots ? { onscroll: `${CAROUSEL_NATIVE}||${handler('carousel', 'sync(this)')}` } : {}),
       },
       ...slides.map((slide) => slide.markup),
     ),
@@ -532,15 +551,36 @@ export function carousel(...args) {
      * which takes the links out of the accessibility tree along with the
      * picture, because there the native markers are the dots.
      *
-     * No `aria-current` on any of them: it would be written here, once,
-     * and be wrong the moment the track is swiped. The same reason the
-     * tabs component leaves it off its `:target` form.
+     * The first dot is marked here because at rest that is the slide
+     * showing, so the mark is right before anything has run and on a
+     * page where nothing ever does. From the first scroll onwards
+     * `carousel.js` owns it. `aria-current` is both the state a screen
+     * reader reads and the hook the stylesheet colours, so there is one
+     * thing to keep true rather than two that could disagree.
      */
     dots
       ? nav(
           { class: 'su-carousel-dots', 'aria-label': String(label) },
-          ...slides.map((slide) =>
-            a({ class: 'su-carousel-dot', href: `#${slide.id}`, 'aria-label': slide.label }),
+          ...slides.map((slide, index) =>
+            a({
+              class: 'su-carousel-dot',
+              href: `#${slide.id}`,
+              'aria-label': slide.label,
+              ...(index === 0 ? { 'aria-current': 'true' } : {}),
+              /*
+               * `preventDefault()` has to run before the import, not
+               * inside it: a dynamic import settles a microtask later,
+               * by which time the browser has already followed the
+               * fragment and the cancel is too late to mean anything.
+               * Cancelling first is what keeps a tap from scrolling the
+               * page, and the rejection path puts the plain link back if
+               * the module never loads.
+               */
+              onclick: `event.preventDefault();${handler(
+                'carousel',
+                'go(this,event),()=>{location.hash=this.hash}',
+              )}`,
+            }),
           ),
         )
       : '',
