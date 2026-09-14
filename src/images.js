@@ -251,6 +251,52 @@ function isHttpUrl(url) {
   return /^https?:\/\//i.test(url)
 }
 
+/**
+ * @typedef {object} VariantHint
+ * @property {number | null} width a `?w=` value, or null for the whole ladder
+ * @property {string | null} format a `?format=` value, or null for the configured formats
+ */
+
+/** @type {VariantHint} */
+const NO_HINT = Object.freeze({ width: null, format: null })
+
+/**
+ * Read the `?w=` and `?format=` hints that pin a local image URL to one
+ * variant — the thumbnail case, where a whole `srcset` ladder is overkill
+ * and the author needs to name a size. The names follow vite-imagetools.
+ *
+ * Static hosts ignore the query, so a site that turns images off still
+ * serves the original. Remote URLs are never parsed: their query belongs
+ * to the origin.
+ *
+ * @param {string} src
+ * @returns {VariantHint & { error?: string }}
+ */
+export function parseVariantHint(src) {
+  if (isExternalUrl(src)) return NO_HINT
+
+  const query = src.split('#')[0].split('?')[1]
+  if (!query) return NO_HINT
+
+  const params = new URLSearchParams(query)
+  const rawWidth = params.get('w')
+  const rawFormat = params.get('format')
+
+  const width = toPositiveInt(rawWidth)
+  if (rawWidth !== null && width === null) {
+    return { ...NO_HINT, error: `?w= must be a positive integer, not "${rawWidth}"` }
+  }
+
+  if (rawFormat !== null && !MIME_BY_FORMAT[rawFormat]) {
+    return {
+      ...NO_HINT,
+      error: `?format= must be one of ${Object.keys(MIME_BY_FORMAT).join(', ')}, not "${rawFormat}"`,
+    }
+  }
+
+  return { width, format: rawFormat }
+}
+
 /** Fast reject of HTML error pages / empty downloads before sharp touches them. */
 function looksLikeRaster(buffer) {
   if (!Buffer.isBuffer(buffer) || buffer.length < 12) return false
@@ -361,6 +407,10 @@ export function resolveWidths(intrinsicWidth, widths) {
  */
 export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlPrefix }) {
   /** @type {Map<string, Promise<null | object>>} */
+  const sources = new Map()
+  /** @type {Map<string, Promise<object>>} */
+  const variants = new Map()
+  /** @type {Map<string, Promise<null | object>>} */
   const inFlight = new Map()
   const stats = { sources: 0, variants: 0, originalBytes: 0, variantBytes: 0 }
   const sourceLimit = createLimiter(options.concurrency)
@@ -386,59 +436,66 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
     })
   }
 
-  async function buildVariant({ sourceBuffer, sourceHash, name, width, format }) {
+  /**
+   * Encode one variant, or return it from the cache. Memoized per output
+   * file: a ladder and a `?w=` hint can ask for the same width at the same
+   * moment, and two writers racing for one path would trip over each other.
+   */
+  function buildVariant({ sourceBuffer, sourceHash, name, width, format }) {
     const extension = EXTENSION_BY_FORMAT[format]
     const key = hash(`${sourceHash}:${width}:${format}:${options.quality[format]}`)
     const fileName = `${name}.${key}-${width}.${extension}`
-    const cachePath = path.join(cacheDir, fileName)
-    const outputPath = path.join(outputDir, fileName)
 
-    let buffer
-    try {
-      buffer = await fs.readFile(cachePath)
-    } catch {
-      buffer = await encode(sourceBuffer, width, format)
-      await fs.mkdir(path.dirname(cachePath), { recursive: true })
-      await writeFileAtomic(cachePath, buffer)
-    }
+    const existing = variants.get(fileName)
+    if (existing) return existing
 
-    if (outputPath !== cachePath) {
-      await fs.mkdir(path.dirname(outputPath), { recursive: true })
-      await writeFileAtomic(outputPath, buffer)
-    }
+    const promise = (async () => {
+      const cachePath = path.join(cacheDir, fileName)
+      const outputPath = path.join(outputDir, fileName)
 
-    stats.variants += 1
-    stats.variantBytes += buffer.length
+      let buffer
+      try {
+        buffer = await fs.readFile(cachePath)
+      } catch {
+        buffer = await encode(sourceBuffer, width, format)
+        await fs.mkdir(path.dirname(cachePath), { recursive: true })
+        await writeFileAtomic(cachePath, buffer)
+      }
 
-    return {
-      url: joinUrl(urlPrefix, fileName),
-      width,
-      format,
-      bytes: buffer.length,
-    }
+      if (outputPath !== cachePath) {
+        await fs.mkdir(path.dirname(outputPath), { recursive: true })
+        await writeFileAtomic(outputPath, buffer)
+      }
+
+      stats.variants += 1
+      stats.variantBytes += buffer.length
+
+      return {
+        url: joinUrl(urlPrefix, fileName),
+        width,
+        format,
+        bytes: buffer.length,
+      }
+    })()
+
+    variants.set(fileName, promise)
+    return promise
   }
 
   /**
-   * Generate every variant for one source file.
-   * @param {string} sourcePath absolute path to the original image
-   * @returns {Promise<null | {
-   *   ladders: Array<{ format: string, variants: Array<{ url: string, width: number }> }>
-   *   fallback: { url: string, width: number, format: string }
-   *   width: number
-   *   height: number
-   * }>}
+   * Read and decode one source file. Memoized so a page that references the
+   * same image at several pinned widths reads and probes it once.
+   * @param {string} sourcePath
+   * @returns {Promise<null | { source: Buffer, metadata: any, sourceHash: string, name: string }>}
    */
-  function generate(sourcePath) {
-    const existing = inFlight.get(sourcePath)
+  function loadSource(sourcePath) {
+    const existing = sources.get(sourcePath)
     if (existing) return existing
 
-    const promise = sourceLimit(async () => {
+    const promise = (async () => {
       const source = await fs.readFile(sourcePath)
 
       if (!looksLikeCompleteRaster(source)) {
-        if (sourcePath.includes(`${path.sep}remote${path.sep}`)) {
-          await fs.unlink(sourcePath).catch(() => {})
-        }
         throw new Error('not a decodable raster image')
       }
 
@@ -449,15 +506,54 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
       if (metadata.format === 'svg') return null
       if ((metadata.pages ?? 1) > 1) return null
 
-      const sourceHash = hash(source, 12)
-      const name = path
-        .basename(sourcePath, path.extname(sourcePath))
-        .replace(/[^a-zA-Z0-9._-]+/g, '-')
-      const widths = resolveWidths(metadata.width, options.widths)
+      stats.sources += 1
+      stats.originalBytes += source.length
+
+      return {
+        source,
+        metadata,
+        sourceHash: hash(source, 12),
+        name: path
+          .basename(sourcePath, path.extname(sourcePath))
+          .replace(/[^a-zA-Z0-9._-]+/g, '-'),
+      }
+    })()
+
+    sources.set(sourcePath, promise)
+    return promise
+  }
+
+  /**
+   * Generate the variants for one source file: the whole configured ladder,
+   * or the single width and/or format a `?w=` / `?format=` hint pins.
+   * @param {string} sourcePath absolute path to the original image
+   * @param {VariantHint} [hint]
+   * @returns {Promise<null | {
+   *   ladders: Array<{ format: string, variants: Array<{ url: string, width: number }> }>
+   *   fallback: { url: string, width: number, format: string }
+   *   width: number
+   *   height: number
+   * }>}
+   */
+  function generate(sourcePath, hint = NO_HINT) {
+    const key = `${sourcePath}\0${hint.width ?? ''}\0${hint.format ?? ''}`
+    const existing = inFlight.get(key)
+    if (existing) return existing
+
+    const promise = sourceLimit(async () => {
+      const loaded = await loadSource(sourcePath)
+      if (!loaded) return null
+
+      const { source, metadata, sourceHash, name } = loaded
+
+      // A pinned width is honoured exactly, short of upscaling.
+      const widths = hint.width
+        ? [Math.min(hint.width, metadata.width)]
+        : resolveWidths(metadata.width, options.widths)
 
       if (widths.length === 0) return null
 
-      const formats = [...options.formats]
+      const formats = hint.format ? [hint.format] : [...options.formats]
       if (formats.length > 1) {
         const fallback = fallbackFormatFor(metadata.format)
         if (!formats.includes(fallback)) formats.push(fallback)
@@ -483,9 +579,6 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
       const fallback = fallbackLadder.variants[fallbackLadder.variants.length - 1]
       const largestWidth = widths[widths.length - 1]
 
-      stats.sources += 1
-      stats.originalBytes += source.length
-
       return {
         ladders,
         fallback,
@@ -499,7 +592,7 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
       throw error
     })
 
-    inFlight.set(sourcePath, promise)
+    inFlight.set(key, promise)
     return promise
   }
 
@@ -633,6 +726,12 @@ export async function rewriteHtmlImages({ html, options, resolve, generate, onWa
       if (insidePicture(match.index)) return null
       if (options.exclude.some((pattern) => pattern.test(src))) return null
 
+      const hint = parseVariantHint(src)
+      if (hint.error) {
+        onWarn?.(`skipped ${src}: ${hint.error}`)
+        return null
+      }
+
       let sourcePath
       try {
         sourcePath = await resolve(src)
@@ -645,7 +744,7 @@ export async function rewriteHtmlImages({ html, options, resolve, generate, onWa
 
       let result
       try {
-        result = await generate(sourcePath)
+        result = await generate(sourcePath, hint)
       } catch (error) {
         onWarn?.(`skipped ${src}: ${error instanceof Error ? error.message : error}`)
         return null
@@ -668,9 +767,13 @@ export async function rewriteHtmlImages({ html, options, resolve, generate, onWa
           ? `${displayWidth}px`
           : `(max-width: ${result.width}px) 100vw, ${result.width}px`)
 
+      // A pinned width is one file per format: there is no ladder for the
+      // browser to choose from, so no srcset and no sizes.
+      const pinned = hint.width !== null
+
       const imgAttributes = new Map(attributes)
       imgAttributes.set('src', result.fallback.url)
-      imgAttributes.set('sizes', sizes)
+      if (!pinned) imgAttributes.set('sizes', sizes)
 
       if (options.dimensions) {
         // Complete whichever dimension the author left off, keeping their
@@ -691,7 +794,7 @@ export async function rewriteHtmlImages({ html, options, resolve, generate, onWa
       }
 
       if (result.ladders.length === 1) {
-        imgAttributes.set('srcset', srcsetFor(result.ladders[0].variants))
+        if (!pinned) imgAttributes.set('srcset', srcsetFor(result.ladders[0].variants))
         return {
           index: match.index,
           length: tag.length,
@@ -702,13 +805,16 @@ export async function rewriteHtmlImages({ html, options, resolve, generate, onWa
       // Multiple formats need <picture> so the browser can negotiate.
       const sources = result.ladders
         .slice(0, -1)
-        .map(
-          (ladder) =>
-            `<source type="${MIME_BY_FORMAT[ladder.format]}" srcset="${srcsetFor(ladder.variants)}" sizes="${String(sizes).replace(/"/g, '&quot;')}">`,
+        .map((ladder) =>
+          pinned
+            ? `<source type="${MIME_BY_FORMAT[ladder.format]}" srcset="${ladder.variants[0].url}">`
+            : `<source type="${MIME_BY_FORMAT[ladder.format]}" srcset="${srcsetFor(ladder.variants)}" sizes="${String(sizes).replace(/"/g, '&quot;')}">`,
         )
         .join('')
 
-      imgAttributes.set('srcset', srcsetFor(result.ladders[result.ladders.length - 1].variants))
+      if (!pinned) {
+        imgAttributes.set('srcset', srcsetFor(result.ladders[result.ladders.length - 1].variants))
+      }
 
       return {
         index: match.index,

@@ -1025,6 +1025,39 @@ export default {
 | `dev` | `true` | Set `false` to serve untouched originals in dev |
 | `concurrency` | CPUs − 1 (max 8); **1** when `remote: true` | Parallel encodes |
 
+### One size, by name
+
+Carousel thumbnails, avatars, a grid of cards — some images are only ever
+shown at one size, and a whole ladder is wasted on them. Variant file names
+carry a content hash, so you can't write them by hand; name the width on
+the URL instead:
+
+```html
+<img src="/images/hero.png?w=400" alt="Sunrise">
+<img src="/images/hero.png?w=400&format=jpeg" alt="Sunrise">
+```
+
+The tag comes out with that one file — no `srcset`, no `sizes`, real
+`width`/`height`:
+
+```html
+<img src="/assets/img/hero.9f8e7d6c-400.webp"
+     alt="Sunrise"
+     width="400" height="267"
+     loading="lazy" decoding="async">
+```
+
+- `w` — the width in pixels. Any width works, not only those in `widths`;
+  a smaller source keeps its own size rather than being upscaled.
+- `format` — `avif`, `webp`, `jpeg` or `png`. On its own it keeps the full
+  ladder, in that one format.
+
+With several `formats` configured, a pinned width still gives you
+`<picture>`, with one file per `<source>`. The names are the ones
+vite-imagetools uses. Remote URLs are never parsed — their query string
+belongs to the origin — and with `images` off, static hosts ignore the
+query and serve the original.
+
 ### Opting out
 
 Tags that already carry a `srcset`, sit inside a `<picture>`, point at an

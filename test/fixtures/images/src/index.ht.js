@@ -6,6 +6,8 @@ export default () => `
     <body>
       <img src="/images/hero.png" alt="Hero">
       <img src="/images/hero.png" alt="Thumb" width="200">
+      <img src="/images/hero.png?w=400" alt="Pinned">
+      <img src="/images/hero.png?w=300&format=jpeg" alt="Pinned jpeg">
       <img src="/images/hero.png" alt="Untouched" data-no-optimize>
       <img src="/logo.svg" alt="Vector">
       <img src="https://example.com/remote.png" alt="Remote">

@@ -153,3 +153,4 @@ test/.tmp/
 
 # misc
 .DS_Store
+.notes/

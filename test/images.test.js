@@ -11,6 +11,7 @@ import sharp from 'sharp'
 import {
   normalizeImageOptions,
   parseAttributes,
+  parseVariantHint,
   resolveWidths,
   rewriteHtmlImages,
 } from '../src/images.js'
@@ -249,6 +250,115 @@ test('rewriteHtmlImages: a failing source is warned about, not fatal', async () 
   assert.match(warnings[0], /unsupported image format/)
 })
 
+test('parseVariantHint: reads w and format from local URLs only', () => {
+  assert.deepEqual(parseVariantHint('/img/a.png'), { width: null, format: null })
+  assert.deepEqual(parseVariantHint('/img/a.png?w=400'), { width: 400, format: null })
+  assert.deepEqual(parseVariantHint('/img/a.png?format=jpeg'), { width: null, format: 'jpeg' })
+  assert.deepEqual(parseVariantHint('/img/a.png?w=400&format=avif#top'), {
+    width: 400,
+    format: 'avif',
+  })
+  assert.deepEqual(parseVariantHint('/img/a.png?v=2'), { width: null, format: null })
+  assert.deepEqual(
+    parseVariantHint('https://cdn.example/a.jpeg?w=500&fm=jpg'),
+    { width: null, format: null },
+    'a remote query string belongs to the origin',
+  )
+})
+
+test('parseVariantHint: reports bad values', () => {
+  assert.match(parseVariantHint('/img/a.png?w=big').error, /positive integer/)
+  assert.match(parseVariantHint('/img/a.png?w=0').error, /positive integer/)
+  assert.match(parseVariantHint('/img/a.png?format=gif').error, /avif, webp, jpeg, png/)
+})
+
+/** Like stubGenerate, but honours a pinned width/format the way the processor does. */
+function stubGenerateWithHint(formats = ['webp']) {
+  return async (sourcePath, hint = {}) => {
+    if (hint.width == null) return stubGenerate(hint.format ? [hint.format] : formats)(sourcePath)
+
+    const width = Math.min(hint.width, 800)
+    const used = hint.format ? [hint.format] : formats
+    return {
+      ladders: used.map((format) => ({
+        format,
+        variants: [{ url: `/assets/img/a-${width}.${format}`, width }],
+      })),
+      fallback: {
+        url: `/assets/img/a-${width}.${used[used.length - 1]}`,
+        width,
+        format: used[used.length - 1],
+      },
+      width,
+      height: width / 2,
+    }
+  }
+}
+
+test('rewriteHtmlImages: ?w= pins a single variant with no ladder', async () => {
+  const hints = []
+  const { html, rewritten } = await rewriteHtmlImages({
+    html: '<img src="/img/a.png?w=400" alt="Thumb">',
+    options: normalizeImageOptions(true),
+    resolve: resolveAll,
+    generate: async (sourcePath, hint) => {
+      hints.push(hint)
+      return stubGenerateWithHint()(sourcePath, hint)
+    },
+  })
+
+  assert.equal(rewritten, 1)
+  assert.deepEqual(hints, [{ width: 400, format: null }])
+  assert.equal(
+    html,
+    '<img src="/assets/img/a-400.webp" alt="Thumb" width="400" height="200" loading="lazy" decoding="async">',
+  )
+})
+
+test('rewriteHtmlImages: ?format= alone keeps the ladder in that format', async () => {
+  const { html } = await rewriteHtmlImages({
+    html: '<img src="/img/a.png?format=jpeg">',
+    options: normalizeImageOptions({ formats: ['avif', 'webp'] }),
+    resolve: resolveAll,
+    generate: stubGenerateWithHint(['avif', 'webp']),
+  })
+
+  assert.equal(html.includes('<picture>'), false, 'one format needs no <picture>')
+  assert.match(html, /srcset="\/assets\/img\/a-400\.jpeg 400w, \/assets\/img\/a-800\.jpeg 800w"/)
+})
+
+test('rewriteHtmlImages: a pinned width with several formats gives one file per <source>', async () => {
+  const { html } = await rewriteHtmlImages({
+    html: '<img src="/img/a.png?w=400" alt="Thumb">',
+    options: normalizeImageOptions({ formats: ['avif', 'webp'] }),
+    resolve: resolveAll,
+    generate: stubGenerateWithHint(['avif', 'webp']),
+  })
+
+  assert.equal(
+    html,
+    '<picture><source type="image/avif" srcset="/assets/img/a-400.avif">' +
+      '<img src="/assets/img/a-400.webp" alt="Thumb" width="400" height="200" loading="lazy" decoding="async">' +
+      '</picture>',
+  )
+})
+
+test('rewriteHtmlImages: a bad hint is warned about and the tag left alone', async () => {
+  const warnings = []
+  const { html, rewritten } = await rewriteHtmlImages({
+    html: '<img src="/img/a.png?w=huge">',
+    options: normalizeImageOptions(true),
+    resolve: resolveAll,
+    generate: stubGenerate(),
+    onWarn: (message) => warnings.push(message),
+  })
+
+  assert.equal(rewritten, 0)
+  assert.equal(html, '<img src="/img/a.png?w=huge">')
+  assert.equal(warnings.length, 1)
+  assert.match(warnings[0], /\?w= must be a positive integer/)
+})
+
 test('sitelo build optimizes referenced images', async (t) => {
   const imagesDir = path.join(fixtureDir, 'src', 'images')
   const distDir = path.join(fixtureDir, 'dist')
@@ -282,12 +392,26 @@ test('sitelo build optimizes referenced images', async (t) => {
   const html = fs.readFileSync(path.join(distDir, 'index.html'), 'utf8')
   const variants = fs.readdirSync(path.join(distDir, 'assets', 'img'))
 
-  assert.equal(variants.length, 2, 'a 1600px source fills the 400/800 ladder')
-  assert.ok(variants.every((file) => file.endsWith('.webp')))
+  assert.equal(
+    variants.length,
+    3,
+    'a 1600px source fills the 400/800 ladder, and ?w=300&format=jpeg adds one more',
+  )
+  assert.equal(variants.filter((file) => file.endsWith('.webp')).length, 2)
+  assert.equal(variants.filter((file) => file.endsWith('.jpg')).length, 1)
 
   assert.match(html, /<img src="\/assets\/img\/hero\.[a-f0-9]+-800\.webp" alt="Hero"/)
   assert.match(html, /srcset="[^"]*400w[^"]*800w"/)
   assert.match(html, /width="800" height="450"/)
+
+  // ?w= reuses the ladder's 400px file and pins the tag to it.
+  const pinned = html.match(/<img src="(\/assets\/img\/hero\.[a-f0-9]+-400\.webp)" alt="Pinned" width="400" height="225" loading="lazy" decoding="async">/)
+  assert.ok(pinned, `a pinned tag has one src and no srcset:\n${html}`)
+  assert.ok(html.includes(`${pinned[1]} 400w`), 'the same file serves the ladder')
+  assert.match(
+    html,
+    /<img src="\/assets\/img\/hero\.[a-f0-9]+-300\.jpg" alt="Pinned jpeg" width="300" height="169" loading="lazy" decoding="async">/,
+  )
 
   assert.match(html, /<img src="\/images\/hero\.png" alt="Untouched">/)
   assert.match(html, /<img src="\/logo\.svg" alt="Vector">/)

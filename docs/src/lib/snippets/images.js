@@ -91,6 +91,14 @@ export default () =>
   <img src="/assets/img/hero.*-1200.png" alt="..." srcset="..." width="1200" height="800">
 </picture>`,
 
+    pinned: `<img src="/images/hero.png?w=400" alt="${t.sunrise}">
+<img src="/images/hero.png?w=400&format=jpeg" alt="${t.sunrise}">`,
+
+    pinnedOutput: `<img src="/assets/img/hero.9f8e7d6c-400.webp"
+     alt="${t.sunrise}"
+     width="400" height="267"
+     loading="lazy" decoding="async">`,
+
     optOut: `<img src="/images/exact.png" alt="${t.pixelArt}" data-no-optimize>`,
 
     remote: `export default {
