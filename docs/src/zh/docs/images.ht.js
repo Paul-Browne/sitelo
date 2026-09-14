@@ -40,14 +40,17 @@ export default () =>
       }),
       p('一张 3000×2000 的原图，出来是这样：'),
       codeBlock('dist/index.html', s.output, 'html'),
+      p(
+        '宽度不超过 400px 的屏幕拿到 400 的文件，不超过 800 拿到 800，不超过 1200 拿到 1200，更宽的则拿到完整的 3000——浏览器会选第一个能覆盖视口的档位（2× 屏幕上翻倍）。',
+      ),
       h2('你会得到什么'),
       ul(
         { class: 'docs-list' },
         li(
           strong('永不放大的缩放'),
-          ' —— 600px 的原图配上 ',
+          ' —— 小于源图的每个配置宽度，再加上源图自身的宽度。一张 750px 的源图配合 ',
           code('widths: [400, 800, 1200]'),
-          '，只会产出 400 和 600，到此为止。',
+          '，只会产出 400 和 750，到此为止。',
         ),
         li(
           strong('现代格式'),
@@ -89,11 +92,24 @@ export default () =>
         code('public/'),
         ' 的图片都会被覆盖到。',
       ),
+      p(
+        '标签一旦被重写，就没有任何东西再指向原图，所以默认会把它从构建产物中清理掉。只有真正无人引用的文件才会被删：构建产物里的每个 HTML、CSS、JS、XML 和 JSON 文件都会被扫描，因此被 ',
+        code('<a href>'),
+        '、',
+        code('og:image'),
+        '、RSS enclosure、CSS 的 ',
+        code('url()'),
+        ' 或 ',
+        code('data-no-optimize'),
+        ' 标签引用的原图都会保留。脚本在运行时拼出的 URL，或由服务端岛渲染出的 URL，它看不到——如果你有这类情况，请设置 ',
+        code('prune: false'),
+        '。',
+      ),
       h2('选项'),
       codeBlock('sitelo.config.js', s.options, 'javascript'),
       ul(
         { class: 'docs-list' },
-        li(code('widths'), ' —— 默认 ', code('[400, 800, 1200]'), '；最大值同时也是上限'),
+        li(code('widths'), ' —— 默认 ', code('[400, 800, 1200]'), '；源图自身的宽度永远是阶梯的顶端'),
         li(
           code('formats'),
           ' —— 默认 ',
@@ -150,7 +166,7 @@ export default () =>
           code('https://'),
           ' 图片',
         ),
-        li(code('prune'), ' —— 默认 ', code('false'), '；删除已无人引用的原图'),
+        li(code('prune'), ' —— 默认 ', code('false'), '；删除构建产物中已无人引用的原图'),
         li(
           code('dev'),
           ' —— 默认 ',
@@ -184,6 +200,22 @@ export default () =>
           ' 里的值；更小的源图保持自身尺寸，不会被放大。',
         ),
         li(
+          code('h'),
+          ' — 像素高度。单独使用时宽度按比例跟随；与 ', code('w'), ' 一起使用时，图片会缩放填满该框并裁切——', code('?w=200&h=200'), ' 就是一个正方形缩略图。',
+        ),
+        li(
+          code('fit'),
+          ' — 如何满足 ', code('w'), '×', code('h'), ' 的框：', code('cover'), '（默认）填满并裁切；', code('contain'), ' 把整张图缩放到框内，不裁切也不留边——', code('width'), '/', code('height'), ' 告诉你实际得到的尺寸。',
+        ),
+        li(
+          code('background'),
+          ' — 把 ', code('contain'), ' 的结果补齐到精确的框，并隐含 ', code('fit=contain'), '。不带 ', code('#'), ' 的十六进制（', code('fff'), '、', code('1a1a1a'), '、', code('ffffff80'), '）、CSS 颜色名，或 ', code('transparent'), '——后者需要带 alpha 的格式；在 jpeg 里会变成黑色。',
+        ),
+        li(
+          code('position'),
+          ' — ', code('cover'), ' 裁切保留哪一部分。默认居中；某条边或某个角（', code('top'), '、', code('left'), '、', code('right-bottom'), '……），或 sharp 基于内容的 ', code('entropy'), ' / ', code('attention'), ' 策略。',
+        ),
+        li(
           code('format'),
           ' — ',
           code('avif'),
@@ -206,6 +238,23 @@ export default () =>
         ' 一个文件。参数名与 vite-imagetools 相同。远程 URL 从不解析——查询串属于源站——而关闭 ',
         code('images'),
         ' 后，静态主机会忽略查询串并返回原图。',
+      ),
+      h3('让图片自己决定裁切'),
+      p(
+        '边或角是可预测的，但一组各不相同的轮播照片，主体很少两次都在同一个位置。',
+        code('entropy'),
+        ' 和 ',
+        code('attention'),
+        ' 让 sharp 逐张查看图片，把裁切窗口滑到它认为值得保留的地方：',
+      ),
+      codeBlock('src/index.ht.js', s.smartCrop, 'html'),
+      ul(
+        { class: 'docs-list' },
+        li(strong(code('entropy')), ' 保留细节最多的区域——边缘、纹理、色彩变化。平坦的天空、空白的墙面和素净的背景最先被裁掉。适合风景、产品，以及任何“热闹”即“有趣”的图片。'),
+        li(strong(code('attention')), ' 让裁切偏向饱和的色彩、高频的亮度变化和肤色——一种模拟人眼会看向哪里的启发式。适合人物照片：通常能找到脸和主体。'),
+      ),
+      p(
+        '两者都只是简单的启发式——没有模型，没有训练——所以把它们当作面向大量图片的合理默认值，而不是对某一张的保证。对你在意的主视觉图，请直接指定边。选择只取决于图片本身，因此是确定性的，会像其他变体一样被缓存。',
       ),
       h2('如何排除'),
       p(

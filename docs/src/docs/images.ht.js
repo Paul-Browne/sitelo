@@ -41,14 +41,17 @@ export default () =>
       }),
       p('A 3000×2000 source comes out the other side like this:'),
       codeBlock('dist/index.html', s.output, 'html'),
+      p(
+        'A screen up to 400px wide gets the 400 file, up to 800 the 800, up to 1200 the 1200, and anything wider the full 3000 — the browser picks the first rung that covers the viewport (doubled on a 2× display).',
+      ),
       h2('What you get'),
       ul(
         { class: 'docs-list' },
         li(
           strong('Resizing that never upscales'),
-          ' — a 600px source with ',
+          ' — every configured width below the source’s, then the source’s own width on top. A 750px source with ',
           code('widths: [400, 800, 1200]'),
-          ' emits 400 and 600, and stops there.',
+          ' emits 400 and 750, and stops there.',
         ),
         li(
           strong('Modern formats'),
@@ -90,11 +93,24 @@ export default () =>
         code('public/'),
         ' alike.',
       ),
+      p(
+        'Once a tag is rewritten nothing points at the original any more, so it is pruned from the build by default. Only genuinely unreferenced files go: every HTML, CSS, JS, XML and JSON file in the build is scanned, so an original linked from an ',
+        code('<a href>'),
+        ', an ',
+        code('og:image'),
+        ', an RSS enclosure, a CSS ',
+        code('url()'),
+        ' or a ',
+        code('data-no-optimize'),
+        ' tag stays. URLs assembled at runtime in a script, or rendered by a server island, are the ones it cannot see — set ',
+        code('prune: false'),
+        ' if you have those.',
+      ),
       h2('Options'),
       codeBlock('sitelo.config.js', s.options, 'javascript'),
       ul(
         { class: 'docs-list' },
-        li(code('widths'), ' — default ', code('[400, 800, 1200]'), '; the largest is also the cap'),
+        li(code('widths'), ' — default ', code('[400, 800, 1200]'), '; the source’s own width always tops the ladder'),
         li(code('formats'), ' — default ', code("['webp']"), '; ', code('avif'), ', ', code('webp'), ', ', code('jpeg'), ', ', code('png')),
         li(code('quality'), ' — default ', code('{ avif: 55, webp: 78, jpeg: 82 }'), '; per-format encoder quality (png uses compression, not quality)'),
         li(code('sizes'), ' — the ', code('sizes'), ' attribute; a ', code('sizes'), ' on the tag always wins'),
@@ -104,7 +120,7 @@ export default () =>
         li(code('assetsDir'), ' — default ', code("'assets/img'")),
         li(code('cacheDir'), ' — default ', code("'node_modules/.sitelo/images'")),
         li(code('remote'), ' — default ', code('false'), '; optimize ', code('https://'), ' images at build time'),
-        li(code('prune'), ' — default ', code('false'), '; delete originals nothing references any more'),
+        li(code('prune'), ' — default ', code('true'), '; delete originals nothing in the build references any more'),
         li(code('dev'), ' — default ', code('true'), '; set ', code('false'), ' to serve untouched originals in dev'),
         li(code('concurrency'), ' — parallel encodes, default CPUs − 1 (max 8); 1 when remote is on'),
       ),
@@ -126,6 +142,22 @@ export default () =>
           ' — the width in pixels. Any width works, not only those in ',
           code('widths'),
           '; a smaller source keeps its own size rather than being upscaled.',
+        ),
+        li(
+          code('h'),
+          ' — the height in pixels. Alone, the width follows the aspect ratio; with ', code('w'), ' as well the image is scaled to fill that box and cropped to it — ', code('?w=200&h=200'), ' is a square thumbnail.',
+        ),
+        li(
+          code('fit'),
+          ' — how a ', code('w'), '×', code('h'), ' box is met: ', code('cover'), ' (the default) fills it and crops; ', code('contain'), ' scales the whole image to sit inside it, no cropping, no padding — ', code('width'), '/', code('height'), ' say what came out.',
+        ),
+        li(
+          code('background'),
+          ' — pads a ', code('contain'), ' result out to the exact box, and implies ', code('fit=contain'), '. Hex without the ', code('#'), ' (', code('fff'), ', ', code('1a1a1a'), ', ', code('ffffff80'), '), a CSS colour name, or ', code('transparent'), ' — which needs a format with alpha; on jpeg it comes out black.',
+        ),
+        li(
+          code('position'),
+          ' — which part a ', code('cover'), ' crop keeps. Centred by default; an edge or corner (', code('top'), ', ', code('left'), ', ', code('right-bottom'), ', …), or sharp’s content-aware ', code('entropy'), ' / ', code('attention'), ' strategies.',
         ),
         li(
           code('format'),
@@ -150,6 +182,23 @@ export default () =>
         '. The names are the ones vite-imagetools uses. Remote URLs are never parsed — their query string belongs to the origin — and with ',
         code('images'),
         ' off, static hosts ignore the query and serve the original.',
+      ),
+      h3('Letting the picture choose the crop'),
+      p(
+        'An edge or corner is predictable, but a carousel of mixed photos rarely has its subject in the same place twice. ',
+        code('entropy'),
+        ' and ',
+        code('attention'),
+        ' ask sharp to look at each picture and slide the crop window to where it finds something worth keeping:',
+      ),
+      codeBlock('src/index.ht.js', s.smartCrop, 'html'),
+      ul(
+        { class: 'docs-list' },
+        li(strong(code('entropy')), ' keeps the region with the most detail — edges, texture, colour variation. Flat sky, blank walls and plain backgrounds go first. Good for landscapes, products, anything where “busy” means “interesting”.'),
+        li(strong(code('attention')), ' weights the crop towards saturated colour, high-frequency luminance and skin tones — a heuristic for where a person would look. Good for photos of people: it tends to find faces and subjects.'),
+      ),
+      p(
+        'Both are plain heuristics — no model, no training — so treat them as a sensible default for many images rather than a guarantee for one. For a hero image you care about, name the edge. The choice depends only on the picture, so it is deterministic and caches like any other variant.',
       ),
       h2('Opting out'),
       p(

@@ -143,7 +143,7 @@ export function normalizeImageOptions(images) {
     assetsDir: (options.assetsDir ?? DEFAULT_ASSETS_DIR).replace(/^\/+|\/+$/g, ''),
     cacheDir: options.cacheDir ?? DEFAULT_CACHE_DIR,
     remote: options.remote === true,
-    prune: options.prune === true,
+    prune: options.prune !== false,
     dev: options.dev !== false,
     // Remote encodes hammer libvips; serialise to avoid SIGBUS on macOS.
     concurrency:
@@ -254,16 +254,72 @@ function isHttpUrl(url) {
 /**
  * @typedef {object} VariantHint
  * @property {number | null} width a `?w=` value, or null for the whole ladder
+ * @property {number | null} height a `?h=` value, or null to follow the aspect ratio
+ * @property {'cover' | 'contain' | null} fit how a `w`×`h` box is met: filled
+ *   and cropped (the default), or fitted inside without cropping
+ * @property {string | null} background a `?background=` colour that pads a
+ *   `contain` result out to the exact box, as sharp understands it
+ * @property {string | null} position a `?position=` value saying which part
+ *   of the picture a `cover` crop keeps, as sharp spells it
  * @property {string | null} format a `?format=` value, or null for the configured formats
  */
 
-/** @type {VariantHint} */
-const NO_HINT = Object.freeze({ width: null, format: null })
+const FITS = new Set(['cover', 'contain'])
 
 /**
- * Read the `?w=` and `?format=` hints that pin a local image URL to one
- * variant — the thumbnail case, where a whole `srcset` ladder is overkill
- * and the author needs to name a size. The names follow vite-imagetools.
+ * sharp's crop positions: an edge or corner to keep, or a strategy that
+ * looks at the picture. `centre` is what happens without one.
+ */
+const POSITIONS = new Set([
+  'top',
+  'right top',
+  'right',
+  'right bottom',
+  'bottom',
+  'left bottom',
+  'left',
+  'left top',
+  'centre',
+  'entropy',
+  'attention',
+])
+
+/** A colour that survives a URL: bare hex, a CSS name, or `transparent`. */
+const BACKGROUND_PATTERN = /^(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8}|[a-z]+)$/i
+
+/** @type {VariantHint} */
+const NO_HINT = Object.freeze({
+  width: null,
+  height: null,
+  fit: null,
+  background: null,
+  position: null,
+  format: null,
+})
+
+/**
+ * Spell a `?position=` value the way sharp does: lower case, words
+ * separated by a space with the horizontal one first, `centre` in British.
+ * @param {string} raw
+ */
+function normalizePosition(raw) {
+  const words = raw.toLowerCase().split(/[\s_-]+/).filter(Boolean)
+  const horizontal = words.filter((word) => word === 'left' || word === 'right')
+  const vertical = words.filter((word) => word === 'top' || word === 'bottom')
+
+  if (words.length === horizontal.length + vertical.length && words.length > 0) {
+    return [...horizontal, ...vertical].join(' ')
+  }
+  return words.join(' ') === 'center' ? 'centre' : words.join(' ')
+}
+
+/**
+ * Read the `?w=`, `?h=`, `?fit=`, `?background=`, `?position=` and
+ * `?format=` hints that pin a local image URL to one variant — the thumbnail case, where a whole
+ * `srcset` ladder is overkill and the author needs to name a size. The
+ * names follow vite-imagetools, and so does `w` with `h`: the box is filled
+ * and cropped unless `fit=contain` asks for the whole image inside it,
+ * padded out with `background` when one is given.
  *
  * Static hosts ignore the query, so a site that turns images off still
  * serves the original. Remote URLs are never parsed: their query belongs
@@ -279,12 +335,20 @@ export function parseVariantHint(src) {
   if (!query) return NO_HINT
 
   const params = new URLSearchParams(query)
-  const rawWidth = params.get('w')
   const rawFormat = params.get('format')
+  const rawBackground = params.get('background')
+  // `background` is padding, and only `contain` leaves anything to pad.
+  const fit = params.get('fit') ?? (rawBackground !== null ? 'contain' : null)
 
-  const width = toPositiveInt(rawWidth)
-  if (rawWidth !== null && width === null) {
-    return { ...NO_HINT, error: `?w= must be a positive integer, not "${rawWidth}"` }
+  /** @type {Record<'w' | 'h', number | null>} */
+  const sizes = { w: null, h: null }
+  for (const name of /** @type {const} */ (['w', 'h'])) {
+    const raw = params.get(name)
+    if (raw === null) continue
+    sizes[name] = toPositiveInt(raw)
+    if (sizes[name] === null) {
+      return { ...NO_HINT, error: `?${name}= must be a positive integer, not "${raw}"` }
+    }
   }
 
   if (rawFormat !== null && !MIME_BY_FORMAT[rawFormat]) {
@@ -294,7 +358,50 @@ export function parseVariantHint(src) {
     }
   }
 
-  return { width, format: rawFormat }
+  if (fit !== null && !FITS.has(fit)) {
+    return { ...NO_HINT, error: `?fit= must be cover or contain, not "${fit}"` }
+  }
+  if (fit !== null && (sizes.w === null || sizes.h === null)) {
+    return {
+      ...NO_HINT,
+      error: `?${rawBackground !== null && params.get('fit') === null ? 'background' : 'fit'}= needs both ?w= and ?h= — it says how to meet that box`,
+    }
+  }
+
+  let background = null
+  if (rawBackground !== null) {
+    if (fit !== 'contain') {
+      return { ...NO_HINT, error: '?background= pads fit=contain; cover leaves nothing to pad' }
+    }
+    const value = rawBackground.replace(/^#/, '')
+    if (!BACKGROUND_PATTERN.test(value)) {
+      return {
+        ...NO_HINT,
+        error: `?background= must be a hex colour (fff, 1a1a1a, ffffff80), a CSS colour name, or transparent, not "${rawBackground}"`,
+      }
+    }
+    background = /^[0-9a-f]+$/i.test(value) ? `#${value.toLowerCase()}` : value.toLowerCase()
+  }
+
+  const rawPosition = params.get('position')
+  let position = null
+  if (rawPosition !== null) {
+    if (sizes.w === null || sizes.h === null) {
+      return { ...NO_HINT, error: '?position= needs both ?w= and ?h= — it says which part of that box to keep' }
+    }
+    if (fit === 'contain') {
+      return { ...NO_HINT, error: '?position= picks what a cover crop keeps; contain crops nothing' }
+    }
+    position = normalizePosition(rawPosition)
+    if (!POSITIONS.has(position)) {
+      return {
+        ...NO_HINT,
+        error: `?position= must be an edge or corner (top, left-top, …), centre, entropy or attention, not "${rawPosition}"`,
+      }
+    }
+  }
+
+  return { width: sizes.w, height: sizes.h, fit, background, position, format: rawFormat }
 }
 
 /** Fast reject of HTML error pages / empty downloads before sharp touches them. */
@@ -379,18 +486,62 @@ function fallbackFormatFor(sourceFormat) {
 }
 
 /**
- * Widths to emit for an image: every configured width that the source can
- * satisfy without upscaling, plus the source width when it is smaller than
- * the whole ladder.
+ * Widths to emit for an image: every configured width below the source's,
+ * topped by the source width itself — so a screen wider than the ladder
+ * gets the full picture, and nothing is ever upscaled.
  * @param {number} intrinsicWidth
  * @param {number[]} widths
  */
 export function resolveWidths(intrinsicWidth, widths) {
-  const usable = widths.filter((width) => width < intrinsicWidth)
+  return [...widths.filter((width) => width < intrinsicWidth), intrinsicWidth]
+}
 
-  if (usable.length === widths.length) return usable
+/**
+ * The sizes to emit for an image: the ladder, or the one size a hint pins.
+ * A pinned side is honoured exactly, short of upscaling; with only `h`
+ * given the width follows the aspect ratio, and with both the box is
+ * filled and cropped — or, with `fit=contain`, the image is scaled to sit
+ * inside it, and with a `background` the canvas is padded out to the box
+ * around that `inner` image. `height` is only present when it was pinned.
+ * @param {{ width: number, height: number }} intrinsic
+ * @param {VariantHint} hint
+ * @param {number[]} widths
+ * @returns {Array<{
+ *   width: number
+ *   height?: number
+ *   inner?: { width: number, height: number }
+ *   background?: string
+ *   position?: string
+ * }>}
+ */
+export function resolveSizes(intrinsic, hint, widths) {
+  if (hint.height === null) {
+    const resolved = hint.width
+      ? [Math.min(hint.width, intrinsic.width)]
+      : resolveWidths(intrinsic.width, widths)
+    return resolved.map((width) => ({ width }))
+  }
 
-  return [...new Set([...usable, intrinsicWidth])].sort((a, b) => a - b)
+  if (hint.width && hint.fit === 'contain') {
+    const scale = Math.min(hint.width / intrinsic.width, hint.height / intrinsic.height, 1)
+    const inner = {
+      width: Math.round(intrinsic.width * scale),
+      height: Math.round(intrinsic.height * scale),
+    }
+
+    if (!hint.background) return [inner]
+
+    // Padding is not upscaling: the picture stays at `inner`, the canvas
+    // is the box asked for.
+    return [{ width: hint.width, height: hint.height, inner, background: hint.background }]
+  }
+
+  const height = Math.min(hint.height, intrinsic.height)
+  const width = hint.width
+    ? Math.min(hint.width, intrinsic.width)
+    : Math.round((intrinsic.width / intrinsic.height) * height)
+
+  return [hint.position ? { width, height, position: hint.position } : { width, height }]
 }
 
 /**
@@ -421,12 +572,33 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
     sharp.concurrency(options.remote ? 1 : Math.min(options.concurrency, 4))
   }
 
-  function encode(sourceBuffer, width, format) {
+  /**
+   * @param {Buffer} sourceBuffer
+   * @param {ReturnType<typeof resolveSizes>[number]} size a width to scale
+   *   to, or an exact box to fill and crop — both already clamped to the
+   *   source — optionally around a smaller `inner` picture on a `background`
+   * @param {string} format
+   */
+  function encode(sourceBuffer, size, format) {
     return encodeLimit(() => {
-      const pipeline = sharp(sourceBuffer, SHARP_INPUT).resize({
-        width,
-        withoutEnlargement: true,
-      })
+      const picture = size.inner ?? size
+      let pipeline = sharp(sourceBuffer, SHARP_INPUT).resize(
+        size.height
+          ? { width: picture.width, height: picture.height, fit: 'cover', position: size.position ?? 'centre' }
+          : { width: size.width, withoutEnlargement: true },
+      )
+
+      if (size.inner) {
+        const top = Math.floor((size.height - size.inner.height) / 2)
+        const left = Math.floor((size.width - size.inner.width) / 2)
+        pipeline = pipeline.extend({
+          top,
+          left,
+          bottom: size.height - size.inner.height - top,
+          right: size.width - size.inner.width - left,
+          background: size.background,
+        })
+      }
 
       if (format === 'png') {
         return pipeline.png({ compressionLevel: 9, palette: true }).toBuffer()
@@ -440,11 +612,17 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
    * Encode one variant, or return it from the cache. Memoized per output
    * file: a ladder and a `?w=` hint can ask for the same width at the same
    * moment, and two writers racing for one path would trip over each other.
+   *
+   * `height` is only set for a `?h=` variant; the ladder's names and cache
+   * keys are unchanged by its absence.
    */
-  function buildVariant({ sourceBuffer, sourceHash, name, width, format }) {
+  function buildVariant({ sourceBuffer, sourceHash, name, width, height, inner, background, position, format }) {
     const extension = EXTENSION_BY_FORMAT[format]
-    const key = hash(`${sourceHash}:${width}:${format}:${options.quality[format]}`)
-    const fileName = `${name}.${key}-${width}.${extension}`
+    const size = height ? `${width}x${height}` : String(width)
+    // Only the box variants have these; the ladder's keys stay as they were.
+    const framing = (background ? `:${background}` : '') + (position ? `@${position}` : '')
+    const key = hash(`${sourceHash}:${size}${framing}:${format}:${options.quality[format]}`)
+    const fileName = `${name}.${key}-${size}.${extension}`
 
     const existing = variants.get(fileName)
     if (existing) return existing
@@ -457,7 +635,7 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
       try {
         buffer = await fs.readFile(cachePath)
       } catch {
-        buffer = await encode(sourceBuffer, width, format)
+        buffer = await encode(sourceBuffer, { width, height, inner, background, position }, format)
         await fs.mkdir(path.dirname(cachePath), { recursive: true })
         await writeFileAtomic(cachePath, buffer)
       }
@@ -525,7 +703,8 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
 
   /**
    * Generate the variants for one source file: the whole configured ladder,
-   * or the single width and/or format a `?w=` / `?format=` hint pins.
+   * or the single size and/or format a `?w=` / `?h=` / `?fit=` /
+   * `?background=` / `?position=` / `?format=` hint pins.
    * @param {string} sourcePath absolute path to the original image
    * @param {VariantHint} [hint]
    * @returns {Promise<null | {
@@ -536,7 +715,9 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
    * }>}
    */
   function generate(sourcePath, hint = NO_HINT) {
-    const key = `${sourcePath}\0${hint.width ?? ''}\0${hint.format ?? ''}`
+    const key = [sourcePath, hint.width, hint.height, hint.fit, hint.background, hint.position, hint.format]
+      .map((part) => part ?? '')
+      .join('\0')
     const existing = inFlight.get(key)
     if (existing) return existing
 
@@ -545,13 +726,9 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
       if (!loaded) return null
 
       const { source, metadata, sourceHash, name } = loaded
+      const sizes = resolveSizes(metadata, hint, options.widths)
 
-      // A pinned width is honoured exactly, short of upscaling.
-      const widths = hint.width
-        ? [Math.min(hint.width, metadata.width)]
-        : resolveWidths(metadata.width, options.widths)
-
-      if (widths.length === 0) return null
+      if (sizes.length === 0) return null
 
       const formats = hint.format ? [hint.format] : [...options.formats]
       if (formats.length > 1) {
@@ -561,8 +738,8 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
 
       const jobs = []
       for (const format of formats) {
-        for (const width of widths) {
-          jobs.push({ sourceBuffer: source, sourceHash, name, width, format })
+        for (const size of sizes) {
+          jobs.push({ sourceBuffer: source, sourceHash, name, ...size, format })
         }
       }
 
@@ -577,13 +754,13 @@ export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlP
 
       const fallbackLadder = ladders[ladders.length - 1]
       const fallback = fallbackLadder.variants[fallbackLadder.variants.length - 1]
-      const largestWidth = widths[widths.length - 1]
+      const largest = sizes[sizes.length - 1]
 
       return {
         ladders,
         fallback,
-        width: largestWidth,
-        height: Math.round((metadata.height / metadata.width) * largestWidth),
+        width: largest.width,
+        height: largest.height ?? Math.round((metadata.height / metadata.width) * largest.width),
       }
     }).catch(async (error) => {
       if (sourcePath.includes(`${path.sep}remote${path.sep}`)) {
@@ -756,20 +933,17 @@ export async function rewriteHtmlImages({ html, options, resolve, generate, onWa
       const authoredWidth = toPositiveInt(attributes.get('width'))
       const authoredHeight = toPositiveInt(attributes.get('height'))
 
-      // An author-sized image is displayed at that width, so say so rather
-      // than claiming the full ladder width.
+      // An author-sized image is displayed at that width, so say so. Anything
+      // else is taken to fill the viewport: the ladder tops out at the source
+      // width, so the browser can always pick the rung that covers the screen.
       const displayWidth = authoredWidth ?? (authoredHeight ? Math.round(authoredHeight * aspect) : null)
 
       const sizes =
-        attributes.get('sizes') ??
-        options.sizes ??
-        (displayWidth
-          ? `${displayWidth}px`
-          : `(max-width: ${result.width}px) 100vw, ${result.width}px`)
+        attributes.get('sizes') ?? options.sizes ?? (displayWidth ? `${displayWidth}px` : '100vw')
 
-      // A pinned width is one file per format: there is no ladder for the
+      // A pinned size is one file per format: there is no ladder for the
       // browser to choose from, so no srcset and no sizes.
-      const pinned = hint.width !== null
+      const pinned = hint.width !== null || hint.height !== null
 
       const imgAttributes = new Map(attributes)
       imgAttributes.set('src', result.fallback.url)

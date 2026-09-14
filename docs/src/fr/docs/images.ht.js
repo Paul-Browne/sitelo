@@ -40,14 +40,17 @@ export default () =>
       }),
       p('Une source de 3000×2000 ressort ainsi :'),
       codeBlock('dist/index.html', s.output, 'html'),
+      p(
+        'Un écran jusqu’à 400px de large reçoit le fichier de 400, jusqu’à 800 celui de 800, jusqu’à 1200 celui de 1200, et tout écran plus large le 3000 complet — le navigateur prend le premier échelon qui couvre la fenêtre (doublé sur un écran 2×).',
+      ),
       h2('Ce que vous obtenez'),
       ul(
         { class: 'docs-list' },
         li(
           strong('Un redimensionnement qui n’agrandit jamais'),
-          ' — une source de 600px avec ',
+          ' — chaque largeur configurée en dessous de celle de la source, puis la largeur de la source elle-même au sommet. Une source de 750px avec ',
           code('widths: [400, 800, 1200]'),
-          ' produit 400 et 600, et s’arrête là.',
+          ' produit 400 et 750, et s’arrête là.',
         ),
         li(
           strong('Des formats modernes'),
@@ -89,6 +92,19 @@ export default () =>
         code('public/'),
         '.',
       ),
+      p(
+        'Une fois la balise réécrite, plus rien ne pointe vers l’original : il est donc retiré du build par défaut. Seuls les fichiers vraiment sans référence partent : chaque HTML, CSS, JS, XML et JSON du build est parcouru, si bien qu’un original lié depuis un ',
+        code('<a href>'),
+        ', un ',
+        code('og:image'),
+        ', une enclosure RSS, un ',
+        code('url()'),
+        ' CSS ou une balise ',
+        code('data-no-optimize'),
+        ' reste. Les URL assemblées à l’exécution dans un script, ou rendues par un îlot serveur, sont celles qu’il ne peut pas voir — mettez ',
+        code('prune: false'),
+        ' si vous en avez.',
+      ),
       h2('Options'),
       codeBlock('sitelo.config.js', s.options, 'javascript'),
       ul(
@@ -97,7 +113,7 @@ export default () =>
           code('widths'),
           ' — par défaut ',
           code('[400, 800, 1200]'),
-          ' ; la plus grande sert aussi de plafond',
+          ' ; la largeur de la source elle-même coiffe toujours l’échelle',
         ),
         li(
           code('formats'),
@@ -166,7 +182,7 @@ export default () =>
           code('prune'),
           ' — par défaut ',
           code('false'),
-          ' ; supprime les originaux que plus rien ne référence',
+          ' ; supprime les originaux que plus rien dans le build ne référence',
         ),
         li(
           code('dev'),
@@ -201,6 +217,22 @@ export default () =>
           ' ; une source plus petite garde sa propre taille au lieu d’être agrandie.',
         ),
         li(
+          code('h'),
+          ' — la hauteur en pixels. Seule, la largeur suit le rapport d’aspect ; avec ', code('w'), ' en plus, l’image est mise à l’échelle pour remplir cette boîte puis rognée — ', code('?w=200&h=200'), ' donne une vignette carrée.',
+        ),
+        li(
+          code('fit'),
+          ' — comment une boîte ', code('w'), '×', code('h'), ' est respectée : ', code('cover'), ' (par défaut) la remplit et rogne ; ', code('contain'), ' réduit l’image entière pour qu’elle tienne dedans, sans rognage ni marges — ', code('width'), '/', code('height'), ' disent ce qui en est sorti.',
+        ),
+        li(
+          code('background'),
+          ' — complète un résultat ', code('contain'), ' jusqu’à la boîte exacte, et implique ', code('fit=contain'), '. Hex sans ', code('#'), ' (', code('fff'), ', ', code('1a1a1a'), ', ', code('ffffff80'), '), un nom de couleur CSS ou ', code('transparent'), ' — qui demande un format avec alpha ; en jpeg, il ressort noir.',
+        ),
+        li(
+          code('position'),
+          ' — quelle partie un rognage ', code('cover'), ' conserve. Centré par défaut ; un bord ou un coin (', code('top'), ', ', code('left'), ', ', code('right-bottom'), ', …), ou les stratégies de sharp guidées par le contenu, ', code('entropy'), ' / ', code('attention'), '.',
+        ),
+        li(
           code('format'),
           ' — ',
           code('avif'),
@@ -223,6 +255,23 @@ export default () =>
         '. Les noms sont ceux de vite-imagetools. Les URL distantes ne sont jamais analysées — leur query string appartient à l’origine — et, avec ',
         code('images'),
         ' désactivé, les hébergeurs statiques ignorent la query et servent l’original.',
+      ),
+      h3('Laisser l’image choisir le rognage'),
+      p(
+        'Un bord ou un coin est prévisible, mais dans un carrousel de photos variées, le sujet est rarement deux fois au même endroit. ',
+        code('entropy'),
+        ' et ',
+        code('attention'),
+        ' demandent à sharp de regarder chaque image et de déplacer la fenêtre de rognage là où il trouve quelque chose qui vaut la peine d’être gardé :',
+      ),
+      codeBlock('src/index.ht.js', s.smartCrop, 'html'),
+      ul(
+        { class: 'docs-list' },
+        li(strong(code('entropy')), ' conserve la région la plus détaillée — contours, texture, variations de couleur. Le ciel uni, les murs vides et les fonds plats partent en premier. Bon pour les paysages, les produits, tout ce où « chargé » veut dire « intéressant ».'),
+        li(strong(code('attention')), ' oriente le rognage vers les couleurs saturées, la luminance à haute fréquence et les tons chair — une heuristique de l’endroit où une personne regarderait. Bon pour les photos de personnes : il trouve généralement les visages et les sujets.'),
+      ),
+      p(
+        'Ce sont deux simples heuristiques — pas de modèle, pas d’entraînement — donc un bon défaut pour beaucoup d’images plutôt qu’une garantie pour une seule. Pour une image de une qui vous tient à cœur, nommez le bord. Le choix ne dépend que de l’image : il est déterministe et se met en cache comme toute autre variante.',
       ),
       h2('Exclure des images'),
       p(

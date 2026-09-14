@@ -42,14 +42,17 @@ export default () =>
       }),
       p('Una imagen original de 3000×2000 sale así por el otro lado:'),
       codeBlock('dist/index.html', s.output, 'html'),
+      p(
+        'Una pantalla de hasta 400px de ancho recibe el archivo de 400, hasta 800 el de 800, hasta 1200 el de 1200, y cualquiera más ancha el de 3000 completo: el navegador elige el primer peldaño que cubre el viewport (el doble en una pantalla 2×).',
+      ),
       h2('Qué obtienes'),
       ul(
         { class: 'docs-list' },
         li(
           strong('Redimensionado que nunca amplía'),
-          ' — un original de 600px con ',
+          ' — cada ancho configurado por debajo del de la fuente, y encima el ancho de la propia fuente. Una fuente de 750px con ',
           code('widths: [400, 800, 1200]'),
-          ' emite 400 y 600, y ahí se detiene.',
+          ' emite 400 y 750, y ahí se detiene.',
         ),
         li(
           strong('Formatos modernos'),
@@ -91,6 +94,19 @@ export default () =>
         code('public/'),
         '.',
       ),
+      p(
+        'Una vez reescrita la etiqueta, nada apunta ya al original, así que por defecto se elimina del build. Solo se van los archivos realmente sin referencias: se recorre cada HTML, CSS, JS, XML y JSON del build, de modo que un original enlazado desde un ',
+        code('<a href>'),
+        ', un ',
+        code('og:image'),
+        ', un enclosure de RSS, un ',
+        code('url()'),
+        ' de CSS o una etiqueta ',
+        code('data-no-optimize'),
+        ' se queda. Las URL construidas en tiempo de ejecución en un script, o renderizadas por una isla de servidor, son las que no puede ver: pon ',
+        code('prune: false'),
+        ' si las tienes.',
+      ),
       h2('Opciones'),
       codeBlock('sitelo.config.js', s.options, 'javascript'),
       ul(
@@ -99,7 +115,7 @@ export default () =>
           code('widths'),
           ' — por defecto ',
           code('[400, 800, 1200]'),
-          '; el mayor es también el máximo',
+          '; el ancho de la propia fuente siempre corona la escalera',
         ),
         li(
           code('formats'),
@@ -168,7 +184,7 @@ export default () =>
           code('prune'),
           ' — por defecto ',
           code('false'),
-          '; borra los originales que ya no referencia nadie',
+          '; borra los originales que ya nada del build referencia',
         ),
         li(
           code('dev'),
@@ -203,6 +219,22 @@ export default () =>
           '; una fuente más pequeña conserva su propio tamaño en vez de ampliarse.',
         ),
         li(
+          code('h'),
+          ' — el alto en píxeles. Solo, el ancho sigue la relación de aspecto; junto con ', code('w'), ' la imagen se escala hasta llenar esa caja y se recorta: ', code('?w=200&h=200'), ' es una miniatura cuadrada.',
+        ),
+        li(
+          code('fit'),
+          ' — cómo se cumple una caja ', code('w'), '×', code('h'), ': ', code('cover'), ' (por defecto) la llena y recorta; ', code('contain'), ' escala la imagen entera para que quepa dentro, sin recorte ni relleno; ', code('width'), '/', code('height'), ' dicen lo que salió.',
+        ),
+        li(
+          code('background'),
+          ' — rellena un resultado ', code('contain'), ' hasta la caja exacta e implica ', code('fit=contain'), '. Hex sin ', code('#'), ' (', code('fff'), ', ', code('1a1a1a'), ', ', code('ffffff80'), '), un nombre de color CSS o ', code('transparent'), ', que necesita un formato con alfa; en jpeg sale negro.',
+        ),
+        li(
+          code('position'),
+          ' — qué parte conserva un recorte ', code('cover'), '. Centrado por defecto; un borde o esquina (', code('top'), ', ', code('left'), ', ', code('right-bottom'), ', …), o las estrategias de sharp según el contenido, ', code('entropy'), ' / ', code('attention'), '.',
+        ),
+        li(
           code('format'),
           ' — ',
           code('avif'),
@@ -225,6 +257,23 @@ export default () =>
         '. Los nombres son los que usa vite-imagetools. Las URL remotas nunca se analizan (su query string pertenece al origen) y, con ',
         code('images'),
         ' desactivado, los hosts estáticos ignoran la query y sirven el original.',
+      ),
+      h3('Dejar que la imagen elija el recorte'),
+      p(
+        'Un borde o una esquina es predecible, pero en un carrusel de fotos variadas el sujeto rara vez está dos veces en el mismo sitio. ',
+        code('entropy'),
+        ' y ',
+        code('attention'),
+        ' piden a sharp que mire cada imagen y desplace la ventana de recorte hacia donde encuentre algo que merezca conservarse:',
+      ),
+      codeBlock('src/index.ht.js', s.smartCrop, 'html'),
+      ul(
+        { class: 'docs-list' },
+        li(strong(code('entropy')), ' conserva la región con más detalle: bordes, textura, variación de color. El cielo plano, las paredes vacías y los fondos lisos se van primero. Bueno para paisajes, productos y todo aquello en lo que «cargado» significa «interesante».'),
+        li(strong(code('attention')), ' inclina el recorte hacia el color saturado, la luminancia de alta frecuencia y los tonos de piel: una heurística de hacia dónde miraría una persona. Bueno para fotos de gente: tiende a encontrar caras y sujetos.'),
+      ),
+      p(
+        'Ambas son heurísticas simples, sin modelo ni entrenamiento, así que tómalas como un buen valor por defecto para muchas imágenes y no como una garantía para una. Para una imagen principal que te importe, indica el borde. La elección depende solo de la imagen, así que es determinista y se cachea como cualquier otra variante.',
       ),
       h2('Cómo excluir imágenes'),
       p(

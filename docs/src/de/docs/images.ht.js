@@ -42,14 +42,17 @@ export default () =>
       }),
       p('Aus einer Quelle mit 3000×2000 wird auf der anderen Seite das hier:'),
       codeBlock('dist/index.html', s.output, 'html'),
+      p(
+        'Ein Bildschirm bis 400px Breite bekommt die 400er-Datei, bis 800 die 800er, bis 1200 die 1200er und alles Breitere die vollen 3000 — der Browser nimmt die erste Stufe, die den Viewport abdeckt (auf einem 2×-Display verdoppelt).',
+      ),
       h2('Was du bekommst'),
       ul(
         { class: 'docs-list' },
         li(
           strong('Skalieren, das nie hochrechnet'),
-          ' — eine 600px-Quelle mit ',
+          ' — jede konfigurierte Breite unterhalb der Quelle, dann die Breite der Quelle selbst obendrauf. Eine 750px-Quelle mit ',
           code('widths: [400, 800, 1200]'),
-          ' liefert 400 und 600 und hört dort auf.',
+          ' liefert 400 und 750 und hört dort auf.',
         ),
         li(
           strong('Moderne Formate'),
@@ -91,6 +94,19 @@ export default () =>
         code('public/'),
         ' gleichermaßen.',
       ),
+      p(
+        'Sobald ein Tag umgeschrieben ist, zeigt nichts mehr auf das Original, also wird es standardmäßig aus dem Build entfernt. Nur wirklich unreferenzierte Dateien gehen: jede HTML-, CSS-, JS-, XML- und JSON-Datei im Build wird durchsucht, ein Original aus einem ',
+        code('<a href>'),
+        ', einem ',
+        code('og:image'),
+        ', einem RSS-Enclosure, einem CSS-',
+        code('url()'),
+        ' oder einem ',
+        code('data-no-optimize'),
+        '-Tag bleibt also. Zur Laufzeit in einem Skript zusammengesetzte oder von einer Server-Island gerenderte URLs sieht es nicht — setze ',
+        code('prune: false'),
+        ', wenn du solche hast.',
+      ),
       h2('Optionen'),
       codeBlock('sitelo.config.js', s.options, 'javascript'),
       ul(
@@ -99,7 +115,7 @@ export default () =>
           code('widths'),
           ' — Standard ',
           code('[400, 800, 1200]'),
-          '; der größte Wert ist zugleich die Obergrenze',
+          '; die Breite der Quelle selbst bildet immer die oberste Stufe',
         ),
         li(
           code('formats'),
@@ -168,7 +184,7 @@ export default () =>
           code('prune'),
           ' — Standard ',
           code('false'),
-          '; löscht Originale, die nichts mehr referenziert',
+          '; löscht Originale, die nichts im Build mehr referenziert',
         ),
         li(
           code('dev'),
@@ -203,6 +219,22 @@ export default () =>
           '; eine kleinere Quelle behält ihre eigene Größe, statt hochskaliert zu werden.',
         ),
         li(
+          code('h'),
+          ' — die Höhe in Pixeln. Allein folgt die Breite dem Seitenverhältnis; zusammen mit ', code('w'), ' wird das Bild auf diese Box skaliert und zugeschnitten — ', code('?w=200&h=200'), ' ist ein quadratisches Thumbnail.',
+        ),
+        li(
+          code('fit'),
+          ' — wie eine ', code('w'), '×', code('h'), '-Box erfüllt wird: ', code('cover'), ' (Standard) füllt sie und schneidet zu; ', code('contain'), ' skaliert das ganze Bild in sie hinein, ohne Zuschnitt und ohne Ränder — ', code('width'), '/', code('height'), ' sagen, was herauskam.',
+        ),
+        li(
+          code('background'),
+          ' — füllt ein ', code('contain'), '-Ergebnis bis zur exakten Box auf und impliziert ', code('fit=contain'), '. Hex ohne ', code('#'), ' (', code('fff'), ', ', code('1a1a1a'), ', ', code('ffffff80'), '), ein CSS-Farbname oder ', code('transparent'), ' — das ein Format mit Alpha braucht; bei JPEG wird es schwarz.',
+        ),
+        li(
+          code('position'),
+          ' — welchen Teil ein ', code('cover'), '-Zuschnitt behält. Standardmäßig die Mitte; eine Kante oder Ecke (', code('top'), ', ', code('left'), ', ', code('right-bottom'), ', …) oder sharps inhaltsbasierte Strategien ', code('entropy'), ' / ', code('attention'), '.',
+        ),
+        li(
           code('format'),
           ' — ',
           code('avif'),
@@ -225,6 +257,23 @@ export default () =>
         '. Die Namen sind die von vite-imagetools. Entfernte URLs werden nie geparst — ihr Query-String gehört dem Ursprung — und ist ',
         code('images'),
         ' aus, ignorieren statische Hosts den Query und liefern das Original.',
+      ),
+      h3('Das Bild den Zuschnitt wählen lassen'),
+      p(
+        'Eine Kante oder Ecke ist vorhersehbar, aber in einem Karussell gemischter Fotos sitzt das Motiv selten zweimal an derselben Stelle. ',
+        code('entropy'),
+        ' und ',
+        code('attention'),
+        ' lassen sharp jedes Bild ansehen und das Zuschnittfenster dorthin schieben, wo es etwas Behaltenswertes findet:',
+      ),
+      codeBlock('src/index.ht.js', s.smartCrop, 'html'),
+      ul(
+        { class: 'docs-list' },
+        li(strong(code('entropy')), ' behält die Region mit den meisten Details — Kanten, Textur, Farbvariation. Flacher Himmel, leere Wände und ruhige Hintergründe fallen zuerst weg. Gut für Landschaften, Produkte, alles, wo „viel los“ „interessant“ heißt.'),
+        li(strong(code('attention')), ' gewichtet den Zuschnitt zu gesättigten Farben, hochfrequenter Helligkeit und Hauttönen — eine Heuristik dafür, wohin ein Mensch schauen würde. Gut für Fotos von Menschen: es findet meist Gesichter und Motive.'),
+      ),
+      p(
+        'Beides sind einfache Heuristiken — kein Modell, kein Training —, also eher ein sinnvoller Standard für viele Bilder als eine Garantie für eines. Bei einem Hero-Bild, das dir wichtig ist, nenne die Kante. Die Wahl hängt nur vom Bild ab, ist also deterministisch und wird wie jede andere Variante gecacht.',
       ),
       h2('Ausnahmen'),
       p(

@@ -952,19 +952,24 @@ export default {
 export default () => `<img src="/images/hero.png" alt="Sunrise">`
 ```
 
-A 3000×2000 PNG becomes a resized, modern-format ladder, and the tag is
-rewritten in place:
+A 3000×2000 PNG becomes a resized, modern-format ladder topped by the
+full-size picture, and the tag is rewritten in place:
 
 ```html
-<img src="/assets/img/hero.a1b2c3d4-1200.webp"
+<img src="/assets/img/hero.a1b2c3d4-3000.webp"
      alt="Sunrise"
-     sizes="(max-width: 1200px) 100vw, 1200px"
-     width="1200" height="800"
+     sizes="100vw"
+     width="3000" height="2000"
      loading="lazy" decoding="async"
      srcset="/assets/img/hero.9f8e7d6c-400.webp 400w,
              /assets/img/hero.5b4a3c2d-800.webp 800w,
-             /assets/img/hero.a1b2c3d4-1200.webp 1200w">
+             /assets/img/hero.7c6d5e4f-1200.webp 1200w,
+             /assets/img/hero.a1b2c3d4-3000.webp 3000w">
 ```
+
+A screen up to 400px wide gets the 400 file, up to 800 the 800, up to
+1200 the 1200, and anything wider the full 3000 — the browser picks the
+first rung that covers the viewport (doubled on a 2× display).
 
 Encoding is done by [sharp](https://sharp.pixelplumbing.com), an optional
 peer dependency — install it alongside sitelo when you enable `images`:
@@ -980,8 +985,9 @@ one it resolves.
 
 ### What it does
 
-- **Resizes** to each configured width, and **never upscales**. A 600px
-  source with `widths: [400, 800, 1200]` emits 400 and 600, nothing more.
+- **Resizes** to each configured width below the source's, then adds the
+  source's own width on top — and **never upscales**. A 750px source with
+  `widths: [400, 800, 1200]` emits 400 and 750, nothing more.
 - **Converts** to modern formats. One format gives you a plain
   `<img srcset>`; two or more wrap it in `<picture>` with a `<source>` per
   format and a fallback in the original format.
@@ -994,6 +1000,14 @@ one it resolves.
 
 Images in both `src/` and `public/` are covered — the rewrite runs over the
 built HTML, so it doesn't matter where the file came from.
+
+Once a tag is rewritten nothing points at the original any more, so it is
+**pruned** from `dist/` by default. Only genuinely unreferenced files go:
+sitelo scans every HTML, CSS, JS, XML and JSON file in the build, so an
+original linked from `<a href>`, `og:image`, an RSS enclosure, a CSS
+`url()`, or a `data-no-optimize` tag stays. URLs assembled at runtime in
+a script, or rendered by a server island, are the ones it cannot see —
+set `prune: false` (or `exclude` that folder) if you have those.
 
 ### Options
 
@@ -1011,7 +1025,7 @@ export default {
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `widths` | `[400, 800, 1200]` | Ladder of widths; the largest is also the cap |
+| `widths` | `[400, 800, 1200]` | Ladder of widths; the source's own width always tops it |
 | `formats` | `['webp']` | `avif`, `webp`, `jpeg`, `png`. 2+ formats → `<picture>` |
 | `quality` | `{ avif: 55, webp: 78, jpeg: 82 }` | Per-format encoder quality |
 | `sizes` | derived | `sizes` attribute; a `sizes` on the tag always wins |
@@ -1021,7 +1035,7 @@ export default {
 | `assetsDir` | `'assets/img'` | Where variants are written inside `dist/` |
 | `cacheDir` | `'node_modules/.sitelo/images'` | Shared dev/build encode cache |
 | `remote` | `false` | Download and optimize `https://` images at build time |
-| `prune` | `false` | Delete originals nothing references after rewriting |
+| `prune` | `true` | Delete originals nothing in `dist/` references after rewriting; `false` keeps them |
 | `dev` | `true` | Set `false` to serve untouched originals in dev |
 | `concurrency` | CPUs − 1 (max 8); **1** when `remote: true` | Parallel encodes |
 
@@ -1049,6 +1063,19 @@ The tag comes out with that one file — no `srcset`, no `sizes`, real
 
 - `w` — the width in pixels. Any width works, not only those in `widths`;
   a smaller source keeps its own size rather than being upscaled.
+- `h` — the height in pixels. Alone, the width follows the aspect ratio;
+  with `w` as well, the image is scaled to fill that box and cropped to it
+  (`?w=200&h=200` is a square thumbnail).
+- `fit` — how a `w`×`h` box is met: `cover` (the default) fills it and
+  crops; `contain` scales the whole image to sit inside it, no cropping,
+  no padding — `width`/`height` say what came out.
+- `background` — pads a `contain` result out to the exact box (and implies
+  `fit=contain`). Hex without the `#` (`fff`, `1a1a1a`, `ffffff80`), a CSS
+  colour name, or `transparent` — which needs a format with alpha; on jpeg
+  it comes out black.
+- `position` — which part a `cover` crop keeps. Centred by default; an
+  edge or corner (`top`, `left`, `right-bottom`, …), or sharp's
+  content-aware `entropy` / `attention` strategies.
 - `format` — `avif`, `webp`, `jpeg` or `png`. On its own it keeps the full
   ladder, in that one format.
 
@@ -1057,6 +1084,30 @@ With several `formats` configured, a pinned width still gives you
 vite-imagetools uses. Remote URLs are never parsed — their query string
 belongs to the origin — and with `images` off, static hosts ignore the
 query and serve the original.
+
+#### Letting the picture choose the crop
+
+An edge or corner is predictable, but a carousel of mixed photos rarely
+has its subject in the same place twice. `entropy` and `attention` ask
+sharp to look at each picture and slide the crop window to where it
+finds something worth keeping:
+
+```html
+<img src="/images/sunset.png?w=300&h=300&position=entropy">
+<img src="/images/team.jpg?w=300&h=300&position=attention">
+```
+
+- **`entropy`** keeps the region with the most detail — edges, texture,
+  colour variation. Flat sky, blank walls and plain backgrounds go first.
+  Good for landscapes, products, anything where "busy" means "interesting".
+- **`attention`** weights the crop towards saturated colour, high-frequency
+  luminance and skin tones — a heuristic for where a person would look.
+  Good for photos of people: it tends to find faces and subjects.
+
+Both are plain heuristics — no model, no training — so treat them as a
+sensible default for many images rather than a guarantee for one. For a
+hero image you care about, name the edge. The choice depends only on the
+picture, so it is deterministic and caches like any other variant.
 
 ### Opting out
 

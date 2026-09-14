@@ -40,14 +40,17 @@ export default () =>
       }),
       p('Uma origem de 3000×2000 sai assim:'),
       codeBlock('dist/index.html', s.output, 'html'),
+      p(
+        'Um ecrã até 400px de largura recebe o ficheiro de 400, até 800 o de 800, até 1200 o de 1200, e qualquer um mais largo o 3000 completo — o browser escolhe o primeiro degrau que cobre o viewport (a dobrar num ecrã 2×).',
+      ),
       h2('O que obténs'),
       ul(
         { class: 'docs-list' },
         li(
           strong('Redimensionamento que nunca amplia'),
-          ' — uma origem de 600px com ',
+          ' — cada largura configurada abaixo da da fonte, e por cima a largura da própria fonte. Uma fonte de 750px com ',
           code('widths: [400, 800, 1200]'),
-          ' produz 400 e 600, e fica por aí.',
+          ' produz 400 e 750, e fica por aí.',
         ),
         li(
           strong('Formatos modernos'),
@@ -89,6 +92,19 @@ export default () =>
         code('public/'),
         '.',
       ),
+      p(
+        'Depois de a tag ser reescrita, nada aponta para o original, por isso é removido do build por omissão. Só vão os ficheiros realmente sem referências: cada HTML, CSS, JS, XML e JSON do build é percorrido, pelo que um original ligado a partir de um ',
+        code('<a href>'),
+        ', um ',
+        code('og:image'),
+        ', um enclosure de RSS, um ',
+        code('url()'),
+        ' de CSS ou uma tag ',
+        code('data-no-optimize'),
+        ' fica. URLs montados em tempo de execução num script, ou renderizados por uma ilha de servidor, são os que não consegue ver — define ',
+        code('prune: false'),
+        ' se os tiveres.',
+      ),
       h2('Opções'),
       codeBlock('sitelo.config.js', s.options, 'javascript'),
       ul(
@@ -97,7 +113,7 @@ export default () =>
           code('widths'),
           ' — por omissão ',
           code('[400, 800, 1200]'),
-          '; o maior é também o limite',
+          '; a largura da própria fonte fica sempre no topo da escada',
         ),
         li(
           code('formats'),
@@ -159,7 +175,7 @@ export default () =>
           code('prune'),
           ' — por omissão ',
           code('false'),
-          '; apaga os originais que já ninguém referencia',
+          '; apaga os originais que já nada no build referencia',
         ),
         li(
           code('dev'),
@@ -194,6 +210,22 @@ export default () =>
           '; uma fonte mais pequena mantém o seu próprio tamanho em vez de ser ampliada.',
         ),
         li(
+          code('h'),
+          ' — a altura em píxeis. Sozinha, a largura segue a proporção; com ', code('w'), ' também, a imagem é escalada para preencher essa caixa e recortada — ', code('?w=200&h=200'), ' é uma miniatura quadrada.',
+        ),
+        li(
+          code('fit'),
+          ' — como uma caixa ', code('w'), '×', code('h'), ' é cumprida: ', code('cover'), ' (por omissão) preenche-a e recorta; ', code('contain'), ' escala a imagem inteira para caber lá dentro, sem recorte nem margens — ', code('width'), '/', code('height'), ' dizem o que saiu.',
+        ),
+        li(
+          code('background'),
+          ' — preenche um resultado ', code('contain'), ' até à caixa exata e implica ', code('fit=contain'), '. Hex sem ', code('#'), ' (', code('fff'), ', ', code('1a1a1a'), ', ', code('ffffff80'), '), um nome de cor CSS ou ', code('transparent'), ' — que precisa de um formato com alfa; em jpeg sai preto.',
+        ),
+        li(
+          code('position'),
+          ' — que parte um recorte ', code('cover'), ' mantém. Centrado por omissão; uma margem ou canto (', code('top'), ', ', code('left'), ', ', code('right-bottom'), ', …), ou as estratégias do sharp guiadas pelo conteúdo, ', code('entropy'), ' / ', code('attention'), '.',
+        ),
+        li(
           code('format'),
           ' — ',
           code('avif'),
@@ -216,6 +248,23 @@ export default () =>
         '. Os nomes são os do vite-imagetools. URLs remotos nunca são analisados — a query string pertence à origem — e, com ',
         code('images'),
         ' desligado, os hosts estáticos ignoram a query e servem o original.',
+      ),
+      h3('Deixar a imagem escolher o recorte'),
+      p(
+        'Uma margem ou um canto é previsível, mas num carrossel de fotos variadas o assunto raramente está duas vezes no mesmo sítio. ',
+        code('entropy'),
+        ' e ',
+        code('attention'),
+        ' pedem ao sharp que olhe para cada imagem e desloque a janela de recorte para onde encontrar algo que valha a pena manter:',
+      ),
+      codeBlock('src/index.ht.js', s.smartCrop, 'html'),
+      ul(
+        { class: 'docs-list' },
+        li(strong(code('entropy')), ' mantém a região com mais detalhe — contornos, textura, variação de cor. Céu liso, paredes vazias e fundos planos vão primeiro. Bom para paisagens, produtos, tudo onde «cheio» significa «interessante».'),
+        li(strong(code('attention')), ' inclina o recorte para cores saturadas, luminância de alta frequência e tons de pele — uma heurística de para onde uma pessoa olharia. Bom para fotos de pessoas: tende a encontrar rostos e assuntos.'),
+      ),
+      p(
+        'Ambas são heurísticas simples — sem modelo, sem treino — por isso encara-as como um bom valor por omissão para muitas imagens e não como garantia para uma. Para uma imagem principal que te importe, indica a margem. A escolha depende só da imagem, por isso é determinista e fica em cache como qualquer outra variante.',
       ),
       h2('Como excluir imagens'),
       p(
