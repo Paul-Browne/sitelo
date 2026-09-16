@@ -154,3 +154,5 @@ test/.tmp/
 # misc
 .DS_Store
 .notes/
+examples/elisa
+examples/test
