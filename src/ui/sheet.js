@@ -43,6 +43,17 @@ export function sheetSource(name) {
 }
 
 /**
+ * The eight hex characters a sheet's file name carries: enough to tell
+ * two revisions apart, short enough to read.
+ *
+ * @param {string} css
+ * @returns {string}
+ */
+export function digestOf(css) {
+  return createHash('sha256').update(css).digest('hex').slice(0, 8)
+}
+
+/**
  * A deliberately conservative minifier: comments out, whitespace
  * collapsed, and the padding around braces, semicolons and commas
  * removed. It never touches the space after a colon, because that space
@@ -130,7 +141,7 @@ export function createSheet(name, source) {
      */
     if (css !== digest.css) {
       digest.css = css
-      digest.value = createHash('sha256').update(css).digest('hex').slice(0, 8)
+      digest.value = digestOf(css)
     }
 
     return `${name}-${digest.value}.css`

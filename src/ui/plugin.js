@@ -13,6 +13,10 @@
  * extra links — `grainStyles()` from `sitelo/ui-extras` — since those
  * are one file per component rather than part of `ui.css`.
  *
+ * With `prune` on, the sheets are cut down first to the rules the pages
+ * can match — see `prune.js`. That too is decided by reading the built
+ * HTML, so it happens here and only here: dev serves the whole sheet.
+ *
  * It is part of sitelo's default plugin, so a normal project gets this
  * without configuring anything.
  */
@@ -26,7 +30,8 @@ import {
   RUNTIME_MODULES,
   uiClientBase,
 } from './handlers.js';
-import { sheetNamed } from './sheet.js';
+import { classesIn, pruneCss } from './prune.js';
+import { digestOf, sheetNamed } from './sheet.js';
 
 const RUNTIME_DIR = fileURLToPath(new URL('./runtime/', import.meta.url));
 
@@ -142,19 +147,34 @@ function withImports(named) {
   return found;
 }
 
-/** Every `.html` file under `dir`, as absolute paths. */
-function htmlFiles(dir) {
+/**
+ * Every file under `dir` with one of the extensions, as absolute paths.
+ *
+ * @param {string} dir
+ * @param {string[]} extensions
+ * @returns {string[]}
+ */
+function filesUnder(dir, extensions) {
   const found = [];
 
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
 
-    if (entry.isDirectory()) found.push(...htmlFiles(full));
-    else if (entry.name.endsWith('.html')) found.push(full);
+    if (entry.isDirectory()) found.push(...filesUnder(full, extensions));
+    else if (extensions.some((ext) => entry.name.endsWith(ext))) found.push(full);
   }
 
   return found;
 }
+
+/**
+ * A `<style>` that `styles({ inline: true })` — or an extra's — wrote,
+ * by the marker each one carries: `data-sitelo-ui` for the core sheet,
+ * `data-sitelo-ui-grain` for grain's. The name is checked against the
+ * sheets that exist, so `theme()`'s `data-sitelo-ui-theme` is passed by.
+ */
+const INLINE_SHEET =
+  /<style (data-sitelo-ui(?:-([a-z][a-z0-9-]*))?(?:="")?)((?:\s[^>]*)?)>([\s\S]*?)<\/style>/g;
 
 /**
  * Where to serve from, resolved on every use rather than captured.
@@ -195,10 +215,14 @@ export function uiClientPrefix({ base } = {}) {
 /**
  * @param {object} [options]
  * @param {string} [options.base] - where the runtime is served from.
+ * @param {boolean | { keep?: string[] }} [options.prune] - cut each sheet
+ *   the build writes down to the rules its pages can match; `keep` names
+ *   classes to treat as present anyway, `su-foo*` for a prefix.
  * @returns {import('vite').Plugin}
  */
-export function uiRuntime({ base } = {}) {
+export function uiRuntime({ base, prune = false } = {}) {
   let outDir;
+  const keep = typeof prune === 'object' && prune ? prune.keep ?? [] : [];
 
   return {
     name: 'sitelo:ui-runtime',
@@ -265,10 +289,12 @@ export function uiRuntime({ base } = {}) {
       const wanted = new Set();
       /** File name → the sheet whose bytes go under it. */
       const sheets = new Map();
+      const pages = filesUnder(outDir, ['.html']).map((file) => ({
+        file,
+        html: fs.readFileSync(file, 'utf8'),
+      }));
 
-      for (const file of htmlFiles(outDir)) {
-        const html = fs.readFileSync(file, 'utf8');
-
+      for (const { html } of pages) {
         for (const value of eventAttributes(html)) {
           for (const name of RUNTIME_MODULES) {
             if (value.includes(`${prefix}${name}.js`)) wanted.add(name);
@@ -291,11 +317,9 @@ export function uiRuntime({ base } = {}) {
         }
       }
 
-      if (!wanted.size && !sheets.size) return;
-
       const dir = path.join(outDir, prefix.slice(1));
 
-      fs.mkdirSync(dir, { recursive: true });
+      if (wanted.size || sheets.size) fs.mkdirSync(dir, { recursive: true });
 
       for (const name of withImports(wanted)) {
         fs.copyFileSync(
@@ -304,8 +328,71 @@ export function uiRuntime({ base } = {}) {
         );
       }
 
+      if (!prune) {
+        for (const [name, sheet] of sheets) {
+          fs.writeFileSync(path.join(dir, name), sheet.stylesheet());
+        }
+
+        return;
+      }
+
+      /*
+       * Every class the site can put on a page. The scripts are read after
+       * the runtime was copied, so the modules the pages import are among
+       * them; a linked sheet is pruned against the whole site, since every
+       * page shares it, and an inlined one against its own page.
+       *
+       * A page is scanned without any sheet it inlined: that is the one
+       * place every class in the library is written out, and none of them
+       * is on the page for being there.
+       */
+      const scripts = filesUnder(outDir, ['.js', '.mjs']).map((file) =>
+        fs.readFileSync(file, 'utf8'),
+      );
+      const markup = ({ html }) => html.replace(INLINE_SHEET, '');
+      const site = classesIn([...scripts, ...pages.map(markup)], keep);
+      const scripted = classesIn(scripts, keep);
+      const before = new Map(pages.map(({ file, html }) => [file, html]));
+
       for (const [name, sheet] of sheets) {
-        fs.writeFileSync(path.join(dir, name), sheet.stylesheet());
+        const css = pruneCss(sheet.stylesheet(), site);
+        /*
+         * The hash names the bytes, and the bytes just changed: a site that
+         * starts using one more component gets one more rule and a new
+         * name, so a cache holding the old file `immutable` never serves
+         * it for this one. A page that linked the plain name keeps it.
+         */
+        const written = /-[0-9a-f]+\.css$/.test(name)
+          ? name.replace(/-[0-9a-f]+\.css$/, `-${digestOf(css)}.css`)
+          : name;
+
+        fs.writeFileSync(path.join(dir, written), css);
+
+        if (written === name) continue;
+
+        for (const page of pages) {
+          page.html = page.html.replaceAll(`${prefix}${name}`, `${prefix}${written}`);
+        }
+      }
+
+      for (const page of pages) {
+        const own = classesIn([markup(page)]);
+        const has = (className) => own(className) || scripted(className);
+
+        page.html = page.html.replace(INLINE_SHEET, (whole, marker, name, attributes, css) => {
+          const sheet = sheetNamed(name ?? 'ui');
+
+          if (!sheet) return whole;
+
+          // The readable sheet has line breaks; the minified one has none.
+          const source = sheet.stylesheet({ minify: !css.includes('\n') });
+
+          return `<style ${marker}${attributes}>${pruneCss(source, has)}</style>`;
+        });
+      }
+
+      for (const { file, html } of pages) {
+        if (html !== before.get(file)) fs.writeFileSync(file, html);
       }
     },
   };

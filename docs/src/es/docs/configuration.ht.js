@@ -112,6 +112,18 @@ export default () =>
           code('{ top }'),
           ' para cambiar cuántos archivos grandes se listan',
         ),
+        li(
+          code('pruneCss'),
+          ' — por defecto ',
+          code('false'),
+          '; ',
+          code('true'),
+          ' o ',
+          code('{ keep }'),
+          ' escribe la ',
+          a({ href: '/es/docs/ui#estilos' }, 'hoja de estilos de sitelo/ui'),
+          ' solo con las reglas que las páginas construidas pueden aplicar',
+        ),
         li(code('debug'), ' — registro detallado'),
         li(
           code('devToolbar'),

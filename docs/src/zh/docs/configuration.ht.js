@@ -101,6 +101,17 @@ export default () =>
           code('{ top }'),
           ' 改变列出多少个大文件',
         ),
+        li(
+          code('pruneCss'),
+          ' —— 默认 ',
+          code('false'),
+          '；',
+          code('true'),
+          ' 或 ',
+          code('{ keep }'),
+          '，只把构建出的页面能匹配到的规则写进 ',
+          a({ href: '/zh/docs/ui#样式' }, 'sitelo/ui 样式表'),
+        ),
         li(code('debug'), ' —— 详细日志'),
         li(
           code('devToolbar'),

@@ -15,6 +15,7 @@ const T = {
     becomesAbout: 'src/about.ht.js becomes /about.',
     readMore: 'Read more',
     inlineComment: 'the whole sheet in the page — no request at all',
+    pruneKeepComment: 'or name classes the build never sees; `*` for a prefix',
     themingComment: 'After styles(), so these win.',
     themeScriptComment: 'applies the stored choice before the first paint',
     anywhereComment: '…anywhere in the body',
@@ -50,6 +51,7 @@ const T = {
     becomesAbout: 'src/about.ht.js pasa a ser /about.',
     readMore: 'Leer más',
     inlineComment: 'la hoja entera en la página, sin ninguna petición',
+    pruneKeepComment: 'o nombra clases que la build nunca ve; `*` para un prefijo',
     themingComment: 'Después de styles(), para que estos ganen.',
     themeScriptComment: 'aplica la elección guardada antes del primer pintado',
     anywhereComment: '…en cualquier parte del body',
@@ -85,6 +87,7 @@ const T = {
     becomesAbout: 'src/about.ht.js devient /about.',
     readMore: 'En savoir plus',
     inlineComment: 'la feuille entière dans la page, sans aucune requête',
+    pruneKeepComment: 'ou nommer des classes que le build ne voit jamais ; `*` pour un préfixe',
     themingComment: 'Après styles(), pour que ces valeurs l’emportent.',
     themeScriptComment: 'applique le choix enregistré avant le premier rendu',
     anywhereComment: '…n’importe où dans le body',
@@ -120,6 +123,7 @@ const T = {
     becomesAbout: 'src/about.ht.js wird zu /about.',
     readMore: 'Mehr erfahren',
     inlineComment: 'die ganze Datei in der Seite — gar keine Anfrage',
+    pruneKeepComment: 'oder Klassen benennen, die der Build nie sieht; `*` für ein Präfix',
     themingComment: 'Nach styles(), damit diese Werte gewinnen.',
     themeScriptComment: 'wendet die gespeicherte Wahl vor dem ersten Rendern an',
     anywhereComment: '…irgendwo im body',
@@ -155,6 +159,7 @@ const T = {
     becomesAbout: 'src/about.ht.js становится /about.',
     readMore: 'Подробнее',
     inlineComment: 'вся таблица прямо в странице — ни одного запроса',
+    pruneKeepComment: 'или перечислите классы, которых сборка не видит; `*` — префикс',
     themingComment: 'После styles(), чтобы победили эти значения.',
     themeScriptComment: 'применяет сохранённый выбор до первой отрисовки',
     anywhereComment: '…где угодно в body',
@@ -190,6 +195,7 @@ const T = {
     becomesAbout: 'src/about.ht.js 对应 /about。',
     readMore: '了解更多',
     inlineComment: '整份样式表就在页面里——一次请求都不用',
+    pruneKeepComment: '或列出构建看不到的类名；`*` 表示前缀',
     themingComment: '放在 styles() 之后，这些值才会生效。',
     themeScriptComment: '在首次绘制前应用已保存的选择',
     anywhereComment: '……body 中的任意位置',
@@ -225,6 +231,7 @@ const T = {
     becomesAbout: 'src/about.ht.js passa a ser /about.',
     readMore: 'Saber mais',
     inlineComment: 'a folha inteira na página, sem pedido nenhum',
+    pruneKeepComment: 'ou nomeia classes que a build nunca vê; `*` para um prefixo',
     themingComment: 'Depois de styles(), para que estes prevaleçam.',
     themeScriptComment: 'aplica a escolha guardada antes da primeira pintura',
     anywhereComment: '…em qualquer sítio do body',
@@ -294,6 +301,12 @@ head(
   // ${t.inlineComment}
   styles({ inline: true }),
 )`,
+
+    pruneCss: `export default {
+  pruneCss: true,
+  // ${t.pruneKeepComment}
+  // pruneCss: { keep: ['su-card', 'su-btn*'] },
+}`,
 
     theming: `import { styles, theme } from 'sitelo/ui'
 

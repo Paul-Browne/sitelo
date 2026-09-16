@@ -14,6 +14,20 @@ export interface SiteloPluginOptions extends HtPagesPluginOptions {
      */
     base?: string;
   };
+  /**
+   * Cut the `sitelo/ui` stylesheet down to what the build uses.
+   *
+   * On a build, each sheet the pages link or inline is written with
+   * only the rules whose `su-` classes appear in the output — the
+   * pages, and the scripts beside them. A linked sheet is pruned
+   * against the whole site and renamed for its new contents; an
+   * inlined one is pruned per page. Dev serves the whole sheet.
+   *
+   * `keep` names classes to treat as present anyway — for markup the
+   * build never sees, such as a server island's — with a trailing `*`
+   * for a prefix: `['su-card', 'su-btn*']`.
+   */
+  pruneCss?: boolean | { keep?: string[] };
 }
 
 declare function sitelo(options?: SiteloPluginOptions): Plugin[];

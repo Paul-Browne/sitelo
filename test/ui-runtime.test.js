@@ -424,3 +424,149 @@ test('the linked name changes with the sheet, so it can be cached forever', asyn
     writeFileSync(source, original);
   }
 });
+
+/* ------------------------------------------------------------------ *
+ * Pruning
+ * ------------------------------------------------------------------ */
+
+/**
+ * Build a site of several files with pruning on, and hand back a reader
+ * for what ended up on disk.
+ */
+function prunedSite(files, prune = true) {
+  const root = mkdtempSync(path.join(tmpdir(), 'sitelo-ui-'));
+  const outDir = path.join(root, 'dist');
+
+  for (const [name, content] of Object.entries(files)) {
+    mkdirSync(path.dirname(path.join(outDir, name)), { recursive: true });
+    writeFileSync(path.join(outDir, name), content);
+  }
+
+  const plugin = uiRuntime({ prune });
+
+  plugin.configResolved({ root, build: { outDir } });
+  plugin.writeBundle();
+
+  return {
+    read: (name) => readFileSync(path.join(outDir, name), 'utf8'),
+    list: (dir = 'su') => readdirSync(path.join(outDir, dir)).sort(),
+  };
+}
+
+test('with prune on, a linked sheet holds only what the site uses, under a new name', () => {
+  const linked = stylesUrl().split('/').pop();
+  const site = prunedSite({
+    'index.html': `<link rel="stylesheet" href="/su/${linked}"><a class="su-btn su-c-primary">x</a>`,
+    'about/index.html': `<link rel="stylesheet" href="/su/${linked}"><div class="su-card">y</div>`,
+  });
+  const [written] = site.list();
+  const css = site.read(`su/${written}`);
+
+  assert.match(written, /^ui-[0-9a-f]{8}\.css$/);
+  assert.notEqual(written, linked, 'the hash follows the bytes');
+
+  // The union across pages: what one page uses is in the sheet they share.
+  assert.match(css, /\.su-btn\{/);
+  assert.match(css, /\.su-card\{/);
+  assert.doesNotMatch(css, /\.su-modal/);
+  assert.ok(css.length < stylesheet().length / 2);
+
+  // And every page now points at the file that exists.
+  for (const page of ['index.html', 'about/index.html']) {
+    assert.ok(site.read(page).includes(`/su/${written}`), `${page} was rewritten`);
+    assert.ok(!site.read(page).includes(linked), `${page} no longer names the old file`);
+  }
+});
+
+test('a sheet linked without a hash keeps its name when pruned', () => {
+  const site = prunedSite({
+    'index.html': '<link rel="stylesheet" href="/su/ui.css"><a class="su-btn">x</a>',
+  });
+
+  assert.deepEqual(site.list(), ['ui.css']);
+  assert.match(site.read('su/ui.css'), /\.su-btn\{/);
+  assert.doesNotMatch(site.read('su/ui.css'), /\.su-card\{/);
+});
+
+test('prune off writes the whole sheet, as before', () => {
+  const site = prunedSite({ 'index.html': '<link rel="stylesheet" href="/su/ui.css">' }, false);
+
+  assert.equal(site.read('su/ui.css'), stylesheet());
+});
+
+test('an inlined sheet is pruned to its own page', () => {
+  const site = prunedSite({
+    'a.html': `${styles({ inline: true, nonce: 'n1' })}<a class="su-btn">x</a>`,
+    'b.html': `${styles({ inline: true, minify: false })}<div class="su-card">y</div>`,
+  });
+  const a = site.read('a.html');
+  const b = site.read('b.html');
+
+  assert.match(a, /^<style data-sitelo-ui="" nonce="n1">/, 'the tag is kept as written');
+  assert.match(a, /\.su-btn\{/);
+  assert.doesNotMatch(a, /\.su-card\{/);
+
+  // The readable sheet stays readable.
+  assert.match(b, /\n\.su-card \{\n/);
+  assert.doesNotMatch(b, /\.su-btn/);
+  assert.ok(b.length < stylesheet({ minify: false }).length / 2);
+});
+
+test('a theme() block is not a sheet to prune', () => {
+  const block = '<style data-sitelo-ui-theme="">:root{--su-primary: red}</style>';
+  const site = prunedSite({ 'index.html': block });
+
+  assert.equal(site.read('index.html'), block);
+});
+
+test('a class a script adds counts as used', () => {
+  // The toast runtime builds its classes in a string, and `su-c-` cut
+  // off at the template expression keeps the whole palette.
+  const site = prunedSite({
+    'index.html': '<link rel="stylesheet" href="/su/ui.css"><script type="module" src="/assets/main.js"></script>',
+    'assets/main.js': 'node.className=`su-alert su-alert--soft su-c-${color}`',
+  });
+  const css = site.read('su/ui.css');
+
+  assert.match(css, /\.su-alert\{/);
+  assert.match(css, /\.su-c-danger\{/);
+  assert.match(css, /\.su-c-success\{/);
+});
+
+test('a runtime module the page imports is scanned too', () => {
+  // `steps.js` swaps `su-step--complete` and friends onto elements the
+  // server rendered without them.
+  const html =
+    '<link rel="stylesheet" href="/su/ui.css">' +
+    '<ol class="su-steps"><li class="su-step"><span class="su-step-marker"></span>' +
+    `<button onclick="import('/su/steps.js').then(m=>m.set('f',1))">n</button></li></ol>`;
+  const site = prunedSite({ 'index.html': html });
+  const css = site.read('su/ui.css');
+
+  assert.match(css, /\.su-step--complete/);
+  assert.match(css, /\.su-step--current/);
+});
+
+test('keep names classes the build never sees', () => {
+  const site = prunedSite(
+    { 'index.html': '<link rel="stylesheet" href="/su/ui.css">' },
+    { keep: ['su-card', 'su-btn*'] },
+  );
+  const css = site.read('su/ui.css');
+
+  assert.match(css, /\.su-card\{/);
+  assert.match(css, /\.su-btn--soft/);
+  assert.doesNotMatch(css, /\.su-modal/);
+});
+
+test('an extra’s sheet is pruned on the same terms', () => {
+  const linked = grainStylesUrl().split('/').pop();
+  const site = prunedSite({
+    'index.html': `<link rel="stylesheet" href="/su/${linked}"><div class="su-grain">g</div>`,
+  });
+  const [written] = site.list();
+
+  assert.match(written, /^grain-[0-9a-f]{8}\.css$/);
+  assert.match(site.read(`su/${written}`), /\.su-grain\{/);
+  assert.ok(site.read('index.html').includes(written));
+});

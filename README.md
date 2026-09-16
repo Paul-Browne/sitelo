@@ -564,10 +564,38 @@ the file in dev and writes it into the build, at the same base as the
 component runtime, under a name carrying a hash of the contents so you
 can serve it `immutable`.
 
-`{ inline: true }` puts the whole sheet in a `<style>` instead (~7 kB
+`{ inline: true }` puts the whole sheet in a `<style>` instead (~11 kB
 gzipped per page). That costs no round trip and cannot go missing from
 `dist/`, which is the better trade for a single page; the link buys its
 request back on the second page a visitor reads.
+
+The sheet covers every component in the library, and a site uses a
+handful. `pruneCss` writes only the rules the build can match:
+
+```js
+// sitelo.config.js
+export default {
+  pruneCss: true,
+}
+```
+
+The plugin reads the `su-` classes off the pages it has just written —
+and off the scripts beside them, since the toast runtime and the steps
+runtime add classes of their own — and drops every rule whose selector
+names a class nothing carries. This is decided from the output rather
+than the imports, which is what makes it precise: `button({ variant:
+'soft' })` renders `su-btn--soft` and a plain `button()` does not, and
+`import * as ui` says nothing about either. A linked sheet is pruned
+against the whole site and gets a new hash for its new contents, with
+every `<link>` rewritten to match; an inlined one is pruned to its own
+page. A site using a dozen components lands around 2–3 kB gzipped.
+
+It runs on the build only — dev serves the whole sheet. Markup the build
+never sees, such as a server island's, needs its classes named:
+
+```js
+pruneCss: { keep: ['su-card', 'su-card-body', 'su-btn*'] }  // `*` for a prefix
+```
 
 The rest of the family hands you the pieces: `stylesheet()` is the raw
 CSS as a string — for hosting the sheet where sitelo cannot reach, or
@@ -1747,6 +1775,8 @@ export default {
 | `renderConcurrency` | `8` | Pages rendered in parallel |
 | `renderBatchSize` | `max(concurrency, 32)` | Pages per render batch |
 | `buildReport` | `true` | Post-build summary. `false` to disable, or `{ top }` for how many large files to list (CLI only) |
+| `uiClient` | `{ base: '/su/' }` | Where the `sitelo/ui` runtime and stylesheet are served from; an absolute URL to host them yourself |
+| `pruneCss` | `false` | `true`, or `{ keep }`; writes the `sitelo/ui` stylesheet with only the rules the built pages can match |
 | `debug` | `false` | Verbose logging of discovery, routing, and emission |
 
 ### Performance

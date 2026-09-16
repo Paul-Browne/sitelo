@@ -90,6 +90,18 @@ export default () =>
           code('{ top }'),
           ' to change how many large files are listed',
         ),
+        li(
+          code('pruneCss'),
+          ' — default ',
+          code('false'),
+          '; ',
+          code('true'),
+          ' or ',
+          code('{ keep }'),
+          ' writes the ',
+          a({ href: '/docs/ui#styling' }, 'sitelo/ui stylesheet'),
+          ' with only the rules the built pages can match',
+        ),
         li(code('debug'), ' — verbose logging'),
         li(
           code('devToolbar'),

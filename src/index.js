@@ -21,9 +21,14 @@ function toArray(value) {
  * @param {{ base?: string }} [options.uiClient] - where to serve the
  *   sitelo-ui runtime from. Defaults to `/su/`; set it for a sub-path
  *   deploy, or to an absolute URL to host the files yourself.
+ * @param {boolean | { keep?: string[] }} [options.pruneCss] - write only
+ *   the rules of the sitelo-ui stylesheet that the built pages can
+ *   match, rather than the whole sheet. `keep` names classes to keep
+ *   regardless — for markup that arrives at request time, say — with a
+ *   trailing `*` for a prefix.
  */
 export default function sitelo(options = {}) {
-  const { uiClient, externalAssets, ...pluginOptions } = options;
+  const { uiClient, pruneCss, externalAssets, ...pluginOptions } = options;
 
   /*
    * The runtime is served by the plugin below — in dev from middleware,
@@ -45,6 +50,6 @@ export default function sitelo(options = {}) {
       generatedTypesDir: options.generatedTypesDir ?? '.sitelo/types',
       displayName: options.displayName ?? 'sitelo',
     }),
-    uiRuntime(uiClient),
+    uiRuntime({ ...uiClient, prune: pruneCss }),
   ];
 }

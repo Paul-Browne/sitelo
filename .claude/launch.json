@@ -22,6 +22,19 @@
         "examples/ui"
       ],
       "port": 5174
+    },
+    {
+      "name": "ui-example-preview",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "./bin/sitelo.js",
+        "preview",
+        "--root",
+        "examples/ui",
+        "--port",
+        "4173"
+      ],
+      "port": 4173
     }
   ]
 }

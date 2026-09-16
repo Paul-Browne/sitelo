@@ -102,6 +102,18 @@ export default () =>
           code('{ top }'),
           ' pour changer le nombre de gros fichiers listés',
         ),
+        li(
+          code('pruneCss'),
+          ' — par défaut ',
+          code('false'),
+          ' ; ',
+          code('true'),
+          ' ou ',
+          code('{ keep }'),
+          ' écrit la ',
+          a({ href: '/fr/docs/ui#styles' }, 'feuille de style de sitelo/ui'),
+          ' avec seulement les règles que les pages construites peuvent appliquer',
+        ),
         li(code('debug'), ' — journalisation détaillée'),
         li(
           code('devToolbar'),

@@ -102,6 +102,18 @@ export default () =>
           code('{ top }'),
           ' muda quantos ficheiros grandes são listados',
         ),
+        li(
+          code('pruneCss'),
+          ' — por omissão ',
+          code('false'),
+          '; ',
+          code('true'),
+          ' ou ',
+          code('{ keep }'),
+          ' escreve a ',
+          a({ href: '/pt/docs/ui#estilos' }, 'folha de estilos do sitelo/ui'),
+          ' apenas com as regras que as páginas construídas podem aplicar',
+        ),
         li(code('debug'), ' — registo detalhado'),
         li(
           code('devToolbar'),
