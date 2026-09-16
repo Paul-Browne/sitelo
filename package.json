@@ -104,7 +104,8 @@
     "docs:preview": "node ./bin/sitelo.js preview --root docs",
     "docs:index": "npm run docs:build",
     "docs:icons": "node ./docs/scripts/icons.mjs",
-    "docs:fonts": "node ./docs/scripts/fonts.mjs"
+    "docs:fonts": "node ./docs/scripts/fonts.mjs",
+    "update:all": "npm i && for d in examples/*/; do [ -f \"$d/package.json\" ] && (cd \"$d\" && echo \"--- $d\" && npm i); done"
   },
   "dependencies": {
     "javascript-to-html": "^1.1.5",
