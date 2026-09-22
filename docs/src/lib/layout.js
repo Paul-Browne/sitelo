@@ -582,8 +582,8 @@ function pageShell({
 /**
  * Letters a locale spells out before the accent fold below, because NFD
  * leaves them alone: they are single code points rather than a base letter
- * plus a combining mark, so the fold cannot see them. German is the only
- * locale that needs it today; a locale with no entry folds alone.
+ * plus a combining mark, so the fold cannot see them. A locale with no
+ * entry folds alone.
  */
 const TRANSLITERATIONS = {
   de: [
@@ -592,6 +592,7 @@ const TRANSLITERATIONS = {
     [/ü/g, 'ue'],
     [/ß/g, 'ss'],
   ],
+  pl: [[/ł/g, 'l']],
 }
 
 /**
@@ -608,8 +609,6 @@ const FOLD_TO_ASCII = new Set([
   'pt',
   'it',
   'pl',
-  'tr',
-  'id',
 ])
 
 /**
@@ -619,7 +618,8 @@ const FOLD_TO_ASCII = new Set([
  * de imágenes" slugs to `optimizacion-de-imagenes` rather than losing every
  * accented letter to a dash. Some letters are spelled out first, because the
  * fold cannot see them: German umlauts give `jsx-einschraenkungen` rather
- * than `jsx-einschrankungen`.
+ * than `jsx-einschrankungen`, and Polish “ł” becomes a plain `l`
+ * rather than surviving as itself.
  *
  * Russian and Chinese keep their own characters — HTML5 ids allow them, and
  * stripping to ASCII would leave every heading with an empty or colliding id.

@@ -19,6 +19,11 @@ const T = {
     exampleTitle: 'sitelo — esempio di base',
     hello: 'Ciao da sitelo',
   },
+  pl: {
+    exampleTitle: 'sitelo — podstawowy przykład',
+    hello: 'Cześć z sitelo',
+  },
+
 }
 
 export function basicSnippets(lang = 'en') {

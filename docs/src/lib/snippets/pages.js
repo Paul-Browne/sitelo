@@ -31,6 +31,11 @@ const T = {
     hello: 'Ciao',
     staticAsItGets: 'Più statico di così',
   },
+  pl: {
+    hello: 'Cześć',
+    staticAsItGets: 'Statyczniej się nie da',
+  },
+
 }
 
 export function pagesSnippets(lang = 'en') {

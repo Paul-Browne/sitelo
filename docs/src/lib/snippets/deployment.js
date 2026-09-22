@@ -35,6 +35,12 @@ const T = {
     amplify: 'Hosting AWS Amplify',
     ghPages: 'GitHub Pages',
   },
+  pl: {
+    cloudflare: 'Cloudflare Pages',
+    amplify: 'Hosting AWS Amplify',
+    ghPages: 'GitHub Pages',
+  },
+
 }
 
 export function deploymentSnippets(lang = 'en') {

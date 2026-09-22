@@ -16,6 +16,7 @@ export const LOCALES = [
   'zh',
   'pt',
   'it',
+  'pl',
 ]
 
 /** Locales served from a URL prefix — everything but the default. */
@@ -31,6 +32,7 @@ export const LOCALE_NAMES = {
   zh: '简体中文',
   pt: 'Português',
   it: 'Italiano',
+  pl: 'Polski',
 }
 
 /**
@@ -49,6 +51,7 @@ export const LOCALE_TAGS = {
   zh: 'zh-Hans',
   pt: 'pt-PT',
   it: 'it',
+  pl: 'pl',
 }
 
 /**
@@ -68,6 +71,7 @@ export const LOCALE_FLAGS = {
   zh: '🇨🇳',
   pt: '🇵🇹',
   it: '🇮🇹',
+  pl: '🇵🇱',
 }
 
 /** Open Graph locale identifiers. */
@@ -80,6 +84,7 @@ export const OG_LOCALES = {
   zh: 'zh_CN',
   pt: 'pt_PT',
   it: 'it_IT',
+  pl: 'pl_PL',
 }
 
 /**
@@ -507,6 +512,45 @@ const STRINGS = {
     cookieDecline: 'Rifiuta',
     defaultDescription:
       'sitelo — generazione di siti statici per Vite. Scrivi funzioni che restituiscono HTML.',
+  },
+  pl: {
+    navDocs: 'Dokumentacja',
+    navExamples: 'Przykłady',
+    navUi: 'UI',
+    navAbout: 'O projekcie',
+    openMenu: 'Otwórz menu',
+    menu: 'Menu',
+    languageLabel: 'Język',
+    themeToLight: 'Przełącz na jasny motyw',
+    themeToDark: 'Przełącz na ciemny motyw',
+    sidebarDocs: 'Dokumentacja',
+    sidebarExamples: 'Przykłady',
+    sidebarUi: 'Komponenty',
+    titleSuffixDocs: 'dokumentacja sitelo',
+    titleSuffixExamples: 'przykłady sitelo',
+    titleSuffixUi: 'sitelo UI',
+    tocLabel: 'Na tej stronie',
+    pagenavLabel: 'Sąsiednie strony',
+    previous: '← Poprzednia',
+    next: 'Następna →',
+    copy: 'Kopiuj',
+    copyCode: 'Kopiuj kod',
+    copied: 'Skopiowano',
+    copyFailed: 'Błąd',
+    markupStyle: 'Styl znaczników',
+    templateLiteral: 'Literał szablonu',
+    recommended: 'zalecane',
+    licenseLabel: 'Licencja MIT',
+    nodeLabel: 'Wymaga Node 20.19 lub nowszego',
+    githubLabel: (version) => `sitelo ${version} na GitHubie`,
+    viteLabel: (version) => `Napędzane przez Vite ${version}`,
+    cookieLabel: 'Zgoda na pliki cookie',
+    cookieText:
+      'Ta strona używa plików cookie Google Analytics do liczenia wizyt. Bez Twojej zgody nic nie jest zapisywane.',
+    cookieAccept: 'Akceptuj',
+    cookieDecline: 'Odrzuć',
+    defaultDescription:
+      'sitelo — generowanie stron statycznych dla Vite. Pisz funkcje, które zwracają HTML.',
   },
 }
 

@@ -142,6 +142,26 @@ const T = {
     listening: 'In ascolto su',
     notFound: 'Non trovato',
   },
+  pl: {
+    nodeHost: 'Host Node: statyczny dist + wyspy',
+    netlifyRewrite: 'przepisanie Netlify → funkcja',
+    vercelRewrite: 'przepisanie Vercel → trasa api',
+    netlifyHandler: 'obsługa wysp dla Netlify',
+    vercelHandler: 'obsługa wysp dla Vercela',
+    pagePlaceholder: 'strona z miejscem na wyspę',
+    clientLoader: 'loader kliencki (wchodzi do paczki w dist/)',
+    serverOnlyFragment: 'moduł fragmentu tylko po stronie serwera',
+    serverTime: 'Czas serwera',
+    rightNow: 'Właśnie teraz',
+    renderedOnRequest: 'Wyrenderowane na żądanie o',
+    demoTitle: 'Demo wysp serwerowych',
+    staticLive: 'Statyczna strona, żywa wyspa',
+    builtOnce: 'Ten HTML zbudowano raz. Ramka poniżej wypełnia się w chwili żądania.',
+    loadingTime: '<p>Wczytywanie czasu serwera…</p>',
+    listening: 'Nasłuchuje na',
+    notFound: 'Nie znaleziono',
+  },
+
 }
 
 export function islandsExampleSnippets(lang = 'en') {

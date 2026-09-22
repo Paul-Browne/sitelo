@@ -76,6 +76,8 @@ const TABLE_HEADERS = {
   zh: ['属性', '类型', '默认值', '说明'],
   pt: ['Prop', 'Tipo', 'Predefinição', 'Descrição'],
   it: ['Prop', 'Tipo', 'Predefinito', 'Descrizione'],
+  pl: ['Prop', 'Typ', 'Domyślnie', 'Opis'],
+
 }
 
 /**
@@ -91,6 +93,8 @@ const SANDBOX_LABELS = {
   zh: { type: '类型', frequency: '频率', octaves: '倍频', seed: '种子', color: '颜色', colorHelp: '透明或白色就是保持灰色；alpha 决定上多少。', opacity: '不透明度', blend: '混合', background: '背景', preview: '动动这些控件。' },
   pt: { type: 'Tipo', frequency: 'Frequência', octaves: 'Oitavas', seed: 'Semente', color: 'Cor', colorHelp: 'Transparente ou branco deixa-o cinzento; o alfa é o quanto.', opacity: 'Opacidade', blend: 'Mistura', background: 'Fundo', preview: 'Brinque com os controlos.' },
   it: { type: 'Tipo', frequency: 'Frequenza', octaves: 'Ottave', seed: 'Seme', color: 'Colore', colorHelp: 'Trasparente o bianco lo lascia grigio; l’alfa dice quanto.', opacity: 'Opacità', blend: 'Fusione', background: 'Sfondo', preview: 'Gioca con i controlli.' },
+  pl: { type: 'Typ', frequency: 'Częstotliwość', octaves: 'Oktawy', seed: 'Ziarno', color: 'Kolor', colorHelp: 'Przezroczysty albo biały zostawia szary; alfa decyduje ile.', opacity: 'Krycie', blend: 'Mieszanie', background: 'Tło', preview: 'Pobaw się suwakami.' },
+
 }
 
 /**

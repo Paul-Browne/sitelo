@@ -122,6 +122,25 @@ const T = {
     rssFeed: 'Feed RSS',
     notFound: 'Articolo non trovato',
   },
+  pl: {
+    postsComment: 'posts: frontmatter + markdown',
+    libComment: 'czyta content/, parsuje frontmatter, renderuje markdown',
+    indexComment: '/ — lista wpisów',
+    slugComment: '/blog/:slug — jedna strona na wpis',
+    feedItemComment: 'każda strona /blog/* staje się elementem kanału',
+    outsideSrc: 'Wpisy leżą poza src/, więc nigdy nie są traktowane jak strony ani zasoby.',
+    frontmatterDoc: 'Malutki parser frontmattera — linie `klucz: wartość` między znacznikami ---.',
+    allPostsDoc: 'Wszystkie wpisy, od najnowszego. Działa w Node tylko przy buildzie i w dev.',
+    myBlog: 'Mój blog',
+    latestPosts: 'Najnowsze wpisy',
+    postTitle: 'Witaj, świecie',
+    postDesc: 'Obowiązkowy pierwszy wpis.',
+    postBody: 'Ten blog to katalog plików markdown renderowanych do statycznego HTML-a.',
+    allPosts: '← Wszystkie wpisy',
+    rssFeed: 'Kanał RSS',
+    notFound: 'Nie znaleziono wpisu',
+  },
+
 }
 
 export function blogSnippets(lang = 'en') {

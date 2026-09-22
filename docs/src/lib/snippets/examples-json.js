@@ -166,6 +166,27 @@ const T = {
     inStock: 'Disponibile',
     outOfStock: 'Esaurito',
   },
+  pl: {
+    siteComment: 'ustawienia całej witryny',
+    productsComment: 'jeden plik na produkt',
+    categoriesComment: 'jeden obiekt, kluczowany slugiem',
+    libComment: 'jedyny moduł dotykający sitelo/data',
+    indexComment: '/ — kategorie i wszystkie produkty',
+    productComment: '/products/:slug — jedna strona na plik JSON',
+    categoryComment: '/categories/:slug — jedna strona na klucz',
+    siteDoc: 'Ustawienia całej witryny: jeden plik JSON, parsowany bez zmian.',
+    productsDoc: 'Jeden wpis na plik, slug brany z nazwy pliku.',
+    categoriesDoc: 'Jeden plik z obiektem kluczowanym slugiem — klucz staje się slugiem.',
+    inCategoryDoc: 'Produkty z jednej kategorii, od najtańszego.',
+    categories: 'Kategorie',
+    allProducts: 'Wszystkie produkty',
+    category: 'Kategoria',
+    released: 'Premiera',
+    availability: 'Dostępność',
+    inStock: 'Dostępny',
+    outOfStock: 'Niedostępny',
+  },
+
 }
 
 export function jsonSnippets(lang = 'en') {

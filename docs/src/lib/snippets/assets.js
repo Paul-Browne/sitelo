@@ -74,6 +74,16 @@ const T = {
     mySite: 'Il mio sito',
     hello: 'Ciao',
   },
+  pl: {
+    pageReturnsHtml: 'strona — zwraca HTML',
+    linkedBundled: 'podlinkowane z HTML → trafia do paczki',
+    importedBundled: 'importowane przez main.js → też trafia do paczki',
+    dataOnly: 'używane tylko w data() → nigdy nie trafia do wyniku',
+    copiedAsIs: 'kopiowane bez zmian',
+    mySite: 'Moja strona',
+    hello: 'Cześć',
+  },
+
 }
 
 export function assetsSnippets(lang = 'en') {

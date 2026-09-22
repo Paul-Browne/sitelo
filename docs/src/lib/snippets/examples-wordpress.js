@@ -152,6 +152,31 @@ const T = {
     backToBlog: '← Blog',
     notFound: 'Articolo non trovato',
   },
+  pl: {
+    wpHelpers: 'pomocniki REST WP (stronicowane pobieranie)',
+    homeComment: 'strona główna — lista najnowszych wpisów',
+    archiveComment: '/blog — pełne archiwum',
+    everyPost: '/blog/:slug — każdy wpis',
+    raiseConcurrency: 'tysiące stron? zwiększ współbieżność',
+    wpMax: 'maksimum WP dla /wp/v2/posts',
+    walkEvery: 'Przejdź każdą stronę /posts, aż cała witryna zostanie pobrana.',
+    fullArchive: 'Pełne archiwum — przejdź stronicowaniem przez całą witrynę WP',
+    ripping: 'pobieram wpisy…',
+    sinceStart: 'od startu',
+    ripEvery: 'Pobierz każdy opublikowany wpis (tysiące są w porządku — 100 na żądanie)',
+    slugsOnly: 'tylko slugi; pomiń _embed dla szybkości',
+    page: 'strona',
+    posts: 'wpisów',
+    ripped: 'pobrano',
+    inTime: 'w',
+    mySite: 'Moja strona',
+    latestFromBlog: 'Najnowsze z bloga',
+    allPosts: 'Wszystkie wpisy',
+    blog: 'Blog',
+    backToBlog: '← Blog',
+    notFound: 'Nie znaleziono wpisu',
+  },
+
 }
 
 export function wordpressSnippets(lang = 'en') {

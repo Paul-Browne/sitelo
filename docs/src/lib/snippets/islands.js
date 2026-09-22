@@ -99,6 +99,19 @@ const T = {
     serverComment: 'ad esempio un server Node, oppure una funzione serverless/edge',
     notIslandRequest: 'Request web → Response | null (null = non è una richiesta island)',
   },
+  pl: {
+    staticContent: '…statyczna treść…',
+    loadingComments: '<p>Wczytywanie komentarzy…</p>',
+    loadWithPage: 'Ładuj razem ze stroną — domyślnie.',
+    waitIdle: 'Poczekaj na wywołanie w bezczynności.',
+    waitVisible: 'Poczekaj, aż wejdzie w pole widzenia.',
+    startEarly: 'zacznij ładować 400px wcześniej',
+    perIsland: 'na wyspę; 0 wyłącza. Domyślnie 10000',
+    visibleDefault: "domyślne dla wysp z `when: 'visible'`",
+    serverComment: 'np. serwer Node albo funkcja serverless/edge',
+    notIslandRequest: 'webowy Request → Response | null (null = to nie żądanie wyspy)',
+  },
+
 }
 
 export function islandsSnippets(lang = 'en') {

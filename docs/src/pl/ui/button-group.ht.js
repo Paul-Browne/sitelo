@@ -1,0 +1,126 @@
+import { a, h2, p, strong } from 'javascript-to-html'
+import { code, demo, propsTable, uiLayout } from '../../lib/pl.js'
+
+export default () =>
+  uiLayout({
+    title: 'Grupa przycisków',
+    description:
+      'Przyciski, które do siebie należą, złączone w jedną kontrolkę wspólnymi obramowaniami i zaokrąglonymi końcami.',
+    activeHref: '/pl/ui/button-group',
+    children: [
+      p(
+        'Przyciski grupuje się, opakowując je w ',
+        code('buttonGroup()'),
+        '. Muszą być bezpośrednimi dziećmi: grupa zaokrągla pierwszy i ostatni przycisk, a resztę ściąga do siebie, więc cokolwiek pomiędzy rozbija spoinę.',
+      ),
+
+      h2('Podstawowa grupa'),
+      demo(`buttonGroup({ label: 'Podstawowa grupa przycisków' },
+  button('Jeden'),
+  button('Dwa'),
+  button('Trzy'),
+)`),
+
+      h2('Warianty'),
+      p(
+        'Sama grupa nie niesie koloru. Ustaw ',
+        code('variant'),
+        ' i ',
+        code('color'),
+        ' na przyciskach i trzymaj je w grupie jednakowe — to właśnie sprawia, że czyta się ją jako jedną kontrolkę.',
+      ),
+      demo(`stack({ gap: 'md', align: 'flex-start' },
+  buttonGroup({ label: 'Solid' },
+    button({ variant: 'solid' }, 'Jeden'),
+    button({ variant: 'solid' }, 'Dwa'),
+    button({ variant: 'solid' }, 'Trzy'),
+  ),
+  buttonGroup({ label: 'Outline' },
+    button({ variant: 'outline', color: 'neutral' }, 'Jeden'),
+    button({ variant: 'outline', color: 'neutral' }, 'Dwa'),
+    button({ variant: 'outline', color: 'neutral' }, 'Trzy'),
+  ),
+  buttonGroup({ label: 'Soft' },
+    button({ variant: 'soft' }, 'Jeden'),
+    button({ variant: 'soft' }, 'Dwa'),
+    button({ variant: 'soft' }, 'Trzy'),
+  ),
+)`, { align: 'start' }),
+
+      h2('Rozmiary i kolory'),
+      demo(`stack({ gap: 'md', align: 'flex-start' },
+  buttonGroup({ label: 'Małe' },
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Lewo'),
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Środek'),
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Prawo'),
+  ),
+  buttonGroup({ label: 'Duże' },
+    button({ size: 'lg', variant: 'soft', color: 'danger' }, 'Anuluj'),
+    button({ size: 'lg', variant: 'soft', color: 'danger' }, 'Odrzuć'),
+  ),
+)`, { align: 'start' }),
+
+      h2('Odnośniki'),
+      p(
+        'Przyciski z ',
+        code('href'),
+        ' grupują się dokładnie tak samo — na rząd rzeczy, z których każda gdzieś prowadzi, a żadna nie jest tą, na której właśnie jesteś.',
+      ),
+      demo(`buttonGroup({ label: 'Udostępnij' },
+  button({ href: '#rss', variant: 'outline', color: 'neutral' }, 'RSS'),
+  button({ href: '#json', variant: 'outline', color: 'neutral' }, 'JSON'),
+  button({ href: '#sitemap', variant: 'outline', color: 'neutral' }, 'Mapa witryny'),
+)`),
+
+      h2('Grupa przycisków czy grupa przełączników?'),
+      p(
+        'Grupa przycisków to kontener: łączy to, co do niej włożysz, i nie trzyma żadnego stanu. Jeśli jeden z elementów jest ',
+        strong('wybrany'),
+        ' — kontrolka segmentowa, filtr, sekcja, w której właśnie jesteś — to ',
+        a({ href: '/pl/ui/toggle-group' }, 'grupa przełączników'),
+        ', która buduje elementy z danych i sama oznacza aktywny.',
+      ),
+      p(
+        'Zasada kciuka: jeśli naciśnięcie jednego czyni pozostałe nieaktualnymi, to grupa przełączników. Jeśli każdy robi swoje, osobne — to grupa przycisków.',
+      ),
+      demo(`stack({ gap: 'lg' },
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'buttonGroup — trzy osobne akcje'),
+    buttonGroup({ label: 'Akcje wiersza' },
+      button({ variant: 'outline', color: 'neutral' }, 'Edytuj'),
+      button({ variant: 'outline', color: 'neutral' }, 'Duplikuj'),
+      button({ variant: 'outline', color: 'neutral' }, 'Usuń'),
+    ),
+  ),
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'toggleGroup — jeden wybór z trzech'),
+    toggleGroup({
+      label: 'Wyrównanie tekstu',
+      value: 'Do środka',
+      items: ['Do lewej', 'Do środka', 'Do prawej'],
+    }),
+  ),
+)`, { align: 'start' }),
+
+      h2('Z przyciskiem-ikoną'),
+      demo(`buttonGroup({ label: 'Akcje edytora' },
+  button({ variant: 'outline', color: 'neutral' }, 'Zapisz'),
+  iconButton({
+    label: 'Więcej akcji',
+    variant: 'outline',
+    color: 'neutral',
+    icon: icon('more-horizontal'),
+  }),
+)`),
+
+      h2('Propsy'),
+      propsTable([
+        ['label', 'string', '', 'Dostępna nazwa grupy; staje się aria-label na role="group".'],
+      ]),
+      p(
+        'Cała reszta przechodzi na opakowanie. Przyciski w środku biorą własne propsy — zobacz ',
+        code('button()'),
+        '.',
+      ),
+    ],
+  })

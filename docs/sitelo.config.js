@@ -48,8 +48,8 @@ export default {
       cpuQuietThresholdMs: 0,
     },
     exclude: [
-      '{de,es,fr,id,it,pl,pt,ru,tr,zh}.html',
-      '{de,es,fr,id,it,pl,pt,ru,tr,zh}/**',
+      '{de,es,fr,it,pl,pt,ru,zh}.html',
+      '{de,es,fr,it,pl,pt,ru,zh}/**',
       '404.html',
     ],
     /*

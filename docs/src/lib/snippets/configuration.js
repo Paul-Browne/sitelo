@@ -197,6 +197,31 @@ const T = {
     saveReports: 'report completi in .sitelo/lighthouse/',
     auditEveryBuild: 'esegui l’audit anche alla fine di sitelo build',
   },
+  pl: {
+    myBlog: 'Mój blog',
+    latestPosts: 'Najnowsze wpisy',
+    viteOnly: 'Tylko opcje Vite; sitelo i tak wstrzykuje wtyczkę',
+    registerPlugin: 'Zarejestruj wtyczkę samodzielnie',
+    linkCheckModes: "'warn' (domyślnie), 'error' albo obiekt opcji",
+    failBuild: 'przerwij build przy martwym odnośniku',
+    verifyFragments: 'sprawdzaj też cele #fragmentów',
+    hideToolbar: 'ukryj dla wszystkich w tym projekcie',
+    brokenLinks: 'martwe odnośniki wewnętrzne',
+    escapesOutDir: 'wychodzi poza katalog wyjściowy',
+    noSuchPage: 'nie ma takiej strony',
+    mySite: 'Moja strona',
+    home: 'Start',
+    hello: 'Cześć',
+    onlyIndexed: 'Indeksowany jest tylko ten obszar.',
+    indexAfterBuild: 'Indeks powstaje dopiero po `sitelo build` (domyślnie kopiowany do public/pagefind)',
+    thenPreview: 'potem: sitelo preview — albo sitelo (dev) korzystające z public/pagefind',
+    skip404: 'strona 404 rzadko warta jest audytu',
+    desktopPreset: 'presetu desktopowego Lighthouse',
+    medianRuns: 'trzy przebiegi na stronę, wynik mediany',
+    saveReports: 'pełne raporty w .sitelo/lighthouse/',
+    auditEveryBuild: 'audytuj też na końcu sitelo build',
+  },
+
 }
 
 export function configurationSnippets(lang = 'en') {

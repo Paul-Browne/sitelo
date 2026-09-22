@@ -75,6 +75,16 @@ const T = {
     clientScript: 'ciò che le pagine caricano con uno <script src>',
     anythingElse: 'e qualunque altra cosa knip accetti',
   },
+  pl: {
+    sameAsDev: 'to samo co sitelo dev',
+    devServer: 'serwer deweloperski',
+    prodBuild: 'build produkcyjny',
+    previewBuild: 'podgląd buildu produkcyjnego',
+    auditBuild: 'audyt buildu produkcyjnego',
+    clientScript: 'to, co strony ładują przez <script src>',
+    anythingElse: 'i cokolwiek innego, co knip przyjmie',
+  },
+
 }
 
 export function cliSnippets(lang = 'en') {

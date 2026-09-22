@@ -114,6 +114,21 @@ const T = {
     jsxOnloadNote: 'React mappa onLoad → evento sintetico; lo spread ci fa emettere onload="" grezzo',
     jsxOnsubmitNote: 'stesso motivo — onsubmit="" grezzo, non l’onSubmit di React',
   },
+  pl: {
+    shellComment: 'statyczna powłoka + wbudowane handlery import()',
+    handlersComment: 'eksportowane handlery (ładowane na żądanie)',
+    todos: 'Zadania',
+    whatNeedsDoing: 'Co jest do zrobienia?',
+    add: 'Dodaj',
+    nothingYet: 'Jeszcze nic tu nie ma.',
+    left: 'zostało',
+    remove: 'Usuń',
+    markComplete: 'Oznacz',
+    complete: 'jako zrobione',
+    jsxOnloadNote: 'React mapuje onLoad → zdarzenie syntetyczne; spread pozwala wypisać surowe onload=""',
+    jsxOnsubmitNote: 'ten sam powód — surowe onsubmit="", nie onSubmit Reacta',
+  },
+
 }
 
 export function todoSnippets(lang = 'en') {
