@@ -114,7 +114,7 @@
     "update:all": "npm i && for d in examples/*/; do [ -f \"$d/package.json\" ] && (cd \"$d\" && echo \"--- $d\" && npm i); done"
   },
   "dependencies": {
-    "javascript-to-html": "^1.1.5",
+    "javascript-to-html": "^1.1.6",
     "vite": "^8.3.0",
     "vite-plugin-html-pages": "^2.4.1"
   },
