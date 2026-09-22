@@ -31,6 +31,21 @@ trap 'rm -rf "$WORK"' EXIT
 
 export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
+# Yarn 4.15+ refuses any version published in the last 24 hours
+# (`npmMinimalAgeGate`, default 1440 minutes), failing the install with
+# YN0016 "all versions satisfying X are quarantined". That fires on sitelo's
+# own dependencies: bumping to a release published the same day reds this leg
+# for a day while npm, pnpm and Yarn Classic all pass, and the error reads
+# like the package is missing rather than young.
+#
+# The gate is a supply-chain defence and worth having where a lockfile is
+# committed. Here it only obstructs: this leg exists to prove sitelo's
+# optional peer *resolution* works under Plug'n'Play, it installs into a
+# throwaway directory that is deleted on exit, and it holds no secrets.
+#
+# Ignored by every manager but Berry.
+export YARN_NPM_MINIMAL_AGE_GATE=0
+
 fail() { echo "::error::[$MANAGER] $*"; exit 1; }
 info() { echo "  [$MANAGER] $*"; }
 
