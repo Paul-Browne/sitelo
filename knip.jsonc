@@ -1,0 +1,18 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+  "entry": [
+    // The docs site: file-based pages and the one client script its
+    // layout references by URL rather than import.
+    "docs/sitelo.config.js",
+    "docs/src/**/*.ht.js",
+    "docs/src/main.js",
+    // Served to the browser by the sitelo/ui plugin; their exports are
+    // called from event attributes, so nothing imports them statically.
+    "src/ui/runtime/*.js"
+  ],
+  // Each example is its own package, installed against a tarball of this one.
+  "ignore": ["examples/**"],
+  // lighthouse's own dependency, resolved through lighthouse on purpose
+  // (see loadChromeLauncher in src/lighthouse.js).
+  "ignoreDependencies": ["chrome-launcher"]
+}
