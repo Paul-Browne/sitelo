@@ -38,5 +38,6 @@ Add each island name to the serverless stubs’ `islands` map (or use `createIsl
 - `server.js` — serves `dist/` + `createIslandsFromDirectory`
 - `netlify.toml` / `netlify/functions/` — Netlify rewrite + function
 - `vercel.json` / `api/islands/` — Vercel rewrite + serverless route
+- `knip.js` — `npm run knip` finds unused code; pages and islands come from `sitelo/knip`, the host entry points are named
 
 See the full walkthrough at [sitelo.dev/examples/islands](https://sitelo.dev/examples/islands).

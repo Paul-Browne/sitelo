@@ -6,9 +6,13 @@
     "dev": "sitelo",
     "build": "sitelo build",
     "preview": "sitelo preview",
-    "start": "node server.js"
+    "start": "node server.js",
+    "knip": "knip"
   },
   "dependencies": {
     "sitelo": "file:../.."
+  },
+  "devDependencies": {
+    "knip": "^6.37.0"
   }
 }
