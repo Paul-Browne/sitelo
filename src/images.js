@@ -556,7 +556,7 @@ export function resolveSizes(intrinsic, hint, widths) {
  *   urlPrefix: string
  * }} args
  */
-export function createImageProcessor({ sharp, options, cacheDir, outputDir, urlPrefix }) {
+function createImageProcessor({ sharp, options, cacheDir, outputDir, urlPrefix }) {
   /** @type {Map<string, Promise<null | object>>} */
   const sources = new Map()
   /** @type {Map<string, Promise<object>>} */
@@ -784,7 +784,7 @@ const ATTRIBUTE_PATTERN =
  * Needed so `src="…?a=1&amp;b=2"` fetches as `…?a=1&b=2`.
  * @param {string} value
  */
-export function decodeHtmlEntities(value) {
+function decodeHtmlEntities(value) {
   return String(value)
     .replace(/&quot;/gi, '"')
     .replace(/&#0*39;/g, "'")
@@ -1018,7 +1018,7 @@ export async function rewriteHtmlImages({ html, options, resolve, generate, onWa
  * Resolve a root-relative URL against the directories sitelo serves from.
  * @param {{ root: string, dirs: Array<string | false | undefined>, base?: string }} args
  */
-export function createSourceResolver({ root, dirs, base = '/' }) {
+function createSourceResolver({ root, dirs, base = '/' }) {
   const basePrefix = base.replace(/\/+$/, '')
   const roots = dirs
     .filter((dir) => typeof dir === 'string' && dir.length > 0)

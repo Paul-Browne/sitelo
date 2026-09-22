@@ -80,7 +80,7 @@ export function space(value) {
  * @param {Record<string, string | number | undefined | null>} declarations
  * @returns {string}
  */
-export function css(declarations) {
+function css(declarations) {
   return Object.entries(declarations)
     .filter(([, value]) => value != null && value !== '')
     .map(([property, value]) => `${property}: ${value}`)
@@ -147,7 +147,7 @@ export function escapeHtml(value) {
 }
 
 /** Colors every themed component accepts. */
-export const COLORS = ['primary', 'neutral', 'success', 'warning', 'danger']
+const COLORS = ['primary', 'neutral', 'success', 'warning', 'danger']
 
 /** Button variants, shared with `menu()` whose trigger is a button. */
 export const BUTTON_VARIANTS = ['solid', 'soft', 'outline', 'ghost', 'link']

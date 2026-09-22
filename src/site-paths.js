@@ -46,7 +46,7 @@ export function toPosix(value) {
  *
  * @param {string} glob
  */
-export function globToRegExp(glob) {
+function globToRegExp(glob) {
   let source = ''
   let braces = 0
 

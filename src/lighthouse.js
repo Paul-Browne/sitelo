@@ -21,7 +21,7 @@ const CATEGORY_LABELS = {
 }
 
 /** The two device profiles Lighthouse emulates, in reporting order. */
-export const FORM_FACTORS = ['mobile', 'desktop']
+const FORM_FACTORS = ['mobile', 'desktop']
 
 const OUTPUT_FORMATS = ['html', 'json', 'csv']
 const DEFAULT_INCLUDE = ['**/*.html']

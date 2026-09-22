@@ -179,7 +179,7 @@ export function createCodeHelpers(lang = DEFAULT_LOCALE) {
   return { code, codeBlock, pageCodeTabs, inlineCode: code, docLink }
 }
 
-export function docLink(href, label) {
+function docLink(href, label) {
   return a({ href }, label)
 }
 
@@ -187,4 +187,3 @@ const en = createCodeHelpers(DEFAULT_LOCALE)
 
 export const codeBlock = en.codeBlock
 export const pageCodeTabs = en.pageCodeTabs
-export const inlineCode = en.inlineCode

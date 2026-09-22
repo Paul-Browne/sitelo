@@ -76,7 +76,7 @@ export const OG_LOCALES = {
  * alternates are emitted only for these, so a path that gains a locale must
  * be listed here or the switcher will not offer it.
  */
-export const TRANSLATED_PATHS = new Set([
+const TRANSLATED_PATHS = new Set([
   '/',
   '/about',
   '/docs',
@@ -159,14 +159,6 @@ export function basePath(path) {
     if (path.startsWith(`/${locale}/`)) return path.slice(locale.length + 1)
   }
   return path
-}
-
-/** Which locale a path is served under. */
-export function localeOf(path) {
-  for (const locale of PREFIXED) {
-    if (path === `/${locale}` || path.startsWith(`/${locale}/`)) return locale
-  }
-  return DEFAULT_LOCALE
 }
 
 /** Render a path in `lang`. `localePath('/docs', 'fr')` → `/fr/docs`. */

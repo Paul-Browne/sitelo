@@ -672,7 +672,3 @@ export function exampleNav(lang = DEFAULT_LOCALE) {
   const items = EXAMPLE_LABELS[lang] ?? EXAMPLE_LABELS[DEFAULT_LOCALE]
   return items.map(({ href, label }) => ({ href: localePath(href, lang), label }))
 }
-
-export const DOC_NAV = docNav(DEFAULT_LOCALE)
-export const EXAMPLE_NAV = exampleNav()
-export const UI_NAV = uiNav(DEFAULT_LOCALE)

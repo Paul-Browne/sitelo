@@ -33,7 +33,7 @@ const NAME = /^[a-z][a-z0-9-]*$/
  * @param {string} name
  * @returns {URL | null}
  */
-export function sheetSource(name) {
+function sheetSource(name) {
   if (name === 'ui') return CORE
   if (!NAME.test(name)) return null
 
