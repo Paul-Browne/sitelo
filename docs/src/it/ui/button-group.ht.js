@@ -1,0 +1,126 @@
+import { a, h2, p, strong } from 'javascript-to-html'
+import { code, demo, propsTable, uiLayout } from '../../lib/it.js'
+
+export default () =>
+  uiLayout({
+    title: 'Gruppo di pulsanti',
+    description:
+      'Pulsanti che stanno insieme, uniti in un unico controllo con bordi condivisi ed estremità arrotondate.',
+    activeHref: '/it/ui/button-group',
+    children: [
+      p(
+        'I pulsanti si raggruppano avvolgendoli in ',
+        code('buttonGroup()'),
+        '. Devono essere figli diretti: il gruppo arrotonda il primo e l’ultimo pulsante e stringe insieme gli altri, quindi qualunque cosa in mezzo rompe la giuntura.',
+      ),
+
+      h2('Gruppo di base'),
+      demo(`buttonGroup({ label: 'Gruppo di pulsanti di base' },
+  button('Uno'),
+  button('Due'),
+  button('Tre'),
+)`),
+
+      h2('Varianti'),
+      p(
+        'Il gruppo di per sé non porta colore. Imposta ',
+        code('variant'),
+        ' e ',
+        code('color'),
+        ' sui pulsanti, e tienili uguali in tutto il gruppo — è questo che lo fa leggere come un unico controllo.',
+      ),
+      demo(`stack({ gap: 'md', align: 'flex-start' },
+  buttonGroup({ label: 'Solid' },
+    button({ variant: 'solid' }, 'Uno'),
+    button({ variant: 'solid' }, 'Due'),
+    button({ variant: 'solid' }, 'Tre'),
+  ),
+  buttonGroup({ label: 'Outline' },
+    button({ variant: 'outline', color: 'neutral' }, 'Uno'),
+    button({ variant: 'outline', color: 'neutral' }, 'Due'),
+    button({ variant: 'outline', color: 'neutral' }, 'Tre'),
+  ),
+  buttonGroup({ label: 'Soft' },
+    button({ variant: 'soft' }, 'Uno'),
+    button({ variant: 'soft' }, 'Due'),
+    button({ variant: 'soft' }, 'Tre'),
+  ),
+)`, { align: 'start' }),
+
+      h2('Dimensioni e colori'),
+      demo(`stack({ gap: 'md', align: 'flex-start' },
+  buttonGroup({ label: 'Piccolo' },
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Sinistra'),
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Centro'),
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Destra'),
+  ),
+  buttonGroup({ label: 'Grande' },
+    button({ size: 'lg', variant: 'soft', color: 'danger' }, 'Annulla'),
+    button({ size: 'lg', variant: 'soft', color: 'danger' }, 'Scarta'),
+  ),
+)`, { align: 'start' }),
+
+      h2('Link'),
+      p(
+        'I pulsanti con un ',
+        code('href'),
+        ' si raggruppano esattamente allo stesso modo — per una fila di cose che portano ciascuna da qualche parte, nessuna delle quali è quella in cui ti trovi.',
+      ),
+      demo(`buttonGroup({ label: 'Condividi' },
+  button({ href: '#rss', variant: 'outline', color: 'neutral' }, 'RSS'),
+  button({ href: '#json', variant: 'outline', color: 'neutral' }, 'JSON'),
+  button({ href: '#sitemap', variant: 'outline', color: 'neutral' }, 'Sitemap'),
+)`),
+
+      h2('Gruppo di pulsanti o gruppo a due stati?'),
+      p(
+        'Un gruppo di pulsanti è un contenitore: unisce ciò che ci metti dentro e non tiene alcuno stato. Se uno degli elementi è ',
+        strong('selezionato'),
+        ' — un controllo segmentato, un filtro, la sezione in cui ti trovi — allora è un ',
+        a({ href: '/it/ui/toggle-group' }, 'gruppo a due stati'),
+        ', che costruisce gli elementi dai dati e segna per te quello attivo.',
+      ),
+      p(
+        'La regola pratica: se premerne uno rende sbagliati gli altri, è un gruppo a due stati. Se ciascuno fa una cosa sua e separata, è un gruppo di pulsanti.',
+      ),
+      demo(`stack({ gap: 'lg' },
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'buttonGroup — tre azioni separate'),
+    buttonGroup({ label: 'Azioni sulla riga' },
+      button({ variant: 'outline', color: 'neutral' }, 'Modifica'),
+      button({ variant: 'outline', color: 'neutral' }, 'Duplica'),
+      button({ variant: 'outline', color: 'neutral' }, 'Elimina'),
+    ),
+  ),
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'toggleGroup — una scelta su tre'),
+    toggleGroup({
+      label: 'Allineamento del testo',
+      value: 'Centro',
+      items: ['Sinistra', 'Centro', 'Destra'],
+    }),
+  ),
+)`, { align: 'start' }),
+
+      h2('Con un pulsante-icona'),
+      demo(`buttonGroup({ label: 'Azioni dell’editor' },
+  button({ variant: 'outline', color: 'neutral' }, 'Salva'),
+  iconButton({
+    label: 'Altre azioni',
+    variant: 'outline',
+    color: 'neutral',
+    icon: icon('more-horizontal'),
+  }),
+)`),
+
+      h2('Props'),
+      propsTable([
+        ['label', 'string', '', 'Nome accessibile del gruppo; diventa aria-label su role="group".'],
+      ]),
+      p(
+        'Tutto il resto passa all’involucro. I pulsanti al suo interno prendono le proprie props — vedi ',
+        code('button()'),
+        '.',
+      ),
+    ],
+  })

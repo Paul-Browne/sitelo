@@ -100,6 +100,20 @@ const T = {
     jsxOnloadNote: 'o React converte onLoad num evento sintético; o spread deixa-nos emitir um onload="" em bruto',
     jsxOnsubmitNote: 'pela mesma razão — onsubmit="" em bruto, não o onSubmit do React',
   },
+  it: {
+    shellComment: 'guscio statico + handler import() inline',
+    handlersComment: 'handler esportati (caricati su richiesta)',
+    todos: 'Cose da fare',
+    whatNeedsDoing: 'Cosa c’è da fare?',
+    add: 'Aggiungi',
+    nothingYet: 'Ancora niente qui.',
+    left: 'rimaste',
+    remove: 'Rimuovi',
+    markComplete: 'Segna',
+    complete: 'come completata',
+    jsxOnloadNote: 'React mappa onLoad → evento sintetico; lo spread ci fa emettere onload="" grezzo',
+    jsxOnsubmitNote: 'stesso motivo — onsubmit="" grezzo, non l’onSubmit di React',
+  },
 }
 
 export function todoSnippets(lang = 'en') {

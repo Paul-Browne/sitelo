@@ -27,6 +27,10 @@ const T = {
     hello: 'Olá',
     staticAsItGets: 'Mais estático que isto, impossível',
   },
+  it: {
+    hello: 'Ciao',
+    staticAsItGets: 'Più statico di così',
+  },
 }
 
 export function pagesSnippets(lang = 'en') {

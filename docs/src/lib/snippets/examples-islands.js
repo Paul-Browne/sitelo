@@ -123,6 +123,25 @@ const T = {
     listening: 'À escuta em',
     notFound: 'Não encontrado',
   },
+  it: {
+    nodeHost: 'Host Node: dist statico + island',
+    netlifyRewrite: 'rewrite Netlify → function',
+    vercelRewrite: 'rewrite Vercel → route api',
+    netlifyHandler: 'handler island per Netlify',
+    vercelHandler: 'handler island per Vercel',
+    pagePlaceholder: 'pagina con un segnaposto island',
+    clientLoader: 'loader client (incluso nel bundle in dist/)',
+    serverOnlyFragment: 'modulo frammento solo lato server',
+    serverTime: 'Ora del server',
+    rightNow: 'Adesso',
+    renderedOnRequest: 'Renderizzato su richiesta per',
+    demoTitle: 'Demo di island server',
+    staticLive: 'Pagina statica, island viva',
+    builtOnce: 'Questo HTML è stato costruito una volta sola. Il riquadro qui sotto viene riempito al momento della richiesta.',
+    loadingTime: '<p>Caricamento dell’ora del server…</p>',
+    listening: 'In ascolto su',
+    notFound: 'Non trovato',
+  },
 }
 
 export function islandsExampleSnippets(lang = 'en') {

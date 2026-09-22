@@ -579,12 +579,20 @@ function pageShell({
 }
 
 /** German spells out its umlauts when transliterating: ä → ae, ß → ss. */
-const DE_TRANSLITERATIONS = [
-  [/ä/g, 'ae'],
-  [/ö/g, 'oe'],
-  [/ü/g, 'ue'],
-  [/ß/g, 'ss'],
-]
+/**
+ * Letters a locale spells out before the accent fold below, because NFD
+ * leaves them alone: they are single code points rather than a base letter
+ * plus a combining mark, so the fold cannot see them. German is the only
+ * locale that needs it today; a locale with no entry folds alone.
+ */
+const TRANSLITERATIONS = {
+  de: [
+    [/ä/g, 'ae'],
+    [/ö/g, 'oe'],
+    [/ü/g, 'ue'],
+    [/ß/g, 'ss'],
+  ],
+}
 
 /**
  * Locales whose headings are folded to unaccented ASCII.
@@ -592,15 +600,26 @@ const DE_TRANSLITERATIONS = [
  * Deliberately excludes the non-Latin scripts: NFD decomposition would turn
  * Russian "й" into "и" and "ё" into "е", quietly changing the word.
  */
-const FOLD_TO_ASCII = new Set(['en', 'es', 'fr', 'de', 'pt'])
+const FOLD_TO_ASCII = new Set([
+  'en',
+  'es',
+  'fr',
+  'de',
+  'pt',
+  'it',
+  'pl',
+  'tr',
+  'id',
+])
 
 /**
  * Slugify a heading for use as an anchor id.
  *
  * Latin-script locales fold to ASCII, so a Spanish heading like "Optimización
  * de imágenes" slugs to `optimizacion-de-imagenes` rather than losing every
- * accented letter to a dash. German first spells its umlauts out, giving
- * `jsx-einschraenkungen` rather than `jsx-einschrankungen`.
+ * accented letter to a dash. Some letters are spelled out first, because the
+ * fold cannot see them: German umlauts give `jsx-einschraenkungen` rather
+ * than `jsx-einschrankungen`.
  *
  * Russian and Chinese keep their own characters — HTML5 ids allow them, and
  * stripping to ASCII would leave every heading with an empty or colliding id.
@@ -608,10 +627,8 @@ const FOLD_TO_ASCII = new Set(['en', 'es', 'fr', 'de', 'pt'])
 function slugify(text, lang) {
   let value = text.toLowerCase()
 
-  if (lang === 'de') {
-    for (const [pattern, replacement] of DE_TRANSLITERATIONS) {
-      value = value.replace(pattern, replacement)
-    }
+  for (const [pattern, replacement] of TRANSLITERATIONS[lang] ?? []) {
+    value = value.replace(pattern, replacement)
   }
 
   if (FOLD_TO_ASCII.has(lang)) {

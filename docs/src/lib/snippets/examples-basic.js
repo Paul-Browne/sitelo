@@ -15,6 +15,10 @@ const T = {
     exampleTitle: 'sitelo — exemplo básico',
     hello: 'Olá do sitelo',
   },
+  it: {
+    exampleTitle: 'sitelo — esempio di base',
+    hello: 'Ciao da sitelo',
+  },
 }
 
 export function basicSnippets(lang = 'en') {

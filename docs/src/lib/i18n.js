@@ -7,7 +7,16 @@
  */
 
 export const DEFAULT_LOCALE = 'en'
-export const LOCALES = ['en', 'es', 'fr', 'de', 'ru', 'zh', 'pt']
+export const LOCALES = [
+  'en',
+  'es',
+  'fr',
+  'de',
+  'ru',
+  'zh',
+  'pt',
+  'it',
+]
 
 /** Locales served from a URL prefix — everything but the default. */
 const PREFIXED = LOCALES.filter((locale) => locale !== DEFAULT_LOCALE)
@@ -21,6 +30,7 @@ export const LOCALE_NAMES = {
   ru: 'Русский',
   zh: '简体中文',
   pt: 'Português',
+  it: 'Italiano',
 }
 
 /**
@@ -38,6 +48,7 @@ export const LOCALE_TAGS = {
   ru: 'ru',
   zh: 'zh-Hans',
   pt: 'pt-PT',
+  it: 'it',
 }
 
 /**
@@ -56,6 +67,7 @@ export const LOCALE_FLAGS = {
   ru: '🇷🇺',
   zh: '🇨🇳',
   pt: '🇵🇹',
+  it: '🇮🇹',
 }
 
 /** Open Graph locale identifiers. */
@@ -67,6 +79,7 @@ export const OG_LOCALES = {
   ru: 'ru_RU',
   zh: 'zh_CN',
   pt: 'pt_PT',
+  it: 'it_IT',
 }
 
 /**
@@ -455,6 +468,45 @@ const STRINGS = {
     cookieDecline: 'Recusar',
     defaultDescription:
       'sitelo — geração de sites estáticos para Vite. Escreve funções que devolvem HTML.',
+  },
+  it: {
+    navDocs: 'Documentazione',
+    navExamples: 'Esempi',
+    navUi: 'UI',
+    navAbout: 'Informazioni',
+    openMenu: 'Apri il menu',
+    menu: 'Menu',
+    languageLabel: 'Lingua',
+    themeToLight: 'Passa al tema chiaro',
+    themeToDark: 'Passa al tema scuro',
+    sidebarDocs: 'Documentazione',
+    sidebarExamples: 'Esempi',
+    sidebarUi: 'Componenti',
+    titleSuffixDocs: 'documentazione di sitelo',
+    titleSuffixExamples: 'esempi di sitelo',
+    titleSuffixUi: 'sitelo UI',
+    tocLabel: 'In questa pagina',
+    pagenavLabel: 'Pagine adiacenti',
+    previous: '← Precedente',
+    next: 'Successiva →',
+    copy: 'Copia',
+    copyCode: 'Copia il codice',
+    copied: 'Copiato',
+    copyFailed: 'Errore',
+    markupStyle: 'Stile di markup',
+    templateLiteral: 'Template literal',
+    recommended: 'consigliato',
+    licenseLabel: 'Licenza MIT',
+    nodeLabel: 'Richiede Node 20.19 o successivo',
+    githubLabel: (version) => `sitelo ${version} su GitHub`,
+    viteLabel: (version) => `Basato su Vite ${version}`,
+    cookieLabel: 'Consenso ai cookie',
+    cookieText:
+      'Questo sito usa cookie di Google Analytics per contare le visite. Senza il tuo consenso non viene memorizzato nulla.',
+    cookieAccept: 'Accetta',
+    cookieDecline: 'Rifiuta',
+    defaultDescription:
+      'sitelo — generazione di siti statici per Vite. Scrivi funzioni che restituiscono HTML.',
   },
 }
 

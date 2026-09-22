@@ -104,6 +104,24 @@ const T = {
     rssFeed: 'Feed RSS',
     notFound: 'Artigo não encontrado',
   },
+  it: {
+    postsComment: 'posts: frontmatter + markdown',
+    libComment: 'legge content/, analizza il frontmatter, renderizza il markdown',
+    indexComment: '/ — elenco degli articoli',
+    slugComment: '/blog/:slug — una pagina per articolo',
+    feedItemComment: 'ogni pagina /blog/* diventa un elemento del feed',
+    outsideSrc: 'Gli articoli stanno fuori da src/, così non vengono mai trattati come pagine o risorse.',
+    frontmatterDoc: 'Minuscolo parser di frontmatter — righe `chiave: valore` fra i delimitatori ---.',
+    allPostsDoc: 'Tutti gli articoli, dal più recente. Gira in Node solo in build/dev.',
+    myBlog: 'Il mio blog',
+    latestPosts: 'Ultimi articoli',
+    postTitle: 'Ciao, mondo',
+    postDesc: 'L’immancabile primo articolo.',
+    postBody: 'Questo blog è una cartella di file markdown renderizzati in HTML statico.',
+    allPosts: '← Tutti gli articoli',
+    rssFeed: 'Feed RSS',
+    notFound: 'Articolo non trovato',
+  },
 }
 
 export function blogSnippets(lang = 'en') {

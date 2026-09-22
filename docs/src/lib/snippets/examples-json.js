@@ -146,6 +146,26 @@ const T = {
     inStock: 'Em stock',
     outOfStock: 'Esgotado',
   },
+  it: {
+    siteComment: 'impostazioni di tutto il sito',
+    productsComment: 'un file per prodotto',
+    categoriesComment: 'un oggetto, indicizzato per slug',
+    libComment: 'l’unico modulo che tocca sitelo/data',
+    indexComment: '/ — categorie e ogni prodotto',
+    productComment: '/products/:slug — una pagina per file JSON',
+    categoryComment: '/categories/:slug — una pagina per chiave',
+    siteDoc: 'Impostazioni di tutto il sito: un file JSON, analizzato così com’è.',
+    productsDoc: 'Una voce per file, slug preso dal nome del file.',
+    categoriesDoc: 'Un file con un oggetto indicizzato per slug — la chiave diventa lo slug.',
+    inCategoryDoc: 'Prodotti di una categoria, dal più economico.',
+    categories: 'Categorie',
+    allProducts: 'Tutti i prodotti',
+    category: 'Categoria',
+    released: 'Uscita',
+    availability: 'Disponibilità',
+    inStock: 'Disponibile',
+    outOfStock: 'Esaurito',
+  },
 }
 
 export function jsonSnippets(lang = 'en') {

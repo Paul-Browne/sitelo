@@ -65,6 +65,15 @@ const T = {
     mySite: 'O meu site',
     hello: 'Olá',
   },
+  it: {
+    pageReturnsHtml: 'pagina — restituisce HTML',
+    linkedBundled: 'collegata dall’HTML → nel bundle',
+    importedBundled: 'importata da main.js → anch’essa nel bundle',
+    dataOnly: 'usata solo in data() → non viene mai pubblicata',
+    copiedAsIs: 'copiata così com’è',
+    mySite: 'Il mio sito',
+    hello: 'Ciao',
+  },
 }
 
 export function assetsSnippets(lang = 'en') {

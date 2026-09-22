@@ -51,6 +51,13 @@ const T = {
     writeDist: 'escreve dist/',
     previewBuild: 'pré-visualiza a compilação',
   },
+  it: {
+    myWebsite: 'Il mio sito web',
+    helloWorld: 'Ciao mondo',
+    devServer: 'server di sviluppo',
+    writeDist: 'scrive dist/',
+    previewBuild: 'anteprima della build',
+  },
 }
 
 export function gettingStartedSnippets(lang = 'en') {

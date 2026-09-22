@@ -19,6 +19,9 @@ const T = {
   pt: {
     standardFetchOptions: 'opções normais do fetch',
   },
+  it: {
+    standardFetchOptions: 'opzioni fetch standard',
+  },
 }
 
 export function dataSnippets(lang = 'en') {

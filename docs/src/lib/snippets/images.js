@@ -32,6 +32,11 @@ const T = {
     pixelArt: 'Pixel art',
     team: 'A equipa',
   },
+  it: {
+    sunrise: 'Alba sul porto',
+    pixelArt: 'Pixel art',
+    team: 'Il team',
+  },
 }
 
 export function imagesSnippets(lang = 'en') {
