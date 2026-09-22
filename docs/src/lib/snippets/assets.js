@@ -83,6 +83,15 @@ const T = {
     mySite: 'Moja strona',
     hello: 'Cześć',
   },
+  tr: {
+    pageReturnsHtml: 'sayfa — HTML döndürür',
+    linkedBundled: 'HTML’den bağlandı → paketlenir',
+    importedBundled: 'main.js içe aktardı → o da paketlenir',
+    dataOnly: 'yalnızca data() içinde kullanılır → hiç yayımlanmaz',
+    copiedAsIs: 'olduğu gibi kopyalanır',
+    mySite: 'Sitem',
+    hello: 'Merhaba',
+  },
 
 }
 

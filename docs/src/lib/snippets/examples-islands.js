@@ -161,6 +161,25 @@ const T = {
     listening: 'Nasłuchuje na',
     notFound: 'Nie znaleziono',
   },
+  tr: {
+    nodeHost: 'Node sunucusu: statik dist + adalar',
+    netlifyRewrite: 'Netlify yeniden yazımı → function',
+    vercelRewrite: 'Vercel yeniden yazımı → api rotası',
+    netlifyHandler: 'Netlify ada işleyicisi',
+    vercelHandler: 'Vercel ada işleyicisi',
+    pagePlaceholder: 'ada yer tutucusu olan sayfa',
+    clientLoader: 'istemci yükleyicisi (dist/ içine paketlenir)',
+    serverOnlyFragment: 'yalnızca sunucuda çalışan parça modülü',
+    serverTime: 'Sunucu saati',
+    rightNow: 'Şu anda',
+    renderedOnRequest: 'İstek üzerine şunun için işlendi:',
+    demoTitle: 'Sunucu adaları demosu',
+    staticLive: 'Statik sayfa, canlı ada',
+    builtOnce: 'Bu HTML bir kez derlendi. Aşağıdaki kutu istek anında doldurulur.',
+    loadingTime: '<p>Sunucu saati yükleniyor…</p>',
+    listening: 'Dinleniyor:',
+    notFound: 'Bulunamadı',
+  },
 
 }
 

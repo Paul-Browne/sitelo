@@ -128,6 +128,20 @@ const T = {
     jsxOnloadNote: 'React mapuje onLoad → zdarzenie syntetyczne; spread pozwala wypisać surowe onload=""',
     jsxOnsubmitNote: 'ten sam powód — surowe onsubmit="", nie onSubmit Reacta',
   },
+  tr: {
+    shellComment: 'statik kabuk + satır içi import() işleyicileri',
+    handlersComment: 'dışa aktarılan işleyiciler (istendiğinde yüklenir)',
+    todos: 'Yapılacaklar',
+    whatNeedsDoing: 'Ne yapılması gerekiyor?',
+    add: 'Ekle',
+    nothingYet: 'Burada henüz bir şey yok.',
+    left: 'kaldı',
+    remove: 'Kaldır',
+    markComplete: 'İşaretle:',
+    complete: 'tamamlandı',
+    jsxOnloadNote: 'React onLoad’ı sentetik olaya eşler; spread ham onload="" yazmamızı sağlar',
+    jsxOnsubmitNote: 'aynı sebep — React’in onSubmit’i değil, ham onsubmit=""',
+  },
 
 }
 

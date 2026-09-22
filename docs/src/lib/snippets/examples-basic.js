@@ -23,6 +23,10 @@ const T = {
     exampleTitle: 'sitelo — podstawowy przykład',
     hello: 'Cześć z sitelo',
   },
+  tr: {
+    exampleTitle: 'sitelo — temel örnek',
+    hello: 'sitelo’dan merhaba',
+  },
 
 }
 

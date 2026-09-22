@@ -140,6 +140,24 @@ const T = {
     rssFeed: 'Kanał RSS',
     notFound: 'Nie znaleziono wpisu',
   },
+  tr: {
+    postsComment: 'posts: frontmatter + markdown',
+    libComment: 'content/ dizinini okur, frontmatter’ı ayrıştırır, markdown’ı işler',
+    indexComment: '/ — yazı listesi',
+    slugComment: '/blog/:slug — yazı başına bir sayfa',
+    feedItemComment: 'her /blog/* sayfası bir akış ögesi olur',
+    outsideSrc: 'Yazılar src/ dışında durur, böylece hiçbir zaman sayfa ya da varlık sayılmazlar.',
+    frontmatterDoc: 'Minik frontmatter ayrıştırıcı — --- çitleri arasındaki `anahtar: değer` satırları.',
+    allPostsDoc: 'Tüm yazılar, en yeniden başlayarak. Yalnızca derleme/geliştirme sırasında Node’da çalışır.',
+    myBlog: 'Blogum',
+    latestPosts: 'Son yazılar',
+    postTitle: 'Merhaba, dünya',
+    postDesc: 'Kaçınılmaz ilk yazı.',
+    postBody: 'Bu blog, statik HTML’e işlenen bir markdown dosyaları klasörüdür.',
+    allPosts: '← Tüm yazılar',
+    rssFeed: 'RSS akışı',
+    notFound: 'Yazı bulunamadı',
+  },
 
 }
 

@@ -1,0 +1,125 @@
+import { a, h2, p, strong } from 'javascript-to-html'
+import { code, demo, propsTable, uiLayout } from '../../lib/tr.js'
+
+export default () =>
+  uiLayout({
+    title: 'Düğme grubu',
+    description:
+      'Birbirine ait düğmeler, ortak kenarlıklar ve yuvarlatılmış uçlarla tek bir denetime birleştirilmiş.',
+    activeHref: '/tr/ui/button-group',
+    children: [
+      p(
+        'Düğmeler ',
+        code('buttonGroup()'),
+        ' içine sarılarak gruplanabilir. Doğrudan çocuk olmaları gerekir: grup ilk ve son düğmeyi yuvarlatır ve gerisini birbirine çeker, bu yüzden aralarına giren her şey dikişi bozar.',
+      ),
+
+      h2('Temel düğme grubu'),
+      demo(`buttonGroup({ label: 'Temel düğme grubu' },
+  button('Bir'),
+  button('İki'),
+  button('Üç'),
+)`),
+
+      h2('Türevler'),
+      p(
+        'Grubun kendisi renk taşımaz. ',
+        code('variant'),
+        ' ve ',
+        code('color'),
+        ' değerlerini düğmelere verin ve grup boyunca aynı tutun — onu tek bir denetim gibi okutan şey budur.',
+      ),
+      demo(`stack({ gap: 'md', align: 'flex-start' },
+  buttonGroup({ label: 'Solid' },
+    button({ variant: 'solid' }, 'Bir'),
+    button({ variant: 'solid' }, 'İki'),
+    button({ variant: 'solid' }, 'Üç'),
+  ),
+  buttonGroup({ label: 'Outline' },
+    button({ variant: 'outline', color: 'neutral' }, 'Bir'),
+    button({ variant: 'outline', color: 'neutral' }, 'İki'),
+    button({ variant: 'outline', color: 'neutral' }, 'Üç'),
+  ),
+  buttonGroup({ label: 'Soft' },
+    button({ variant: 'soft' }, 'Bir'),
+    button({ variant: 'soft' }, 'İki'),
+    button({ variant: 'soft' }, 'Üç'),
+  ),
+)`, { align: 'start' }),
+
+      h2('Boyutlar ve renkler'),
+      demo(`stack({ gap: 'md', align: 'flex-start' },
+  buttonGroup({ label: 'Küçük' },
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Sol'),
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Orta'),
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Sağ'),
+  ),
+  buttonGroup({ label: 'Büyük' },
+    button({ size: 'lg', variant: 'soft', color: 'danger' }, 'Vazgeç'),
+    button({ size: 'lg', variant: 'soft', color: 'danger' }, 'At'),
+  ),
+)`, { align: 'start' }),
+
+      h2('Bağlantılar'),
+      p(
+        code('href'),
+        ' taşıyan düğmeler de tam olarak aynı biçimde gruplanır — her biri bir yere giden ve hiçbiri bulunduğunuz sayfa olmayan bir dizi şey için.',
+      ),
+      demo(`buttonGroup({ label: 'Paylaş' },
+  button({ href: '#rss', variant: 'outline', color: 'neutral' }, 'RSS'),
+  button({ href: '#json', variant: 'outline', color: 'neutral' }, 'JSON'),
+  button({ href: '#sitemap', variant: 'outline', color: 'neutral' }, 'Site haritası'),
+)`),
+
+      h2('Düğme grubu mu, değiştirici grubu mu?'),
+      p(
+        'Düğme grubu bir kaptır: içine koyduğunuz her şeyi birleştirir ve durum tutmaz. Öğelerden biri ',
+        strong('seçili'),
+        ' ise — bir bölmeli denetim, bir süzgeç, içinde bulunduğunuz bölüm — o zaman aradığınız şey, öğeleri veriden kuran ve etkin olanı sizin için işaretleyen ',
+        a({ href: '/tr/ui/toggle-group' }, 'değiştirici grubudur'),
+        '.',
+      ),
+      p(
+        'Kaba kural: birine basmak diğerlerini yanlış kılıyorsa bu bir değiştirici grubudur. Her biri kendi ayrı işini yapıyorsa bu bir düğme grubudur.',
+      ),
+      demo(`stack({ gap: 'lg' },
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'buttonGroup — üç ayrı eylem'),
+    buttonGroup({ label: 'Satır eylemleri' },
+      button({ variant: 'outline', color: 'neutral' }, 'Düzenle'),
+      button({ variant: 'outline', color: 'neutral' }, 'Çoğalt'),
+      button({ variant: 'outline', color: 'neutral' }, 'Sil'),
+    ),
+  ),
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'toggleGroup — üç seçenekten biri'),
+    toggleGroup({
+      label: 'Metin hizalaması',
+      value: 'Orta',
+      items: ['Sol', 'Orta', 'Sağ'],
+    }),
+  ),
+)`, { align: 'start' }),
+
+      h2('Bir simge düğmesiyle'),
+      demo(`buttonGroup({ label: 'Düzenleyici eylemleri' },
+  button({ variant: 'outline', color: 'neutral' }, 'Kaydet'),
+  iconButton({
+    label: 'Daha fazla eylem',
+    variant: 'outline',
+    color: 'neutral',
+    icon: icon('more-horizontal'),
+  }),
+)`),
+
+      h2('Proplar'),
+      propsTable([
+        ['label', 'string', '', 'Grup için erişilebilir ad; role="group" üzerinde aria-label olur.'],
+      ]),
+      p(
+        'Geri kalan her şey sarmalayıcıya düşer. İçerideki düğmeler kendi proplarını alır — bkz. ',
+        code('button()'),
+        '.',
+      ),
+    ],
+  })

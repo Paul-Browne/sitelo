@@ -77,6 +77,7 @@ const TABLE_HEADERS = {
   pt: ['Prop', 'Tipo', 'Predefinição', 'Descrição'],
   it: ['Prop', 'Tipo', 'Predefinito', 'Descrizione'],
   pl: ['Prop', 'Typ', 'Domyślnie', 'Opis'],
+  tr: ['Prop', 'Tür', 'Varsayılan', 'Açıklama'],
 
 }
 
@@ -94,6 +95,7 @@ const SANDBOX_LABELS = {
   pt: { type: 'Tipo', frequency: 'Frequência', octaves: 'Oitavas', seed: 'Semente', color: 'Cor', colorHelp: 'Transparente ou branco deixa-o cinzento; o alfa é o quanto.', opacity: 'Opacidade', blend: 'Mistura', background: 'Fundo', preview: 'Brinque com os controlos.' },
   it: { type: 'Tipo', frequency: 'Frequenza', octaves: 'Ottave', seed: 'Seme', color: 'Colore', colorHelp: 'Trasparente o bianco lo lascia grigio; l’alfa dice quanto.', opacity: 'Opacità', blend: 'Fusione', background: 'Sfondo', preview: 'Gioca con i controlli.' },
   pl: { type: 'Typ', frequency: 'Częstotliwość', octaves: 'Oktawy', seed: 'Ziarno', color: 'Kolor', colorHelp: 'Przezroczysty albo biały zostawia szary; alfa decyduje ile.', opacity: 'Krycie', blend: 'Mieszanie', background: 'Tło', preview: 'Pobaw się suwakami.' },
+  tr: { type: 'Tür', frequency: 'Frekans', octaves: 'Oktavlar', seed: 'Tohum', color: 'Renk', colorHelp: 'Saydam ya da beyaz onu gri bırakır; alfa ne kadar olduğunu söyler.', opacity: 'Saydamsızlık', blend: 'Karışım', background: 'Arka plan', preview: 'Denetimlerle oynayın.' },
 
 }
 

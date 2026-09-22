@@ -65,6 +65,13 @@ const T = {
     writeDist: 'zapisuje dist/',
     previewBuild: 'podgląd buildu',
   },
+  tr: {
+    myWebsite: 'Web sitem',
+    helloWorld: 'Merhaba dünya',
+    devServer: 'geliştirme sunucusu',
+    writeDist: 'dist/ yazar',
+    previewBuild: 'derlemeyi önizle',
+  },
 
 }
 

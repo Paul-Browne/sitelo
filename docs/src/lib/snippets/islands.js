@@ -111,6 +111,18 @@ const T = {
     serverComment: 'np. serwer Node albo funkcja serverless/edge',
     notIslandRequest: 'webowy Request → Response | null (null = to nie żądanie wyspy)',
   },
+  tr: {
+    staticContent: '…statik içerik…',
+    loadingComments: '<p>Yorumlar yükleniyor…</p>',
+    loadWithPage: 'Sayfa yüklenir yüklenmez yükle — varsayılan.',
+    waitIdle: 'Boşta kalma geri çağrısını bekle.',
+    waitVisible: 'Görünüme girene dek bekle.',
+    startEarly: '400px erken yüklemeye başla',
+    perIsland: 'ada başına; 0 devre dışı bırakır. Varsayılan 10000',
+    visibleDefault: "`when: 'visible'` adaları için varsayılan",
+    serverComment: 'örneğin bir Node sunucusu ya da bir serverless/edge işlevi',
+    notIslandRequest: 'web Request → Response | null (null = ada isteği değil)',
+  },
 
 }
 

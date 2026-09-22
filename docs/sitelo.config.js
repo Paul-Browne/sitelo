@@ -10,8 +10,8 @@ export default {
   cleanUrls: false,
   /*
    * English pages only. Every translation is the same template with
-   * different copy, so their scores track the English ones — and eleven
-   * locales is eleven times the browser time for the same findings.
+   * different copy, so their scores track the English ones — and ten
+   * locales is ten times the browser time for the same findings.
    *
    * Each locale's home page is flat (`de.html`) and the rest of it lives
    * under a directory (`de/docs/cli.html`), so both shapes are excluded.
@@ -48,8 +48,8 @@ export default {
       cpuQuietThresholdMs: 0,
     },
     exclude: [
-      '{de,es,fr,it,pl,pt,ru,zh}.html',
-      '{de,es,fr,it,pl,pt,ru,zh}/**',
+      '{de,es,fr,it,pl,pt,ru,tr,zh}.html',
+      '{de,es,fr,it,pl,pt,ru,tr,zh}/**',
       '404.html',
     ],
     /*

@@ -17,6 +17,7 @@ export const LOCALES = [
   'pt',
   'it',
   'pl',
+  'tr',
 ]
 
 /** Locales served from a URL prefix — everything but the default. */
@@ -33,6 +34,7 @@ export const LOCALE_NAMES = {
   pt: 'Português',
   it: 'Italiano',
   pl: 'Polski',
+  tr: 'Türkçe',
 }
 
 /**
@@ -52,6 +54,7 @@ export const LOCALE_TAGS = {
   pt: 'pt-PT',
   it: 'it',
   pl: 'pl',
+  tr: 'tr',
 }
 
 /**
@@ -72,6 +75,7 @@ export const LOCALE_FLAGS = {
   pt: '🇵🇹',
   it: '🇮🇹',
   pl: '🇵🇱',
+  tr: '🇹🇷',
 }
 
 /** Open Graph locale identifiers. */
@@ -85,6 +89,7 @@ export const OG_LOCALES = {
   pt: 'pt_PT',
   it: 'it_IT',
   pl: 'pl_PL',
+  tr: 'tr_TR',
 }
 
 /**
@@ -551,6 +556,45 @@ const STRINGS = {
     cookieDecline: 'Odrzuć',
     defaultDescription:
       'sitelo — generowanie stron statycznych dla Vite. Pisz funkcje, które zwracają HTML.',
+  },
+  tr: {
+    navDocs: 'Belgeler',
+    navExamples: 'Örnekler',
+    navUi: 'UI',
+    navAbout: 'Hakkında',
+    openMenu: 'Menüyü aç',
+    menu: 'Menü',
+    languageLabel: 'Dil',
+    themeToLight: 'Açık temaya geç',
+    themeToDark: 'Koyu temaya geç',
+    sidebarDocs: 'Belgeler',
+    sidebarExamples: 'Örnekler',
+    sidebarUi: 'Bileşenler',
+    titleSuffixDocs: 'sitelo belgeleri',
+    titleSuffixExamples: 'sitelo örnekleri',
+    titleSuffixUi: 'sitelo UI',
+    tocLabel: 'Bu sayfada',
+    pagenavLabel: 'Komşu sayfalar',
+    previous: '← Önceki',
+    next: 'Sonraki →',
+    copy: 'Kopyala',
+    copyCode: 'Kodu kopyala',
+    copied: 'Kopyalandı',
+    copyFailed: 'Başarısız',
+    markupStyle: 'Biçimlendirme stili',
+    templateLiteral: 'Şablon dizesi',
+    recommended: 'önerilen',
+    licenseLabel: 'MIT lisansı',
+    nodeLabel: 'Node 20.19 veya üstünü gerektirir',
+    githubLabel: (version) => `GitHub’da sitelo ${version}`,
+    viteLabel: (version) => `Vite ${version} ile çalışır`,
+    cookieLabel: 'Çerez onayı',
+    cookieText:
+      'Bu site ziyaretleri saymak için Google Analytics çerezlerini kullanır. Onay vermezseniz hiçbir şey saklanmaz.',
+    cookieAccept: 'Kabul et',
+    cookieDecline: 'Reddet',
+    defaultDescription:
+      'sitelo — Vite için statik site üretimi. HTML döndüren fonksiyonlar yazın.',
   },
 }
 

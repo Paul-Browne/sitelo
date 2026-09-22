@@ -186,6 +186,26 @@ const T = {
     inStock: 'Dostępny',
     outOfStock: 'Niedostępny',
   },
+  tr: {
+    siteComment: 'site geneli ayarlar',
+    productsComment: 'ürün başına bir dosya',
+    categoriesComment: 'tek nesne, slug ile anahtarlanmış',
+    libComment: 'sitelo/data’ya dokunan tek modül',
+    indexComment: '/ — kategoriler ve her ürün',
+    productComment: '/products/:slug — JSON dosyası başına bir sayfa',
+    categoryComment: '/categories/:slug — anahtar başına bir sayfa',
+    siteDoc: 'Site geneli ayarlar: tek bir JSON dosyası, olduğu gibi ayrıştırılır.',
+    productsDoc: 'Dosya başına bir kayıt, slug dosya adından alınır.',
+    categoriesDoc: 'Slug ile anahtarlanmış bir nesne tutan tek dosya — anahtar slug olur.',
+    inCategoryDoc: 'Bir kategorideki ürünler, en ucuzdan başlayarak.',
+    categories: 'Kategoriler',
+    allProducts: 'Tüm ürünler',
+    category: 'Kategori',
+    released: 'Çıkış',
+    availability: 'Durum',
+    inStock: 'Stokta',
+    outOfStock: 'Tükendi',
+  },
 
 }
 

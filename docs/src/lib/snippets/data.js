@@ -25,6 +25,9 @@ const T = {
   pl: {
     standardFetchOptions: 'standardowe opcje fetch',
   },
+  tr: {
+    standardFetchOptions: 'standart fetch seçenekleri',
+  },
 
 }
 

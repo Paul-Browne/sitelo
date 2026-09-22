@@ -42,6 +42,11 @@ const T = {
     pixelArt: 'Pixel art',
     team: 'Zespół',
   },
+  tr: {
+    sunrise: 'Limanda gün doğumu',
+    pixelArt: 'Piksel sanatı',
+    team: 'Ekip',
+  },
 
 }
 

@@ -35,6 +35,10 @@ const T = {
     hello: 'Cześć',
     staticAsItGets: 'Statyczniej się nie da',
   },
+  tr: {
+    hello: 'Merhaba',
+    staticAsItGets: 'Bundan daha statiği yok',
+  },
 
 }
 

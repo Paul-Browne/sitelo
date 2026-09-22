@@ -84,6 +84,15 @@ const T = {
     clientScript: 'to, co strony ładują przez <script src>',
     anythingElse: 'i cokolwiek innego, co knip przyjmie',
   },
+  tr: {
+    sameAsDev: 'sitelo dev ile aynı',
+    devServer: 'geliştirme sunucusu',
+    prodBuild: 'üretim derlemesi',
+    previewBuild: 'üretim derlemesini önizle',
+    auditBuild: 'üretim derlemesini denetle',
+    clientScript: 'sayfaların <script src> ile yüklediği şey',
+    anythingElse: 've knip’in kabul ettiği her şey',
+  },
 
 }
 

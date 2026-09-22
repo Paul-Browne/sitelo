@@ -593,6 +593,7 @@ const TRANSLITERATIONS = {
     [/ß/g, 'ss'],
   ],
   pl: [[/ł/g, 'l']],
+  tr: [[/ı/g, 'i']],
 }
 
 /**
@@ -609,6 +610,7 @@ const FOLD_TO_ASCII = new Set([
   'pt',
   'it',
   'pl',
+  'tr',
 ])
 
 /**
@@ -618,8 +620,10 @@ const FOLD_TO_ASCII = new Set([
  * de imágenes" slugs to `optimizacion-de-imagenes` rather than losing every
  * accented letter to a dash. Some letters are spelled out first, because the
  * fold cannot see them: German umlauts give `jsx-einschraenkungen` rather
- * than `jsx-einschrankungen`, and Polish “ł” becomes a plain `l`
- * rather than surviving as itself.
+ * than `jsx-einschrankungen`, Polish “ł” becomes a plain `l`
+ * rather than surviving as itself, and Turkish dotless “ı” becomes `i`, so
+ * “JSX kısıtlamaları” slugs to `jsx-kisitlamalari`. Turkish “İ” needs no
+ * rule: `toLowerCase` leaves a combining dot the fold then removes.
  *
  * Russian and Chinese keep their own characters — HTML5 ids allow them, and
  * stripping to ASCII would leave every heading with an empty or colliding id.
