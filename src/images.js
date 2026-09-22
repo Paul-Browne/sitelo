@@ -105,7 +105,13 @@ export function normalizeImageOptions(images) {
     throw new Error('"images" must be true or an object')
   }
 
-  const options = images === true ? {} : images
+  /*
+   * Whatever the config file put there — every read below is checked
+   * before it is used, so it arrives unchecked rather than trusted.
+   */
+  const options = /** @type {Record<string, unknown>} */ (
+    images === true ? {} : images
+  )
 
   const widths = options.widths ?? DEFAULT_WIDTHS
   if (
@@ -128,27 +134,59 @@ export function normalizeImageOptions(images) {
     }
   }
 
-  const exclude = (options.exclude ?? []).map((pattern) =>
+  const rawExclude = options.exclude ?? []
+  if (!Array.isArray(rawExclude)) {
+    throw new Error('"images.exclude" must be an array of globs or regular expressions')
+  }
+
+  const exclude = rawExclude.map((pattern) =>
     pattern instanceof RegExp ? pattern : globToRegExp(String(pattern)),
   )
+
+  const quality = options.quality ?? {}
+  if (typeof quality !== 'object' || Array.isArray(quality)) {
+    throw new Error('"images.quality" must be an object of per-format qualities')
+  }
+
+  if (options.sizes != null && typeof options.sizes !== 'string') {
+    throw new Error('"images.sizes" must be a `sizes` attribute string')
+  }
+
+  const sizes = typeof options.sizes === 'string' ? options.sizes : undefined
+
+  const assetsDir = options.assetsDir ?? DEFAULT_ASSETS_DIR
+  if (typeof assetsDir !== 'string') {
+    throw new Error('"images.assetsDir" must be a directory path')
+  }
+
+  const cacheDir = options.cacheDir ?? DEFAULT_CACHE_DIR
+  if (typeof cacheDir !== 'string') {
+    throw new Error('"images.cacheDir" must be a directory path')
+  }
+
+  // Remote encodes hammer libvips; serialise to avoid SIGBUS on macOS.
+  const concurrency =
+    options.concurrency ??
+    (options.remote === true ? 1 : Math.max(1, Math.min(8, (os.cpus()?.length ?? 4) - 1)))
+
+  if (typeof concurrency !== 'number' || !Number.isInteger(concurrency) || concurrency < 1) {
+    throw new Error('"images.concurrency" must be a positive integer')
+  }
 
   return {
     widths: [...new Set(widths)].sort((a, b) => a - b),
     formats: [...new Set(formats)],
-    quality: { ...DEFAULT_QUALITY, ...(options.quality ?? {}) },
-    sizes: options.sizes,
+    quality: { ...DEFAULT_QUALITY, ...quality },
+    sizes,
     dimensions: options.dimensions !== false,
     lazy: options.lazy !== false,
     exclude,
-    assetsDir: (options.assetsDir ?? DEFAULT_ASSETS_DIR).replace(/^\/+|\/+$/g, ''),
-    cacheDir: options.cacheDir ?? DEFAULT_CACHE_DIR,
+    assetsDir: assetsDir.replace(/^\/+|\/+$/g, ''),
+    cacheDir,
     remote: options.remote === true,
     prune: options.prune !== false,
     dev: options.dev !== false,
-    // Remote encodes hammer libvips; serialise to avoid SIGBUS on macOS.
-    concurrency:
-      options.concurrency ??
-      (options.remote === true ? 1 : Math.max(1, Math.min(8, (os.cpus()?.length ?? 4) - 1))),
+    concurrency,
   }
 }
 
@@ -264,8 +302,6 @@ function isHttpUrl(url) {
  * @property {string | null} format a `?format=` value, or null for the configured formats
  */
 
-const FITS = new Set(['cover', 'contain'])
-
 /**
  * sharp's crop positions: an edge or corner to keep, or a strategy that
  * looks at the picture. `centre` is what happens without one.
@@ -338,7 +374,11 @@ export function parseVariantHint(src) {
   const rawFormat = params.get('format')
   const rawBackground = params.get('background')
   // `background` is padding, and only `contain` leaves anything to pad.
-  const fit = params.get('fit') ?? (rawBackground !== null ? 'contain' : null)
+  const rawFit = params.get('fit') ?? (rawBackground !== null ? 'contain' : null)
+  // Narrowed by the assignment rather than by the check below: ruling two
+  // values out of a `string` still leaves a `string`, and the hint wants
+  // the pair.
+  const fit = rawFit === 'cover' || rawFit === 'contain' ? rawFit : null
 
   /** @type {Record<'w' | 'h', number | null>} */
   const sizes = { w: null, h: null }
@@ -358,8 +398,8 @@ export function parseVariantHint(src) {
     }
   }
 
-  if (fit !== null && !FITS.has(fit)) {
-    return { ...NO_HINT, error: `?fit= must be cover or contain, not "${fit}"` }
+  if (rawFit !== null && fit === null) {
+    return { ...NO_HINT, error: `?fit= must be cover or contain, not "${rawFit}"` }
   }
   if (fit !== null && (sizes.w === null || sizes.h === null)) {
     return {
@@ -872,7 +912,7 @@ function pictureRanges(html) {
  *   html: string
  *   options: ImageOptions
  *   resolve: (url: string) => Promise<string | null> | string | null
- *   generate: (sourcePath: string) => Promise<null | object>
+ *   generate: (sourcePath: string, hint?: VariantHint) => Promise<null | object>
  *   onWarn?: (message: string) => void
  * }} args
  * @returns {Promise<{ html: string, rewritten: number }>}
@@ -1020,9 +1060,9 @@ export async function rewriteHtmlImages({ html, options, resolve, generate, onWa
  */
 function createSourceResolver({ root, dirs, base = '/' }) {
   const basePrefix = base.replace(/\/+$/, '')
-  const roots = dirs
-    .filter((dir) => typeof dir === 'string' && dir.length > 0)
-    .map((dir) => path.resolve(root, dir))
+  const roots = dirs.flatMap((dir) =>
+    typeof dir === 'string' && dir.length > 0 ? [path.resolve(root, dir)] : [],
+  )
 
   return (url) => {
     if (isExternalUrl(url) || url.startsWith('data:')) return null
@@ -1190,7 +1230,7 @@ function formatBytes(bytes) {
  *   stats: () => { sources: number, variants: number }
  *   every?: number
  *   intervalMs?: number
- * }}
+ * }} options
  */
 function createImageProgressLogger({
   total,

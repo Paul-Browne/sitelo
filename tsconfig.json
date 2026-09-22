@@ -1,0 +1,32 @@
+{
+  // Type-checks the JSDoc across the package against the `.d.ts` files it
+  // ships. Nothing is emitted: the declarations are hand-written, and
+  // this only asks whether they still describe the code beside them.
+  //
+  // What it catches is drift — an option a function accepts but no
+  // longer documents, a callback declared with fewer arguments than it
+  // is called with, a subpath whose target stopped existing, a config
+  // value read without being checked first. `sitelo/types` was dead for
+  // both runtime and types when this was first run.
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": true,
+    "checkJs": true,
+
+    // The resolution the package is actually consumed under: ESM with
+    // an `exports` map, which is what makes a missing subpath an error
+    // here rather than a surprise for whoever installs it.
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "target": "es2022",
+
+    // The dependencies' own declarations are their business.
+    "skipLibCheck": true
+  },
+
+  // Everything the package ships: the `exports` surface and the CLI
+  // behind `bin/`. Listing the directories rather than the entry points
+  // means a new module is covered the day it is added, instead of
+  // whenever someone remembers to name it here.
+  "include": ["src/**/*.js", "bin/**/*.js"]
+}

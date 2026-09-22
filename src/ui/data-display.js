@@ -533,7 +533,7 @@ export function carousel(...args) {
          */
         role: 'group',
         'aria-label': String(label),
-        tabindex: '0',
+        tabindex: 0,
         /*
          * Every way a carousel can move ends in a scroll event — a
          * swipe, a trackpad, the arrow keys, a scrollbar drag, a

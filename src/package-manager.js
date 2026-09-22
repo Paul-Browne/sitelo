@@ -14,6 +14,14 @@ const INSTALL_COMMANDS = {
 }
 
 /** Lockfile -> manager, checked in this order. */
+/**
+ * The managers this knows how to name — the keys of `INSTALL_COMMANDS`,
+ * and everything either detector can return.
+ *
+ * @typedef {'npm' | 'pnpm' | 'yarn' | 'bun'} PackageManager
+ */
+
+/** @type {Array<[string, PackageManager]>} */
 const LOCKFILES = [
   ['bun.lock', 'bun'],
   ['bun.lockb', 'bun'],
@@ -34,21 +42,25 @@ const MAX_LOCKFILE_DEPTH = 6
  * {@link detectFromLockfile} exists.
  *
  * @param {string | undefined} userAgent
- * @returns {string | null}
+ * @returns {PackageManager | null}
  */
 export function detectFromUserAgent(userAgent) {
   if (typeof userAgent !== 'string' || userAgent === '') return null
 
   const name = userAgent.trim().split(/[/\s]/)[0]
 
-  return name in INSTALL_COMMANDS ? name : null
+  // The `in` check is what makes this one of the four; it is the key
+  // test, not a cast that skips one.
+  return name in INSTALL_COMMANDS
+    ? /** @type {PackageManager} */ (name)
+    : null
 }
 
 /**
  * Walk up from `startDir` looking for a lockfile.
  *
  * @param {string} startDir
- * @returns {string | null}
+ * @returns {PackageManager | null}
  */
 export function detectFromLockfile(startDir) {
   let dir = path.resolve(startDir)
@@ -74,7 +86,7 @@ export function detectFromLockfile(startDir) {
  * @param {string | null} [options.userAgent] Omit to read
  *   `npm_config_user_agent`; pass `null` to ignore the environment and
  *   force lockfile detection.
- * @returns {'npm' | 'pnpm' | 'yarn' | 'bun'}
+ * @returns {PackageManager}
  */
 export function detectPackageManager({
   cwd = process.cwd(),

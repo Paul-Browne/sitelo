@@ -21,6 +21,7 @@ const CATEGORY_LABELS = {
 }
 
 /** The two device profiles Lighthouse emulates, in reporting order. */
+/** @type {Array<'mobile' | 'desktop'>} */
 const FORM_FACTORS = ['mobile', 'desktop']
 
 const OUTPUT_FORMATS = ['html', 'json', 'csv']
@@ -113,12 +114,16 @@ function toPatterns(value, label) {
  * @param {unknown} value
  * @param {string} label
  * @param {N} fallback
+ * @returns {number | N}
  * @template N
  */
 function toPositiveInteger(value, label, fallback) {
   if (value == null) return fallback
 
-  if (!Number.isInteger(value) || value < 1) {
+  // `Number.isInteger` already answers false for anything that is not a
+  // number; saying so first is what lets the comparison below read it as
+  // one.
+  if (typeof value !== 'number' || !Number.isInteger(value) || value < 1) {
     throw new Error(`"${label}" must be a positive integer`)
   }
 
@@ -138,7 +143,15 @@ export function normalizeLighthouseOptions(lighthouse) {
     throw new Error('"lighthouse" must be true or an object')
   }
 
-  const options = lighthouse === true ? {} : lighthouse
+  /*
+   * Whatever the config file put there. Every read below is a value this
+   * function has not vouched for yet — which is the point of the rest of
+   * it — so they arrive as `unknown` and are narrowed by the checks that
+   * follow rather than trusted on the way in.
+   */
+  const options = /** @type {Record<string, unknown>} */ (
+    lighthouse === true ? {} : lighthouse
+  )
 
   const categories = options.categories ?? CATEGORIES
 
@@ -236,7 +249,7 @@ export function normalizeLighthouseOptions(lighthouse) {
     throw new Error('"lighthouse.chromeFlags" must be an array of strings')
   }
 
-  const flags = options.flags ?? {}
+  const flags = /** @type {Record<string, unknown>} */ (options.flags ?? {})
 
   if (typeof flags !== 'object' || Array.isArray(flags)) {
     throw new Error('"lighthouse.flags" must be an object of Lighthouse flags')
@@ -246,8 +259,19 @@ export function normalizeLighthouseOptions(lighthouse) {
     throw new Error('"lighthouse.config" must be a Lighthouse config object')
   }
 
-  if (options.port != null && (!Number.isInteger(options.port) || options.port < 0)) {
-    throw new Error('"lighthouse.port" must be a port number')
+  /** @type {number | undefined} */
+  let port
+
+  if (options.port != null) {
+    const value = options.port
+
+    // Unlike the other counts, 0 is meaningful here: it asks Chrome for
+    // whatever port is free.
+    if (typeof value !== 'number' || !Number.isInteger(value) || value < 0) {
+      throw new Error('"lighthouse.port" must be a port number')
+    }
+
+    port = value
   }
 
   return {
@@ -264,7 +288,7 @@ export function normalizeLighthouseOptions(lighthouse) {
     formats: [...new Set(formats)],
     headless: options.headless !== false,
     chromeFlags,
-    port: options.port ?? undefined,
+    port,
     flags,
     config: options.config ?? undefined,
     onBuild: options.onBuild === true,

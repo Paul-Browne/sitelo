@@ -28,7 +28,18 @@
 
 import { part } from './helpers.js'
 
-/** The noise the stylesheet carries, as numbers. */
+/**
+ * Which turbulence to run. The two the filter understands, named the way
+ * the component says them rather than the way SVG spells them.
+ *
+ * @typedef {'fractal' | 'turbulence'} GrainType
+ */
+
+/**
+ * The noise the stylesheet carries, as numbers.
+ *
+ * @type {{ type: GrainType, frequency: number, octaves: number, seed: number }}
+ */
 export const DEFAULTS = { type: 'fractal', frequency: 0.57, octaves: 3, seed: 0 }
 
 /** `type` in the component's words, and in the filter's. */
@@ -123,7 +134,7 @@ function encode(svg) {
  * both themes take it at roughly the same strength.
  *
  * @param {object} [options]
- * @param {'fractal' | 'turbulence'} [options.type]
+ * @param {GrainType} [options.type]
  * @param {number} [options.frequency] - cycles per pixel
  * @param {number} [options.octaves]
  * @param {number} [options.seed]
@@ -175,7 +186,7 @@ export function isDefault(options) {
  * read the same way.
  *
  * @param {string} url
- * @returns {{ type: string, frequency: number, octaves: number, seed: number, color: string | null }}
+ * @returns {{ type: GrainType, frequency: number, octaves: number, seed: number, color: string | null }}
  */
 function parse(url) {
   const text = decodeURIComponent(url)
@@ -207,7 +218,7 @@ function parse(url) {
  * touched reports the theme's opacity rather than `undefined`.
  *
  * @param {Element | string} target - the grain, or the id of one
- * @returns {{ type: string, frequency: number, octaves: number, seed: number, color: string | null, opacity: number, blend: string } | null}
+ * @returns {{ type: GrainType, frequency: number, octaves: number, seed: number, color: string | null, opacity: number, blend: string } | null}
  */
 export function get(target) {
   const el = part(target, 'su-grain')
@@ -235,7 +246,7 @@ export function get(target) {
  *
  * @param {Element | string} target - the grain, or the id of one
  * @param {object} options
- * @param {'fractal' | 'turbulence'} [options.type]
+ * @param {GrainType} [options.type]
  * @param {number} [options.frequency]
  * @param {number} [options.octaves]
  * @param {number} [options.seed]

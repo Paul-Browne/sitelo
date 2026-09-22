@@ -41,8 +41,11 @@ function parts(target) {
 
   return {
     bar,
-    fill: bar.querySelector('.su-progress-fill'),
-    shown: root.querySelector('[data-su-progress-value]'),
+    // Read for `style` below, the way `part` hands its own back.
+    fill: /** @type {HTMLElement | null} */ (bar.querySelector('.su-progress-fill')),
+    shown: /** @type {HTMLElement | null} */ (
+      root.querySelector('[data-su-progress-value]')
+    ),
   }
 }
 

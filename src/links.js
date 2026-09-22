@@ -35,7 +35,11 @@ export function normalizeLinkCheckOptions(linkCheck) {
     )
   }
 
-  const { mode = 'warn', exclude = [], checkFragments = false } = raw
+  const {
+    mode = 'warn',
+    exclude = [],
+    checkFragments = false,
+  } = /** @type {Record<string, unknown>} */ (raw)
 
   if (mode !== 'warn' && mode !== 'error') {
     throw new Error(

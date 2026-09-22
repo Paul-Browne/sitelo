@@ -11,6 +11,44 @@ import { collectHtmlFiles, matchesGlob, pageUrl } from './site-paths.js'
 export { matchesGlob, pageUrl as pagefindUrl } from './site-paths.js'
 
 /**
+ * A value the config may leave out, and has to be `T` when it does not.
+ *
+ * Pagefind's own options were passed straight through before this, so a
+ * `glob: 42` reached Pagefind as a number and failed there instead of
+ * here. The other normalizers in the package all check their input; this
+ * one now does too.
+ *
+ * @param {unknown} value
+ * @param {string} label
+ * @param {'string' | 'boolean'} type
+ * @returns {any}
+ */
+function optional(value, label, type) {
+  if (value == null) return undefined
+
+  if (typeof value !== type) {
+    throw new Error(`"${label}" must be a ${type}`)
+  }
+
+  return value
+}
+
+/**
+ * @param {unknown} value
+ * @param {string} label
+ * @returns {string[] | undefined}
+ */
+function optionalStrings(value, label) {
+  if (value == null) return undefined
+
+  if (!Array.isArray(value) || value.some((entry) => typeof entry !== 'string')) {
+    throw new Error(`"${label}" must be an array of strings`)
+  }
+
+  return value
+}
+
+/**
  * Normalize sitelo.config.js `pagefind` option.
  * @param {unknown} pagefind
  * @returns {null | {
@@ -35,15 +73,23 @@ export function normalizePagefindOptions(pagefind) {
     throw new Error('"pagefind" must be true or an object')
   }
 
+  // Whatever the config file put there; Pagefind itself validates the
+  // values it is handed.
+  const options = /** @type {Record<string, unknown>} */ (pagefind)
+
   return {
-    syncPublic: pagefind.syncPublic !== false,
-    glob: pagefind.glob,
-    rootSelector: pagefind.rootSelector,
-    excludeSelectors: pagefind.excludeSelectors,
-    forceLanguage: pagefind.forceLanguage,
-    verbose: pagefind.verbose,
-    keepIndexUrl: pagefind.keepIndexUrl,
-    includeCharacters: pagefind.includeCharacters,
+    syncPublic: options.syncPublic !== false,
+    glob: optional(options.glob, 'pagefind.glob', 'string'),
+    rootSelector: optional(options.rootSelector, 'pagefind.rootSelector', 'string'),
+    excludeSelectors: optionalStrings(options.excludeSelectors, 'pagefind.excludeSelectors'),
+    forceLanguage: optional(options.forceLanguage, 'pagefind.forceLanguage', 'string'),
+    verbose: optional(options.verbose, 'pagefind.verbose', 'boolean'),
+    keepIndexUrl: optional(options.keepIndexUrl, 'pagefind.keepIndexUrl', 'boolean'),
+    includeCharacters: optional(
+      options.includeCharacters,
+      'pagefind.includeCharacters',
+      'string',
+    ),
   }
 }
 

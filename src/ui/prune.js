@@ -312,10 +312,13 @@ function serialize(nodes, include = () => true) {
 }
 
 /**
- * Every `@keyframes` in the tree, at any depth, as `[name, node]`.
+ * Every `@keyframes` in the tree, at any depth.
+ *
+ * Only `block` nodes come back — that is what an at-rule with a body
+ * parses to — so callers can read the `prelude` the name lives in.
  *
  * @param {Node[]} nodes
- * @returns {Node[]}
+ * @returns {Extract<Node, { kind: 'block' }>[]}
  */
 function keyframes(nodes) {
   const found = []
@@ -345,8 +348,13 @@ export function pruneCss(css, has) {
   const animations = keyframes(kept)
   const dead = new Set()
 
+  // Held as the wider node type: it is asked about every node in the
+  // sheet below, not only the `@keyframes` that went into it.
+  /** @type {Set<Node>} */
+  const animated = new Set(animations)
+
   if (animations.length) {
-    const rest = serialize(kept, (node) => !animations.includes(node))
+    const rest = serialize(kept, (node) => !animated.has(node))
 
     for (const node of animations) {
       const name = node.prelude.replace(/^@keyframes\s+/, '').trim()

@@ -29,6 +29,20 @@
 import { part } from './helpers.js'
 
 /**
+ * The `<input type="range">` a call is aimed at.
+ *
+ * `su-slider` is only ever on the input the component renders, never on
+ * the row around it, so whatever `part` finds under that class is one —
+ * which is what lets the callers below read `value` off it.
+ *
+ * @param {Element | string} target
+ * @returns {HTMLInputElement | null}
+ */
+function rangeInput(target) {
+  return /** @type {HTMLInputElement | null} */ (part(target, 'su-slider'))
+}
+
+/**
  * Copy the input's value into the output beside it.
  *
  * @param {HTMLInputElement} input
@@ -53,7 +67,7 @@ export function sync(input) {
  * @returns {number | null} the value it took, or `null` for no such slider
  */
 export function set(target, value) {
-  const input = part(target, 'su-slider')
+  const input = rangeInput(target)
   const numeric = Number(value)
 
   if (!input || value == null || !Number.isFinite(numeric)) return null
@@ -81,7 +95,7 @@ export function set(target, value) {
  * @returns {number | null} its value, or `null` for no such slider
  */
 export function get(target) {
-  const input = part(target, 'su-slider')
+  const input = rangeInput(target)
   const numeric = Number(input?.value)
 
   return input && input.value !== '' && Number.isFinite(numeric) ? numeric : null

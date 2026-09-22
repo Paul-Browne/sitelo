@@ -19,12 +19,17 @@
  * `set('upload')`, `set('#upload')` and `set(element)` are all things a
  * caller will reasonably write, so all three work.
  *
+ * Everything these components are pointed at is an HTML element — they
+ * read `style` and `value` off what comes back — so the narrower type is
+ * the honest one, and the two DOM lookups below are cast to it rather
+ * than left as the `Element` their signatures promise.
+ *
  * @param {Element | string | null | undefined} target
- * @returns {Element | null}
+ * @returns {HTMLElement | null}
  */
 export function find(target) {
   if (target == null) return null
-  if (typeof target !== 'string') return target
+  if (typeof target !== 'string') return /** @type {HTMLElement} */ (target)
 
   const byId = document.getElementById(target)
 
@@ -35,7 +40,7 @@ export function find(target) {
    * rather than returning null, so the fallback has to be guarded.
    */
   try {
-    return document.querySelector(target)
+    return /** @type {HTMLElement | null} */ (document.querySelector(target))
   } catch {
     return null
   }
@@ -50,7 +55,7 @@ export function find(target) {
  *
  * @param {Element | string} target
  * @param {string} className - without the leading dot
- * @returns {Element | null}
+ * @returns {HTMLElement | null}
  */
 export function part(target, className) {
   const node = find(target)
@@ -59,7 +64,9 @@ export function part(target, className) {
 
   return node.classList?.contains(className)
     ? node
-    : (node.querySelector?.(`.${className}`) ?? null)
+    : (/** @type {HTMLElement | null} */ (
+        node.querySelector?.(`.${className}`)
+      ) ?? null)
 }
 
 /**

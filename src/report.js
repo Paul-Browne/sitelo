@@ -51,9 +51,9 @@ export function normalizeBuildReportOptions(buildReport) {
     )
   }
 
-  const { top = DEFAULT_TOP } = buildReport
+  const { top = DEFAULT_TOP } = /** @type {Record<string, unknown>} */ (buildReport)
 
-  if (!Number.isInteger(top) || top < 0) {
+  if (typeof top !== 'number' || !Number.isInteger(top) || top < 0) {
     throw new Error('"buildReport.top" must be a non-negative integer')
   }
 
@@ -184,14 +184,18 @@ export function formatBuildReport(stats, timings = {}, options = {}) {
   const { top = DEFAULT_TOP } = options
   const lines = []
 
+  // Three columns, always — which is what `width(2)` and the destructure
+  // in `renderRow` below both assume.
+  /** @type {Array<[string, string, string]>} */
   const rows = [
-    ...stats.groups.map((group) => [
+    ...stats.groups.map((group) => /** @type {[string, string, string]} */ ([
       group.label,
       `${group.files} ${group.files === 1 ? 'file' : 'files'}`,
       formatBytes(group.bytes),
-    ]),
+    ])),
   ]
 
+  /** @type {[string, string, string]} */
   const totalRow = [
     'total',
     `${stats.files} ${stats.files === 1 ? 'file' : 'files'}`,
@@ -205,6 +209,7 @@ export function formatBuildReport(stats, timings = {}, options = {}) {
   const countWidth = width(1)
   const bytesWidth = width(2)
 
+  /** @param {[string, string, string]} row */
   const renderRow = ([label, count, size]) =>
     `  ${label.padEnd(labelWidth)}  ${count.padStart(countWidth)}  ${size.padStart(bytesWidth)}`
 

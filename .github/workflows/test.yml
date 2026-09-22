@@ -36,6 +36,25 @@ jobs:
 
       - run: npm test
 
+  # Checks the JSDoc across `src` and `bin` against the `.d.ts` files the
+  # package ships. Its own job on one Node version: the answer does not
+  # vary across the matrix above, so running it three times would only
+  # buy three copies of the same result.
+  typecheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run typecheck
+
   # sharp, pagefind and lighthouse are optional peers, and that
   # declaration is load-bearing: drop it and only Yarn Berry's Plug'n'Play
   # linker breaks, while npm and pnpm keep working. So exercise every

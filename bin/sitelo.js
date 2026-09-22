@@ -430,6 +430,7 @@ function islandsDevPlugin({ root, pagesDir = 'src' }) {
           );
 
           const params = new URLSearchParams(query);
+          /** @type {Record<string, unknown>} */
           let props = {};
           const rawProps = params.get('props');
 
@@ -609,6 +610,7 @@ function buildInlineConfig(cli, command, viteFromSitelo = {}) {
   const mode = cli.mode ?? (command === 'build' ? 'production' : 'development');
   const logLevel = cli.logLevel ?? 'info';
 
+  /** @type {import('vite').InlineConfig} */
   const cliLayer = {
     root: cli.root,
     configFile: cli.config,

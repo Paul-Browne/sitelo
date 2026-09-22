@@ -102,6 +102,7 @@
   },
   "scripts": {
     "test": "node --test test/*.test.js",
+    "typecheck": "tsc",
     "knip": "knip",
     "docs:dev": "node ./bin/sitelo.js --root docs",
     "docs:build": "node ./bin/sitelo.js build --root docs",
@@ -115,7 +116,7 @@
   "dependencies": {
     "javascript-to-html": "^1.1.5",
     "vite": "^8.3.0",
-    "vite-plugin-html-pages": "^2.4.0"
+    "vite-plugin-html-pages": "^2.4.1"
   },
   "peerDependencies": {
     "lighthouse": "^12.0.0 || ^13.0.0",
@@ -145,6 +146,7 @@
     "lighthouse": "^13.4.1",
     "pagefind": "^1.5.2",
     "prismjs": "^1.30.0",
-    "sharp": "^0.35.3"
+    "sharp": "^0.35.3",
+    "typescript": "^5.9.3"
   }
 }

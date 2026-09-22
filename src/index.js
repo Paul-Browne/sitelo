@@ -17,15 +17,18 @@ function toArray(value) {
  * server side of `sitelo/ui`: the small runtime modules its components
  * import from their own event attributes.
  *
- * @param {object} [options]
- * @param {{ base?: string }} [options.uiClient] - where to serve the
- *   sitelo-ui runtime from. Defaults to `/su/`; set it for a sub-path
- *   deploy, or to an absolute URL to host the files yourself.
- * @param {boolean | { keep?: string[] }} [options.pruneCss] - write only
- *   the rules of the sitelo-ui stylesheet that the built pages can
- *   match, rather than the whole sheet. `keep` names classes to keep
- *   regardless — for markup that arrives at request time, say — with a
- *   trailing `*` for a prefix.
+ * Options are every vite-plugin-html-pages option plus sitelo's own,
+ * taken from the shipped declaration so the two cannot drift:
+ *
+ * - `uiClient` — where to serve the sitelo-ui runtime from. Defaults to
+ *   `/su/`; set it for a sub-path deploy, or to an absolute URL to host
+ *   the files yourself.
+ * - `pruneCss` — write only the rules of the sitelo-ui stylesheet that
+ *   the built pages can match, rather than the whole sheet. `keep` names
+ *   classes to keep regardless — for markup that arrives at request
+ *   time, say — with a trailing `*` for a prefix.
+ *
+ * @param {import('./index.js').SiteloPluginOptions} [options]
  */
 export default function sitelo(options = {}) {
   const { uiClient, pruneCss, externalAssets, ...pluginOptions } = options;
