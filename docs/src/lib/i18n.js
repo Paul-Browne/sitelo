@@ -75,8 +75,11 @@ export const OG_LOCALES = {
  * Keyed by the English path. The language switcher and the `hreflang`
  * alternates are emitted only for these, so a path that gains a locale must
  * be listed here or the switcher will not offer it.
+ *
+ * Exported so `test/docs-locales.test.js` can hold it against the page files
+ * on disk; pages themselves should ask `isTranslated()`.
  */
-const TRANSLATED_PATHS = new Set([
+export const TRANSLATED_PATHS = new Set([
   '/',
   '/about',
   '/docs',
