@@ -65,12 +65,7 @@ run_logged() {
   fi
 }
 
-# --- pack -----------------------------------------------------------------
-#
-# Pack from a copy carrying a throwaway version. Yarn Classic caches by
-# package name + version, so re-packing at an unchanged version makes it
-# silently reinstall a previously cached tarball.
-# --- preflight -------------------------------------------------------------
+# --- preflight ------------------------------------------------------------
 case "$MANAGER" in
   npm)        MANAGER_BIN=(npm) ;;
   pnpm)       MANAGER_BIN=(pnpm) ;;
@@ -89,6 +84,11 @@ else
 fi
 info "node $(node --version)"
 
+# --- pack -----------------------------------------------------------------
+#
+# Pack from a copy carrying a throwaway version. Yarn Classic caches by
+# package name + version, so re-packing at an unchanged version makes it
+# silently reinstall a previously cached tarball.
 PACK_SRC="$WORK/pack-src"
 mkdir -p "$PACK_SRC"
 git -C "$REPO_ROOT" ls-files -z | while IFS= read -r -d '' f; do
