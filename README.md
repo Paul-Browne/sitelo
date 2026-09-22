@@ -68,6 +68,7 @@ That's the whole mental model. Everything else is convenience on top.
 - **Asset validation** — broken `<script src>` / stylesheet links fail the build
 - **Link checking** — dead internal `<a href>` links reported against the real output
 - **Lighthouse audits** — score the real build against per-category thresholds, on demand or in CI
+- **Unused-code detection** — a one-line [knip](https://knip.dev) config that knows pages and islands are entry points
 - **Image optimization** — `<img>` tags get resized, converted, and turned into a `srcset`, in dev and in the build
 - **Real dev server** — pages render on request (dynamic routes included, no `generateStaticParams` needed in dev) with full reload and readable error frames
 - **Server islands** — static pages with regions rendered on the server at
@@ -1733,6 +1734,52 @@ Three things worth knowing before you gate a pipeline on this:
 - **Pages are audited one at a time**, through a single Chrome. Running
   them in parallel would compete for the CPU Lighthouse is measuring, so
   budget a few seconds per page.
+
+---
+
+## Finding unused code
+
+[knip](https://knip.dev) finds files, exports and dependencies nothing
+uses. On a sitelo project it needs one hint: pages and islands are
+discovered from the filesystem, so nothing imports them, and without
+being told otherwise knip reports the whole site as unused files.
+
+```bash
+npm install -D knip
+```
+
+```js
+// knip.js
+import { knipConfig } from 'sitelo/knip'
+
+export default knipConfig()
+```
+
+```bash
+npx knip
+```
+
+`knipConfig()` reads your `sitelo.config.js` and marks the pages and
+islands as entry points the same way the build discovers them —
+`pagesDir`, `pageExtensions`, `include` and `exclude` all apply. What is
+left in the report is code the site genuinely never reaches.
+
+One thing it cannot see: a client script a page references by URL rather
+than import, like `<script src="/js/app.js">`. List those yourself, and
+pass anything else knip accepts alongside — it is spread into the result:
+
+```js
+export default knipConfig({
+  entry: ['src/js/app.js!'],
+  ignore: ['legacy/**'],
+})
+```
+
+The trailing `!` is knip's marker for production code, which is what a
+script shipped to the browser is. It matters only for
+[`knip --production`](https://knip.dev/features/production-mode), where
+pages, islands and any entry marked this way are the whole graph and
+`sitelo.config.js` drops out of it.
 
 ---
 

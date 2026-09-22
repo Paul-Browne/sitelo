@@ -87,6 +87,10 @@
     "./islands/server": {
       "types": "./src/islands-server.d.ts",
       "import": "./src/islands-server.js"
+    },
+    "./knip": {
+      "types": "./src/knip.d.ts",
+      "import": "./src/knip.js"
     }
   },
   "files": [

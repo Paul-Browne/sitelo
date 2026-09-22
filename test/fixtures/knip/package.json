@@ -1,0 +1,9 @@
+{
+  "name": "sitelo-fixture-knip",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "knip": "*",
+    "sitelo": "*"
+  }
+}
