@@ -1,6 +1,6 @@
 {
   "name": "sitelo",
-  "version": "2.9.0",
+  "version": "2.9.1",
   "author": "Paul Browne",
   "type": "module",
   "license": "MIT",
@@ -114,9 +114,9 @@
     "update:all": "npm i && for d in examples/*/; do [ -f \"$d/package.json\" ] && (cd \"$d\" && echo \"--- $d\" && npm i); done"
   },
   "dependencies": {
-    "javascript-to-html": "^1.1.6",
+    "javascript-to-html": "^1.2.0",
     "vite": "^8.3.0",
-    "vite-plugin-html-pages": "^2.4.1"
+    "vite-plugin-html-pages": "^2.5.1"
   },
   "peerDependencies": {
     "lighthouse": "^12.0.0 || ^13.0.0",
