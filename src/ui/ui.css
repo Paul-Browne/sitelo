@@ -1700,6 +1700,18 @@ a.su-list-item:hover,
   box-shadow: var(--su-shadow-lg);
 }
 
+/*
+ * A theme is free to make a soft palette translucent, which is fine on
+ * an alert sitting in the flow and unreadable on a toast floating over
+ * the page's own text. The tint goes on top of a solid surface instead,
+ * which with the default, opaque soft colours looks exactly the same.
+ */
+.su-toasts > .su-alert--soft {
+  background:
+    linear-gradient(var(--su-c-soft, var(--su-surface-2)), var(--su-c-soft, var(--su-surface-2)))
+    var(--su-surface);
+}
+
 /* ------------------------------------------------------------------ *
  * Navigation
  * ------------------------------------------------------------------ */
