@@ -14,6 +14,7 @@ import { uiClientPrefix, uiRuntime } from '../src/ui/plugin.js';
 import { configureUiClient, RUNTIME_MODULES } from '../src/ui/handlers.js';
 import { styles, stylesheet, stylesUrl } from '../src/ui/styles.js';
 import { grainStylesheet, grainStylesUrl } from '../src/ui-extras/index.js';
+import { editableSheet } from './helpers/sheet.js';
 
 /** A throwaway outDir holding one page. */
 function siteWith(html) {
@@ -406,23 +407,21 @@ test('stylesUrl() is the href styles() carries', () => {
   assert.equal(stylesUrl({ hash: false }), '/su/ui.css');
 });
 
-test('the linked name changes with the sheet, so it can be cached forever', async () => {
-  const source = new URL('../src/ui/ui.css', import.meta.url);
-  const original = readFileSync(source, 'utf8');
-  const before = stylesUrl();
+test('the linked name changes with the sheet, so it can be cached forever', () => {
+  // Against a private copy of the file: editing the tracked one raced
+  // ui.test.js, which reads it. See test/helpers/sheet.js.
+  const { sheet, original, edit } = editableSheet(
+    'ui',
+    new URL('../src/ui/ui.css', import.meta.url),
+  );
+  const before = sheet.stylesUrl();
 
   assert.match(before, /^\/su\/ui-[0-9a-f]{8}\.css$/);
-  assert.equal(stylesUrl(), before, 'stable while the sheet is');
+  assert.equal(sheet.stylesUrl(), before, 'stable while the sheet is');
 
-  try {
-    // A second apart, because the read is cached on the file's mtime.
-    await new Promise((resolve) => setTimeout(resolve, 1100));
-    writeFileSync(source, `${original}\n.su-canary{color:red}\n`);
+  edit(`${original}\n.su-canary{color:red}\n`);
 
-    assert.notEqual(stylesUrl(), before, 'and moves when it changes');
-  } finally {
-    writeFileSync(source, original);
-  }
+  assert.notEqual(sheet.stylesUrl(), before, 'and moves when it changes');
 });
 
 /* ------------------------------------------------------------------ *

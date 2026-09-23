@@ -7,6 +7,7 @@ import * as ui from '../src/ui/index.js';
 import defaultExport from '../src/ui/index.js';
 import { configureUiClient, RUNTIME_MODULES } from '../src/ui/handlers.js';
 import { attrs, parseArgs, space } from '../src/ui/internal.js';
+import { editableSheet } from './helpers/sheet.js';
 
 /** The sheet itself, for the components whose behaviour is only in it. */
 const uiCss = readFileSync(fileURLToPath(new URL('../src/ui/ui.css', import.meta.url)), 'utf8');
@@ -1302,33 +1303,31 @@ test('every palette clears WCAG AA against the surface it sits on', () => {
   }
 });
 
-test('stylesheet() picks up an edit to ui.css instead of serving a stale copy', async () => {
+test('stylesheet() picks up an edit to ui.css instead of serving a stale copy', () => {
   // A build reads the sheet once; a dev server outlives edits to it. This
   // is the bug where a running server kept serving the old palette.
-  const { readFileSync, writeFileSync } = await import('node:fs');
-  const cssPath = fileURLToPath(new URL('../src/ui/ui.css', import.meta.url));
-  const original = readFileSync(cssPath, 'utf8');
+  //
+  // Against a private copy of the file: editing the tracked one raced
+  // every other test file reading it. See test/helpers/sheet.js.
+  const { sheet, original, edit } = editableSheet(
+    'ui',
+    new URL('../src/ui/ui.css', import.meta.url),
+  );
 
   assert.ok(original.includes('--su-primary:'), 'the token exists to edit');
+  assert.ok(sheet.stylesheet().includes('--su-primary'), 'reads before the edit');
 
-  try {
-    assert.ok(ui.stylesheet().includes('--su-primary'), 'reads before the edit');
+  edit(original.replace('--su-primary:', '--su-canary-token: #abcdef;\n  --su-primary:'));
 
-    writeFileSync(
-      cssPath,
-      original.replace('--su-primary:', '--su-canary-token: #abcdef;\n  --su-primary:'),
-    );
+  assert.match(
+    sheet.stylesheet(),
+    /--su-canary-token/,
+    'the edit is visible to the next call',
+  );
 
-    assert.match(
-      ui.stylesheet(),
-      /--su-canary-token/,
-      'the edit is visible to the next call',
-    );
-  } finally {
-    writeFileSync(cssPath, original);
-  }
+  edit(original);
 
-  assert.ok(!ui.stylesheet().includes('--su-canary-token'), 'and so is the revert');
+  assert.ok(!sheet.stylesheet().includes('--su-canary-token'), 'and so is the revert');
 });
 
 test('styles() links the sheet, and inlines it when asked', () => {

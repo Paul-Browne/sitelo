@@ -1,7 +1,5 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 
 import * as extras from '../src/ui-extras/index.js';
 import defaultExport from '../src/ui-extras/index.js';
@@ -9,6 +7,7 @@ import { grain, grainStyles, grainStylesheet, grainStylesUrl } from '../src/ui-e
 import * as client from '../src/ui-extras/client.js';
 import * as coreClient from '../src/ui/client.js';
 import * as ui from '../src/ui/index.js';
+import { editableSheet } from './helpers/sheet.js';
 
 /* ------------------------------------------------------------------ *
  * The entry point
@@ -64,22 +63,19 @@ test('grain.css is complete on its own', () => {
   }
 });
 
-test('grainStylesheet() picks up an edit to grain.css instead of serving a stale copy', async () => {
-  const { writeFileSync } = await import('node:fs');
-  const cssPath = fileURLToPath(new URL('../src/ui-extras/grain.css', import.meta.url));
-  const original = readFileSync(cssPath, 'utf8');
-  const before = grainStylesUrl();
+test('grainStylesheet() picks up an edit to grain.css instead of serving a stale copy', () => {
+  // Against a private copy of the file: editing the tracked one raced
+  // ui-runtime.test.js, which reads it. See test/helpers/sheet.js.
+  const { sheet, original, edit } = editableSheet(
+    'grain',
+    new URL('../src/ui-extras/grain.css', import.meta.url),
+  );
+  const before = sheet.stylesUrl();
 
-  try {
-    // A second apart, because the read is cached on the file's mtime.
-    await new Promise((resolve) => setTimeout(resolve, 1100));
-    writeFileSync(cssPath, `${original}\n.su-canary{color:red}\n`);
+  edit(`${original}\n.su-canary{color:red}\n`);
 
-    assert.match(grainStylesheet(), /su-canary/, 'the edit is visible to the next call');
-    assert.notEqual(grainStylesUrl(), before, 'and the hashed name moves with it');
-  } finally {
-    writeFileSync(cssPath, original);
-  }
+  assert.match(sheet.stylesheet(), /su-canary/, 'the edit is visible to the next call');
+  assert.notEqual(sheet.stylesUrl(), before, 'and the hashed name moves with it');
 });
 
 /* ------------------------------------------------------------------ *
