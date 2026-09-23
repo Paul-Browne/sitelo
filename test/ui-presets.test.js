@@ -121,6 +121,62 @@ for (const name of presets) {
     }
   });
 
+  test(`${name}: an input inside a group stays clear in every state it repaints`, () => {
+    /*
+     * With an adornment, the group is the well and the input sits in it
+     * with no ground of its own. A preset that repaints a bare input in
+     * some state — `:hover:not([disabled])` is (0,3,0) — outranks the
+     * group's plain `.su-input-group .su-input`, and the input covers
+     * the well the moment it is pointed at. So every such state has to
+     * be cleared again under the group, by name.
+     */
+    const rules = [...presetCss(name).replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+      .map(([, selectors, body]) => ({
+        selectors: selectors.split(/,(?![^(]*\))/).map((selector) => selector.trim()),
+        body,
+      }));
+    const background = /background(?:-color)?\s*:\s*([^;]+)/;
+    const states = rules
+      .filter(({ body }) => background.test(body) && background.exec(body)[1].trim() !== 'transparent')
+      .flatMap(({ selectors }) => selectors)
+      .filter((selector) => /^\.su-input:/.test(selector));
+    const cleared = new Set(
+      rules
+        .filter(({ body }) => background.exec(body)?.[1].trim() === 'transparent')
+        .flatMap(({ selectors }) => selectors),
+    );
+
+    assert.ok(states.length > 0, 'the preset repaints the input in some state');
+
+    for (const state of states) {
+      assert.ok(cleared.has(`.su-input-group ${state}`), `${state} is not cleared inside .su-input-group`);
+    }
+  });
+
+  test(`${name}: overrides every core rule that rounds an accordion header`, () => {
+    /*
+     * The core rounds a header only where it meets the accordion's
+     * corners, with selectors that outrank a plain `summary`. A preset
+     * that shapes its items differently has to name each one, or the
+     * core's corners win on the headers they pick out.
+     */
+    const headers = (css) =>
+      [...css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+        .filter(([, , body]) => /border-[a-z-]*radius/.test(body))
+        .flatMap(([, selectors]) => selectors.split(/,(?![^(]*\))/).map((selector) => selector.trim()))
+        .filter((selector) => /^\.su-accordion-item\b.*> summary$/.test(selector));
+    const core = headers(ui.stylesheet({ minify: false }));
+    const own = new Set(headers(presetCss(name)));
+
+    if (!own.size) return;
+
+    assert.ok(core.length > 0, 'the core rounds some headers');
+
+    for (const selector of core) {
+      assert.ok(own.has(selector), `${selector} is not restated`);
+    }
+  });
+
   test(`${name}: every palette still clears WCAG AA`, () => {
     /*
      * The preset's tokens laid over the core's, the way the cascade

@@ -426,6 +426,19 @@
 }
 
 /*
+ * The same ring on an accordion header, drawn inward. `.su-accordion`
+ * clips to its own radius and a header runs its full width, so a ring
+ * 2px outside it would be cut off down both sides, and along the top of
+ * the first. The header's corners follow the accordion's where the two
+ * meet — see `.su-accordion-item:first-child > summary` — or the clip
+ * would take the ring's corners instead.
+ */
+.su-accordion-item > summary:focus-visible {
+  outline: 2px solid var(--su-c, var(--su-primary));
+  outline-offset: -2px;
+}
+
+/*
  * Every `<summary>` the library styles draws its own marker, so the
  * default one comes off all three together. This is the WebKit-only
  * half of that — each rule above also sets `list-style: none`, which
@@ -2282,6 +2295,24 @@ html:has(.su-drawer--lock:popover-open) {
 
 .su-accordion-item[open] > summary::after {
   transform: rotate(225deg) translate(-0.1rem, -0.1rem);
+}
+
+/*
+ * Rounded where a header meets the accordion's own corners: the top of
+ * the first, and the bottom of the last while it is shut. Its hover
+ * background is already cut to that shape by the clip; the focus ring
+ * is not, because it is drawn inside the header, and would lose its
+ * corners to the clip otherwise. The radius inside a border is the
+ * outer one less the border.
+ */
+.su-accordion-item:first-child > summary {
+  border-start-start-radius: calc(var(--su-radius-lg) - var(--su-border-width));
+  border-start-end-radius: calc(var(--su-radius-lg) - var(--su-border-width));
+}
+
+.su-accordion-item:last-child:not([open]) > summary {
+  border-end-start-radius: calc(var(--su-radius-lg) - var(--su-border-width));
+  border-end-end-radius: calc(var(--su-radius-lg) - var(--su-border-width));
 }
 
 .su-accordion-item > summary:hover {

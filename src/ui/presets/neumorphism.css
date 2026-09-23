@@ -268,6 +268,42 @@
   margin-inline-start: var(--su-space-xs);
 }
 
+/*
+ * A segmented control: the group is a track pressed into the page, and
+ * the option that is chosen is the one raised out of it. The reverse of
+ * a toggle button on its own, which is pressed in when it is on — here
+ * the track already reads as pressed, so being chosen has to stand up.
+ *
+ * `gap` rather than the margin above, because a toggle group wraps, and
+ * a margin would indent the first option of every line after the first.
+ */
+.su-toggle-group {
+  gap: var(--su-space-xs);
+  padding: var(--su-space-xs);
+  border-radius: var(--su-radius-md);
+  box-shadow: var(--su-neu-inset);
+}
+
+.su-toggle-group > .su-btn + .su-btn {
+  margin-inline-start: 0;
+}
+
+/* Rounded all round: the core squares off every option but the ends. */
+.su-toggle-group > .su-toggle-btn {
+  border-color: transparent;
+  border-radius: var(--su-radius-md);
+  background: transparent;
+  box-shadow: none;
+}
+
+.su-toggle-group > .su-toggle-btn[aria-pressed='true'],
+.su-toggle-group > .su-toggle-btn[aria-current] {
+  border-color: transparent;
+  background: var(--su-surface);
+  color: var(--su-c-soft-fg);
+  box-shadow: var(--su-neu-raised-sm);
+}
+
 /* ------------------------------------------------------------------ *
  * Form controls
  *
@@ -332,7 +368,11 @@
   box-shadow: var(--su-neu-inset), 0 0 0 var(--su-ring-width) var(--su-primary-ring);
 }
 
+/* Every state the rules above repaint, named again here: the hover is
+   (0,3,0), and would outrank a bare `.su-input-group .su-input` and
+   paint the input over the well it sits in. */
 .su-input-group .su-input,
+.su-input-group .su-input:hover:not([disabled]),
 .su-input-group .su-input:focus {
   background: transparent;
   box-shadow: none;
@@ -459,6 +499,89 @@ button.su-chip:hover {
 }
 
 /* ------------------------------------------------------------------ *
+ * Accordion
+ *
+ * Each item stands on its own, raised, instead of sharing one ruled
+ * box: rules are what the look does without. An open item is pressed
+ * into the page, the way a toggle that is on is — its panel becomes
+ * the well the answer sits in.
+ * ------------------------------------------------------------------ */
+
+.su-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--su-space-md);
+  border-color: transparent;
+  background: transparent;
+  /* The core clips its items to its own radius; these draw their own
+     shadows past it. */
+  overflow: visible;
+}
+
+.su-accordion-item {
+  border-radius: var(--su-radius-md);
+  background: var(--su-surface);
+  box-shadow: var(--su-neu-raised-sm);
+  overflow: hidden;
+  transition: box-shadow var(--su-transition);
+}
+
+.su-accordion-item + .su-accordion-item {
+  border-top: 0;
+}
+
+.su-accordion-item:not([open]):hover {
+  box-shadow: var(--su-neu-raised);
+}
+
+.su-accordion-item[open] {
+  box-shadow: var(--su-neu-inset-sm);
+}
+
+.su-accordion-item > summary:hover {
+  background: transparent;
+}
+
+/*
+ * The core draws a header's focus ring inside it, and rounds the header
+ * where it meets the accordion's corners — the top of the first, the
+ * foot of the last. Here every item is its own rounded box, clipping to
+ * its own radius, so every header takes its item's corners all round:
+ * the core's selectors restated, since they outrank a plain one.
+ *
+ * Named, not `inherit`: a `<summary>` inherits from the slot inside
+ * `<details>`'s own shadow tree rather than from the item, and the slot
+ * has no radius to give it.
+ */
+.su-accordion-item > summary,
+.su-accordion-item:first-child > summary,
+.su-accordion-item:last-child:not([open]) > summary {
+  border-radius: var(--su-radius-md);
+}
+
+/* ------------------------------------------------------------------ *
+ * Timeline
+ *
+ * The rule between items is a groove pressed into the page, and each
+ * marker a stud raised out of it. A coloured marker keeps its flat fill
+ * rather than a gradient, since an icon can sit on it.
+ * ------------------------------------------------------------------ */
+
+.su-timeline-item:not(:last-child)::after {
+  /* Centred under the 1.05rem marker, and wide enough to read as a
+     groove rather than a line. */
+  inset-inline-start: calc(0.525rem - 3px);
+  width: 6px;
+  border-radius: var(--su-radius-full);
+  background: var(--su-surface);
+  box-shadow: var(--su-neu-inset-sm);
+}
+
+.su-timeline-marker {
+  box-shadow: var(--su-neu-raised-sm);
+}
+
+/* ------------------------------------------------------------------ *
  * Navigation
  * ------------------------------------------------------------------ */
 
@@ -487,6 +610,12 @@ button.su-chip:hover {
    shadow cannot be clipped by the strip's own scrolling. */
 .su-tablist {
   border-bottom-color: transparent;
+}
+
+/* Tabs whose panels follow them have no strip to rule under: the line
+   is the top of each panel instead. */
+.su-tabs--panels > .su-tabpanel {
+  border-top-color: transparent;
 }
 
 .su-tab {

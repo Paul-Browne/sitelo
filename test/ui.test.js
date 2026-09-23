@@ -1168,6 +1168,51 @@ test('stylesheet() minifies without unbalancing the CSS', () => {
   }
 });
 
+/** Every rule in a sheet, comments out, as its selectors and its body. */
+function rulesIn(css) {
+  return [...css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(
+    ([, selectors, body]) => ({
+      selectors: selectors.split(/,(?![^(]*\))/).map((selector) => selector.trim()),
+      body,
+    }),
+  );
+}
+
+test('an accordion header’s focus ring is drawn inside the accordion’s clip', () => {
+  /*
+   * `.su-accordion` clips to its radius and a header runs its full
+   * width, so the ring every other control gets — 2px outside — would be
+   * cut off down both sides. The header's is drawn inward instead, and
+   * where the header meets the accordion's corners it takes their radius,
+   * or the clip would take the ring's corners.
+   */
+  const rules = rulesIn(ui.stylesheet({ minify: false }));
+  const bodyOf = (selector) =>
+    rules.filter(({ selectors }) => selectors.includes(selector)).map(({ body }) => body).join(';');
+
+  assert.match(bodyOf('.su-accordion'), /overflow:\s*hidden/, 'the accordion clips, which is the reason for the rest');
+
+  const ring = bodyOf('.su-accordion-item > summary:focus-visible');
+  const offset = /outline-offset:\s*(-?[\d.]+)px/.exec(ring);
+
+  assert.match(ring, /outline:\s*2px solid var\(--su-c, var\(--su-primary\)\)/, 'the library’s own ring');
+  assert.ok(offset && Number(offset[1]) <= -2, 'drawn at least its own width inside the header');
+
+  const inner = 'calc(var(--su-radius-lg) - var(--su-border-width))';
+
+  for (const [selector, corners] of [
+    ['.su-accordion-item:first-child > summary', ['start-start', 'start-end']],
+    ['.su-accordion-item:last-child:not([open]) > summary', ['end-start', 'end-end']],
+  ]) {
+    for (const corner of corners) {
+      assert.ok(
+        bodyOf(selector).includes(`border-${corner}-radius: ${inner}`),
+        `${selector} rounds its ${corner} corner to the inside of the accordion’s`,
+      );
+    }
+  }
+});
+
 test('the two dark blocks stay in step with each other', () => {
   const css = ui.stylesheet({ minify: false });
 
