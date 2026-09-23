@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/fr.js'
+import { code, codeBlock, demo, presetPreview, propsTable, uiLayout } from '../../lib/fr.js'
 
 export default () =>
   uiLayout({
@@ -43,7 +43,7 @@ head(
         code('{ inline: true }'),
         ' met plutôt la feuille entière dans un ',
         code('<style>'),
-        ' : environ 7 ko gzippés dans chaque page, mais aucune requête supplémentaire et rien qui puisse manquer dans ',
+        ' : environ 11 ko gzippés dans chaque page, mais aucune requête supplémentaire et rien qui puisse manquer dans ',
         code('dist/'),
         '. C’est le meilleur compromis pour une page unique ; le lien rembourse sa requête dès la deuxième page lue.',
       ),
@@ -57,6 +57,46 @@ head(
         ' renvoie le CSS brut sous forme de chaîne — pour héberger la feuille là où sitelo n’a pas la main, ou l’écrire vous-même quelque part — et ',
         code('stylesUrl()'),
         ' l’URL seule, pour un élément link à vous.',
+      ),
+
+      h2('Préréglages'),
+      p(
+        'Un préréglage change tout le rendu d’un coup. ',
+        code("styles({ preset: 'neumorphism' })"),
+        ' lie une seconde feuille juste après la feuille principale — servie, hachée et mise en cache aux mêmes conditions — et chaque composant de la page la suit, sans rien changer au balisage.',
+      ),
+      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+
+head(
+  title('Mon site'),
+  styles({ preset: 'neumorphism' }),
+)
+// <link rel="stylesheet" href="/su/ui-c9428b65.css">
+// <link rel="stylesheet" href="/su/neumorphism-5d0e7b91.css">`, 'javascript'),
+      presetPreview('neumorphism'),
+      p(
+        code('neumorphism'),
+        ' est de la soft UI : chaque surface est la page elle-même, et un contrôle ne se détache que par la lumière et l’ombre — en relief sur la page, ou enfoncé dedans. Il garde deux choses que ce style sacrifie d’habitude, un texte conforme à WCAG AA et le contour de focus, et il suit le mode sombre comme tout le reste. Il lui faut en revanche que le fond de la page elle-même soit ',
+        code('var(--su-bg)'),
+        ', car l’effet repose sur le fait que les deux soient de la même couleur.',
+      ),
+      p(
+        code('theme()'),
+        ' fonctionne toujours par-dessus : un préréglage est un point de départ, pas un fork. Celui-ci ajoute un dixième emplacement à chaque palette, ',
+        code('glow'),
+        ' — la couleur dans laquelle une barre de progression ou un interrupteur se fond à son extrémité — pour qu’une nouvelle couleur primaire puisse apporter la sienne.',
+      ),
+      codeBlock('src/index.ht.js', `head(
+  styles({ preset: 'neumorphism' }),
+  theme({
+    primary: { base: '#7c3aed', hover: '#6d28d9', active: '#5b21b6', glow: '#e879f9' },
+  }),
+)`, 'javascript'),
+      p(
+        code('inline'),
+        ' intègre les deux feuilles, ',
+        code('stylesheet({ preset })'),
+        ' les renvoie en une seule chaîne, et un nom qui n’est pas un préréglage lève une erreur qui liste ceux qui existent.',
       ),
 
       h2('Surcharger des jetons'),
@@ -215,6 +255,7 @@ head(
       h2('Props'),
       p(code('styles()'), ' :'),
       propsTable([
+        ['preset', "'neumorphism'", '', 'Restyle chaque composant avec un préréglage, lié ou intégré après la feuille principale.'],
         ['inline', 'boolean', 'false', 'Émet le CSS lui-même plutôt qu’un lien vers lui.'],
         ['hash', 'boolean', 'true', 'Ajoute au nom de fichier une empreinte du contenu. Lien uniquement.'],
         ['base', 'string', "'/su/'", 'Pointe l’URL ailleurs ; cette copie est à vous d’héberger. Lien uniquement.'],
@@ -231,6 +272,8 @@ head(
         code('stylesheet()'),
         ' prend ',
         code('minify'),
+        ' et ',
+        code('preset'),
         '.',
       ),
       p(code('theme(tokens, options)'), ' :'),

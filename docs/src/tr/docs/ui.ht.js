@@ -163,6 +163,15 @@ export default () =>
         ' de tam olarak bunu yapar:',
       ),
       codeBlock('src/index.ht.js', s.themeToggle, 'javascript'),
+      p(
+        'Bütün görünümü tek seferde değiştirmek de mümkün: ',
+        code("styles({ preset: 'neumorphism' })"),
+        ' bir hazır ayarın stil sayfasını çekirdek stil sayfasının hemen ardından bağlar, her bileşen onu izler ve ',
+        code('theme()'),
+        ' üstünde çalışmayı sürdürür. Temalar sayfasının ',
+        a({ href: '/tr/ui/theming#hazir-ayarlar' }, 'Hazır ayarlar'),
+        ' bölümünde canlı olarak görülebilir.',
+      ),
 
       h2('JavaScript ve ne kadar azı olduğu'),
       p(

@@ -164,6 +164,15 @@ export default () =>
         ':',
       ),
       codeBlock('src/index.ht.js', s.themeToggle, 'javascript'),
+      p(
+        'O cambia todo el aspecto de una vez: ',
+        code("styles({ preset: 'neumorphism' })"),
+        ' enlaza la hoja de un preset justo después de la principal, cada componente la sigue y ',
+        code('theme()'),
+        ' sigue funcionando por encima. Puedes verlo en directo en ',
+        a({ href: '/es/ui/theming#presets' }, 'Presets'),
+        ', en la página Temas.',
+      ),
 
       h2('JavaScript, y lo poco que hay'),
       p(

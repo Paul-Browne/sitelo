@@ -164,6 +164,15 @@ export default () =>
         ':',
       ),
       codeBlock('src/index.ht.js', s.themeToggle, 'javascript'),
+      p(
+        'Atau ubah seluruh tampilan sekaligus: ',
+        code("styles({ preset: 'neumorphism' })"),
+        ' menautkan lembar sebuah preset tepat setelah lembar inti, setiap komponen mengikutinya, dan ',
+        code('theme()'),
+        ' tetap bekerja di atasnya. Lihat langsung di bagian ',
+        a({ href: '/id/ui/theming#preset' }, 'Preset'),
+        ' pada halaman Tema.',
+      ),
 
       h2('JavaScript, dan betapa sedikitnya'),
       p(

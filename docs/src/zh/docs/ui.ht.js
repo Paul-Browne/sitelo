@@ -164,6 +164,15 @@ export default () =>
         ' 做的正是这件事：',
       ),
       codeBlock('src/index.ht.js', s.themeToggle, 'javascript'),
+      p(
+        '也可以一次改掉整体观感：',
+        code("styles({ preset: 'neumorphism' })"),
+        ' 会在核心样式表之后紧接着链接某个预设的样式表，每个组件都会跟着变，而 ',
+        code('theme()'),
+        ' 依然可以叠在上面用。它在主题定制页面的',
+        a({ href: '/zh/ui/theming#预设' }, '预设'),
+        '一节里实时运行。',
+      ),
 
       h2('JavaScript，以及它有多少'),
       p(

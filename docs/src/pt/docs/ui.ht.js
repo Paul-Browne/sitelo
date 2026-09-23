@@ -165,6 +165,15 @@ export default () =>
         ' faz:',
       ),
       codeBlock('src/index.ht.js', s.themeToggle, 'javascript'),
+      p(
+        'Ou muda o aspeto todo de uma vez: ',
+        code("styles({ preset: 'neumorphism' })"),
+        ' liga a folha de um preset logo a seguir à principal, todos os componentes a seguem, e o ',
+        code('theme()'),
+        ' continua a funcionar por cima. Podes vê-lo ao vivo em ',
+        a({ href: '/pt/ui/theming#presets' }, 'Presets'),
+        ', na página Temas.',
+      ),
 
       h2('JavaScript, e o pouco que é preciso'),
       p(

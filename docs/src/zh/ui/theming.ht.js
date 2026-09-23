@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
+import { code, codeBlock, demo, presetPreview, propsTable, uiLayout } from '../../lib/zh.js'
 
 export default () =>
   uiLayout({
@@ -42,7 +42,7 @@ head(
         code('{ inline: true }'),
         ' 改为把整份样式表放进一个 ',
         code('<style>'),
-        '：每一页多出大约 7 kB（gzip 后），但不用多一次请求，也不会有东西从 ',
+        '：每一页多出大约 11 kB（gzip 后），但不用多一次请求，也不会有东西从 ',
         code('dist/'),
         ' 里漏掉。对单页来说这更划算；而访客读到第二页时，链接就把那次请求赚回来了。',
       ),
@@ -56,6 +56,46 @@ head(
         ' 返回字符串形式的原始 CSS，方便你把它放到 sitelo 够不着的地方，或是自己写到别处去；',
         code('stylesUrl()'),
         ' 只给出这个 URL，方便你自己写 link 元素。',
+      ),
+
+      h2('预设'),
+      p(
+        '预设一次就改掉整体观感。',
+        code("styles({ preset: 'neumorphism' })"),
+        ' 会在核心样式表之后紧接着链接第二份样式表——服务、哈希和缓存的方式都一样——页面上的每个组件都会跟着变，标记一处都不用改。',
+      ),
+      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+
+head(
+  title('我的站点'),
+  styles({ preset: 'neumorphism' }),
+)
+// <link rel="stylesheet" href="/su/ui-c9428b65.css">
+// <link rel="stylesheet" href="/su/neumorphism-5d0e7b91.css">`, 'javascript'),
+      presetPreview('neumorphism'),
+      p(
+        code('neumorphism'),
+        ' 是软 UI：每个表面都是页面本身，控件只靠光与影区分出来——要么从页面上凸起，要么压进页面里。这种风格通常放弃的两样东西它都保留了：达到 WCAG AA 的文字，以及焦点轮廓；它也和其他一切一样跟随深色模式。不过它要求页面自身的背景是 ',
+        code('var(--su-bg)'),
+        '，因为整个效果就建立在两者同色之上。',
+      ),
+      p(
+        code('theme()'),
+        ' 依然可以叠在上面用，所以预设是起点，而不是分叉。这个预设给每套调色板加了第十个槽位 ',
+        code('glow'),
+        '——进度条或开关在末端渐变过去的那个颜色——这样新的主色就能带上自己的。',
+      ),
+      codeBlock('src/index.ht.js', `head(
+  styles({ preset: 'neumorphism' }),
+  theme({
+    primary: { base: '#7c3aed', hover: '#6d28d9', active: '#5b21b6', glow: '#e879f9' },
+  }),
+)`, 'javascript'),
+      p(
+        code('inline'),
+        ' 会把两份样式表都内联，',
+        code('stylesheet({ preset })'),
+        ' 把它们作为一个字符串返回；传入一个不是预设的名字会抛错，并列出现有的预设。',
       ),
 
       h2('覆盖令牌'),
@@ -214,6 +254,7 @@ head(
       h2('属性'),
       p(code('styles()'), '：'),
       propsTable([
+        ['preset', "'neumorphism'", '', '用预设重新设计每个组件，链接或内联在核心样式表之后。'],
         ['inline', 'boolean', 'false', '直接产出 CSS 本身，而不是指向它的链接。'],
         ['hash', 'boolean', 'true', '在文件名里加上内容哈希。仅链接时有效。'],
         ['base', 'string', "'/su/'", '把 URL 指向别处；那份文件由你自己托管。仅链接时有效。'],
@@ -230,6 +271,8 @@ head(
         code('stylesheet()'),
         ' 接受 ',
         code('minify'),
+        ' 和 ',
+        code('preset'),
         '。',
       ),
       p(code('theme(tokens, options)'), '：'),

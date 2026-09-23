@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/tr.js'
+import { code, codeBlock, demo, presetPreview, propsTable, uiLayout } from '../../lib/tr.js'
 
 export default () =>
   uiLayout({
@@ -43,7 +43,7 @@ head(
         code('{ inline: true }'),
         ' bunun yerine bütün sayfayı bir ',
         code('<style>'),
-        ' içine koyar — her sayfada gzip ile yaklaşık 7 kB, ama fazladan istek yok ve ',
+        ' içine koyar — her sayfada gzip ile yaklaşık 11 kB, ama fazladan istek yok ve ',
         code('dist/'),
         ' içinden kaybolabilecek hiçbir şey yok. Tek bir sayfa için daha iyi takas budur; bağlantı ise isteğini, ziyaretçinin okuduğu ikinci sayfada geri kazanır.',
       ),
@@ -57,6 +57,46 @@ head(
         ' ham CSS’i bir dize olarak döndürür — sayfayı sitelo’nun ulaşamadığı bir yerde barındırmak ya da onu kendiniz bir yere yazmak için — ',
         code('stylesUrl()'),
         ' ise kendinize ait bir link öğesi için yalnızca href değerini.',
+      ),
+
+      h2('Hazır ayarlar'),
+      p(
+        'Bir hazır ayar, bütün görünümü tek seferde değiştirir. ',
+        code("styles({ preset: 'neumorphism' })"),
+        ' çekirdek stil sayfasının hemen ardından ikinci bir stil sayfası bağlar — aynı koşullarla sunulur, hash’lenir ve önbelleğe alınır — ve sayfadaki her bileşen, işaretlemede hiçbir şey değiştirmeden onu izler.',
+      ),
+      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+
+head(
+  title('Sitem'),
+  styles({ preset: 'neumorphism' }),
+)
+// <link rel="stylesheet" href="/su/ui-c9428b65.css">
+// <link rel="stylesheet" href="/su/neumorphism-5d0e7b91.css">`, 'javascript'),
+      presetPreview('neumorphism'),
+      p(
+        code('neumorphism'),
+        ' bir soft UI’dır: her yüzey sayfanın kendisidir ve bir denetim yalnızca ışık ve gölgeyle öne çıkar — sayfadan kabarık ya da içine bastırılmış olarak. Bu tarzın genellikle vazgeçtiği iki şeyi korur, WCAG AA’yı geçen metni ve odak çerçevesini; koyu kipi de her şey gibi izler. Ancak sayfanın kendi arka planının ',
+        code('var(--su-bg)'),
+        ' olmasını gerektirir, çünkü etki ikisinin aynı renk olmasına dayanır.',
+      ),
+      p(
+        code('theme()'),
+        ' üstünde çalışmayı sürdürür, yani bir hazır ayar bir çatal değil, bir başlangıç noktasıdır. Bu hazır ayar her palete onuncu bir yuva ekler, ',
+        code('glow'),
+        ' — bir ilerleme çubuğunun ya da anahtarın ucunda eridiği renk — böylece yeni bir birincil renk kendi rengini getirebilir.',
+      ),
+      codeBlock('src/index.ht.js', `head(
+  styles({ preset: 'neumorphism' }),
+  theme({
+    primary: { base: '#7c3aed', hover: '#6d28d9', active: '#5b21b6', glow: '#e879f9' },
+  }),
+)`, 'javascript'),
+      p(
+        code('inline'),
+        ' iki stil sayfasını da satır içine gömer, ',
+        code('stylesheet({ preset })'),
+        ' ikisini tek bir dize olarak döndürür, hazır ayar olmayan bir ad ise var olanları listeleyen bir hata fırlatır.',
       ),
 
       h2('Belirteçleri geçersiz kılmak'),
@@ -215,6 +255,7 @@ head(
       h2('Proplar'),
       p(code('styles()'), ':'),
       propsTable([
+        ['preset', "'neumorphism'", '', 'Her bileşeni bir hazır ayarla yeniden biçimlendirir; çekirdek stil sayfasından sonra bağlanır ya da satır içine gömülür.'],
         ['inline', 'boolean', 'false', 'Ona bir bağlantı yerine CSS’in kendisini üretir.'],
         ['hash', 'boolean', 'true', 'Dosya adını içerikle özetler. Yalnızca bağlantılı.'],
         ['base', 'string', "'/su/'", 'URL’i başka yere yöneltir; o kopyayı siz barındırırsınız. Yalnızca bağlantılı.'],
@@ -231,6 +272,8 @@ head(
         code('stylesheet()'),
         ' ise ',
         code('minify'),
+        ' ve ',
+        code('preset'),
         '.',
       ),
       p(code('theme(tokens, options)'), ':'),

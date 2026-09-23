@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/pl.js'
+import { code, codeBlock, demo, presetPreview, propsTable, uiLayout } from '../../lib/pl.js'
 
 export default () =>
   uiLayout({
@@ -43,7 +43,7 @@ head(
         code('{ inline: true }'),
         ' wkłada zamiast tego cały arkusz w ',
         code('<style>'),
-        ' — około 7 kB po gzipie na każdej stronie, ale bez dodatkowego żądania i bez niczego, co mogłoby zginąć z ',
+        ' — około 11 kB po gzipie na każdej stronie, ale bez dodatkowego żądania i bez niczego, co mogłoby zginąć z ',
         code('dist/'),
         '. To lepszy kompromis dla pojedynczej strony; odnośnik odrabia swoje żądanie na drugiej stronie, którą odwiedzający przeczyta.',
       ),
@@ -57,6 +57,46 @@ head(
         ' zwraca surowy CSS jako ciąg znaków — do hostowania arkusza tam, gdzie sitelo nie sięgnie, albo do zapisania go gdzieś samodzielnie — a ',
         code('stylesUrl()'),
         ' sam adres, do własnego elementu link.',
+      ),
+
+      h2('Presety'),
+      p(
+        'Preset zmienia cały wygląd za jednym razem. ',
+        code("styles({ preset: 'neumorphism' })"),
+        ' dołącza drugi arkusz zaraz po głównym — serwowany, hashowany i buforowany na tych samych zasadach — a każdy komponent na stronie za nim podąża, bez żadnej zmiany w znacznikach.',
+      ),
+      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+
+head(
+  title('Moja strona'),
+  styles({ preset: 'neumorphism' }),
+)
+// <link rel="stylesheet" href="/su/ui-c9428b65.css">
+// <link rel="stylesheet" href="/su/neumorphism-5d0e7b91.css">`, 'javascript'),
+      presetPreview('neumorphism'),
+      p(
+        code('neumorphism'),
+        ' to soft UI: każda powierzchnia jest samą stroną, a kontrolka wyróżnia się wyłącznie światłem i cieniem — wypukła nad stroną albo wciśnięta w nią. Zachowuje dwie rzeczy, z których ten styl zwykle rezygnuje, tekst spełniający WCAG AA i obrys fokusu, i podąża za trybem ciemnym jak cała reszta. Wymaga za to, żeby tłem samej strony było ',
+        code('var(--su-bg)'),
+        ', bo cały efekt opiera się na tym, że oba mają ten sam kolor.',
+      ),
+      p(
+        code('theme()'),
+        ' dalej działa na wierzchu, więc preset to punkt wyjścia, a nie fork. Ten dodaje do każdej palety dziesiąte miejsce, ',
+        code('glow'),
+        ' — kolor, w który przechodzi koniec paska postępu albo przełącznika — żeby nowy kolor główny mógł przynieść własny.',
+      ),
+      codeBlock('src/index.ht.js', `head(
+  styles({ preset: 'neumorphism' }),
+  theme({
+    primary: { base: '#7c3aed', hover: '#6d28d9', active: '#5b21b6', glow: '#e879f9' },
+  }),
+)`, 'javascript'),
+      p(
+        code('inline'),
+        ' wstawia oba arkusze inline, ',
+        code('stylesheet({ preset })'),
+        ' zwraca je jako jeden ciąg, a nazwa, która nie jest presetem, rzuca błąd z listą tych, które istnieją.',
       ),
 
       h2('Nadpisywanie tokenów'),
@@ -214,6 +254,7 @@ head(
       h2('Propsy'),
       p(code('styles()'), ':'),
       propsTable([
+        ['preset', "'neumorphism'", '', 'Zmienia wygląd każdego komponentu presetem, dołączonym albo wstawionym po głównym arkuszu.'],
         ['inline', 'boolean', 'false', 'Wypuść sam CSS zamiast odnośnika do niego.'],
         ['hash', 'boolean', 'true', 'Wstaw skrót treści w nazwę pliku. Tylko postać z odnośnikiem.'],
         ['base', 'string', "'/su/'", 'Skieruj adres gdzie indziej; tamtą kopię hostujesz Ty. Tylko postać z odnośnikiem.'],
@@ -230,6 +271,8 @@ head(
         code('stylesheet()'),
         ' przyjmuje ',
         code('minify'),
+        ' i ',
+        code('preset'),
         '.',
       ),
       p(code('theme(tokens, options)'), ':'),

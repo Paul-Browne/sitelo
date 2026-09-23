@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/es.js'
+import { code, codeBlock, demo, presetPreview, propsTable, uiLayout } from '../../lib/es.js'
 
 export default () =>
   uiLayout({
@@ -43,7 +43,7 @@ head(
         code('{ inline: true }'),
         ' mete la hoja entera en un ',
         code('<style>'),
-        ': unos 7 kB en gzip en cada página, pero ni una petición extra ni nada que pueda faltar en ',
+        ': unos 11 kB en gzip en cada página, pero ni una petición extra ni nada que pueda faltar en ',
         code('dist/'),
         '. Es el mejor trato para una página suelta; el enlace se paga solo en la segunda página que lee una visita.',
       ),
@@ -57,6 +57,46 @@ head(
         ' devuelve el CSS crudo como cadena —para alojar la hoja donde sitelo no llega, o para escribirla tú donde quieras— y ',
         code('stylesUrl()'),
         ' solo la URL, para un elemento link propio.',
+      ),
+
+      h2('Presets'),
+      p(
+        'Un preset cambia todo el aspecto de una vez. ',
+        code("styles({ preset: 'neumorphism' })"),
+        ' enlaza una segunda hoja justo después de la principal — servida, con hash y en caché en las mismas condiciones — y cada componente de la página la sigue, sin que tengas que tocar el marcado.',
+      ),
+      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+
+head(
+  title('Mi sitio'),
+  styles({ preset: 'neumorphism' }),
+)
+// <link rel="stylesheet" href="/su/ui-c9428b65.css">
+// <link rel="stylesheet" href="/su/neumorphism-5d0e7b91.css">`, 'javascript'),
+      presetPreview('neumorphism'),
+      p(
+        code('neumorphism'),
+        ' es soft UI: cada superficie es la propia página, y un control destaca solo por la luz y la sombra — en relieve sobre la página o hundido en ella. Conserva dos cosas a las que este estilo suele renunciar, un texto que cumple WCAG AA y el contorno de foco, y sigue al modo oscuro como todo lo demás. Eso sí, necesita que el fondo de la propia página sea ',
+        code('var(--su-bg)'),
+        ', porque el efecto depende de que ambos sean del mismo color.',
+      ),
+      p(
+        code('theme()'),
+        ' sigue funcionando por encima, así que un preset es un punto de partida y no un fork. Este añade una décima ranura a cada paleta, ',
+        code('glow'),
+        ' — el color en el que se funde el extremo de una barra de progreso o de un interruptor — para que un primario nuevo pueda traer el suyo.',
+      ),
+      codeBlock('src/index.ht.js', `head(
+  styles({ preset: 'neumorphism' }),
+  theme({
+    primary: { base: '#7c3aed', hover: '#6d28d9', active: '#5b21b6', glow: '#e879f9' },
+  }),
+)`, 'javascript'),
+      p(
+        code('inline'),
+        ' incrusta las dos hojas, ',
+        code('stylesheet({ preset })'),
+        ' las devuelve como una sola cadena, y un nombre que no es un preset lanza un error con la lista de los que existen.',
       ),
 
       h2('Anular tokens'),
@@ -215,6 +255,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
+        ['preset', "'neumorphism'", '', 'Reestiliza todos los componentes con un preset, enlazado o incrustado después de la hoja principal.'],
         ['inline', 'boolean', 'false', 'Emite el CSS en sí en vez de un enlace a él.'],
         ['hash', 'boolean', 'true', 'Añade al nombre del archivo un hash del contenido. Solo enlazado.'],
         ['base', 'string', "'/su/'", 'Apunta la URL a otro sitio; esa copia la alojas tú. Solo enlazado.'],
@@ -231,6 +272,8 @@ head(
         code('stylesheet()'),
         ' acepta ',
         code('minify'),
+        ' y ',
+        code('preset'),
         '.',
       ),
       p(code('theme(tokens, options)'), ':'),

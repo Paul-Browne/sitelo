@@ -164,6 +164,15 @@ export default () =>
         ':',
       ),
       codeBlock('src/index.ht.js', s.themeToggle, 'javascript'),
+      p(
+        'Oder du änderst den ganzen Look auf einmal: ',
+        code("styles({ preset: 'neumorphism' })"),
+        ' verlinkt das Stylesheet eines Presets direkt nach dem Kern-Stylesheet, jede Komponente folgt ihm, und ',
+        code('theme()'),
+        ' funktioniert weiterhin obendrauf. Live zu sehen unter ',
+        a({ href: '/de/ui/theming#presets' }, 'Presets'),
+        ' auf der Seite Theming.',
+      ),
 
       h2('JavaScript, und wie wenig davon nötig ist'),
       p(

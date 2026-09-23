@@ -169,6 +169,15 @@ export default () =>
         ':',
       ),
       codeBlock('src/index.ht.js', s.themeToggle, 'javascript'),
+      p(
+        'Albo zmień cały wygląd za jednym razem: ',
+        code("styles({ preset: 'neumorphism' })"),
+        ' dołącza arkusz presetu zaraz po głównym, każdy komponent za nim podąża, a ',
+        code('theme()'),
+        ' dalej działa na wierzchu. Na żywo zobaczysz to w sekcji ',
+        a({ href: '/pl/ui/theming#presety' }, 'Presety'),
+        ' na stronie Motywy.',
+      ),
 
       h2('JavaScript i jak mało go tu jest'),
       p(

@@ -1,7 +1,7 @@
 import { h2, p } from 'javascript-to-html'
 import { code, codeBlock } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
-import { demo, propsTable } from '../lib/ui-demo.js'
+import { demo, presetPreview, propsTable } from '../lib/ui-demo.js'
 
 export default () =>
   uiLayout({
@@ -45,7 +45,7 @@ head(
         code('{ inline: true }'),
         ' puts the whole sheet in a ',
         code('<style>'),
-        ' instead — about 7 kB gzipped in every page, but no extra request and nothing that can go missing from ',
+        ' instead — about 11 kB gzipped in every page, but no extra request and nothing that can go missing from ',
         code('dist/'),
         '. That is the better trade for a single page; the link buys its request back on the second page a visitor reads.',
       ),
@@ -59,6 +59,46 @@ head(
         ' returns the raw CSS as a string — for hosting the sheet somewhere sitelo cannot reach, or writing it somewhere yourself — and ',
         code('stylesUrl()'),
         ' the href alone, for a link element of your own.',
+      ),
+
+      h2('Presets'),
+      p(
+        'A preset changes the whole look at once. ',
+        code("styles({ preset: 'neumorphism' })"),
+        ' links a second sheet straight after the core one — served, hashed and cached on the same terms — and every component on the page follows it, with nothing to change in the markup.',
+      ),
+      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+
+head(
+  title('My site'),
+  styles({ preset: 'neumorphism' }),
+)
+// <link rel="stylesheet" href="/su/ui-c9428b65.css">
+// <link rel="stylesheet" href="/su/neumorphism-5d0e7b91.css">`, 'javascript'),
+      presetPreview('neumorphism'),
+      p(
+        code('neumorphism'),
+        ' is soft UI: every surface is the page itself, and a control stands out by light and shade alone — raised from the page, or pressed into it. It keeps two things the look usually gives up, text that clears WCAG AA and the focus outline, and it follows dark mode like everything else. It does need the page’s own background to be ',
+        code('var(--su-bg)'),
+        ', since the effect rests on the two being one colour.',
+      ),
+      p(
+        code('theme()'),
+        ' still works on top, so a preset is a starting point rather than a fork. This one adds a tenth slot to each palette, ',
+        code('glow'),
+        ' — the colour a progress bar or a switch fades into at its far end — so a new primary can bring its own.',
+      ),
+      codeBlock('src/index.ht.js', `head(
+  styles({ preset: 'neumorphism' }),
+  theme({
+    primary: { base: '#7c3aed', hover: '#6d28d9', active: '#5b21b6', glow: '#e879f9' },
+  }),
+)`, 'javascript'),
+      p(
+        code('inline'),
+        ' inlines both sheets, ',
+        code('stylesheet({ preset })'),
+        ' returns them as one string, and a name that is not a preset throws with a list of the ones there are.',
       ),
 
       h2('Overriding tokens'),
@@ -217,6 +257,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
+        ['preset', "'neumorphism'", '', 'Restyle every component with a preset, linked or inlined after the core sheet.'],
         ['inline', 'boolean', 'false', 'Emit the CSS itself rather than a link to it.'],
         ['hash', 'boolean', 'true', 'Content-hash the file name. Linked only.'],
         ['base', 'string', "'/su/'", 'Point the URL elsewhere; that copy is yours to host. Linked only.'],
@@ -233,6 +274,8 @@ head(
         code('stylesheet()'),
         ' takes ',
         code('minify'),
+        ' and ',
+        code('preset'),
         '.',
       ),
       p(code('theme(tokens, options)'), ':'),

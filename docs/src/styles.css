@@ -2237,6 +2237,17 @@ a.feature-card:hover h3 {
   margin: 0 0 1.75rem;
 }
 
+/* A preset restyles the whole document it is in, so it is shown in a
+   frame of its own; the frame is the box the demos draw, and the
+   preset paints its own ground inside it. */
+.ui-preset-frame {
+  display: block;
+  width: 100%;
+  margin: 0 0 1.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+}
+
 .ui-sandbox-controls {
   display: grid;
   /* Two to a row, so the pairs in the markup stay pairs: the dropdowns,

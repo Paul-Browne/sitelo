@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/id.js'
+import { code, codeBlock, demo, presetPreview, propsTable, uiLayout } from '../../lib/id.js'
 
 export default () =>
   uiLayout({
@@ -43,7 +43,7 @@ head(
         code('{ inline: true }'),
         ' justru menaruh seluruh lembarnya dalam sebuah ',
         code('<style>'),
-        ' — sekitar 7 kB ter-gzip di setiap halaman, tetapi tanpa permintaan tambahan dan tanpa apa pun yang bisa hilang dari ',
+        ' — sekitar 11 kB ter-gzip di setiap halaman, tetapi tanpa permintaan tambahan dan tanpa apa pun yang bisa hilang dari ',
         code('dist/'),
         '. Itu takaran yang lebih baik untuk satu halaman; tautannya menebus permintaannya kembali pada halaman kedua yang dibaca pengunjung.',
       ),
@@ -57,6 +57,46 @@ head(
         ' mengembalikan CSS mentahnya sebagai string — untuk menghosting lembarnya di tempat yang tidak bisa dijangkau sitelo, atau menulisnya sendiri ke suatu tempat — dan ',
         code('stylesUrl()'),
         ' hanya href-nya, untuk elemen link milik Anda sendiri.',
+      ),
+
+      h2('Preset'),
+      p(
+        'Preset mengubah seluruh tampilan sekaligus. ',
+        code("styles({ preset: 'neumorphism' })"),
+        ' menautkan lembar kedua tepat setelah lembar inti — disajikan, di-hash, dan di-cache dengan cara yang sama — dan setiap komponen di halaman mengikutinya, tanpa ada yang perlu diubah di markup.',
+      ),
+      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+
+head(
+  title('Situs saya'),
+  styles({ preset: 'neumorphism' }),
+)
+// <link rel="stylesheet" href="/su/ui-c9428b65.css">
+// <link rel="stylesheet" href="/su/neumorphism-5d0e7b91.css">`, 'javascript'),
+      presetPreview('neumorphism'),
+      p(
+        code('neumorphism'),
+        ' adalah soft UI: setiap permukaan adalah halaman itu sendiri, dan sebuah kontrol menonjol hanya lewat cahaya dan bayangan — terangkat dari halaman, atau tertekan ke dalamnya. Preset ini mempertahankan dua hal yang biasanya dikorbankan gaya ini, teks yang lolos WCAG AA dan garis fokus, dan mengikuti mode gelap seperti bagian lainnya. Namun ia membutuhkan latar halaman itu sendiri berupa ',
+        code('var(--su-bg)'),
+        ', karena efeknya bergantung pada keduanya yang berwarna sama.',
+      ),
+      p(
+        code('theme()'),
+        ' tetap bekerja di atasnya, jadi preset adalah titik awal, bukan fork. Preset ini menambahkan slot kesepuluh ke setiap palet, ',
+        code('glow'),
+        ' — warna yang dituju ujung bilah kemajuan atau sakelar saat memudar — supaya warna primer yang baru bisa membawa miliknya sendiri.',
+      ),
+      codeBlock('src/index.ht.js', `head(
+  styles({ preset: 'neumorphism' }),
+  theme({
+    primary: { base: '#7c3aed', hover: '#6d28d9', active: '#5b21b6', glow: '#e879f9' },
+  }),
+)`, 'javascript'),
+      p(
+        code('inline'),
+        ' menyisipkan kedua lembar secara inline, ',
+        code('stylesheet({ preset })'),
+        ' mengembalikan keduanya sebagai satu string, dan nama yang bukan preset melempar galat berisi daftar preset yang ada.',
       ),
 
       h2('Menimpa token'),
@@ -215,6 +255,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
+        ['preset', "'neumorphism'", '', 'Menata ulang setiap komponen dengan sebuah preset, ditautkan atau disisipkan setelah lembar inti.'],
         ['inline', 'boolean', 'false', 'Menghasilkan CSS-nya sendiri alih-alih tautan kepadanya.'],
         ['hash', 'boolean', 'true', 'Memberi hash konten pada nama berkasnya. Hanya untuk yang bertautan.'],
         ['base', 'string', "'/su/'", 'Mengarahkan URL-nya ke tempat lain; salinan itu Anda yang menghosting. Hanya untuk yang bertautan.'],
@@ -231,6 +272,8 @@ head(
         code('stylesheet()'),
         ' menerima ',
         code('minify'),
+        ' dan ',
+        code('preset'),
         '.',
       ),
       p(code('theme(tokens, options)'), ':'),

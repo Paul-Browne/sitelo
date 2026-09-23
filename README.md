@@ -644,6 +644,18 @@ head(
 )
 ```
 
+A preset changes the whole look at once. `styles({ preset })` links a
+second sheet straight after the core one, served and hashed on the same
+terms, and `theme()` still works on top of it:
+
+```js
+head(styles({ preset: 'neumorphism' }))
+```
+
+`neumorphism` is soft UI — controls raised from the page or pressed into
+it by light and shade — with text kept at WCAG AA and the focus outline
+kept on. It needs the page's background to be `var(--su-bg)`.
+
 ### Icons
 
 `icon()` returns an inline `<svg>` from a set of 99 glyphs, drawn on one

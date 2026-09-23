@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/de.js'
+import { code, codeBlock, demo, presetPreview, propsTable, uiLayout } from '../../lib/de.js'
 
 export default () =>
   uiLayout({
@@ -43,7 +43,7 @@ head(
         code('{ inline: true }'),
         ' packt stattdessen die ganze Datei in ein ',
         code('<style>'),
-        ' — rund 7 kB gzippt in jeder Seite, dafür keine zusätzliche Anfrage und nichts, was in ',
+        ' — rund 11 kB gzippt in jeder Seite, dafür keine zusätzliche Anfrage und nichts, was in ',
         code('dist/'),
         ' fehlen kann. Für eine einzelne Seite ist das der bessere Handel; der Link holt seine Anfrage ab der zweiten gelesenen Seite wieder herein.',
       ),
@@ -57,6 +57,46 @@ head(
         ' gibt das rohe CSS als String zurück — für eine Datei irgendwo, wo sitelo nicht hinkommt, oder um sie selbst irgendwohin zu schreiben —, und ',
         code('stylesUrl()'),
         ' nur die URL, für ein eigenes link-Element.',
+      ),
+
+      h2('Presets'),
+      p(
+        'Ein Preset ändert den ganzen Look auf einmal. ',
+        code("styles({ preset: 'neumorphism' })"),
+        ' verlinkt direkt nach dem Kern-Stylesheet ein zweites — ausgeliefert, gehasht und gecacht zu denselben Bedingungen —, und jede Komponente auf der Seite folgt ihm, ohne dass du am Markup etwas änderst.',
+      ),
+      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+
+head(
+  title('Meine Website'),
+  styles({ preset: 'neumorphism' }),
+)
+// <link rel="stylesheet" href="/su/ui-c9428b65.css">
+// <link rel="stylesheet" href="/su/neumorphism-5d0e7b91.css">`, 'javascript'),
+      presetPreview('neumorphism'),
+      p(
+        code('neumorphism'),
+        ' ist Soft UI: Jede Fläche ist die Seite selbst, und ein Bedienelement hebt sich allein durch Licht und Schatten ab — aus der Seite gehoben oder in sie hineingedrückt. Zwei Dinge, die dieser Look sonst aufgibt, behält es: Text, der WCAG AA erfüllt, und den Fokusrahmen. Den Dunkelmodus macht es mit wie alles andere. Es braucht allerdings ',
+        code('var(--su-bg)'),
+        ' als Hintergrund der Seite selbst, denn der Effekt beruht darauf, dass beides dieselbe Farbe hat.',
+      ),
+      p(
+        code('theme()'),
+        ' funktioniert weiterhin obendrauf, ein Preset ist also ein Ausgangspunkt und kein Fork. Dieses hier gibt jeder Palette einen zehnten Platz, ',
+        code('glow'),
+        ' — die Farbe, in die ein Fortschrittsbalken oder ein Switch an seinem Ende ausläuft —, damit eine neue Primärfarbe ihre eigene mitbringen kann.',
+      ),
+      codeBlock('src/index.ht.js', `head(
+  styles({ preset: 'neumorphism' }),
+  theme({
+    primary: { base: '#7c3aed', hover: '#6d28d9', active: '#5b21b6', glow: '#e879f9' },
+  }),
+)`, 'javascript'),
+      p(
+        code('inline'),
+        ' bettet beide Stylesheets ein, ',
+        code('stylesheet({ preset })'),
+        ' gibt sie als einen String zurück, und ein Name, der kein Preset ist, wirft einen Fehler, der die vorhandenen auflistet.',
       ),
 
       h2('Tokens überschreiben'),
@@ -215,6 +255,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
+        ['preset', "'neumorphism'", '', 'Jede Komponente mit einem Preset neu gestalten, nach dem Kern-Stylesheet verlinkt oder eingebettet.'],
         ['inline', 'boolean', 'false', 'Das CSS selbst ausgeben statt eines Links darauf.'],
         ['hash', 'boolean', 'true', 'Hash des Inhalts in den Dateinamen aufnehmen. Nur verlinkt.'],
         ['base', 'string', "'/su/'", 'Zeigt die URL woandershin; diese Kopie hostest du selbst. Nur verlinkt.'],
@@ -231,6 +272,8 @@ head(
         code('stylesheet()'),
         ' nimmt ',
         code('minify'),
+        ' und ',
+        code('preset'),
         '.',
       ),
       p(code('theme(tokens, options)'), ':'),
