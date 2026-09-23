@@ -45,6 +45,11 @@ const T = {
     amplify: 'AWS Amplify Hosting',
     ghPages: 'GitHub Pages',
   },
+  id: {
+    cloudflare: 'Cloudflare Pages',
+    amplify: 'Hosting AWS Amplify',
+    ghPages: 'GitHub Pages',
+  },
 
 }
 

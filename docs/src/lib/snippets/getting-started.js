@@ -72,6 +72,13 @@ const T = {
     writeDist: 'dist/ yazar',
     previewBuild: 'derlemeyi önizle',
   },
+  id: {
+    myWebsite: 'Situs web saya',
+    helloWorld: 'Halo dunia',
+    devServer: 'server dev',
+    writeDist: 'tulis dist/',
+    previewBuild: 'pratinjau build',
+  },
 
 }
 

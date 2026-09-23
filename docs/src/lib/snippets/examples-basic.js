@@ -27,6 +27,10 @@ const T = {
     exampleTitle: 'sitelo — temel örnek',
     hello: 'sitelo’dan merhaba',
   },
+  id: {
+    exampleTitle: 'sitelo — contoh dasar',
+    hello: 'Halo dari sitelo',
+  },
 
 }
 

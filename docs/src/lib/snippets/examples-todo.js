@@ -142,6 +142,20 @@ const T = {
     jsxOnloadNote: 'React onLoad’ı sentetik olaya eşler; spread ham onload="" yazmamızı sağlar',
     jsxOnsubmitNote: 'aynı sebep — React’in onSubmit’i değil, ham onsubmit=""',
   },
+  id: {
+    shellComment: 'cangkang statis + handler import() sebaris',
+    handlersComment: 'handler yang diekspor (dimuat saat dibutuhkan)',
+    todos: 'Daftar tugas',
+    whatNeedsDoing: 'Apa yang perlu dikerjakan?',
+    add: 'Tambah',
+    nothingYet: 'Belum ada apa-apa di sini.',
+    left: 'tersisa',
+    remove: 'Hapus',
+    markComplete: 'Tandai',
+    complete: 'selesai',
+    jsxOnloadNote: 'React memetakan onLoad → event sintetis; spread membuat kita bisa menulis onload="" mentah',
+    jsxOnsubmitNote: 'alasan sama — onsubmit="" mentah, bukan onSubmit milik React',
+  },
 
 }
 

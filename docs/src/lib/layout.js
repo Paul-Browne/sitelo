@@ -611,6 +611,7 @@ const FOLD_TO_ASCII = new Set([
   'it',
   'pl',
   'tr',
+  'id',
 ])
 
 /**

@@ -180,6 +180,25 @@ const T = {
     listening: 'Dinleniyor:',
     notFound: 'Bulunamadı',
   },
+  id: {
+    nodeHost: 'Host Node: dist statis + island',
+    netlifyRewrite: 'rewrite Netlify → function',
+    vercelRewrite: 'rewrite Vercel → rute api',
+    netlifyHandler: 'handler island Netlify',
+    vercelHandler: 'handler island Vercel',
+    pagePlaceholder: 'halaman dengan placeholder island',
+    clientLoader: 'loader klien (dibundel ke dist/)',
+    serverOnlyFragment: 'modul fragmen khusus server',
+    serverTime: 'Waktu server',
+    rightNow: 'Sekarang',
+    renderedOnRequest: 'Dirender saat diminta untuk',
+    demoTitle: 'Demo island server',
+    staticLive: 'Halaman statis, island hidup',
+    builtOnce: 'HTML ini dibangun sekali. Kotak di bawah diisi saat permintaan datang.',
+    loadingTime: '<p>Memuat waktu server…</p>',
+    listening: 'Mendengarkan di',
+    notFound: 'Tidak ditemukan',
+  },
 
 }
 

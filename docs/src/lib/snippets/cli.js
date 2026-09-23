@@ -93,6 +93,15 @@ const T = {
     clientScript: 'sayfaların <script src> ile yüklediği şey',
     anythingElse: 've knip’in kabul ettiği her şey',
   },
+  id: {
+    sameAsDev: 'sama seperti sitelo dev',
+    devServer: 'server pengembangan',
+    prodBuild: 'build produksi',
+    previewBuild: 'pratinjau build produksi',
+    auditBuild: 'audit build produksi',
+    clientScript: 'yang dimuat halaman lewat <script src>',
+    anythingElse: 'dan apa pun lain yang diterima knip',
+  },
 
 }
 

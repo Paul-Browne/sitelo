@@ -28,6 +28,9 @@ const T = {
   tr: {
     standardFetchOptions: 'standart fetch seçenekleri',
   },
+  id: {
+    standardFetchOptions: 'opsi fetch standar',
+  },
 
 }
 

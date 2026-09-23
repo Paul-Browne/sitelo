@@ -18,6 +18,7 @@ export const LOCALES = [
   'it',
   'pl',
   'tr',
+  'id',
 ]
 
 /** Locales served from a URL prefix — everything but the default. */
@@ -35,6 +36,7 @@ export const LOCALE_NAMES = {
   it: 'Italiano',
   pl: 'Polski',
   tr: 'Türkçe',
+  id: 'Bahasa Indonesia',
 }
 
 /**
@@ -55,6 +57,7 @@ export const LOCALE_TAGS = {
   it: 'it',
   pl: 'pl',
   tr: 'tr',
+  id: 'id',
 }
 
 /**
@@ -76,6 +79,7 @@ export const LOCALE_FLAGS = {
   it: '🇮🇹',
   pl: '🇵🇱',
   tr: '🇹🇷',
+  id: '🇮🇩',
 }
 
 /** Open Graph locale identifiers. */
@@ -90,6 +94,7 @@ export const OG_LOCALES = {
   it: 'it_IT',
   pl: 'pl_PL',
   tr: 'tr_TR',
+  id: 'id_ID',
 }
 
 /**
@@ -595,6 +600,45 @@ const STRINGS = {
     cookieDecline: 'Reddet',
     defaultDescription:
       'sitelo — Vite için statik site üretimi. HTML döndüren fonksiyonlar yazın.',
+  },
+  id: {
+    navDocs: 'Dokumentasi',
+    navExamples: 'Contoh',
+    navUi: 'UI',
+    navAbout: 'Tentang',
+    openMenu: 'Buka menu',
+    menu: 'Menu',
+    languageLabel: 'Bahasa',
+    themeToLight: 'Beralih ke tema terang',
+    themeToDark: 'Beralih ke tema gelap',
+    sidebarDocs: 'Dokumentasi',
+    sidebarExamples: 'Contoh',
+    sidebarUi: 'Komponen',
+    titleSuffixDocs: 'dokumentasi sitelo',
+    titleSuffixExamples: 'contoh sitelo',
+    titleSuffixUi: 'sitelo UI',
+    tocLabel: 'Di halaman ini',
+    pagenavLabel: 'Halaman berdekatan',
+    previous: '← Sebelumnya',
+    next: 'Berikutnya →',
+    copy: 'Salin',
+    copyCode: 'Salin kode',
+    copied: 'Tersalin',
+    copyFailed: 'Gagal',
+    markupStyle: 'Gaya markup',
+    templateLiteral: 'Template literal',
+    recommended: 'disarankan',
+    licenseLabel: 'Lisensi MIT',
+    nodeLabel: 'Membutuhkan Node 20.19 atau lebih baru',
+    githubLabel: (version) => `sitelo ${version} di GitHub`,
+    viteLabel: (version) => `Ditenagai Vite ${version}`,
+    cookieLabel: 'Persetujuan cookie',
+    cookieText:
+      'Situs ini memakai cookie Google Analytics untuk menghitung kunjungan. Tidak ada yang disimpan tanpa persetujuan Anda.',
+    cookieAccept: 'Terima',
+    cookieDecline: 'Tolak',
+    defaultDescription:
+      'sitelo — pembuatan situs statis untuk Vite. Tulis fungsi yang mengembalikan HTML.',
   },
 }
 

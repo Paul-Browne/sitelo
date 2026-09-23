@@ -1,0 +1,126 @@
+import { a, h2, p, strong } from 'javascript-to-html'
+import { code, demo, propsTable, uiLayout } from '../../lib/id.js'
+
+export default () =>
+  uiLayout({
+    title: 'Grup tombol',
+    description:
+      'Tombol yang saling berkaitan, disatukan menjadi satu kendali dengan batas bersama dan ujung membulat.',
+    activeHref: '/id/ui/button-group',
+    children: [
+      p(
+        'Tombol bisa dikelompokkan dengan membungkusnya dalam ',
+        code('buttonGroup()'),
+        '. Mereka harus menjadi anak langsung: grup membulatkan tombol pertama dan terakhir lalu menarik sisanya rapat, jadi apa pun di antaranya merusak sambungannya.',
+      ),
+
+      h2('Grup tombol dasar'),
+      demo(`buttonGroup({ label: 'Grup tombol dasar' },
+  button('Satu'),
+  button('Dua'),
+  button('Tiga'),
+)`),
+
+      h2('Varian'),
+      p(
+        'Grupnya sendiri tidak membawa warna. Setel ',
+        code('variant'),
+        ' dan ',
+        code('color'),
+        ' pada tombolnya, dan jaga agar sama di seluruh grup — itulah yang membuatnya terbaca sebagai satu kendali.',
+      ),
+      demo(`stack({ gap: 'md', align: 'flex-start' },
+  buttonGroup({ label: 'Solid' },
+    button({ variant: 'solid' }, 'Satu'),
+    button({ variant: 'solid' }, 'Dua'),
+    button({ variant: 'solid' }, 'Tiga'),
+  ),
+  buttonGroup({ label: 'Outline' },
+    button({ variant: 'outline', color: 'neutral' }, 'Satu'),
+    button({ variant: 'outline', color: 'neutral' }, 'Dua'),
+    button({ variant: 'outline', color: 'neutral' }, 'Tiga'),
+  ),
+  buttonGroup({ label: 'Soft' },
+    button({ variant: 'soft' }, 'Satu'),
+    button({ variant: 'soft' }, 'Dua'),
+    button({ variant: 'soft' }, 'Tiga'),
+  ),
+)`, { align: 'start' }),
+
+      h2('Ukuran dan warna'),
+      demo(`stack({ gap: 'md', align: 'flex-start' },
+  buttonGroup({ label: 'Kecil' },
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Kiri'),
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Tengah'),
+    button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Kanan'),
+  ),
+  buttonGroup({ label: 'Besar' },
+    button({ size: 'lg', variant: 'soft', color: 'danger' }, 'Batal'),
+    button({ size: 'lg', variant: 'soft', color: 'danger' }, 'Buang'),
+  ),
+)`, { align: 'start' }),
+
+      h2('Tautan'),
+      p(
+        'Tombol dengan ',
+        code('href'),
+        ' dikelompokkan dengan cara yang persis sama — untuk sebarisan hal yang masing-masing menuju suatu tempat, dan tidak satu pun adalah halaman tempat Anda berada.',
+      ),
+      demo(`buttonGroup({ label: 'Bagikan' },
+  button({ href: '#rss', variant: 'outline', color: 'neutral' }, 'RSS'),
+  button({ href: '#json', variant: 'outline', color: 'neutral' }, 'JSON'),
+  button({ href: '#sitemap', variant: 'outline', color: 'neutral' }, 'Peta situs'),
+)`),
+
+      h2('Grup tombol atau grup alih?'),
+      p(
+        'Grup tombol adalah wadah: ia menyatukan apa pun yang Anda taruh di dalamnya dan tidak menyimpan keadaan. Jika salah satu itemnya ',
+        strong('terpilih'),
+        ' — kendali bersegmen, sebuah filter, bagian tempat Anda berada sekarang — maka yang Anda cari adalah ',
+        a({ href: '/id/ui/toggle-group' }, 'grup alih'),
+        ', yang membangun itemnya dari data dan menandai yang aktif untuk Anda.',
+      ),
+      p(
+        'Patokan kasarnya: jika menekan satu membuat yang lain menjadi salah, itu grup alih. Jika masing-masing melakukan urusannya sendiri, itu grup tombol.',
+      ),
+      demo(`stack({ gap: 'lg' },
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'buttonGroup — tiga tindakan terpisah'),
+    buttonGroup({ label: 'Tindakan baris' },
+      button({ variant: 'outline', color: 'neutral' }, 'Sunting'),
+      button({ variant: 'outline', color: 'neutral' }, 'Gandakan'),
+      button({ variant: 'outline', color: 'neutral' }, 'Hapus'),
+    ),
+  ),
+  stack({ gap: 'xs' },
+    text({ variant: 'caption', tone: 'muted' }, 'toggleGroup — satu pilihan dari tiga'),
+    toggleGroup({
+      label: 'Perataan teks',
+      value: 'Tengah',
+      items: ['Kiri', 'Tengah', 'Kanan'],
+    }),
+  ),
+)`, { align: 'start' }),
+
+      h2('Dengan tombol ikon'),
+      demo(`buttonGroup({ label: 'Tindakan editor' },
+  button({ variant: 'outline', color: 'neutral' }, 'Simpan'),
+  iconButton({
+    label: 'Tindakan lainnya',
+    variant: 'outline',
+    color: 'neutral',
+    icon: icon('more-horizontal'),
+  }),
+)`),
+
+      h2('Props'),
+      propsTable([
+        ['label', 'string', '', 'Nama yang dapat diakses untuk grupnya; menjadi aria-label pada role="group".'],
+      ]),
+      p(
+        'Selebihnya jatuh ke pembungkusnya. Tombol di dalamnya menerima props-nya sendiri — lihat ',
+        code('button()'),
+        '.',
+      ),
+    ],
+  })

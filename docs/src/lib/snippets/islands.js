@@ -123,6 +123,18 @@ const T = {
     serverComment: 'örneğin bir Node sunucusu ya da bir serverless/edge işlevi',
     notIslandRequest: 'web Request → Response | null (null = ada isteği değil)',
   },
+  id: {
+    staticContent: '…konten statis…',
+    loadingComments: '<p>Memuat komentar…</p>',
+    loadWithPage: 'Muat begitu halaman dimuat — bawaannya.',
+    waitIdle: 'Tunggu callback saat menganggur.',
+    waitVisible: 'Tunggu sampai tergulir ke tampilan.',
+    startEarly: 'mulai memuat 400px lebih awal',
+    perIsland: 'per island; 0 menonaktifkan. Bawaan 10000',
+    visibleDefault: "bawaan untuk island `when: 'visible'`",
+    serverComment: 'misalnya server Node, atau fungsi serverless/edge',
+    notIslandRequest: 'Request web → Response | null (null = bukan permintaan island)',
+  },
 
 }
 

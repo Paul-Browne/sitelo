@@ -39,6 +39,10 @@ const T = {
     hello: 'Merhaba',
     staticAsItGets: 'Bundan daha statiği yok',
   },
+  id: {
+    hello: 'Halo',
+    staticAsItGets: 'Sestatis mungkin',
+  },
 
 }
 

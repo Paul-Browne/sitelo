@@ -47,6 +47,11 @@ const T = {
     pixelArt: 'Piksel sanatı',
     team: 'Ekip',
   },
+  id: {
+    sunrise: 'Matahari terbit di pelabuhan',
+    pixelArt: 'Pixel art',
+    team: 'Tim',
+  },
 
 }
 

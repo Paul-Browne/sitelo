@@ -206,6 +206,26 @@ const T = {
     inStock: 'Stokta',
     outOfStock: 'Tükendi',
   },
+  id: {
+    siteComment: 'pengaturan seluruh situs',
+    productsComment: 'satu berkas per produk',
+    categoriesComment: 'satu objek, dikunci per slug',
+    libComment: 'satu-satunya modul yang menyentuh sitelo/data',
+    indexComment: '/ — kategori dan semua produk',
+    productComment: '/products/:slug — satu halaman per berkas JSON',
+    categoryComment: '/categories/:slug — satu halaman per kunci',
+    siteDoc: 'Pengaturan seluruh situs: satu berkas JSON, diurai apa adanya.',
+    productsDoc: 'Satu entri per berkas, slug diambil dari nama berkas.',
+    categoriesDoc: 'Satu berkas berisi objek yang dikunci per slug — kuncinya menjadi slug.',
+    inCategoryDoc: 'Produk dalam satu kategori, termurah dulu.',
+    categories: 'Kategori',
+    allProducts: 'Semua produk',
+    category: 'Kategori',
+    released: 'Rilis',
+    availability: 'Ketersediaan',
+    inStock: 'Tersedia',
+    outOfStock: 'Habis',
+  },
 
 }
 

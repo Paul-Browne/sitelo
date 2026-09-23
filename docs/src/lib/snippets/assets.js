@@ -92,6 +92,15 @@ const T = {
     mySite: 'Sitem',
     hello: 'Merhaba',
   },
+  id: {
+    pageReturnsHtml: 'halaman — mengembalikan HTML',
+    linkedBundled: 'ditautkan dari HTML → dibundel',
+    importedBundled: 'diimpor oleh main.js → ikut dibundel',
+    dataOnly: 'hanya dipakai di data() → tidak pernah dikirim',
+    copiedAsIs: 'disalin apa adanya',
+    mySite: 'Situs saya',
+    hello: 'Halo',
+  },
 
 }
 

@@ -158,6 +158,24 @@ const T = {
     rssFeed: 'RSS akışı',
     notFound: 'Yazı bulunamadı',
   },
+  id: {
+    postsComment: 'posts: frontmatter + markdown',
+    libComment: 'baca content/, urai frontmatter, render markdown',
+    indexComment: '/ — daftar tulisan',
+    slugComment: '/blog/:slug — satu halaman per tulisan',
+    feedItemComment: 'setiap halaman /blog/* menjadi item feed',
+    outsideSrc: 'Tulisan berada di luar src/ sehingga tidak pernah dianggap halaman atau aset.',
+    frontmatterDoc: 'Pengurai frontmatter mungil — baris `kunci: nilai` di antara pagar ---.',
+    allPostsDoc: 'Semua tulisan, terbaru dulu. Berjalan di Node hanya saat build/dev.',
+    myBlog: 'Blog saya',
+    latestPosts: 'Tulisan terbaru',
+    postTitle: 'Halo, dunia',
+    postDesc: 'Tulisan pertama yang wajib ada.',
+    postBody: 'Blog ini adalah folder berisi berkas markdown yang dirender ke HTML statis.',
+    allPosts: '← Semua tulisan',
+    rssFeed: 'Feed RSS',
+    notFound: 'Tulisan tidak ditemukan',
+  },
 
 }
 
