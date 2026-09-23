@@ -8,6 +8,7 @@ import defaultExport from '../src/ui/index.js';
 import { configureUiClient, RUNTIME_MODULES } from '../src/ui/handlers.js';
 import { attrs, parseArgs, space } from '../src/ui/internal.js';
 import { editableSheet } from './helpers/sheet.js';
+import { contrast, parseHex, readTokens } from './helpers/tokens.js';
 
 /** The sheet itself, for the components whose behaviour is only in it. */
 const uiCss = readFileSync(fileURLToPath(new URL('../src/ui/ui.css', import.meta.url)), 'utf8');
@@ -1166,53 +1167,6 @@ test('stylesheet() minifies without unbalancing the CSS', () => {
     assert.ok(minified.includes(selector), `${selector} survived minification`);
   }
 });
-
-/**
- * Relative luminance, per WCAG 2.
- * @param {[number, number, number]} rgb
- * @returns {number}
- */
-function luminance(rgb) {
-  const [r, g, b] = rgb.map((value) => {
-    const channel = value / 255;
-    return channel <= 0.03928
-      ? channel / 12.92
-      : ((channel + 0.055) / 1.055) ** 2.4;
-  });
-
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
-/** @param {string} value @returns {[number, number, number] | null} */
-function parseHex(value) {
-  const match = /^#([0-9a-f]{6})$/i.exec(value.trim());
-
-  if (!match) return null;
-
-  const int = Number.parseInt(match[1], 16);
-
-  return [(int >> 16) & 255, (int >> 8) & 255, int & 255];
-}
-
-/** @returns {number} */
-function contrast(foreground, background) {
-  const [lighter, darker] = [luminance(foreground), luminance(background)].sort(
-    (a, b) => b - a,
-  );
-
-  return (lighter + 0.05) / (darker + 0.05);
-}
-
-/** Custom properties declared in one block of the sheet. */
-function readTokens(block) {
-  const tokens = {};
-
-  for (const [, name, value] of block.matchAll(/(--su-[a-z0-9-]+):\s*([^;]+);/g)) {
-    tokens[name] = value.trim();
-  }
-
-  return tokens;
-}
 
 test('the two dark blocks stay in step with each other', () => {
   const css = ui.stylesheet({ minify: false });

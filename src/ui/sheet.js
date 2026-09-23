@@ -11,13 +11,14 @@
  */
 
 import { createHash } from 'node:crypto'
-import { existsSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { link, style } from 'javascript-to-html'
 
 import { uiClientBase } from './handlers.js'
 
 const CORE = new URL('./ui.css', import.meta.url)
 const EXTRAS = new URL('../ui-extras/', import.meta.url)
+const PRESETS = new URL('./presets/', import.meta.url)
 
 /** A sheet is named the way its file is, before the hash. */
 const NAME = /^[a-z][a-z0-9-]*$/
@@ -25,10 +26,11 @@ const NAME = /^[a-z][a-z0-9-]*$/
 /**
  * Where the sheet called `name` lives, or `null` if there is none.
  *
- * `ui` is the core sheet; anything else is one of the extras, and only
- * if a file by that name is actually there — the name comes off a URL
- * the plugin is answering, and this is what keeps it off the rest of
- * the disk.
+ * `ui` is the core sheet; anything else is one of the extras or one of
+ * the presets, and only if a file by that name is actually there — the
+ * name comes off a URL the plugin is answering, and this is what keeps
+ * it off the rest of the disk. The two share one namespace, which a
+ * test holds them to.
  *
  * @param {string} name
  * @returns {URL | null}
@@ -37,9 +39,26 @@ function sheetSource(name) {
   if (name === 'ui') return CORE
   if (!NAME.test(name)) return null
 
-  const url = new URL(`${name}.css`, EXTRAS)
+  for (const dir of [EXTRAS, PRESETS]) {
+    const url = new URL(`${name}.css`, dir)
 
-  return existsSync(url) ? url : null
+    if (existsSync(url)) return url
+  }
+
+  return null
+}
+
+/**
+ * The presets `styles({ preset })` accepts: one per sheet in `presets/`.
+ *
+ * @returns {string[]}
+ */
+export function presetNames() {
+  return readdirSync(PRESETS)
+    .filter((file) => file.endsWith('.css'))
+    .map((file) => file.slice(0, -'.css'.length))
+    .filter((name) => NAME.test(name))
+    .sort()
 }
 
 /**

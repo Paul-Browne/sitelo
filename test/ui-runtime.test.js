@@ -14,6 +14,7 @@ import { uiClientPrefix, uiRuntime } from '../src/ui/plugin.js';
 import { configureUiClient, RUNTIME_MODULES } from '../src/ui/handlers.js';
 import { styles, stylesheet, stylesUrl } from '../src/ui/styles.js';
 import { grainStylesheet, grainStylesUrl } from '../src/ui-extras/index.js';
+import { sheetNamed } from '../src/ui/sheet.js';
 import { editableSheet } from './helpers/sheet.js';
 
 /** A throwaway outDir holding one page. */
@@ -362,6 +363,29 @@ test('an extra’s sheet is served and written on the same terms as ui.css', () 
   assert.equal(readFileSync(path.join(outDir, 'su', grain), 'utf8'), grainStylesheet(), 'each file gets its own bytes');
 });
 
+test('a preset’s sheet is served and written on the same terms as ui.css', () => {
+  const neumorphism = sheetNamed('neumorphism');
+
+  for (const name of ['neumorphism.css', neumorphism.stylesUrl().split('/').pop()]) {
+    const { headers, body, passed } = request(`/su/${name}`);
+
+    assert.ok(!passed, `/su/${name} is handled`);
+    assert.equal(headers['Content-Type'], 'text/css; charset=utf-8');
+    assert.equal(body, neumorphism.stylesheet());
+  }
+
+  const { root, outDir } = siteWith(styles({ preset: 'neumorphism' }));
+  const plugin = uiRuntime();
+
+  plugin.configResolved({ root, build: { outDir } });
+  plugin.writeBundle();
+
+  const preset = neumorphism.stylesUrl().split('/').pop();
+
+  assert.deepEqual(readdirSync(path.join(outDir, 'su')).sort(), [preset, stylesUrl().split('/').pop()].sort());
+  assert.equal(readFileSync(path.join(outDir, 'su', preset), 'utf8'), neumorphism.stylesheet());
+});
+
 test('styles() points at the base the plugin serves', () => {
   const before = process.env.SITELO_UI_BASE;
 
@@ -556,6 +580,20 @@ test('keep names classes the build never sees', () => {
   assert.match(css, /\.su-card\{/);
   assert.match(css, /\.su-btn--soft/);
   assert.doesNotMatch(css, /\.su-modal/);
+});
+
+test('a preset’s sheet is pruned on the same terms, tokens kept', () => {
+  const site = prunedSite({
+    'index.html': `${styles({ preset: 'neumorphism' })}<button class="su-btn su-btn--solid su-c-primary">b</button>`,
+  });
+  const written = site.list().find((name) => name.startsWith('neumorphism-'));
+  const css = site.read(`su/${written}`);
+
+  assert.match(written, /^neumorphism-[0-9a-f]{8}\.css$/);
+  assert.match(css, /\.su-btn--solid\{/, 'what the page uses stays');
+  assert.doesNotMatch(css, /\.su-slider/, 'what it does not goes');
+  assert.match(css, /--su-neu-raised:/, 'and the tokens, which gate on no class, stay');
+  assert.ok(site.read('index.html').includes(written), 'the page links the pruned file');
 });
 
 test('an extra’s sheet is pruned on the same terms', () => {

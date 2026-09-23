@@ -44,14 +44,23 @@ export interface StyleOptions extends StylesUrlOptions {
   nonce?: string
 }
 
+/** A look for the whole library, linked after the core sheet. */
+export type Preset = 'neumorphism'
+
+export interface CoreStyleOptions extends StyleOptions {
+  /** Restyle every component in one of the {@link Preset} looks. */
+  preset?: Preset
+}
+
 /**
  * The stylesheet for `head()` — a `<link>` sitelo's plugin serves in dev
- * and writes into the build, or the CSS itself with `inline`.
+ * and writes into the build, or the CSS itself with `inline`. With a
+ * `preset`, that preset's sheet follows it.
  */
-export function styles(options?: StyleOptions): string
+export function styles(options?: CoreStyleOptions): string
 
-/** The stylesheet as raw CSS. */
-export function stylesheet(options?: { minify?: boolean }): string
+/** The stylesheet as raw CSS, with a preset's appended if one is named. */
+export function stylesheet(options?: { minify?: boolean; preset?: Preset }): string
 
 /** The URL the stylesheet is served from, for a `<link>` of your own. */
 export function stylesUrl(options?: StylesUrlOptions): string

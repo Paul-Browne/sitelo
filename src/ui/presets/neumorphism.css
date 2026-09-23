@@ -1,0 +1,503 @@
+/*!
+ * sitelo-ui preset — neumorphism.
+ *
+ * Soft UI: every surface is the page itself, and a control is told apart
+ * from the ground by light and shade alone — raised with a highlight on
+ * one side and a shadow on the other, or pressed into it with the two
+ * swapped. Linked after `ui.css` by `styles({ preset: 'neumorphism' })`.
+ *
+ * Two things the look is known for are deliberately left out. The grey
+ * text it is usually drawn with measures around 2.7:1 on its own ground,
+ * so the text tokens here are darker and clear 4.5:1. And the focus
+ * outline stays: a shadow is not a focus indicator anyone can rely on.
+ *
+ * The page's own background has to be `var(--su-bg)`, as it already is
+ * for the core's dark mode — the whole effect rests on the surfaces and
+ * the ground being one colour.
+ */
+
+:root {
+  /* The two lights everything is drawn with: a highlight from the top
+     left and a shadow falling bottom right. */
+  --su-neu-light: #ffffff;
+  --su-neu-dark: rgba(163, 177, 198, 0.6);
+  --su-neu-thumb: #ffffff;
+
+  --su-shadow-sm: var(--su-neu-raised-sm);
+  --su-shadow-md: var(--su-neu-raised);
+  --su-shadow-lg: var(--su-neu-raised-lg);
+
+  --su-radius-sm: 0.625rem;
+  --su-radius-md: 1rem;
+  --su-radius-lg: 1.75rem;
+
+  --su-bg: #eef0f5;
+  --su-bg-subtle: #e9ecf2;
+  --su-surface: #eef0f5;
+  --su-surface-2: #e6e9ef;
+  --su-surface-hover: #e9ecf2;
+  --su-border: rgba(163, 177, 198, 0.35);
+  --su-border-strong: rgba(163, 177, 198, 0.6);
+  --su-text: #3a4152;
+  --su-text-muted: #5a6377;
+  --su-text-subtle: #5f687c;
+
+  --su-primary: #1a62ee;
+  --su-primary-hover: #1557d6;
+  --su-primary-active: #124bc0;
+  --su-primary-soft-fg: #1450c8;
+  --su-primary-ring: rgba(26, 98, 238, 0.35);
+
+  /* The core's success and warning clear 4.5:1 on white with little to
+     spare, and this ground is darker: nudged just far enough to clear it
+     again as text. Their hover and active were already darker still. */
+  --su-success: #147a39;
+  --su-warning: #a94e08;
+
+  /* Where a fill runs to at its far end — the cyan the primary bars
+     fade into. Nothing sits on a glow, so it needs no contrast. */
+  --su-primary-glow: #3ad7e5;
+  --su-neutral-glow: #8a9bb0;
+  --su-success-glow: #4cd68a;
+  --su-warning-glow: #f5b94a;
+  --su-danger-glow: #f27979;
+}
+
+/*
+ * The composite shadows are declared wherever a theme can change, not
+ * only on `:root`. A custom property inherits its value with the `var()`s
+ * already substituted, so a shadow worked out on `:root` would carry the
+ * light theme's colours into a `data-su-theme="dark"` subtree. Declared
+ * here, it is worked out again at every theme boundary.
+ */
+:root,
+[data-theme],
+[data-su-theme] {
+  --su-neu-raised-sm: -3px -3px 7px var(--su-neu-light), 3px 3px 7px var(--su-neu-dark);
+  --su-neu-raised: -6px -6px 14px var(--su-neu-light), 6px 6px 14px var(--su-neu-dark);
+  --su-neu-raised-lg: -10px -10px 24px var(--su-neu-light), 10px 10px 24px var(--su-neu-dark);
+  --su-neu-inset-sm: inset 2px 2px 4px var(--su-neu-dark), inset -2px -2px 4px var(--su-neu-light);
+  --su-neu-inset: inset 3px 3px 7px var(--su-neu-dark), inset -3px -3px 7px var(--su-neu-light);
+}
+
+/*
+ * The same two blocks as the core's dark tokens, with the same selectors:
+ * those outrank `:root`, so anything the core sets for dark — the
+ * shadows included — has to be set again here, where being later wins.
+ *
+ * Danger is lifted because the ground is: the core's red is 3.8:1 as
+ * text on this grey. And the solid fill runs down to `active`, which has
+ * to carry the label too.
+ */
+[data-theme='dark']:not([data-su-theme='light']),
+[data-su-theme='dark'] {
+  --su-neu-light: rgba(255, 255, 255, 0.07);
+  --su-neu-dark: rgba(0, 0, 0, 0.45);
+  --su-neu-thumb: #4a505b;
+
+  --su-shadow-sm: var(--su-neu-raised-sm);
+  --su-shadow-md: var(--su-neu-raised);
+  --su-shadow-lg: var(--su-neu-raised-lg);
+
+  --su-bg: #2b2f36;
+  --su-bg-subtle: #282c33;
+  --su-surface: #2b2f36;
+  --su-surface-2: #262a30;
+  --su-surface-hover: #30343c;
+  --su-border: rgba(255, 255, 255, 0.08);
+  --su-border-strong: rgba(255, 255, 255, 0.14);
+  --su-text: #d6dbe3;
+  --su-text-muted: #b6bfcc;
+  --su-text-subtle: #9aa4b5;
+
+  --su-primary: #7aa7ff;
+  --su-primary-hover: #93b8ff;
+  --su-primary-active: #6597f5;
+  --su-primary-fg: #0b1a33;
+  --su-primary-soft-fg: #9ec8ff;
+  --su-primary-ring: rgba(122, 167, 255, 0.4);
+
+  --su-danger: #f07a7a;
+  --su-danger-hover: #f58f8f;
+  --su-danger-active: #e66262;
+  --su-danger-ring: rgba(240, 122, 122, 0.36);
+
+  --su-primary-glow: #5ee6ee;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-su-theme='light']) {
+    --su-neu-light: rgba(255, 255, 255, 0.07);
+    --su-neu-dark: rgba(0, 0, 0, 0.45);
+    --su-neu-thumb: #4a505b;
+
+    --su-shadow-sm: var(--su-neu-raised-sm);
+    --su-shadow-md: var(--su-neu-raised);
+    --su-shadow-lg: var(--su-neu-raised-lg);
+
+    --su-bg: #2b2f36;
+    --su-bg-subtle: #282c33;
+    --su-surface: #2b2f36;
+    --su-surface-2: #262a30;
+    --su-surface-hover: #30343c;
+    --su-border: rgba(255, 255, 255, 0.08);
+    --su-border-strong: rgba(255, 255, 255, 0.14);
+    --su-text: #d6dbe3;
+    --su-text-muted: #b6bfcc;
+    --su-text-subtle: #9aa4b5;
+
+    --su-primary: #7aa7ff;
+    --su-primary-hover: #93b8ff;
+    --su-primary-active: #6597f5;
+    --su-primary-fg: #0b1a33;
+    --su-primary-soft-fg: #9ec8ff;
+    --su-primary-ring: rgba(122, 167, 255, 0.4);
+
+    --su-danger: #f07a7a;
+    --su-danger-hover: #f58f8f;
+    --su-danger-active: #e66262;
+    --su-danger-ring: rgba(240, 122, 122, 0.36);
+
+    --su-primary-glow: #5ee6ee;
+  }
+}
+
+/* A glow is bound to a palette the way the core binds the rest of it. */
+.su-c-primary { --su-c-glow: var(--su-primary-glow); }
+.su-c-neutral { --su-c-glow: var(--su-neutral-glow); }
+.su-c-success { --su-c-glow: var(--su-success-glow); }
+.su-c-warning { --su-c-glow: var(--su-warning-glow); }
+.su-c-danger { --su-c-glow: var(--su-danger-glow); }
+
+/*
+ * Pills. Set as the token rather than the property, so the rules in the
+ * core that round only the outer ends — a button group's first and last
+ * child, an adornment beside an input — follow without being restated.
+ */
+.su-btn,
+.su-btn-group,
+.su-input,
+.su-select,
+.su-input-group {
+  --su-radius-md: var(--su-radius-full);
+}
+
+/* A square button stays a square, soft-cornered, rather than a coin. */
+.su-icon-btn {
+  --su-radius-md: 0.875rem;
+}
+
+/* ------------------------------------------------------------------ *
+ * Card
+ * ------------------------------------------------------------------ */
+
+.su-card {
+  border-color: transparent;
+  box-shadow: var(--su-shadow-md);
+}
+
+.su-card--flat {
+  background: var(--su-surface);
+  box-shadow: var(--su-neu-inset);
+}
+
+.su-card--interactive:hover {
+  border-color: transparent;
+  box-shadow: var(--su-shadow-lg);
+  transform: none;
+}
+
+.su-card--interactive:active {
+  box-shadow: var(--su-neu-inset);
+}
+
+/* ------------------------------------------------------------------ *
+ * Button
+ * ------------------------------------------------------------------ */
+
+.su-btn--solid,
+.su-btn--soft,
+.su-btn--outline {
+  box-shadow: var(--su-neu-raised-sm);
+}
+
+/* Both stops are the base or darker, so the label keeps the contrast
+   it has on the flat colour everywhere along the fill. */
+.su-btn--solid {
+  background: linear-gradient(145deg, var(--su-c), var(--su-c-active));
+}
+
+.su-btn--solid:hover {
+  background: linear-gradient(145deg, var(--su-c-hover), var(--su-c-active));
+}
+
+/* Restated: the gradient above outranks the core's own `:active`. */
+.su-btn--solid:active {
+  background: var(--su-c-active);
+}
+
+.su-btn--soft,
+.su-btn--outline {
+  background: var(--su-surface);
+}
+
+.su-btn--soft:hover,
+.su-btn--outline:hover,
+.su-btn--ghost:hover {
+  background: var(--su-surface);
+  box-shadow: var(--su-neu-raised);
+}
+
+/* After the hovers: a button being pressed is also being pointed at. */
+.su-btn:not(.su-btn--link):active,
+.su-toggle-btn[aria-pressed='true'],
+.su-toggle-btn[aria-current] {
+  box-shadow: var(--su-neu-inset-sm);
+}
+
+.su-toggle-btn[aria-pressed='true'],
+.su-toggle-btn[aria-current],
+.su-toggle-btn[aria-pressed='true']:hover,
+.su-toggle-btn[aria-current]:hover {
+  background: var(--su-surface);
+  border-color: transparent;
+}
+
+/* Joined buttons would press their shadows into one another. */
+.su-btn-group > .su-btn + .su-btn {
+  margin-inline-start: var(--su-space-xs);
+}
+
+/* ------------------------------------------------------------------ *
+ * Form controls
+ *
+ * A field is a well pressed into the page; a select is a control you
+ * push, so it is raised like a button.
+ * ------------------------------------------------------------------ */
+
+.su-input,
+.su-textarea,
+.su-select,
+.su-input:hover:not([disabled]),
+.su-textarea:hover:not([disabled]),
+.su-select:hover:not([disabled]),
+.su-input:focus,
+.su-textarea:focus,
+.su-select:focus {
+  background-color: var(--su-surface);
+  border-color: transparent;
+}
+
+.su-input,
+.su-textarea {
+  box-shadow: var(--su-neu-inset);
+}
+
+.su-select {
+  box-shadow: var(--su-neu-raised-sm);
+}
+
+.su-input:focus,
+.su-textarea:focus {
+  box-shadow: var(--su-neu-inset), 0 0 0 var(--su-ring-width) var(--su-primary-ring);
+}
+
+.su-select:focus {
+  box-shadow: var(--su-neu-raised-sm), 0 0 0 var(--su-ring-width) var(--su-primary-ring);
+}
+
+.su-input[disabled],
+.su-textarea[disabled],
+.su-select[disabled] {
+  box-shadow: none;
+}
+
+/* An invalid field keeps its red edge: shade alone would not say it. */
+.su-field--invalid .su-input,
+.su-field--invalid .su-textarea,
+.su-field--invalid .su-select,
+.su-input[aria-invalid='true'],
+.su-textarea[aria-invalid='true'],
+.su-select[aria-invalid='true'] {
+  border-color: var(--su-danger);
+}
+
+/* With adornments, the group is the well and the parts sit inside it. */
+.su-input-group:has(.su-adornment) {
+  border-radius: var(--su-radius-md);
+  box-shadow: var(--su-neu-inset);
+}
+
+.su-input-group:has(.su-adornment):focus-within {
+  box-shadow: var(--su-neu-inset), 0 0 0 var(--su-ring-width) var(--su-primary-ring);
+}
+
+.su-input-group .su-input,
+.su-input-group .su-input:focus {
+  background: transparent;
+  box-shadow: none;
+}
+
+.su-adornment {
+  background: transparent;
+  border-color: transparent;
+}
+
+.su-check-box {
+  border-color: transparent;
+  background: var(--su-surface);
+  box-shadow: var(--su-neu-raised-sm);
+}
+
+.su-check input:checked + .su-check-box {
+  background: var(--su-surface);
+  border-color: transparent;
+  box-shadow: var(--su-neu-inset-sm);
+}
+
+.su-check-box::after {
+  background: var(--su-c, var(--su-primary));
+}
+
+.su-switch-track {
+  background: var(--su-surface);
+  box-shadow: var(--su-neu-inset-sm);
+}
+
+.su-switch-thumb {
+  background: var(--su-neu-thumb);
+}
+
+.su-switch input:checked + .su-switch-track {
+  background: linear-gradient(
+    90deg,
+    var(--su-c, var(--su-primary)),
+    var(--su-c-glow, var(--su-primary-glow))
+  );
+}
+
+.su-slider {
+  --su-slider-track: var(--su-surface);
+}
+
+.su-slider::-webkit-slider-runnable-track {
+  box-shadow: var(--su-neu-inset-sm);
+}
+
+.su-slider::-moz-range-track {
+  box-shadow: var(--su-neu-inset-sm);
+}
+
+/* A raised knob with the palette in its centre. */
+.su-slider::-webkit-slider-thumb {
+  width: 1.4rem;
+  height: 1.4rem;
+  /* Centre the larger thumb on the 0.4rem track. */
+  margin-top: -0.5rem;
+  border: 0;
+  background: radial-gradient(circle, var(--su-c, var(--su-primary)) 0 28%, var(--su-neu-thumb) 32%);
+  box-shadow: var(--su-neu-raised-sm);
+}
+
+.su-slider::-moz-range-thumb {
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 0;
+  background: radial-gradient(circle, var(--su-c, var(--su-primary)) 0 28%, var(--su-neu-thumb) 32%);
+  box-shadow: var(--su-neu-raised-sm);
+}
+
+/* ------------------------------------------------------------------ *
+ * Data display and feedback
+ * ------------------------------------------------------------------ */
+
+.su-chip {
+  background: var(--su-surface);
+  box-shadow: var(--su-neu-raised-sm);
+}
+
+a.su-chip:hover,
+button.su-chip:hover {
+  background: var(--su-surface);
+  box-shadow: var(--su-neu-raised);
+}
+
+.su-chip--outline {
+  border-color: transparent;
+  box-shadow: var(--su-neu-inset-sm);
+}
+
+.su-chip--solid {
+  background: var(--su-c, var(--su-neutral));
+}
+
+.su-avatar {
+  box-shadow: var(--su-neu-raised-sm);
+}
+
+.su-tooltip::after {
+  background: var(--su-surface);
+  color: var(--su-text);
+  box-shadow: var(--su-neu-raised-sm);
+}
+
+.su-alert {
+  box-shadow: var(--su-neu-raised-sm);
+}
+
+.su-progress-bar {
+  background: var(--su-surface);
+  box-shadow: var(--su-neu-inset-sm);
+}
+
+.su-progress-fill {
+  background: linear-gradient(
+    90deg,
+    var(--su-c, var(--su-primary)),
+    var(--su-c-glow, var(--su-primary-glow))
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * Navigation
+ * ------------------------------------------------------------------ */
+
+.su-pagination {
+  gap: var(--su-space-sm);
+}
+
+.su-page-link {
+  background: var(--su-surface);
+  box-shadow: var(--su-neu-raised-sm);
+}
+
+.su-page-link:hover {
+  background: var(--su-surface);
+  box-shadow: var(--su-neu-raised);
+}
+
+.su-page-link:active,
+.su-page-link[aria-current='page'] {
+  background: var(--su-surface);
+  color: var(--su-c, var(--su-primary));
+  box-shadow: var(--su-neu-inset-sm);
+}
+
+/* The selected tab is pressed in rather than underlined: an inset
+   shadow cannot be clipped by the strip's own scrolling. */
+.su-tablist {
+  border-bottom-color: transparent;
+}
+
+.su-tab {
+  border-radius: var(--su-radius-md);
+}
+
+/* The core's own selectors for the selected tab, in all three forms. */
+.su-tab[aria-current='page'],
+.su-tab-input:checked + .su-tab,
+.su-tabs--target > .su-tab:target,
+.su-tabs--target:not(:has(> .su-tab:target)) > .su-tab--default {
+  border-bottom-color: transparent;
+  box-shadow: var(--su-neu-inset-sm);
+}

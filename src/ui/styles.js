@@ -1,6 +1,6 @@
 import { style } from 'javascript-to-html'
 
-import { sheetNamed } from './sheet.js'
+import { presetNames, sheetNamed } from './sheet.js'
 
 /*
  * The core sheet, `ui.css`. Reading, hashing and linking it is shared
@@ -10,6 +10,23 @@ import { sheetNamed } from './sheet.js'
 const core = sheetNamed('ui')
 
 /**
+ * The sheet for a preset, or a `TypeError` that lists the ones there are.
+ *
+ * @param {unknown} name
+ */
+function presetSheet(name) {
+  const names = presetNames()
+
+  if (typeof name !== 'string' || !names.includes(name)) {
+    throw new TypeError(
+      `sitelo/ui: unknown preset ${JSON.stringify(name)} — expected one of ${names.map((n) => `'${n}'`).join(', ')}`,
+    )
+  }
+
+  return /** @type {NonNullable<ReturnType<typeof sheetNamed>>} */ (sheetNamed(name))
+}
+
+/**
  * The sitelo-ui stylesheet as a string.
  *
  * Use this when you would rather write the CSS somewhere yourself — a
@@ -17,11 +34,17 @@ const core = sheetNamed('ui')
  * Most pages want {@link styles} instead.
  *
  * @param {object} [options]
+ * @param {string} [options.preset] - append that preset's sheet, as
+ *   {@link styles} would link it.
  * @param {boolean} [options.minify=true]
  * @returns {string}
  */
-export function stylesheet(options) {
-  return core.stylesheet(options)
+export function stylesheet({ preset, ...options } = {}) {
+  const css = core.stylesheet(options)
+
+  if (preset == null) return css
+
+  return `${css}${options.minify === false ? '\n' : ''}${presetSheet(preset).stylesheet(options)}`
 }
 
 /**
@@ -64,7 +87,20 @@ export function stylesUrl(options) {
  * trade for a single page; the link buys its request back on the second
  * page a visitor reads, which is most sites.
  *
+ * `preset` restyles the whole library in one of a few looks — a second
+ * sheet, linked straight after the core one so it wins, and served,
+ * hashed and pruned on the same terms:
+ *
+ * ```js
+ * head(styles({ preset: 'neumorphism' }), theme({ primary: '#7c3aed' }))
+ * ```
+ *
+ * A preset is where the look comes from; {@link theme} still adjusts the
+ * tokens on top of it.
+ *
  * @param {object} [options]
+ * @param {string} [options.preset] - one of the preset names, e.g.
+ *   `'neumorphism'`. An unknown name throws.
  * @param {boolean} [options.inline=false] - emit the CSS itself rather
  *   than a link to it.
  * @param {string} [options.base] - point the link somewhere else. Only
@@ -77,8 +113,10 @@ export function stylesUrl(options) {
  * @returns {string}
  * @see {@link stylesUrl} for the href alone.
  */
-export function styles(options) {
-  return core.styles(options)
+export function styles({ preset, ...options } = {}) {
+  if (preset == null) return core.styles(options)
+
+  return core.styles(options) + presetSheet(preset).styles(options)
 }
 
 /**
