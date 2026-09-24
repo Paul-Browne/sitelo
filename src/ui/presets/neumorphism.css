@@ -73,11 +73,22 @@
 :root,
 [data-theme],
 [data-su-theme] {
-  --su-neu-raised-sm: -3px -3px 7px var(--su-neu-light), 3px 3px 7px var(--su-neu-dark);
-  --su-neu-raised: -6px -6px 14px var(--su-neu-light), 6px 6px 14px var(--su-neu-dark);
-  --su-neu-raised-lg: -10px -10px 24px var(--su-neu-light), 10px 10px 24px var(--su-neu-dark);
-  --su-neu-inset-sm: inset 2px 2px 4px var(--su-neu-dark), inset -2px -2px 4px var(--su-neu-light);
-  --su-neu-inset: inset 3px 3px 7px var(--su-neu-dark), inset -3px -3px 7px var(--su-neu-light);
+  /*
+   * Four shadows each, two outer then two inset, with the pair a state
+   * does not use drawn at nothing. A shadow list only animates when the
+   * shadows at each position are both outer or both inset; without the
+   * padding, raised to pressed would snap however long the transition.
+   */
+  --su-neu-raised-sm: -3px -3px 7px var(--su-neu-light), 3px 3px 7px var(--su-neu-dark),
+    inset 0 0 0 transparent, inset 0 0 0 transparent;
+  --su-neu-raised: -6px -6px 14px var(--su-neu-light), 6px 6px 14px var(--su-neu-dark),
+    inset 0 0 0 transparent, inset 0 0 0 transparent;
+  --su-neu-raised-lg: -10px -10px 24px var(--su-neu-light), 10px 10px 24px var(--su-neu-dark),
+    inset 0 0 0 transparent, inset 0 0 0 transparent;
+  --su-neu-inset-sm: 0 0 0 transparent, 0 0 0 transparent,
+    inset 2px 2px 4px var(--su-neu-dark), inset -2px -2px 4px var(--su-neu-light);
+  --su-neu-inset: 0 0 0 transparent, 0 0 0 transparent,
+    inset 3px 3px 7px var(--su-neu-dark), inset -3px -3px 7px var(--su-neu-light);
 }
 
 /*
@@ -221,19 +232,58 @@
   box-shadow: var(--su-neu-raised-sm);
 }
 
+/*
+ * A press sinks slowly, the way a soft surface would give. The core's
+ * transition, restated with the shadow and the fill's stops drawn out;
+ * the core's reduced-motion rule still cuts all of it short.
+ */
+.su-btn {
+  --su-neu-press: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color var(--su-transition), border-color var(--su-transition),
+    color var(--su-transition), box-shadow var(--su-neu-press),
+    --su-neu-from var(--su-neu-press), --su-neu-to var(--su-neu-press);
+}
+
+/*
+ * The fill's two stops, registered as colours so a transition can move
+ * them: a gradient itself only ever swaps. Where `@property` is not
+ * supported they are plain custom properties, and the fill still
+ * changes — at once, as it did before.
+ */
+@property --su-neu-from {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --su-neu-to {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: transparent;
+}
+
 /* Both stops are the base or darker, so the label keeps the contrast
    it has on the flat colour everywhere along the fill. */
 .su-btn--solid {
-  background: linear-gradient(145deg, var(--su-c), var(--su-c-active));
+  --su-neu-from: var(--su-c);
+  --su-neu-to: var(--su-c-active);
 }
 
 .su-btn--solid:hover {
-  background: linear-gradient(145deg, var(--su-c-hover), var(--su-c-active));
+  --su-neu-from: var(--su-c-hover);
 }
 
-/* Restated: the gradient above outranks the core's own `:active`. */
+/* Pressed flat: both stops meet at the darkest. */
 .su-btn--solid:active {
-  background: var(--su-c-active);
+  --su-neu-from: var(--su-c-active);
+}
+
+/* One fill for every state, named in each: the core's `:hover` and
+   `:active` outrank a bare `.su-btn--solid`, and would paint over it. */
+.su-btn--solid,
+.su-btn--solid:hover,
+.su-btn--solid:active {
+  background: linear-gradient(145deg, var(--su-neu-from), var(--su-neu-to));
 }
 
 .su-btn--soft,
@@ -253,6 +303,34 @@
 .su-toggle-btn[aria-pressed='true'],
 .su-toggle-btn[aria-current] {
   box-shadow: var(--su-neu-inset-sm);
+}
+
+/*
+ * And what is on it goes down with it: the label and the icon are
+ * pushed back into the button, and shrink toward its centre as they go.
+ *
+ * Moved in depth rather than scaled: a scale shrinks each child about
+ * its own centre, which opens the gap between an icon and its label.
+ * Under a perspective every child shrinks toward the one vanishing
+ * point, which is the button's centre by default — so the content
+ * scales as one piece, whatever its widths, by 95 / (95 + 5) = 0.95.
+ *
+ * `translate` rather than `transform`, so it adds to any transform a
+ * child already has. Both are flex items of the button, so neither is
+ * an inline box it would not apply to.
+ */
+.su-btn {
+  perspective: 95px;
+}
+
+.su-btn > .su-btn-label,
+.su-btn > .su-btn-icon {
+  transition: translate var(--su-neu-press);
+}
+
+.su-btn:not(.su-btn--link):active > .su-btn-label,
+.su-btn:not(.su-btn--link):active > .su-btn-icon {
+  translate: 0 0 -5px;
 }
 
 .su-toggle-btn[aria-pressed='true'],
@@ -475,6 +553,12 @@ button.su-chip:hover {
   box-shadow: var(--su-neu-raised-sm);
 }
 
+/* Raised off whatever it sits on, in place of the core's ring of page
+   colour: here the ring would be the same grey as the avatar under it. */
+.su-badge {
+  box-shadow: var(--su-neu-raised-sm);
+}
+
 .su-tooltip::after {
   background: var(--su-surface);
   color: var(--su-text);
@@ -572,6 +656,10 @@ button.su-chip:hover {
      groove rather than a line. */
   inset-inline-start: calc(0.525rem - 3px);
   width: 6px;
+  /* On past the item's foot to tuck under the next marker, as its top
+     does under this one: the core's line stops at the foot, a quarter
+     rem short of the marker, and a rounded end shows the gap. */
+  bottom: -0.35rem;
   border-radius: var(--su-radius-full);
   background: var(--su-surface);
   box-shadow: var(--su-neu-inset-sm);
