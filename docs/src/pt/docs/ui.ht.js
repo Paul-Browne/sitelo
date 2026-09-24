@@ -170,9 +170,9 @@ export default () =>
         code("styles({ preset: 'neumorphism' })"),
         ' liga a folha de um preset logo a seguir à principal, todos os componentes a seguem, e o ',
         code('theme()'),
-        ' continua a funcionar por cima. Podes vê-lo ao vivo em ',
-        a({ href: '/pt/ui/theming#presets' }, 'Presets'),
-        ', na página Temas.',
+        ' continua a funcionar por cima. Podes vê-lo ao vivo na página ',
+        a({ href: '/pt/ui/theming/neumorphism' }, 'Neumorfismo'),
+        '.',
       ),
 
       h2('JavaScript, e o pouco que é preciso'),

@@ -169,9 +169,9 @@ export default () =>
         code("styles({ preset: 'neumorphism' })"),
         ' lie la feuille d’un préréglage juste après la feuille principale, chaque composant la suit, et ',
         code('theme()'),
-        ' fonctionne toujours par-dessus. Vous le verrez en direct dans ',
-        a({ href: '/fr/ui/theming#prereglages' }, 'Préréglages'),
-        ', sur la page Thématisation.',
+        ' fonctionne toujours par-dessus. Vous le verrez en direct sur la page ',
+        a({ href: '/fr/ui/theming/neumorphism' }, 'Neumorphisme'),
+        '.',
       ),
 
       h2('JavaScript, et le peu qu’il en faut'),

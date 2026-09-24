@@ -13,4 +13,4 @@ export const { code, codeBlock, pageCodeTabs } = createCodeHelpers('fr')
 export const { landingLayout, pageLayout, docsLayout, uiLayout, examplesLayout } =
   createLayouts('fr')
 
-export const { demo, propsTable, presetPreview } = createUiDemo('fr')
+export const { demo, propsTable, presetPreview, presetPreviewHead } = createUiDemo('fr')

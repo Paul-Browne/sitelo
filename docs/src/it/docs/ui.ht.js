@@ -174,9 +174,9 @@ export default () =>
         code("styles({ preset: 'neumorphism' })"),
         ' collega il foglio di un preset subito dopo quello principale, ogni componente lo segue e ',
         code('theme()'),
-        ' continua a funzionare sopra. Lo vedi dal vivo in ',
-        a({ href: '/it/ui/theming#preset' }, 'Preset'),
-        ', nella pagina Temi.',
+        ' continua a funzionare sopra. Lo vedi dal vivo nella pagina ',
+        a({ href: '/it/ui/theming/neumorphism' }, 'Neumorfismo'),
+        '.',
       ),
 
       h2('JavaScript, e quanto poco ce n’è'),

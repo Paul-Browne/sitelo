@@ -1,5 +1,5 @@
-import { h2, p } from 'javascript-to-html'
-import { code, codeBlock, demo, presetPreview, propsTable, uiLayout } from '../../lib/zh.js'
+import { a, h2, p } from 'javascript-to-html'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
 
 export default () =>
   uiLayout({
@@ -72,25 +72,11 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/neumorphism-5d0e7b91.css">`, 'javascript'),
-      presetPreview('neumorphism'),
       p(
-        code('neumorphism'),
-        ' 是软 UI：每个表面都是页面本身，控件只靠光与影区分出来——要么从页面上凸起，要么压进页面里。这种风格通常放弃的两样东西它都保留了：达到 WCAG AA 的文字，以及焦点轮廓；它也和其他一切一样跟随深色模式。不过它要求页面自身的背景是 ',
-        code('var(--su-bg)'),
-        '，因为整个效果就建立在两者同色之上。',
+        '每个预设都有自己的页面，所有组件都在上面实时重新设计：',
+        a({ href: '/zh/ui/theming/neumorphism' }, '新拟态'),
+        '。',
       ),
-      p(
-        code('theme()'),
-        ' 依然可以叠在上面用，所以预设是起点，而不是分叉。这个预设给每套调色板加了第十个槽位 ',
-        code('glow'),
-        '——进度条或开关在末端渐变过去的那个颜色——这样新的主色就能带上自己的。',
-      ),
-      codeBlock('src/index.ht.js', `head(
-  styles({ preset: 'neumorphism' }),
-  theme({
-    primary: { base: '#7c3aed', hover: '#6d28d9', active: '#5b21b6', glow: '#e879f9' },
-  }),
-)`, 'javascript'),
       p(
         code('inline'),
         ' 会把两份样式表都内联，',

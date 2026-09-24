@@ -169,9 +169,9 @@ export default () =>
         code("styles({ preset: 'neumorphism' })"),
         ' verlinkt das Stylesheet eines Presets direkt nach dem Kern-Stylesheet, jede Komponente folgt ihm, und ',
         code('theme()'),
-        ' funktioniert weiterhin obendrauf. Live zu sehen unter ',
-        a({ href: '/de/ui/theming#presets' }, 'Presets'),
-        ' auf der Seite Theming.',
+        ' funktioniert weiterhin obendrauf. Live zu sehen auf der Seite ',
+        a({ href: '/de/ui/theming/neumorphism' }, 'Neumorphismus'),
+        '.',
       ),
 
       h2('JavaScript, und wie wenig davon nötig ist'),

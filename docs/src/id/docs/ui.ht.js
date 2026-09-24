@@ -169,9 +169,9 @@ export default () =>
         code("styles({ preset: 'neumorphism' })"),
         ' menautkan lembar sebuah preset tepat setelah lembar inti, setiap komponen mengikutinya, dan ',
         code('theme()'),
-        ' tetap bekerja di atasnya. Lihat langsung di bagian ',
-        a({ href: '/id/ui/theming#preset' }, 'Preset'),
-        ' pada halaman Tema.',
+        ' tetap bekerja di atasnya. Lihat langsung di halaman ',
+        a({ href: '/id/ui/theming/neumorphism' }, 'Neumorfisme'),
+        '.',
       ),
 
       h2('JavaScript, dan betapa sedikitnya'),

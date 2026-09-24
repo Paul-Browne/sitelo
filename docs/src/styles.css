@@ -2237,15 +2237,37 @@ a.feature-card:hover h3 {
   margin: 0 0 1.75rem;
 }
 
-/* A preset restyles the whole document it is in, so it is shown in a
-   frame of its own; the frame is the box the demos draw, and the
-   preset paints its own ground inside it. */
-.ui-preset-frame {
-  display: block;
-  width: 100%;
+/*
+ * A preset's example. The preset's sheet is scoped to this element — see
+ * `scopedPresetCss()` in lib/ui-demo.js — and sets its tokens on it, so
+ * the ground here is the preset's own, as a site that picked it would
+ * paint its page: neumorphism rests on the surfaces and the ground being
+ * one colour.
+ */
+.ui-preset-stage {
   margin: 0 0 1.75rem;
+  padding: 2rem 1.5rem;
   border: 1px solid var(--line);
   border-radius: 0.85rem;
+  background: var(--su-bg);
+  color: var(--su-text);
+  font-family: var(--su-font-sans);
+}
+
+.ui-preset-stage .preset-card-actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Its own width in the column, so the bubble centres over the button. */
+.ui-preset-stage .preset-tooltip {
+  align-self: flex-start;
+}
+
+/* The toast region, out of its corner and into the column. */
+.ui-preset-stage .preset-toasts {
+  position: static;
+  max-width: none;
 }
 
 .ui-sandbox-controls {

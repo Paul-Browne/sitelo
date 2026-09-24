@@ -1,5 +1,5 @@
-import { h2, p } from 'javascript-to-html'
-import { code, codeBlock, demo, presetPreview, propsTable, uiLayout } from '../../lib/tr.js'
+import { a, h2, p } from 'javascript-to-html'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/tr.js'
 
 export default () =>
   uiLayout({
@@ -73,25 +73,11 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/neumorphism-5d0e7b91.css">`, 'javascript'),
-      presetPreview('neumorphism'),
       p(
-        code('neumorphism'),
-        ' bir soft UI’dır: her yüzey sayfanın kendisidir ve bir denetim yalnızca ışık ve gölgeyle öne çıkar — sayfadan kabarık ya da içine bastırılmış olarak. Bu tarzın genellikle vazgeçtiği iki şeyi korur, WCAG AA’yı geçen metni ve odak çerçevesini; koyu kipi de her şey gibi izler. Ancak sayfanın kendi arka planının ',
-        code('var(--su-bg)'),
-        ' olmasını gerektirir, çünkü etki ikisinin aynı renk olmasına dayanır.',
+        'Her hazır ayarın, tüm bileşenlerin canlı olarak yeniden biçimlendiği kendi sayfası vardır: ',
+        a({ href: '/tr/ui/theming/neumorphism' }, 'Neumorfizm'),
+        '.',
       ),
-      p(
-        code('theme()'),
-        ' üstünde çalışmayı sürdürür, yani bir hazır ayar bir çatal değil, bir başlangıç noktasıdır. Bu hazır ayar her palete onuncu bir yuva ekler, ',
-        code('glow'),
-        ' — bir ilerleme çubuğunun ya da anahtarın ucunda eridiği renk — böylece yeni bir birincil renk kendi rengini getirebilir.',
-      ),
-      codeBlock('src/index.ht.js', `head(
-  styles({ preset: 'neumorphism' }),
-  theme({
-    primary: { base: '#7c3aed', hover: '#6d28d9', active: '#5b21b6', glow: '#e879f9' },
-  }),
-)`, 'javascript'),
       p(
         code('inline'),
         ' iki stil sayfasını da satır içine gömer, ',

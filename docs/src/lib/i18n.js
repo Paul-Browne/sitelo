@@ -181,6 +181,7 @@ export const TRANSLATED_PATHS = new Set([
   '/ui/timeline',
   '/ui/mockup',
   '/ui/theming',
+  '/ui/theming/neumorphism',
 ])
 
 /** Strip any locale prefix, returning the canonical English path. */

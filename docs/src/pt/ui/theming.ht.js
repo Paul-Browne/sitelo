@@ -1,5 +1,5 @@
-import { h2, p } from 'javascript-to-html'
-import { code, codeBlock, demo, presetPreview, propsTable, uiLayout } from '../../lib/pt.js'
+import { a, h2, p } from 'javascript-to-html'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/pt.js'
 
 export default () =>
   uiLayout({
@@ -74,27 +74,11 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/neumorphism-5d0e7b91.css">`, 'javascript'),
-      presetPreview('neumorphism'),
       p(
-        'O ',
-        code('neumorphism'),
-        ' é soft UI: cada superfície é a própria página, e um controlo destaca-se só pela luz e pela sombra — em relevo sobre a página, ou afundado nela. Mantém duas coisas de que este estilo costuma abdicar, texto que cumpre WCAG AA e o contorno de foco, e segue o modo escuro como tudo o resto. Precisa, no entanto, que o fundo da própria página seja ',
-        code('var(--su-bg)'),
-        ', porque o efeito assenta em ambos terem a mesma cor.',
+        'Cada preset tem a sua própria página, com todos os componentes redesenhados ao vivo: ',
+        a({ href: '/pt/ui/theming/neumorphism' }, 'Neumorfismo'),
+        '.',
       ),
-      p(
-        'O ',
-        code('theme()'),
-        ' continua a funcionar por cima, por isso um preset é um ponto de partida e não um fork. Este acrescenta uma décima ranhura a cada paleta, ',
-        code('glow'),
-        ' — a cor em que a ponta de uma barra de progresso ou de um interruptor se desvanece — para que um novo primário possa trazer a sua.',
-      ),
-      codeBlock('src/index.ht.js', `head(
-  styles({ preset: 'neumorphism' }),
-  theme({
-    primary: { base: '#7c3aed', hover: '#6d28d9', active: '#5b21b6', glow: '#e879f9' },
-  }),
-)`, 'javascript'),
       p(
         'A opção ',
         code('inline'),

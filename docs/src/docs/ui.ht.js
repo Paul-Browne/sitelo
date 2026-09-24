@@ -170,9 +170,9 @@ export default () =>
         code("styles({ preset: 'neumorphism' })"),
         ' links a preset’s sheet straight after the core one, every component follows it, and ',
         code('theme()'),
-        ' still works on top. It runs live under ',
-        a({ href: '/ui/theming#presets' }, 'Presets'),
-        ' on the Theming page.',
+        ' still works on top. It runs live on the ',
+        a({ href: '/ui/theming/neumorphism' }, 'Neumorphism'),
+        ' page.',
       ),
 
       h2('JavaScript, and how little of it there is'),

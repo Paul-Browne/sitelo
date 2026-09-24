@@ -174,9 +174,9 @@ export default () =>
         code("styles({ preset: 'neumorphism' })"),
         ' dołącza arkusz presetu zaraz po głównym, każdy komponent za nim podąża, a ',
         code('theme()'),
-        ' dalej działa na wierzchu. Na żywo zobaczysz to w sekcji ',
-        a({ href: '/pl/ui/theming#presety' }, 'Presety'),
-        ' na stronie Motywy.',
+        ' dalej działa na wierzchu. Na żywo zobaczysz to na stronie ',
+        a({ href: '/pl/ui/theming/neumorphism' }, 'Neumorfizm'),
+        '.',
       ),
 
       h2('JavaScript i jak mało go tu jest'),

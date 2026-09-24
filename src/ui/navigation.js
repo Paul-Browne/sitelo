@@ -109,8 +109,12 @@ export function pagination(props = {}) {
   const current = Math.min(Math.max(1, Number(page) || 1), Math.max(1, Number(count) || 1))
   const total = Math.max(1, Number(count) || 1)
 
-  const link = (target, content, extra = {}) => {
+  const link = (target, label, extra = {}) => {
     const disabled = target == null
+    // In an element of its own rather than bare text, so a theme can
+    // move it — a preset presses it back into the link, as it does a
+    // button's label. Text alone cannot be transformed.
+    const content = span({ class: 'su-page-label' }, label)
 
     if (disabled || !href) {
       return buttonEl(

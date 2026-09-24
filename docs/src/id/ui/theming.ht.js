@@ -1,5 +1,5 @@
-import { h2, p } from 'javascript-to-html'
-import { code, codeBlock, demo, presetPreview, propsTable, uiLayout } from '../../lib/id.js'
+import { a, h2, p } from 'javascript-to-html'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/id.js'
 
 export default () =>
   uiLayout({
@@ -73,25 +73,11 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/neumorphism-5d0e7b91.css">`, 'javascript'),
-      presetPreview('neumorphism'),
       p(
-        code('neumorphism'),
-        ' adalah soft UI: setiap permukaan adalah halaman itu sendiri, dan sebuah kontrol menonjol hanya lewat cahaya dan bayangan — terangkat dari halaman, atau tertekan ke dalamnya. Preset ini mempertahankan dua hal yang biasanya dikorbankan gaya ini, teks yang lolos WCAG AA dan garis fokus, dan mengikuti mode gelap seperti bagian lainnya. Namun ia membutuhkan latar halaman itu sendiri berupa ',
-        code('var(--su-bg)'),
-        ', karena efeknya bergantung pada keduanya yang berwarna sama.',
+        'Setiap preset punya halamannya sendiri, dengan semua komponen ditata ulang secara langsung: ',
+        a({ href: '/id/ui/theming/neumorphism' }, 'Neumorfisme'),
+        '.',
       ),
-      p(
-        code('theme()'),
-        ' tetap bekerja di atasnya, jadi preset adalah titik awal, bukan fork. Preset ini menambahkan slot kesepuluh ke setiap palet, ',
-        code('glow'),
-        ' — warna yang dituju ujung bilah kemajuan atau sakelar saat memudar — supaya warna primer yang baru bisa membawa miliknya sendiri.',
-      ),
-      codeBlock('src/index.ht.js', `head(
-  styles({ preset: 'neumorphism' }),
-  theme({
-    primary: { base: '#7c3aed', hover: '#6d28d9', active: '#5b21b6', glow: '#e879f9' },
-  }),
-)`, 'javascript'),
       p(
         code('inline'),
         ' menyisipkan kedua lembar secara inline, ',

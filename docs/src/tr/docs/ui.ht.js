@@ -168,9 +168,9 @@ export default () =>
         code("styles({ preset: 'neumorphism' })"),
         ' bir hazır ayarın stil sayfasını çekirdek stil sayfasının hemen ardından bağlar, her bileşen onu izler ve ',
         code('theme()'),
-        ' üstünde çalışmayı sürdürür. Temalar sayfasının ',
-        a({ href: '/tr/ui/theming#hazir-ayarlar' }, 'Hazır ayarlar'),
-        ' bölümünde canlı olarak görülebilir.',
+        ' üstünde çalışmayı sürdürür. ',
+        a({ href: '/tr/ui/theming/neumorphism' }, 'Neumorfizm'),
+        ' sayfasında canlı olarak görülebilir.',
       ),
 
       h2('JavaScript ve ne kadar azı olduğu'),

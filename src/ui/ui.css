@@ -1805,6 +1805,9 @@ a.su-list-item:hover,
   color: var(--su-text-muted);
   font-size: var(--su-text-sm);
   text-decoration: none;
+  /* A link has the pointer already; without an `href` this is a button,
+     which does not. A disabled one takes no pointer events at all. */
+  cursor: pointer;
   transition: background-color var(--su-transition), color var(--su-transition);
 }
 

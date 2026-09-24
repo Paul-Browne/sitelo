@@ -245,6 +245,7 @@ const UI_LABELS = {
     { href: '/ui/mockup', label: 'Mockup' },
     { heading: 'Styling' },
     { href: '/ui/theming', label: 'Theming' },
+    { href: '/ui/theming/neumorphism', label: 'Neumorphism' },
   ],
   es: [
     { href: '/ui', label: 'Resumen' },
@@ -307,6 +308,7 @@ const UI_LABELS = {
     { href: '/ui/mockup', label: 'Mockup' },
     { heading: 'Estilos' },
     { href: '/ui/theming', label: 'Temas' },
+    { href: '/ui/theming/neumorphism', label: 'Neumorfismo' },
   ],
   fr: [
     { href: '/ui', label: 'Vue d’ensemble' },
@@ -369,6 +371,7 @@ const UI_LABELS = {
     { href: '/ui/mockup', label: 'Maquette' },
     { heading: 'Styles' },
     { href: '/ui/theming', label: 'Thématisation' },
+    { href: '/ui/theming/neumorphism', label: 'Neumorphisme' },
   ],
   de: [
     { href: '/ui', label: 'Überblick' },
@@ -431,6 +434,7 @@ const UI_LABELS = {
     { href: '/ui/mockup', label: 'Mockup' },
     { heading: 'Styling' },
     { href: '/ui/theming', label: 'Theming' },
+    { href: '/ui/theming/neumorphism', label: 'Neumorphismus' },
   ],
   ru: [
     { href: '/ui', label: 'Обзор' },
@@ -493,6 +497,7 @@ const UI_LABELS = {
     { href: '/ui/mockup', label: 'Макет' },
     { heading: 'Стили' },
     { href: '/ui/theming', label: 'Темы' },
+    { href: '/ui/theming/neumorphism', label: 'Неоморфизм' },
   ],
   zh: [
     { href: '/ui', label: '概览' },
@@ -555,6 +560,7 @@ const UI_LABELS = {
     { href: '/ui/mockup', label: '设备外框' },
     { heading: '样式' },
     { href: '/ui/theming', label: '主题定制' },
+    { href: '/ui/theming/neumorphism', label: '新拟态' },
   ],
   pt: [
     { href: '/ui', label: 'Visão geral' },
@@ -617,6 +623,7 @@ const UI_LABELS = {
     { href: '/ui/mockup', label: 'Mockup' },
     { heading: 'Estilos' },
     { href: '/ui/theming', label: 'Temas' },
+    { href: '/ui/theming/neumorphism', label: 'Neumorfismo' },
   ],
   it: [
     { href: '/ui', label: 'Panoramica' },
@@ -679,6 +686,7 @@ const UI_LABELS = {
     { href: '/ui/mockup', label: 'Mockup' },
     { heading: 'Stile' },
     { href: '/ui/theming', label: 'Temi' },
+    { href: '/ui/theming/neumorphism', label: 'Neumorfismo' },
   ],
   pl: [
     { href: '/ui', label: 'Przegląd' },
@@ -741,6 +749,7 @@ const UI_LABELS = {
     { href: '/ui/mockup', label: 'Makieta' },
     { heading: 'Stylowanie' },
     { href: '/ui/theming', label: 'Motywy' },
+    { href: '/ui/theming/neumorphism', label: 'Neumorfizm' },
   ],
   tr: [
     { href: '/ui', label: 'Genel bakış' },
@@ -803,6 +812,7 @@ const UI_LABELS = {
     { href: '/ui/mockup', label: 'Maket' },
     { heading: 'Biçimlendirme' },
     { href: '/ui/theming', label: 'Temalar' },
+    { href: '/ui/theming/neumorphism', label: 'Neumorfizm' },
   ],
   id: [
     { href: '/ui', label: 'Ringkasan' },
@@ -865,6 +875,7 @@ const UI_LABELS = {
     { href: '/ui/mockup', label: 'Maket' },
     { heading: 'Penataan' },
     { href: '/ui/theming', label: 'Tema' },
+    { href: '/ui/theming/neumorphism', label: 'Neumorfisme' },
   ],
 
 }

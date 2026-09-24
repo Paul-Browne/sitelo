@@ -1,5 +1,5 @@
-import { h2, p } from 'javascript-to-html'
-import { code, codeBlock, demo, presetPreview, propsTable, uiLayout } from '../../lib/de.js'
+import { a, h2, p } from 'javascript-to-html'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/de.js'
 
 export default () =>
   uiLayout({
@@ -73,25 +73,11 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/neumorphism-5d0e7b91.css">`, 'javascript'),
-      presetPreview('neumorphism'),
       p(
-        code('neumorphism'),
-        ' ist Soft UI: Jede Fläche ist die Seite selbst, und ein Bedienelement hebt sich allein durch Licht und Schatten ab — aus der Seite gehoben oder in sie hineingedrückt. Zwei Dinge, die dieser Look sonst aufgibt, behält es: Text, der WCAG AA erfüllt, und den Fokusrahmen. Den Dunkelmodus macht es mit wie alles andere. Es braucht allerdings ',
-        code('var(--su-bg)'),
-        ' als Hintergrund der Seite selbst, denn der Effekt beruht darauf, dass beides dieselbe Farbe hat.',
+        'Jedes Preset hat eine eigene Seite, auf der jede Komponente live neu gestaltet wird: ',
+        a({ href: '/de/ui/theming/neumorphism' }, 'Neumorphismus'),
+        '.',
       ),
-      p(
-        code('theme()'),
-        ' funktioniert weiterhin obendrauf, ein Preset ist also ein Ausgangspunkt und kein Fork. Dieses hier gibt jeder Palette einen zehnten Platz, ',
-        code('glow'),
-        ' — die Farbe, in die ein Fortschrittsbalken oder ein Switch an seinem Ende ausläuft —, damit eine neue Primärfarbe ihre eigene mitbringen kann.',
-      ),
-      codeBlock('src/index.ht.js', `head(
-  styles({ preset: 'neumorphism' }),
-  theme({
-    primary: { base: '#7c3aed', hover: '#6d28d9', active: '#5b21b6', glow: '#e879f9' },
-  }),
-)`, 'javascript'),
       p(
         code('inline'),
         ' bettet beide Stylesheets ein, ',

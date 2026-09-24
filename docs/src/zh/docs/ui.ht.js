@@ -169,9 +169,9 @@ export default () =>
         code("styles({ preset: 'neumorphism' })"),
         ' 会在核心样式表之后紧接着链接某个预设的样式表，每个组件都会跟着变，而 ',
         code('theme()'),
-        ' 依然可以叠在上面用。它在主题定制页面的',
-        a({ href: '/zh/ui/theming#预设' }, '预设'),
-        '一节里实时运行。',
+        ' 依然可以叠在上面用。它在',
+        a({ href: '/zh/ui/theming/neumorphism' }, '新拟态'),
+        '页面上实时运行。',
       ),
 
       h2('JavaScript，以及它有多少'),

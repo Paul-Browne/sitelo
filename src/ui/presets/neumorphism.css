@@ -402,19 +402,23 @@
  * an inline box it would not apply to. An outline's line, on its own
  * box inside the button, goes back with them.
  */
-.su-btn {
+.su-btn,
+.su-page-link {
   perspective: 95px;
 }
 
 .su-btn > .su-btn-label,
-.su-btn > .su-btn-icon {
+.su-btn > .su-btn-icon,
+.su-page-link > .su-page-label {
   transition: translate var(--su-neu-press);
 }
 
+/* A page link is pressed the same way: it is a button in all but name. */
 .su-btn:not(.su-btn--link):active > .su-btn-label,
 .su-btn:not(.su-btn--link):active > .su-btn-icon,
 .su-btn--outline:active::before,
-.su-btn--solid:active::before {
+.su-btn--solid:active::before,
+.su-page-link:active > .su-page-label {
   translate: 0 0 -5px;
 }
 
@@ -1075,6 +1079,9 @@ button.su-chip:hover {
 .su-page-link {
   background: var(--su-surface);
   box-shadow: var(--su-neu-raised-sm);
+  /* Raised, lifted and pressed at a button's pace. */
+  transition: background-color var(--su-transition), color var(--su-transition),
+    box-shadow var(--su-neu-press);
 }
 
 .su-page-link:hover {
@@ -1101,8 +1108,8 @@ button.su-chip:hover {
   border-top-color: transparent;
 }
 
-/* A tab being chosen sinks in over the time a button does, the pill's
-   fill with it; the core's colour and line keep their own pace. */
+/* A tab being chosen sinks in over the time a button does; the core's
+   colour and line keep their own pace. */
 .su-tab {
   border-radius: var(--su-radius-md);
   transition: color var(--su-transition), border-color var(--su-transition),
@@ -1116,4 +1123,19 @@ button.su-chip:hover {
 .su-tabs--target:not(:has(> .su-tab:target)) > .su-tab--default {
   border-bottom-color: transparent;
   box-shadow: var(--su-neu-inset-sm);
+}
+
+/*
+ * A chosen pill is the page pressed in, like the current page link,
+ * rather than the core's soft tint pressed in: a well of colour sunk
+ * into grey reads as a stain, most of all in the dark. The palette is
+ * in the label instead. The core's selectors, which outrank the ones
+ * above.
+ */
+.su-tabs--pills .su-tab[aria-current='page'],
+.su-tabs--pills .su-tab-input:checked + .su-tab,
+.su-tabs--pills.su-tabs--target > .su-tab:target,
+.su-tabs--pills.su-tabs--target:not(:has(> .su-tab:target)) > .su-tab--default {
+  background: var(--su-surface);
+  color: var(--su-c-soft-fg, var(--su-primary-soft-fg));
 }

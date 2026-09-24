@@ -1,5 +1,5 @@
-import { h2, p } from 'javascript-to-html'
-import { code, codeBlock, demo, presetPreview, propsTable, uiLayout } from '../../lib/ru.js'
+import { a, h2, p } from 'javascript-to-html'
+import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/ru.js'
 
 export default () =>
   uiLayout({
@@ -73,25 +73,11 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/neumorphism-5d0e7b91.css">`, 'javascript'),
-      presetPreview('neumorphism'),
       p(
-        code('neumorphism'),
-        ' — это soft UI: любая поверхность и есть сама страница, а элемент управления выделяется только светом и тенью, приподнятый над страницей или вдавленный в неё. Пресет сохраняет то, чем этот стиль обычно жертвует, — текст, проходящий WCAG AA, и рамку фокуса — и следует тёмной теме, как и всё остальное. Но фоном самой страницы должен быть ',
-        code('var(--su-bg)'),
-        ': весь эффект держится на том, что у них один цвет.',
+        'У каждого пресета есть своя страница, где все компоненты переоформлены вживую: ',
+        a({ href: '/ru/ui/theming/neumorphism' }, 'Неоморфизм'),
+        '.',
       ),
-      p(
-        code('theme()'),
-        ' по-прежнему работает поверх, так что пресет — это отправная точка, а не форк. Этот добавляет в каждую палитру десятый слот, ',
-        code('glow'),
-        ' — цвет, в который уходит конец полосы прогресса или переключателя, — чтобы новый основной цвет мог принести свой.',
-      ),
-      codeBlock('src/index.ht.js', `head(
-  styles({ preset: 'neumorphism' }),
-  theme({
-    primary: { base: '#7c3aed', hover: '#6d28d9', active: '#5b21b6', glow: '#e879f9' },
-  }),
-)`, 'javascript'),
       p(
         code('inline'),
         ' встраивает обе таблицы, ',
