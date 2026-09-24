@@ -84,8 +84,19 @@ head(
       ),
       p(
         'O ',
+        code('glassmorphism'),
+        ' é vidro fosco: cada superfície é um painel translúcido que desfoca o que está por trás, com a luz na aresta. Vidro só é vidro por cima de alguma coisa, por isso este precisa que o fundo da página seja ',
+        code('var(--su-glass-ground)'),
+        ' — a cor da página com três manchas de cor fixas por trás. O texto é medido contra a cor mais clara sobre a qual um painel pode ficar, tudo o que flutua sobre o texto da página é fosco quase opaco, e quem pede menos transparência recebe os mesmos painéis sobre um fundo parado.',
+      ),
+      codeBlock('src/styles.css', `body {
+  background: var(--su-glass-ground);
+}`, 'css'),
+      presetPreview('glassmorphism'),
+      p(
+        'O ',
         code('theme()'),
-        ' continua a funcionar por cima, por isso um preset é um ponto de partida e não um fork. Este acrescenta uma décima ranhura a cada paleta, ',
+        ' continua a funcionar por cima, por isso um preset é um ponto de partida e não um fork. Ambos acrescentam uma décima ranhura a cada paleta, ',
         code('glow'),
         ' — a cor em que a ponta de uma barra de progresso ou de um interruptor se desvanece — para que um novo primário possa trazer a sua.',
       ),
@@ -260,7 +271,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism'", '', 'Muda o estilo de todos os componentes com um preset, ligado ou inline depois da folha principal.'],
+        ['preset', "'glassmorphism' | 'neumorphism'", '', 'Muda o estilo de todos os componentes com um preset, ligado ou inline depois da folha principal.'],
         ['inline', 'boolean', 'false', 'Emite o próprio CSS em vez de uma ligação para ele.'],
         ['hash', 'boolean', 'true', 'Acrescenta ao nome do ficheiro um hash do conteúdo. Só ligado.'],
         ['base', 'string', "'/su/'", 'Aponta o URL para outro lado; essa cópia alojas tu. Só ligado.'],

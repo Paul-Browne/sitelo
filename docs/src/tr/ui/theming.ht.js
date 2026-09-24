@@ -81,8 +81,18 @@ head(
         ' olmasını gerektirir, çünkü etki ikisinin aynı renk olmasına dayanır.',
       ),
       p(
+        code('glassmorphism'),
+        ' buzlu camdır: her yüzey, arkasındakini bulanıklaştıran, kenarına ışık vuran yarı saydam bir paneldir. Cam ancak bir şeyin üstünde camdır, bu yüzden sayfanın arka planının ',
+        code('var(--su-glass-ground)'),
+        ' olmasını gerektirir — arkasına sabitlenmiş üç renk bulutuyla sayfanın rengi. Metin, bir panelin üstünde durabileceği en açık renge karşı ölçülür; sayfanın kendi metninin üstünde süzülen her şey neredeyse opak buzlanır; daha az saydamlık isteyen okur da aynı panelleri durgun bir zemin üstünde görür.',
+      ),
+      codeBlock('src/styles.css', `body {
+  background: var(--su-glass-ground);
+}`, 'css'),
+      presetPreview('glassmorphism'),
+      p(
         code('theme()'),
-        ' üstünde çalışmayı sürdürür, yani bir hazır ayar bir çatal değil, bir başlangıç noktasıdır. Bu hazır ayar her palete onuncu bir yuva ekler, ',
+        ' üstünde çalışmayı sürdürür, yani bir hazır ayar bir çatal değil, bir başlangıç noktasıdır. İki hazır ayar da her palete onuncu bir yuva ekler, ',
         code('glow'),
         ' — bir ilerleme çubuğunun ya da anahtarın ucunda eridiği renk — böylece yeni bir birincil renk kendi rengini getirebilir.',
       ),
@@ -255,7 +265,7 @@ head(
       h2('Proplar'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism'", '', 'Her bileşeni bir hazır ayarla yeniden biçimlendirir; çekirdek stil sayfasından sonra bağlanır ya da satır içine gömülür.'],
+        ['preset', "'glassmorphism' | 'neumorphism'", '', 'Her bileşeni bir hazır ayarla yeniden biçimlendirir; çekirdek stil sayfasından sonra bağlanır ya da satır içine gömülür.'],
         ['inline', 'boolean', 'false', 'Ona bir bağlantı yerine CSS’in kendisini üretir.'],
         ['hash', 'boolean', 'true', 'Dosya adını içerikle özetler. Yalnızca bağlantılı.'],
         ['base', 'string', "'/su/'", 'URL’i başka yere yöneltir; o kopyayı siz barındırırsınız. Yalnızca bağlantılı.'],

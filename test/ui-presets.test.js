@@ -4,7 +4,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 
 import * as ui from '../src/ui/index.js';
 import { presetNames, sheetNamed } from '../src/ui/sheet.js';
-import { contrast, parseHex, readTokens } from './helpers/tokens.js';
+import { composite, contrast, parseColor, readTokens } from './helpers/tokens.js';
 
 const presets = presetNames();
 
@@ -192,9 +192,39 @@ for (const name of presets) {
     const dark = { ...light, ...media(core), ...media(own) };
 
     for (const [theme, tokens] of [['light', light], ['dark', dark]]) {
+      /*
+       * What a background can show as. An opaque one is itself. A
+       * translucent one — a glass pane, a tint — is whatever is under it
+       * showing through, so it is measured laid over each colour of the
+       * ground: the page's own, and any `-ground-N` a preset paints it
+       * with. And over a pane on the ground, since a tint sits on one as
+       * often as on the page. A blur only ever averages those colours,
+       * so the worst of them is the worst the text will meet.
+       */
+      const grounds = [
+        tokens['--su-bg'],
+        ...Object.keys(tokens).filter((token) => /-ground-\d+$/.test(token)).map((token) => tokens[token]),
+      ].map(parseColor);
+      const pane = parseColor(tokens['--su-surface']);
+      const under = [...grounds, ...grounds.map((ground) => composite(pane, ground))];
+      const shows = (token) => {
+        const color = parseColor(tokens[token]);
+
+        assert.ok(color, `${theme} ${token} is a colour this test can read: ${tokens[token]}`);
+
+        return color[3] === 1 ? [color] : under.map((ground) => composite(color, ground));
+      };
+      const worst = (foreground, background) => {
+        const text = parseColor(tokens[foreground]);
+
+        assert.equal(text?.[3], 1, `${theme} ${foreground} is an opaque colour: ${tokens[foreground]}`);
+
+        return Math.min(...shows(background).map((color) => contrast(text, color)));
+      };
+
       for (const foreground of ['--su-text', '--su-text-muted', '--su-text-subtle']) {
         for (const background of ['--su-surface', '--su-surface-2', '--su-bg']) {
-          const ratio = contrast(parseHex(tokens[foreground]), parseHex(tokens[background]));
+          const ratio = worst(foreground, background);
 
           assert.ok(ratio >= 4.5, `${theme} ${foreground} on ${background} is ${ratio.toFixed(2)}:1`);
         }
@@ -209,7 +239,7 @@ for (const name of presets) {
           [`--su-${color}-soft-fg`, '--su-surface'],
           [`--su-${color}`, '--su-surface'],
         ]) {
-          const ratio = contrast(parseHex(tokens[foreground]), parseHex(tokens[background]));
+          const ratio = worst(foreground, background);
 
           assert.ok(
             ratio >= 4.5,

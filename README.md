@@ -656,6 +656,18 @@ head(styles({ preset: 'neumorphism' }))
 it by light and shade — with text kept at WCAG AA and the focus outline
 kept on. It needs the page's background to be `var(--su-bg)`.
 
+`glassmorphism` is frosted glass — translucent panes that blur what is
+behind them, over a ground of soft colour — with text measured against
+the brightest colour a pane can sit over, floating panes frosted nearly
+opaque, and a still ground for reduced transparency. It needs the page's
+background to be `var(--su-glass-ground)`:
+
+```css
+body {
+  background: var(--su-glass-ground);
+}
+```
+
 ### Icons
 
 `icon()` returns an inline `<svg>` from a set of 99 glyphs, drawn on one

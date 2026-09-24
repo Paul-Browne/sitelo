@@ -81,8 +81,18 @@ head(
         ', perché l’effetto si regge sul fatto che i due siano dello stesso colore.',
       ),
       p(
+        code('glassmorphism'),
+        ' è vetro smerigliato: ogni superficie è un pannello traslucido che sfoca ciò che ha dietro, con la luce sul bordo. Il vetro è vetro solo sopra qualcosa, quindi questo ha bisogno che lo sfondo della pagina sia ',
+        code('var(--su-glass-ground)'),
+        ' — il colore della pagina con tre macchie di colore fisse dietro. Il testo è misurato contro il colore più chiaro su cui un pannello può trovarsi, tutto ciò che fluttua sopra il testo della pagina è smerigliato quasi opaco, e chi chiede meno trasparenza ottiene gli stessi pannelli su uno sfondo fermo.',
+      ),
+      codeBlock('src/styles.css', `body {
+  background: var(--su-glass-ground);
+}`, 'css'),
+      presetPreview('glassmorphism'),
+      p(
         code('theme()'),
-        ' continua a funzionare sopra, quindi un preset è un punto di partenza e non un fork. Questo aggiunge una decima casella a ogni palette, ',
+        ' continua a funzionare sopra, quindi un preset è un punto di partenza e non un fork. Entrambi aggiungono una decima casella a ogni palette, ',
         code('glow'),
         ' — il colore in cui sfuma l’estremità di una barra di avanzamento o di uno switch — così un nuovo primario può portarsi il suo.',
       ),
@@ -255,7 +265,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism'", '', 'Ridisegna ogni componente con un preset, collegato o inline dopo il foglio principale.'],
+        ['preset', "'glassmorphism' | 'neumorphism'", '', 'Ridisegna ogni componente con un preset, collegato o inline dopo il foglio principale.'],
         ['inline', 'boolean', 'false', 'Emetti il CSS stesso invece di un link a esso.'],
         ['hash', 'boolean', 'true', 'Metti un hash del contenuto nel nome del file. Solo forma collegata.'],
         ['base', 'string', "'/su/'", 'Punta l’URL altrove; quella copia la ospiti tu. Solo forma collegata.'],

@@ -83,8 +83,18 @@ head(
         ', since the effect rests on the two being one colour.',
       ),
       p(
+        code('glassmorphism'),
+        ' is frosted glass: every surface is a translucent pane that blurs whatever is behind it, lit along its edge. Glass is only glass over something, so this one needs the page’s background to be ',
+        code('var(--su-glass-ground)'),
+        ' — the page colour with three blooms of colour fixed behind it. Text is measured against the brightest colour a pane can sit over, anything that floats over the page’s own text is frosted nearly opaque, and a reader who asks for reduced transparency gets the same panes over a still ground.',
+      ),
+      codeBlock('src/styles.css', `body {
+  background: var(--su-glass-ground);
+}`, 'css'),
+      presetPreview('glassmorphism'),
+      p(
         code('theme()'),
-        ' still works on top, so a preset is a starting point rather than a fork. This one adds a tenth slot to each palette, ',
+        ' still works on top, so a preset is a starting point rather than a fork. Both add a tenth slot to each palette, ',
         code('glow'),
         ' — the colour a progress bar or a switch fades into at its far end — so a new primary can bring its own.',
       ),
@@ -257,7 +267,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism'", '', 'Restyle every component with a preset, linked or inlined after the core sheet.'],
+        ['preset', "'glassmorphism' | 'neumorphism'", '', 'Restyle every component with a preset, linked or inlined after the core sheet.'],
         ['inline', 'boolean', 'false', 'Emit the CSS itself rather than a link to it.'],
         ['hash', 'boolean', 'true', 'Content-hash the file name. Linked only.'],
         ['base', 'string', "'/su/'", 'Point the URL elsewhere; that copy is yours to host. Linked only.'],

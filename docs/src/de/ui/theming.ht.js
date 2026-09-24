@@ -81,8 +81,18 @@ head(
         ' als Hintergrund der Seite selbst, denn der Effekt beruht darauf, dass beides dieselbe Farbe hat.',
       ),
       p(
+        code('glassmorphism'),
+        ' ist Milchglas: Jede Fläche ist eine durchscheinende Scheibe, die verwischt, was hinter ihr liegt, mit Licht auf der Kante. Glas ist nur über etwas Glas, deshalb braucht dieses Preset ',
+        code('var(--su-glass-ground)'),
+        ' als Hintergrund der Seite — die Seitenfarbe mit drei festen Farbwolken dahinter. Text wird gegen die hellste Farbe gemessen, über der eine Scheibe liegen kann, was über dem Text der Seite schwebt, ist fast deckend mattiert, und wer weniger Transparenz einstellt, bekommt dieselben Scheiben über einem ruhigen Grund.',
+      ),
+      codeBlock('src/styles.css', `body {
+  background: var(--su-glass-ground);
+}`, 'css'),
+      presetPreview('glassmorphism'),
+      p(
         code('theme()'),
-        ' funktioniert weiterhin obendrauf, ein Preset ist also ein Ausgangspunkt und kein Fork. Dieses hier gibt jeder Palette einen zehnten Platz, ',
+        ' funktioniert weiterhin obendrauf, ein Preset ist also ein Ausgangspunkt und kein Fork. Beide geben jeder Palette einen zehnten Platz, ',
         code('glow'),
         ' — die Farbe, in die ein Fortschrittsbalken oder ein Switch an seinem Ende ausläuft —, damit eine neue Primärfarbe ihre eigene mitbringen kann.',
       ),
@@ -255,7 +265,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism'", '', 'Jede Komponente mit einem Preset neu gestalten, nach dem Kern-Stylesheet verlinkt oder eingebettet.'],
+        ['preset', "'glassmorphism' | 'neumorphism'", '', 'Jede Komponente mit einem Preset neu gestalten, nach dem Kern-Stylesheet verlinkt oder eingebettet.'],
         ['inline', 'boolean', 'false', 'Das CSS selbst ausgeben statt eines Links darauf.'],
         ['hash', 'boolean', 'true', 'Hash des Inhalts in den Dateinamen aufnehmen. Nur verlinkt.'],
         ['base', 'string', "'/su/'", 'Zeigt die URL woandershin; diese Kopie hostest du selbst. Nur verlinkt.'],

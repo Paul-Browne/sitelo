@@ -81,8 +81,18 @@ head(
         ', porque el efecto depende de que ambos sean del mismo color.',
       ),
       p(
+        code('glassmorphism'),
+        ' es vidrio esmerilado: cada superficie es un panel translúcido que desenfoca lo que tiene detrás, con el borde iluminado. El vidrio solo es vidrio sobre algo, así que este necesita que el fondo de la página sea ',
+        code('var(--su-glass-ground)'),
+        ' — el color de la página con tres manchas de color fijas detrás. El texto se mide contra el color más claro sobre el que puede quedar un panel, todo lo que flota sobre el texto de la página se esmerila casi opaco, y quien pide menos transparencia recibe los mismos paneles sobre un fondo quieto.',
+      ),
+      codeBlock('src/styles.css', `body {
+  background: var(--su-glass-ground);
+}`, 'css'),
+      presetPreview('glassmorphism'),
+      p(
         code('theme()'),
-        ' sigue funcionando por encima, así que un preset es un punto de partida y no un fork. Este añade una décima ranura a cada paleta, ',
+        ' sigue funcionando por encima, así que un preset es un punto de partida y no un fork. Ambos añaden una décima ranura a cada paleta, ',
         code('glow'),
         ' — el color en el que se funde el extremo de una barra de progreso o de un interruptor — para que un primario nuevo pueda traer el suyo.',
       ),
@@ -255,7 +265,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism'", '', 'Reestiliza todos los componentes con un preset, enlazado o incrustado después de la hoja principal.'],
+        ['preset', "'glassmorphism' | 'neumorphism'", '', 'Reestiliza todos los componentes con un preset, enlazado o incrustado después de la hoja principal.'],
         ['inline', 'boolean', 'false', 'Emite el CSS en sí en vez de un enlace a él.'],
         ['hash', 'boolean', 'true', 'Añade al nombre del archivo un hash del contenido. Solo enlazado.'],
         ['base', 'string', "'/su/'", 'Apunta la URL a otro sitio; esa copia la alojas tú. Solo enlazado.'],

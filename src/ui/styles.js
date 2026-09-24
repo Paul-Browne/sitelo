@@ -99,8 +99,8 @@ export function stylesUrl(options) {
  * tokens on top of it.
  *
  * @param {object} [options]
- * @param {string} [options.preset] - one of the preset names, e.g.
- *   `'neumorphism'`. An unknown name throws.
+ * @param {string} [options.preset] - one of the preset names,
+ *   `'glassmorphism'` or `'neumorphism'`. An unknown name throws.
  * @param {boolean} [options.inline=false] - emit the CSS itself rather
  *   than a link to it.
  * @param {string} [options.base] - point the link somewhere else. Only

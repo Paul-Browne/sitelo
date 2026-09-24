@@ -81,8 +81,18 @@ head(
         ', bo cały efekt opiera się na tym, że oba mają ten sam kolor.',
       ),
       p(
+        code('glassmorphism'),
+        ' to szkło matowe: każda powierzchnia jest półprzezroczystą taflą, która rozmywa to, co za nią, ze światłem na krawędzi. Szkło jest szkłem tylko nad czymś, więc ten preset wymaga, żeby tłem strony było ',
+        code('var(--su-glass-ground)'),
+        ' — kolor strony z trzema plamami koloru przypiętymi za nim. Tekst jest mierzony względem najjaśniejszego koloru, nad którym może leżeć tafla, wszystko, co unosi się nad tekstem strony, jest zmatowione niemal do nieprzezroczystości, a kto prosi o mniej przezroczystości, dostaje te same tafle na nieruchomym tle.',
+      ),
+      codeBlock('src/styles.css', `body {
+  background: var(--su-glass-ground);
+}`, 'css'),
+      presetPreview('glassmorphism'),
+      p(
         code('theme()'),
-        ' dalej działa na wierzchu, więc preset to punkt wyjścia, a nie fork. Ten dodaje do każdej palety dziesiąte miejsce, ',
+        ' dalej działa na wierzchu, więc preset to punkt wyjścia, a nie fork. Oba dodają do każdej palety dziesiąte miejsce, ',
         code('glow'),
         ' — kolor, w który przechodzi koniec paska postępu albo przełącznika — żeby nowy kolor główny mógł przynieść własny.',
       ),
@@ -254,7 +264,7 @@ head(
       h2('Propsy'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism'", '', 'Zmienia wygląd każdego komponentu presetem, dołączonym albo wstawionym po głównym arkuszu.'],
+        ['preset', "'glassmorphism' | 'neumorphism'", '', 'Zmienia wygląd każdego komponentu presetem, dołączonym albo wstawionym po głównym arkuszu.'],
         ['inline', 'boolean', 'false', 'Wypuść sam CSS zamiast odnośnika do niego.'],
         ['hash', 'boolean', 'true', 'Wstaw skrót treści w nazwę pliku. Tylko postać z odnośnikiem.'],
         ['base', 'string', "'/su/'", 'Skieruj adres gdzie indziej; tamtą kopię hostujesz Ty. Tylko postać z odnośnikiem.'],

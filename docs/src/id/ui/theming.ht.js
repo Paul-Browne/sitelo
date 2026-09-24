@@ -81,8 +81,18 @@ head(
         ', karena efeknya bergantung pada keduanya yang berwarna sama.',
       ),
       p(
+        code('glassmorphism'),
+        ' adalah kaca buram: setiap permukaan adalah panel tembus cahaya yang mengaburkan apa pun di belakangnya, dengan cahaya di tepinya. Kaca hanya menjadi kaca di atas sesuatu, jadi preset ini membutuhkan latar halaman berupa ',
+        code('var(--su-glass-ground)'),
+        ' — warna halaman dengan tiga semburat warna yang terpasang di belakangnya. Teks diukur terhadap warna paling terang yang bisa berada di bawah panel, apa pun yang melayang di atas teks halaman dibuat buram hampir pekat, dan pembaca yang meminta transparansi dikurangi mendapat panel yang sama di atas latar yang diam.',
+      ),
+      codeBlock('src/styles.css', `body {
+  background: var(--su-glass-ground);
+}`, 'css'),
+      presetPreview('glassmorphism'),
+      p(
         code('theme()'),
-        ' tetap bekerja di atasnya, jadi preset adalah titik awal, bukan fork. Preset ini menambahkan slot kesepuluh ke setiap palet, ',
+        ' tetap bekerja di atasnya, jadi preset adalah titik awal, bukan fork. Kedua preset menambahkan slot kesepuluh ke setiap palet, ',
         code('glow'),
         ' — warna yang dituju ujung bilah kemajuan atau sakelar saat memudar — supaya warna primer yang baru bisa membawa miliknya sendiri.',
       ),
@@ -255,7 +265,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism'", '', 'Menata ulang setiap komponen dengan sebuah preset, ditautkan atau disisipkan setelah lembar inti.'],
+        ['preset', "'glassmorphism' | 'neumorphism'", '', 'Menata ulang setiap komponen dengan sebuah preset, ditautkan atau disisipkan setelah lembar inti.'],
         ['inline', 'boolean', 'false', 'Menghasilkan CSS-nya sendiri alih-alih tautan kepadanya.'],
         ['hash', 'boolean', 'true', 'Memberi hash konten pada nama berkasnya. Hanya untuk yang bertautan.'],
         ['base', 'string', "'/su/'", 'Mengarahkan URL-nya ke tempat lain; salinan itu Anda yang menghosting. Hanya untuk yang bertautan.'],

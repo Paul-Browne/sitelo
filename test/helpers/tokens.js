@@ -32,6 +32,37 @@ export function parseHex(value) {
   return [(int >> 16) & 255, (int >> 8) & 255, int & 255];
 }
 
+/**
+ * A hex colour, or an `rgb()`/`rgba()` one with the commas the sheets
+ * write, as channels and an alpha.
+ *
+ * @param {string} value
+ * @returns {[number, number, number, number] | null}
+ */
+export function parseColor(value) {
+  const hex = parseHex(value);
+
+  if (hex) return [...hex, 1];
+
+  const match = /^rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\s*\)$/.exec(value.trim());
+
+  if (!match) return null;
+
+  return [Number(match[1]), Number(match[2]), Number(match[3]), match[4] == null ? 1 : Number(match[4])];
+}
+
+/**
+ * A colour laid over an opaque one: what a translucent surface shows as
+ * on a given ground.
+ *
+ * @param {[number, number, number, number]} top
+ * @param {[number, number, number]} under
+ * @returns {[number, number, number]}
+ */
+export function composite([r, g, b, a], under) {
+  return [r, g, b].map((channel, i) => channel * a + under[i] * (1 - a));
+}
+
 /** @returns {number} */
 export function contrast(foreground, background) {
   const [lighter, darker] = [luminance(foreground), luminance(background)].sort(

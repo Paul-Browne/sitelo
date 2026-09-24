@@ -169,9 +169,13 @@ const PRESET_WIRE =
   `d.addEventListener('click',e=>{const b=e.target.closest('.su-toggle-group .su-toggle-btn');if(b)import('${RUNTIME}pressed.js').then(m=>m.set(b,true))});` +
   `d.addEventListener('click',e=>{const b=e.target.closest('.su-alert-dismiss');if(b)import('${RUNTIME}alert.js').then(m=>m.dismiss(b))})`
 
-/** The preview's own few rules: a ground for the preset to sit on. */
+/*
+ * The preview's own few rules: a ground for the preset to sit on. Each
+ * preset says what the page's background has to be — the page colour
+ * for most, the bloomed ground for glass, which only it defines.
+ */
 const PRESET_PAGE_CSS =
-  'body{margin:0;padding:2rem 1.5rem;background:var(--su-bg);color:var(--su-text);font-family:var(--su-font-sans)}' +
+  'body{margin:0;padding:2rem 1.5rem;background:var(--su-glass-ground,var(--su-bg));color:var(--su-text);font-family:var(--su-font-sans)}' +
   '.preset-tile{aspect-ratio:1;max-width:11rem;display:grid;place-items:center}' +
   '.preset-glyph{font-size:4.5rem;font-weight:600;line-height:1;color:var(--su-primary)}' +
   // Its own width in the column, so the bubble centres over the button.

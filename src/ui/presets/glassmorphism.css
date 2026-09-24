@@ -1,0 +1,862 @@
+/*!
+ * sitelo-ui preset — glassmorphism.
+ *
+ * Frosted glass: every surface is a translucent pane over a ground of
+ * soft colour, blurring whatever is behind it, with a bright edge where
+ * the light catches it. Linked after `ui.css` by
+ * `styles({ preset: 'glassmorphism' })`.
+ *
+ * Glass is only glass over something, so the page's own background has
+ * to be `var(--su-glass-ground)`: the page colour with three blooms of
+ * colour laid over it, fixed to the viewport so a long page scrolls
+ * over them rather than stretching them.
+ *
+ * Two things the look is known for are deliberately left out. White text
+ * on a pane barely whiter than the colour behind it is the usual picture,
+ * and it fails contrast wherever the colour is pale; here the text is
+ * dark on light glass and light on dark, and each pane is measured
+ * against every colour of the ground it can sit on, so it clears 4.5:1
+ * over the brightest of them. And anything that floats over the page's
+ * own text — a menu, a tooltip, a toast, a dialog — is frosted nearly
+ * opaque, because a blurred paragraph under a label is still noise.
+ */
+
+:root {
+  /* How much a pane blurs and how much it lifts the colour behind it:
+     a blur alone greys a colour out, so it is saturated back. */
+  --su-glass-blur: 16px;
+  --su-glass-filter: blur(var(--su-glass-blur)) saturate(180%);
+
+  --su-radius-sm: 0.5rem;
+  --su-radius-md: 0.75rem;
+  --su-radius-lg: 1.25rem;
+
+  /* The ground: a pale page, and the three colours bloomed over it. */
+  --su-bg: #eef0fb;
+  --su-glass-ground-1: #cdbdff;
+  --su-glass-ground-2: #b3dcff;
+  --su-glass-ground-3: #ffc9e3;
+
+  /* A pane's edge and the highlight along its top, where the light
+     lands; the tint its shadow falls in; and the fill of a pane that
+     floats over content rather than the ground. `solid` is the same
+     glass with nothing showing through, for wherever there cannot be
+     any — a native select's options, reduced transparency. */
+  --su-glass-edge: rgba(255, 255, 255, 0.6);
+  --su-glass-highlight: rgba(255, 255, 255, 0.75);
+  --su-glass-shade: rgba(44, 38, 120, 0.14);
+  --su-glass-float: rgba(255, 255, 255, 0.82);
+  --su-glass-solid: #f7f7fd;
+  --su-glass-track: rgba(44, 38, 120, 0.12);
+
+  --su-shadow-sm: var(--su-glass-shadow-sm);
+  --su-shadow-md: var(--su-glass-shadow-md);
+  --su-shadow-lg: var(--su-glass-shadow-lg);
+
+  --su-bg-subtle: rgba(255, 255, 255, 0.3);
+  --su-surface: rgba(255, 255, 255, 0.55);
+  --su-surface-2: rgba(255, 255, 255, 0.35);
+  --su-surface-hover: rgba(255, 255, 255, 0.72);
+  --su-border: rgba(44, 38, 120, 0.12);
+  --su-border-strong: rgba(44, 38, 120, 0.24);
+  --su-text: #1c1a33;
+  --su-text-muted: #45425f;
+  --su-text-subtle: #55526f;
+  --su-overlay: rgba(28, 26, 51, 0.28);
+
+  /* The tints are the palette let through rather than a pastel of it,
+     so a soft button is coloured glass instead of a patch of paint. */
+  --su-primary: #4f46e5;
+  --su-primary-hover: #4338ca;
+  --su-primary-active: #3730a3;
+  --su-primary-fg: #ffffff;
+  --su-primary-soft: rgba(79, 70, 229, 0.12);
+  --su-primary-soft-hover: rgba(79, 70, 229, 0.2);
+  --su-primary-soft-fg: #3730a3;
+  --su-primary-border: rgba(79, 70, 229, 0.38);
+  --su-primary-ring: rgba(79, 70, 229, 0.32);
+
+  --su-neutral: #475069;
+  --su-neutral-hover: #3b4259;
+  --su-neutral-active: #2f3549;
+  --su-neutral-fg: #ffffff;
+  --su-neutral-soft: rgba(71, 80, 105, 0.1);
+  --su-neutral-soft-hover: rgba(71, 80, 105, 0.17);
+  --su-neutral-soft-fg: #2f3549;
+  --su-neutral-border: rgba(71, 80, 105, 0.3);
+  --su-neutral-ring: rgba(71, 80, 105, 0.28);
+
+  --su-success: #12703a;
+  --su-success-hover: #0f5f31;
+  --su-success-active: #0c4f29;
+  --su-success-fg: #ffffff;
+  --su-success-soft: rgba(22, 163, 74, 0.14);
+  --su-success-soft-hover: rgba(22, 163, 74, 0.22);
+  --su-success-soft-fg: #0c4a26;
+  --su-success-border: rgba(22, 163, 74, 0.4);
+  --su-success-ring: rgba(22, 163, 74, 0.3);
+
+  --su-warning: #9a4507;
+  --su-warning-hover: #843b06;
+  --su-warning-active: #6f3105;
+  --su-warning-fg: #ffffff;
+  --su-warning-soft: rgba(234, 124, 8, 0.15);
+  --su-warning-soft-hover: rgba(234, 124, 8, 0.24);
+  --su-warning-soft-fg: #6b2f05;
+  --su-warning-border: rgba(234, 124, 8, 0.42);
+  --su-warning-ring: rgba(234, 124, 8, 0.3);
+
+  --su-danger: #b91c3c;
+  --su-danger-hover: #a01834;
+  --su-danger-active: #87142c;
+  --su-danger-fg: #ffffff;
+  --su-danger-soft: rgba(225, 29, 72, 0.12);
+  --su-danger-soft-hover: rgba(225, 29, 72, 0.2);
+  --su-danger-soft-fg: #7f1230;
+  --su-danger-border: rgba(225, 29, 72, 0.38);
+  --su-danger-ring: rgba(225, 29, 72, 0.3);
+
+  /* Where a fill runs to at its far end, the way the ground's colours
+     run into each other. Nothing sits on a glow, so it needs no
+     contrast. */
+  --su-primary-glow: #c04af0;
+  --su-neutral-glow: #8f97b0;
+  --su-success-glow: #2fd1a0;
+  --su-warning-glow: #f7b93e;
+  --su-danger-glow: #fb6f9a;
+}
+
+/*
+ * The composite tokens are declared wherever a theme can change, not
+ * only on `:root`. A custom property inherits its value with the `var()`s
+ * already substituted, so a ground or a shadow worked out on `:root`
+ * would carry the light theme's colours into a `data-su-theme="dark"`
+ * subtree. Declared here, they are worked out again at every theme
+ * boundary.
+ */
+:root,
+[data-theme],
+[data-su-theme] {
+  /*
+   * Three blooms, each fixed to the viewport, over the page colour.
+   */
+  --su-glass-ground:
+    radial-gradient(42rem 36rem at 8% 0%, var(--su-glass-ground-1), transparent 70%) fixed,
+    radial-gradient(38rem 34rem at 100% 18%, var(--su-glass-ground-2), transparent 70%) fixed,
+    radial-gradient(46rem 38rem at 55% 100%, var(--su-glass-ground-3), transparent 70%) fixed,
+    var(--su-bg);
+
+  --su-glass-shadow-sm: 0 2px 10px var(--su-glass-shade);
+  --su-glass-shadow-md: 0 8px 32px var(--su-glass-shade);
+  --su-glass-shadow-lg: 0 20px 56px var(--su-glass-shade);
+
+  /* A pane: lit along its top edge, and lifted by a shadow in the
+     ground's own tint. */
+  --su-glass-pane: inset 0 1px 0 var(--su-glass-highlight), var(--su-glass-shadow-md);
+  --su-glass-pane-sm: inset 0 1px 0 var(--su-glass-highlight), var(--su-glass-shadow-sm);
+}
+
+/*
+ * The same two blocks as the core's dark tokens, with the same selectors:
+ * those outrank `:root`, so anything the core sets for dark — the
+ * shadows included — has to be set again here, where being later wins.
+ */
+[data-theme='dark']:not([data-su-theme='light']),
+[data-su-theme='dark'] {
+  --su-bg: #0d0e20;
+  --su-glass-ground-1: #3a1a80;
+  --su-glass-ground-2: #0f2a66;
+  --su-glass-ground-3: #5c1646;
+
+  --su-glass-edge: rgba(255, 255, 255, 0.14);
+  --su-glass-highlight: rgba(255, 255, 255, 0.16);
+  --su-glass-shade: rgba(0, 0, 0, 0.4);
+  --su-glass-float: rgba(24, 24, 46, 0.8);
+  --su-glass-solid: #1a1a33;
+  --su-glass-track: rgba(255, 255, 255, 0.12);
+
+  --su-shadow-sm: var(--su-glass-shadow-sm);
+  --su-shadow-md: var(--su-glass-shadow-md);
+  --su-shadow-lg: var(--su-glass-shadow-lg);
+
+  --su-bg-subtle: rgba(255, 255, 255, 0.03);
+  --su-surface: rgba(255, 255, 255, 0.06);
+  --su-surface-2: rgba(255, 255, 255, 0.04);
+  --su-surface-hover: rgba(255, 255, 255, 0.12);
+  --su-border: rgba(255, 255, 255, 0.1);
+  --su-border-strong: rgba(255, 255, 255, 0.22);
+  --su-text: #efeefa;
+  --su-text-muted: #d0cee7;
+  --su-text-subtle: #bcbad9;
+  --su-overlay: rgba(4, 4, 12, 0.5);
+
+  --su-primary: #a5b4fc;
+  --su-primary-hover: #c7d2fe;
+  --su-primary-active: #8b9cf9;
+  --su-primary-fg: #1a1745;
+  --su-primary-soft: rgba(165, 180, 252, 0.16);
+  --su-primary-soft-hover: rgba(165, 180, 252, 0.24);
+  --su-primary-soft-fg: #d4dcff;
+  --su-primary-border: rgba(165, 180, 252, 0.42);
+  --su-primary-ring: rgba(165, 180, 252, 0.4);
+
+  --su-neutral: #cbd1e1;
+  --su-neutral-hover: #e0e4ef;
+  --su-neutral-active: #b1b8cc;
+  --su-neutral-fg: #151a2b;
+  --su-neutral-soft: rgba(203, 209, 225, 0.12);
+  --su-neutral-soft-hover: rgba(203, 209, 225, 0.2);
+  --su-neutral-soft-fg: #e3e6f0;
+  --su-neutral-border: rgba(203, 209, 225, 0.32);
+  --su-neutral-ring: rgba(203, 209, 225, 0.36);
+
+  --su-success: #5ee29a;
+  --su-success-hover: #8cedb7;
+  --su-success-active: #3fd185;
+  --su-success-fg: #04260f;
+  --su-success-soft: rgba(94, 226, 154, 0.14);
+  --su-success-soft-hover: rgba(94, 226, 154, 0.22);
+  --su-success-soft-fg: #c2f7d8;
+  --su-success-border: rgba(94, 226, 154, 0.38);
+  --su-success-ring: rgba(94, 226, 154, 0.36);
+
+  --su-warning: #fbc34a;
+  --su-warning-hover: #fcd57c;
+  --su-warning-active: #f5b02a;
+  --su-warning-fg: #3a1802;
+  --su-warning-soft: rgba(251, 195, 74, 0.14);
+  --su-warning-soft-hover: rgba(251, 195, 74, 0.22);
+  --su-warning-soft-fg: #fde7b0;
+  --su-warning-border: rgba(251, 195, 74, 0.38);
+  --su-warning-ring: rgba(251, 195, 74, 0.36);
+
+  --su-danger: #fd9fb5;
+  --su-danger-hover: #fdaec0;
+  --su-danger-active: #f76d8d;
+  --su-danger-fg: #3d0616;
+  --su-danger-soft: rgba(251, 138, 164, 0.14);
+  --su-danger-soft-hover: rgba(251, 138, 164, 0.22);
+  --su-danger-soft-fg: #ffd0dc;
+  --su-danger-border: rgba(251, 138, 164, 0.4);
+  --su-danger-ring: rgba(251, 138, 164, 0.38);
+
+  --su-primary-glow: #e57cff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-su-theme='light']) {
+    --su-bg: #0d0e20;
+    --su-glass-ground-1: #3a1a80;
+    --su-glass-ground-2: #0f2a66;
+    --su-glass-ground-3: #5c1646;
+
+    --su-glass-edge: rgba(255, 255, 255, 0.14);
+    --su-glass-highlight: rgba(255, 255, 255, 0.16);
+    --su-glass-shade: rgba(0, 0, 0, 0.4);
+    --su-glass-float: rgba(24, 24, 46, 0.8);
+    --su-glass-solid: #1a1a33;
+    --su-glass-track: rgba(255, 255, 255, 0.12);
+
+    --su-shadow-sm: var(--su-glass-shadow-sm);
+    --su-shadow-md: var(--su-glass-shadow-md);
+    --su-shadow-lg: var(--su-glass-shadow-lg);
+
+    --su-bg-subtle: rgba(255, 255, 255, 0.03);
+    --su-surface: rgba(255, 255, 255, 0.06);
+    --su-surface-2: rgba(255, 255, 255, 0.04);
+    --su-surface-hover: rgba(255, 255, 255, 0.12);
+    --su-border: rgba(255, 255, 255, 0.1);
+    --su-border-strong: rgba(255, 255, 255, 0.22);
+    --su-text: #efeefa;
+    --su-text-muted: #d0cee7;
+    --su-text-subtle: #bcbad9;
+    --su-overlay: rgba(4, 4, 12, 0.5);
+
+    --su-primary: #a5b4fc;
+    --su-primary-hover: #c7d2fe;
+    --su-primary-active: #8b9cf9;
+    --su-primary-fg: #1a1745;
+    --su-primary-soft: rgba(165, 180, 252, 0.16);
+    --su-primary-soft-hover: rgba(165, 180, 252, 0.24);
+    --su-primary-soft-fg: #d4dcff;
+    --su-primary-border: rgba(165, 180, 252, 0.42);
+    --su-primary-ring: rgba(165, 180, 252, 0.4);
+
+    --su-neutral: #cbd1e1;
+    --su-neutral-hover: #e0e4ef;
+    --su-neutral-active: #b1b8cc;
+    --su-neutral-fg: #151a2b;
+    --su-neutral-soft: rgba(203, 209, 225, 0.12);
+    --su-neutral-soft-hover: rgba(203, 209, 225, 0.2);
+    --su-neutral-soft-fg: #e3e6f0;
+    --su-neutral-border: rgba(203, 209, 225, 0.32);
+    --su-neutral-ring: rgba(203, 209, 225, 0.36);
+
+    --su-success: #5ee29a;
+    --su-success-hover: #8cedb7;
+    --su-success-active: #3fd185;
+    --su-success-fg: #04260f;
+    --su-success-soft: rgba(94, 226, 154, 0.14);
+    --su-success-soft-hover: rgba(94, 226, 154, 0.22);
+    --su-success-soft-fg: #c2f7d8;
+    --su-success-border: rgba(94, 226, 154, 0.38);
+    --su-success-ring: rgba(94, 226, 154, 0.36);
+
+    --su-warning: #fbc34a;
+    --su-warning-hover: #fcd57c;
+    --su-warning-active: #f5b02a;
+    --su-warning-fg: #3a1802;
+    --su-warning-soft: rgba(251, 195, 74, 0.14);
+    --su-warning-soft-hover: rgba(251, 195, 74, 0.22);
+    --su-warning-soft-fg: #fde7b0;
+    --su-warning-border: rgba(251, 195, 74, 0.38);
+    --su-warning-ring: rgba(251, 195, 74, 0.36);
+
+    --su-danger: #fd9fb5;
+    --su-danger-hover: #fdaec0;
+    --su-danger-active: #f76d8d;
+    --su-danger-fg: #3d0616;
+    --su-danger-soft: rgba(251, 138, 164, 0.14);
+    --su-danger-soft-hover: rgba(251, 138, 164, 0.22);
+    --su-danger-soft-fg: #ffd0dc;
+    --su-danger-border: rgba(251, 138, 164, 0.4);
+    --su-danger-ring: rgba(251, 138, 164, 0.38);
+
+    --su-primary-glow: #e57cff;
+  }
+}
+
+/* A glow is bound to a palette the way the core binds the rest of it. */
+.su-c-primary { --su-c-glow: var(--su-primary-glow); }
+.su-c-neutral { --su-c-glow: var(--su-neutral-glow); }
+.su-c-success { --su-c-glow: var(--su-success-glow); }
+.su-c-warning { --su-c-glow: var(--su-warning-glow); }
+.su-c-danger { --su-c-glow: var(--su-danger-glow); }
+
+/* ------------------------------------------------------------------ *
+ * Panes
+ *
+ * What every surface is made of: the translucent fill the tokens above
+ * already give it, the blur behind it, the lit edge round it. One list,
+ * so a pane looks like a pane whichever component it is.
+ *
+ * `backdrop-filter` makes each of these a stacking context, which is
+ * why the list stops at things that already clip what is inside them
+ * or are drawn over everything else: a pane in the flow that let a
+ * menu hang out of it would paint the menu under the next pane along.
+ * ------------------------------------------------------------------ */
+
+.su-card,
+.su-list:not(.su-list--plain),
+.su-table-wrap,
+.su-accordion,
+.su-stat-group,
+.su-alert--soft,
+.su-alert--outline,
+.su-appbar,
+.su-chip:not(.su-chip--solid),
+.su-btn--soft,
+.su-btn--outline,
+.su-page-link,
+.su-input,
+.su-textarea,
+.su-select,
+.su-check-box,
+.su-toggle-group,
+.su-mockup {
+  -webkit-backdrop-filter: var(--su-glass-filter);
+  backdrop-filter: var(--su-glass-filter);
+}
+
+/*
+ * What floats over the page, rather than sitting on its ground, is
+ * frosted nearly opaque: what it covers is the page's own text, and a
+ * blur of that behind a label is still noise.
+ */
+.su-tooltip::after,
+.su-menu-list,
+.su-modal,
+.su-drawer,
+.su-toasts > * {
+  -webkit-backdrop-filter: var(--su-glass-filter);
+  backdrop-filter: var(--su-glass-filter);
+  background-color: var(--su-glass-float);
+}
+
+/* ------------------------------------------------------------------ *
+ * Card, list, table, accordion
+ * ------------------------------------------------------------------ */
+
+.su-card,
+.su-list:not(.su-list--plain),
+.su-table-wrap,
+.su-accordion,
+.su-stat-group {
+  border-color: var(--su-glass-edge);
+  box-shadow: var(--su-glass-pane);
+}
+
+/* A flat card is thinner glass, lying on the ground rather than lifted
+   off it. */
+.su-card--flat {
+  background: var(--su-surface-2);
+  border-color: var(--su-glass-edge);
+  box-shadow: inset 0 1px 0 var(--su-glass-highlight);
+}
+
+.su-card--interactive:hover {
+  border-color: var(--su-glass-edge);
+  background: var(--su-surface-hover);
+  box-shadow: inset 0 1px 0 var(--su-glass-highlight), var(--su-glass-shadow-lg);
+}
+
+/* The table is the pane; its wrap draws the edge and the blur, so the
+   table under it only tints. */
+.su-table {
+  background: transparent;
+}
+
+.su-table thead th {
+  background: var(--su-surface-2);
+}
+
+/* ------------------------------------------------------------------ *
+ * Button
+ * ------------------------------------------------------------------ */
+
+/*
+ * A solid button stays solid — it is the one thing on the page meant to
+ * be seen first — and glows in its own colour instead, lit along its
+ * top edge like every pane. The highlight is a line, not a sheen over
+ * the face, so the label keeps the contrast the flat colour gives it.
+ */
+.su-btn--solid {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 6px 18px -6px color-mix(in srgb, var(--su-c) 55%, transparent);
+}
+
+.su-btn--solid:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 10px 26px -6px color-mix(in srgb, var(--su-c) 65%, transparent);
+}
+
+.su-btn--solid:active {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 3px 10px -4px color-mix(in srgb, var(--su-c) 55%, transparent);
+}
+
+/* Soft is coloured glass: the palette let through, with a pane's edge. */
+.su-btn--soft {
+  border-color: var(--su-glass-edge);
+  box-shadow: var(--su-glass-pane-sm);
+}
+
+/* Outline is clear glass with a coloured edge. */
+.su-btn--outline {
+  background: var(--su-surface-2);
+  box-shadow: var(--su-glass-pane-sm);
+}
+
+.su-btn--outline:hover {
+  background: var(--su-c-soft);
+}
+
+/* ------------------------------------------------------------------ *
+ * Toggle group
+ *
+ * A segmented control: the group is one pane, and the option that is
+ * chosen is a brighter pane lifted inside it.
+ * ------------------------------------------------------------------ */
+
+.su-toggle-group {
+  gap: var(--su-space-xs);
+  padding: var(--su-space-xs);
+  border: var(--su-border-width) solid var(--su-glass-edge);
+  border-radius: calc(var(--su-radius-md) + var(--su-space-xs));
+  background: var(--su-surface-2);
+  box-shadow: inset 0 1px 0 var(--su-glass-highlight);
+}
+
+.su-btn-group.su-toggle-group > .su-btn + .su-btn {
+  margin-inline-start: 0;
+}
+
+/* Rounded all round: the core squares off every option but the ends.
+   And none of the pane an outline button is on its own — the group is
+   that pane. */
+.su-toggle-group > .su-toggle-btn {
+  border-color: transparent;
+  border-radius: var(--su-radius-md);
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.su-toggle-group > .su-toggle-btn:hover {
+  background: var(--su-surface-2);
+}
+
+.su-toggle-group > .su-toggle-btn[aria-pressed='true'],
+.su-toggle-group > .su-toggle-btn[aria-current] {
+  border-color: var(--su-glass-edge);
+  background: var(--su-surface-hover);
+  color: var(--su-c-soft-fg);
+  box-shadow: var(--su-glass-pane-sm);
+}
+
+/* ------------------------------------------------------------------ *
+ * Form controls
+ *
+ * A field is a pane like any other, but keeps a darker edge than the
+ * lit one panes have: a white line round a white field says nothing
+ * about where to type.
+ * ------------------------------------------------------------------ */
+
+.su-input,
+.su-textarea,
+.su-select {
+  box-shadow: inset 0 1px 0 var(--su-glass-highlight);
+}
+
+/* Focused, the glass clears: the fill brightens under the core's ring. */
+.su-input:focus,
+.su-textarea:focus,
+.su-select:focus {
+  background-color: var(--su-surface-hover);
+}
+
+.su-input[disabled],
+.su-textarea[disabled],
+.su-select[disabled] {
+  box-shadow: none;
+}
+
+/* The open list is drawn by the platform, which cannot see through to
+   anything: given the translucent fill, some paint it black. */
+.su-select option {
+  background-color: var(--su-glass-solid);
+  color: var(--su-text);
+}
+
+/*
+ * With adornments, the group is the one pane and the parts sit inside
+ * it, rather than a pane beside a pane with the ground showing between.
+ * It takes the field's edge and, when the input is focused, the core's
+ * ring and bright fill.
+ */
+.su-input-group:has(.su-adornment) {
+  border: var(--su-border-width) solid var(--su-border-strong);
+  border-radius: var(--su-radius-md);
+  background: var(--su-surface);
+  box-shadow: inset 0 1px 0 var(--su-glass-highlight);
+  -webkit-backdrop-filter: var(--su-glass-filter);
+  backdrop-filter: var(--su-glass-filter);
+  transition: border-color var(--su-transition), box-shadow var(--su-transition),
+    background-color var(--su-transition);
+}
+
+.su-input-group:has(.su-adornment):hover {
+  border-color: var(--su-text-subtle);
+}
+
+.su-input-group:has(.su-adornment):has(.su-input:focus) {
+  border-color: var(--su-primary);
+  background: var(--su-surface-hover);
+  box-shadow: 0 0 0 var(--su-ring-width) var(--su-primary-ring);
+}
+
+.su-field--invalid .su-input-group:has(.su-adornment),
+.su-input-group:has(.su-adornment):has(.su-input[aria-invalid='true']) {
+  border-color: var(--su-danger);
+}
+
+.su-field--invalid .su-input-group:has(.su-adornment):has(.su-input:focus),
+.su-input-group:has(.su-adornment):has(.su-input[aria-invalid='true']:focus) {
+  box-shadow: 0 0 0 var(--su-ring-width) var(--su-danger-ring);
+}
+
+/* Every state the rules above repaint, named again here: the hover is
+   (0,3,0), and would outrank a bare `.su-input-group .su-input` and
+   paint a second pane over the one it sits in. */
+.su-input-group .su-input,
+.su-input-group .su-input:hover:not([disabled]),
+.su-input-group .su-input:focus {
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.su-input-group:has(.su-adornment) .su-input,
+.su-input-group:has(.su-adornment) .su-adornment {
+  border-color: transparent;
+}
+
+.su-adornment {
+  background: transparent;
+}
+
+.su-check-box {
+  box-shadow: inset 0 1px 0 var(--su-glass-highlight);
+}
+
+.su-check input:checked + .su-check-box {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 3px 10px -3px color-mix(in srgb, var(--su-c, var(--su-primary)) 60%, transparent);
+}
+
+.su-switch-track {
+  background: var(--su-glass-track);
+  box-shadow: inset 0 1px 2px var(--su-glass-shade);
+}
+
+.su-switch-thumb {
+  box-shadow: 0 1px 4px var(--su-glass-shade), inset 0 -1px 0 rgba(44, 38, 120, 0.08);
+}
+
+.su-switch input:checked + .su-switch-track {
+  background: linear-gradient(
+    90deg,
+    var(--su-c, var(--su-primary)),
+    var(--su-c-glow, var(--su-primary-glow))
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 3px 12px -3px color-mix(in srgb, var(--su-c-glow, var(--su-primary-glow)) 60%, transparent);
+}
+
+.su-slider {
+  --su-slider-track: var(--su-glass-track);
+}
+
+/* A bright bead with the palette at its heart: the core's ring is the
+   surface, which here would let the track show through the thumb. */
+.su-slider::-webkit-slider-thumb {
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--su-c, var(--su-primary)) 45%, transparent);
+}
+
+.su-slider::-moz-range-thumb {
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--su-c, var(--su-primary)) 45%, transparent);
+}
+
+/* ------------------------------------------------------------------ *
+ * Data display and feedback
+ * ------------------------------------------------------------------ */
+
+.su-chip:not(.su-chip--solid):not(.su-chip--outline) {
+  border-color: var(--su-glass-edge);
+}
+
+/* The core rings a badge and a grouped avatar in the surface, to cut
+   them out of what they overlap; a ring of glass cuts nothing. */
+.su-badge {
+  box-shadow: 0 0 0 2px var(--su-glass-edge),
+    0 2px 8px -2px color-mix(in srgb, var(--su-c, var(--su-danger)) 60%, transparent);
+}
+
+.su-avatar {
+  box-shadow: 0 0 0 1px var(--su-glass-edge);
+}
+
+.su-avatar-group > .su-avatar {
+  box-shadow: 0 0 0 2px var(--su-glass-solid);
+}
+
+/* A frosted bubble in the page's text colour, instead of the core's
+   inverted one. */
+.su-tooltip::after {
+  padding: 0.4rem 0.65rem;
+  border: var(--su-border-width) solid var(--su-glass-edge);
+  border-radius: var(--su-radius-sm);
+  color: var(--su-text);
+  font-weight: var(--su-weight-medium);
+  box-shadow: var(--su-glass-pane-sm);
+}
+
+.su-alert--soft,
+.su-alert--outline {
+  box-shadow: var(--su-glass-pane-sm);
+}
+
+.su-alert--soft {
+  border-color: var(--su-glass-edge);
+}
+
+.su-alert--solid {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 8px 24px -8px color-mix(in srgb, var(--su-c) 55%, transparent);
+}
+
+/*
+ * A toast floats over the page, so it is frosted nearly opaque and takes
+ * the tallest lift there is. The core lays a soft tint over a solid
+ * surface for the same reason; here it is laid over the frosted one.
+ */
+.su-toasts > * {
+  border-color: var(--su-glass-edge);
+  box-shadow: inset 0 1px 0 var(--su-glass-highlight), var(--su-glass-shadow-lg);
+}
+
+.su-toasts > .su-alert--soft {
+  background:
+    linear-gradient(var(--su-c-soft, var(--su-surface-2)), var(--su-c-soft, var(--su-surface-2)))
+    var(--su-glass-float);
+}
+
+.su-progress-bar {
+  background: var(--su-glass-track);
+  box-shadow: inset 0 1px 2px var(--su-glass-shade);
+}
+
+.su-progress-fill {
+  background: linear-gradient(
+    90deg,
+    var(--su-c, var(--su-primary)),
+    var(--su-c-glow, var(--su-primary-glow))
+  );
+  box-shadow: 0 0 12px color-mix(in srgb, var(--su-c-glow, var(--su-primary-glow)) 50%, transparent);
+}
+
+/*
+ * A marker is a solid bead on the line rather than glass over it: the
+ * line runs up to its centre, and would show through. Uncoloured, it is
+ * the glass made solid, ringed like a field.
+ */
+.su-timeline-marker {
+  border-color: var(--su-glass-edge);
+  background: var(--su-c, var(--su-glass-solid));
+  box-shadow: 0 0 0 1px var(--su-border-strong);
+}
+
+.su-timeline-marker[class*='su-c-'] {
+  box-shadow: 0 2px 8px -2px color-mix(in srgb, var(--su-c) 60%, transparent);
+}
+
+/* ------------------------------------------------------------------ *
+ * Steps
+ *
+ * A step still to come is clear glass, the one you are on is edged in
+ * the palette, and one done is filled and glowing like a solid button.
+ * ------------------------------------------------------------------ */
+
+.su-step-marker {
+  -webkit-backdrop-filter: var(--su-glass-filter);
+  backdrop-filter: var(--su-glass-filter);
+  box-shadow: inset 0 1px 0 var(--su-glass-highlight);
+}
+
+.su-step--current .su-step-marker {
+  background: var(--su-surface-hover);
+  box-shadow: inset 0 1px 0 var(--su-glass-highlight), 0 0 0 4px var(--su-primary-ring);
+}
+
+.su-step--complete .su-step-marker {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 3px 10px -3px color-mix(in srgb, var(--su-primary) 60%, transparent);
+}
+
+/* ------------------------------------------------------------------ *
+ * Navigation
+ * ------------------------------------------------------------------ */
+
+.su-page-link {
+  background: var(--su-surface-2);
+  border-color: var(--su-glass-edge);
+  box-shadow: inset 0 1px 0 var(--su-glass-highlight);
+}
+
+.su-page-link:hover {
+  background: var(--su-surface-hover);
+}
+
+.su-page-link[aria-current='page'] {
+  border-color: transparent;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 4px 14px -4px color-mix(in srgb, var(--su-c, var(--su-primary)) 60%, transparent);
+}
+
+/* The chosen pill is a pane lifted off the strip, in the core's own
+   selectors for it, in all three forms. */
+.su-tabs--pills .su-tab {
+  border: var(--su-border-width) solid transparent;
+  transition: color var(--su-transition), background-color var(--su-transition),
+    border-color var(--su-transition), box-shadow var(--su-transition);
+}
+
+.su-tabs--pills .su-tab[aria-current='page'],
+.su-tabs--pills .su-tab-input:checked + .su-tab,
+.su-tabs--pills.su-tabs--target > .su-tab:target,
+.su-tabs--pills.su-tabs--target:not(:has(> .su-tab:target)) > .su-tab--default {
+  border-color: var(--su-glass-edge);
+  background: var(--su-surface-hover);
+  box-shadow: var(--su-glass-pane-sm);
+}
+
+.su-appbar {
+  border-bottom-color: var(--su-glass-edge);
+  box-shadow: var(--su-glass-shadow-sm);
+}
+
+/* ------------------------------------------------------------------ *
+ * Overlays
+ * ------------------------------------------------------------------ */
+
+.su-menu-list,
+.su-modal,
+.su-drawer {
+  border-color: var(--su-glass-edge);
+  box-shadow: inset 0 1px 0 var(--su-glass-highlight), var(--su-glass-shadow-lg);
+}
+
+/* What is behind a dialog goes out of focus as well as dim. */
+.su-modal::backdrop,
+.su-drawer::backdrop {
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* ------------------------------------------------------------------ *
+ * Where there is no glass
+ *
+ * A browser that cannot blur, and a reader who has asked for less
+ * transparency, both get the same panes with the ground kept still
+ * behind them: the page's own colour rather than the blooms, and every
+ * floating pane solid. Nothing is hidden and nothing moves; the tints
+ * still read, since the tokens they are measured with already allow
+ * for the ground showing through.
+ * ------------------------------------------------------------------ */
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .su-tooltip::after,
+  .su-menu-list,
+  .su-modal,
+  .su-drawer,
+  .su-toasts > * {
+    --su-glass-float: var(--su-glass-solid);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root,
+  [data-theme],
+  [data-su-theme] {
+    --su-glass-ground: var(--su-bg);
+    --su-glass-filter: none;
+  }
+
+  .su-tooltip::after,
+  .su-menu-list,
+  .su-modal,
+  .su-drawer,
+  .su-toasts > * {
+    --su-glass-float: var(--su-glass-solid);
+  }
+
+  .su-modal::backdrop,
+  .su-drawer::backdrop {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

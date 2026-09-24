@@ -45,7 +45,7 @@ export interface StyleOptions extends StylesUrlOptions {
 }
 
 /** A look for the whole library, linked after the core sheet. */
-export type Preset = 'neumorphism'
+export type Preset = 'glassmorphism' | 'neumorphism'
 
 export interface CoreStyleOptions extends StyleOptions {
   /** Restyle every component in one of the {@link Preset} looks. */

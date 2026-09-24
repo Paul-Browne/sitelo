@@ -81,8 +81,18 @@ head(
         ', car l’effet repose sur le fait que les deux soient de la même couleur.',
       ),
       p(
+        code('glassmorphism'),
+        ' est du verre dépoli : chaque surface est un panneau translucide qui floute ce qu’il y a derrière, la lumière sur son bord. Le verre n’est du verre que par-dessus quelque chose, alors celui-ci demande que le fond de la page soit ',
+        code('var(--su-glass-ground)'),
+        ' — la couleur de la page avec trois halos de couleur fixés derrière. Le texte est mesuré contre la couleur la plus claire sur laquelle un panneau peut se poser, tout ce qui flotte au-dessus du texte de la page est dépoli presque opaque, et qui demande moins de transparence obtient les mêmes panneaux sur un fond immobile.',
+      ),
+      codeBlock('src/styles.css', `body {
+  background: var(--su-glass-ground);
+}`, 'css'),
+      presetPreview('glassmorphism'),
+      p(
         code('theme()'),
-        ' fonctionne toujours par-dessus : un préréglage est un point de départ, pas un fork. Celui-ci ajoute un dixième emplacement à chaque palette, ',
+        ' fonctionne toujours par-dessus : un préréglage est un point de départ, pas un fork. Tous deux ajoutent un dixième emplacement à chaque palette, ',
         code('glow'),
         ' — la couleur dans laquelle une barre de progression ou un interrupteur se fond à son extrémité — pour qu’une nouvelle couleur primaire puisse apporter la sienne.',
       ),
@@ -255,7 +265,7 @@ head(
       h2('Props'),
       p(code('styles()'), ' :'),
       propsTable([
-        ['preset', "'neumorphism'", '', 'Restyle chaque composant avec un préréglage, lié ou intégré après la feuille principale.'],
+        ['preset', "'glassmorphism' | 'neumorphism'", '', 'Restyle chaque composant avec un préréglage, lié ou intégré après la feuille principale.'],
         ['inline', 'boolean', 'false', 'Émet le CSS lui-même plutôt qu’un lien vers lui.'],
         ['hash', 'boolean', 'true', 'Ajoute au nom de fichier une empreinte du contenu. Lien uniquement.'],
         ['base', 'string', "'/su/'", 'Pointe l’URL ailleurs ; cette copie est à vous d’héberger. Lien uniquement.'],
