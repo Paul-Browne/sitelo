@@ -23,6 +23,10 @@
   --su-neu-dark: rgba(163, 177, 198, 0.6);
   --su-neu-thumb: #ffffff;
 
+  /* How long a surface takes to sink in or rise back out: slower than
+     the core's transitions, the way something soft gives. */
+  --su-neu-press: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
   --su-shadow-sm: var(--su-neu-raised-sm);
   --su-shadow-md: var(--su-neu-raised);
   --su-shadow-lg: var(--su-neu-raised-lg);
@@ -89,6 +93,22 @@
     inset 2px 2px 4px var(--su-neu-dark), inset -2px -2px 4px var(--su-neu-light);
   --su-neu-inset: 0 0 0 transparent, 0 0 0 transparent,
     inset 3px 3px 7px var(--su-neu-dark), inset -3px -3px 7px var(--su-neu-light);
+}
+
+/*
+ * A well pressed into a colour rather than the page. The page's two
+ * lights are drawn for the page: its shade is a pale grey-blue, which
+ * reads as shadow only on something paler, and on a saturated fill
+ * lightens the very edge that should fall dark. Here the shade and the
+ * highlight are black and white let through, which darken and lighten
+ * whatever colour is under them — in either theme.
+ *
+ * Only the inset: a raised fill still casts onto the page. Padded to
+ * the same four as the rest, so it animates from them.
+ */
+:root {
+  --su-neu-inset-fill: 0 0 0 transparent, 0 0 0 transparent,
+    inset 2px 2px 4px rgba(0, 0, 0, 0.3), inset -2px -2px 4px rgba(255, 255, 255, 0.18);
 }
 
 /*
@@ -180,6 +200,11 @@
 .su-c-warning { --su-c-glow: var(--su-warning-glow); }
 .su-c-danger { --su-c-glow: var(--su-danger-glow); }
 
+/* Neutral is the absence of a colour, so its focus is drawn in the one
+   the fields are: a neutral button and an input beside it ring alike.
+   A coloured control still rings in its own. */
+.su-c-neutral { --su-c-focus: var(--su-primary); }
+
 /*
  * Pills. Set as the token rather than the property, so the rules in the
  * core that round only the outer ends — a button group's first and last
@@ -233,15 +258,67 @@
 }
 
 /*
+ * No border. The fill runs on under it, and an inset shadow is drawn
+ * only inside it — so a pressed solid button kept a ring of flat colour
+ * around its well. Its width goes to the padding instead, so no button
+ * changes size.
+ */
+.su-btn:not(.su-btn--link) {
+  border-width: 0;
+  padding: calc(var(--su-btn-padding-y, 0.6rem) + var(--su-border-width))
+    calc(var(--su-btn-padding-x, 1rem) + var(--su-border-width));
+}
+
+/*
+ * What colours a button — an outline's line, a solid's fill — is drawn
+ * on a face inside it rather than on the button, so that a press can
+ * push it back with the label — see below — and leave the button itself
+ * as the well it sinks into. Behind the label: the button's perspective
+ * makes it a stacking context, so -1 is above the button's own
+ * background and below its content.
+ */
+.su-btn--outline,
+.su-btn--solid {
+  position: relative;
+}
+
+.su-btn--outline::before,
+.su-btn--solid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  transition: translate var(--su-neu-press), box-shadow var(--su-neu-press),
+    --su-neu-from var(--su-neu-press), --su-neu-to var(--su-neu-press);
+}
+
+/* The core's reduced-motion rule is on `su-` classes, which a
+   pseudo-element does not have. */
+@media (prefers-reduced-motion: reduce) {
+  .su-btn--outline::before,
+  .su-btn--solid::before {
+    transition: none;
+  }
+}
+
+/* The line's colour is the button's own border colour, inherited:
+   whatever the core or this sheet says about that — the hover, a toggle
+   group's none — still holds. */
+.su-btn--outline::before {
+  border: var(--su-border-width) solid;
+  border-color: inherit;
+}
+
+/*
  * A press sinks slowly, the way a soft surface would give. The core's
- * transition, restated with the shadow and the fill's stops drawn out;
- * the core's reduced-motion rule still cuts all of it short.
+ * transition, restated with the shadow drawn out; the core's
+ * reduced-motion rule still cuts it short. The face inside has its own.
  */
 .su-btn {
-  --su-neu-press: 400ms cubic-bezier(0.4, 0, 0.2, 1);
   transition: background-color var(--su-transition), border-color var(--su-transition),
-    color var(--su-transition), box-shadow var(--su-neu-press),
-    --su-neu-from var(--su-neu-press), --su-neu-to var(--su-neu-press);
+    color var(--su-transition), box-shadow var(--su-neu-press);
 }
 
 /*
@@ -263,27 +340,32 @@
 }
 
 /* Both stops are the base or darker, so the label keeps the contrast
-   it has on the flat colour everywhere along the fill. */
-.su-btn--solid {
+   it has on the flat colour everywhere along the fill. On the face, not
+   the button: registered stops do not inherit. */
+.su-btn--solid::before {
   --su-neu-from: var(--su-c);
   --su-neu-to: var(--su-c-active);
+  background: linear-gradient(145deg, var(--su-neu-from), var(--su-neu-to));
 }
 
-.su-btn--solid:hover {
+.su-btn--solid:hover::before {
   --su-neu-from: var(--su-c-hover);
 }
 
-/* Pressed flat: both stops meet at the darkest. */
-.su-btn--solid:active {
+/* Pressed flat: both stops meet at the darkest, and the face is shaded
+   as a well of its own colour — see `--su-neu-inset-fill`. */
+.su-btn--solid:active::before {
   --su-neu-from: var(--su-c-active);
+  box-shadow: var(--su-neu-inset-fill);
 }
 
-/* One fill for every state, named in each: the core's `:hover` and
-   `:active` outrank a bare `.su-btn--solid`, and would paint over it. */
+/* The button under the face is the page, in every state: the core's
+   `:hover` and `:active` outrank a bare `.su-btn--solid`, so each is
+   named. It shows only round a face that has been pushed back. */
 .su-btn--solid,
 .su-btn--solid:hover,
 .su-btn--solid:active {
-  background: linear-gradient(145deg, var(--su-neu-from), var(--su-neu-to));
+  background: var(--su-surface);
 }
 
 .su-btn--soft,
@@ -317,7 +399,8 @@
  *
  * `translate` rather than `transform`, so it adds to any transform a
  * child already has. Both are flex items of the button, so neither is
- * an inline box it would not apply to.
+ * an inline box it would not apply to. An outline's line, on its own
+ * box inside the button, goes back with them.
  */
 .su-btn {
   perspective: 95px;
@@ -329,7 +412,9 @@
 }
 
 .su-btn:not(.su-btn--link):active > .su-btn-label,
-.su-btn:not(.su-btn--link):active > .su-btn-icon {
+.su-btn:not(.su-btn--link):active > .su-btn-icon,
+.su-btn--outline:active::before,
+.su-btn--solid:active::before {
   translate: 0 0 -5px;
 }
 
@@ -411,13 +496,32 @@
   box-shadow: var(--su-neu-raised-sm);
 }
 
+/*
+ * Focus is the library's outline, as it is on every other control, in
+ * place of the core's ring. The core's ring comes with a coloured
+ * border; here the border is gone, and the ring alone — a translucent
+ * primary on this grey — is about 1.7:1, where a focus indicator needs
+ * 3:1. So a field keeps its shape when focused and takes the outline,
+ * and the invalid rules are named too: the core's are (0,3,0), and
+ * would put its red ring back in place of the well.
+ */
 .su-input:focus,
-.su-textarea:focus {
-  box-shadow: var(--su-neu-inset), 0 0 0 var(--su-ring-width) var(--su-primary-ring);
+.su-textarea:focus,
+.su-field--invalid .su-input:focus,
+.su-field--invalid .su-textarea:focus {
+  box-shadow: var(--su-neu-inset);
 }
 
-.su-select:focus {
-  box-shadow: var(--su-neu-raised-sm), 0 0 0 var(--su-ring-width) var(--su-primary-ring);
+.su-select:focus,
+.su-field--invalid .su-select:focus {
+  box-shadow: var(--su-neu-raised-sm);
+}
+
+.su-input:focus-visible,
+.su-textarea:focus-visible,
+.su-select:focus-visible {
+  outline: 2px solid var(--su-primary);
+  outline-offset: 2px;
 }
 
 .su-input[disabled],
@@ -436,14 +540,36 @@
   border-color: var(--su-danger);
 }
 
+.su-field--invalid .su-input:focus-visible,
+.su-field--invalid .su-textarea:focus-visible,
+.su-field--invalid .su-select:focus-visible,
+.su-input[aria-invalid='true']:focus-visible,
+.su-textarea[aria-invalid='true']:focus-visible,
+.su-select[aria-invalid='true']:focus-visible {
+  outline-color: var(--su-danger);
+}
+
 /* With adornments, the group is the well and the parts sit inside it. */
 .su-input-group:has(.su-adornment) {
   border-radius: var(--su-radius-md);
   box-shadow: var(--su-neu-inset);
 }
 
-.su-input-group:has(.su-adornment):focus-within {
-  box-shadow: var(--su-neu-inset), 0 0 0 var(--su-ring-width) var(--su-primary-ring);
+/* The outline goes round the whole well rather than the input inside
+   it. On the input's own focus, not `:focus-within`: a button in an
+   adornment draws its own. */
+.su-input-group:has(.su-adornment):has(.su-input:focus-visible) {
+  outline: 2px solid var(--su-primary);
+  outline-offset: 2px;
+}
+
+.su-input-group:has(.su-adornment):has(.su-input[aria-invalid='true']:focus-visible),
+.su-field--invalid .su-input-group:has(.su-adornment):has(.su-input:focus-visible) {
+  outline-color: var(--su-danger);
+}
+
+.su-input-group:has(.su-adornment) .su-input:focus-visible {
+  outline: none;
 }
 
 /* Every state the rules above repaint, named again here: the hover is
@@ -492,6 +618,7 @@
     var(--su-c, var(--su-primary)),
     var(--su-c-glow, var(--su-primary-glow))
   );
+  box-shadow: var(--su-neu-inset-fill);
 }
 
 .su-slider {
@@ -607,7 +734,7 @@ button.su-chip:hover {
   background: var(--su-surface);
   box-shadow: var(--su-neu-raised-sm);
   overflow: hidden;
-  transition: box-shadow var(--su-transition);
+  transition: box-shadow var(--su-neu-press);
 }
 
 .su-accordion-item + .su-accordion-item {
@@ -641,6 +768,61 @@ button.su-chip:hover {
 .su-accordion-item:first-child > summary,
 .su-accordion-item:last-child:not([open]) > summary {
   border-radius: var(--su-radius-md);
+}
+
+/* ------------------------------------------------------------------ *
+ * Folding
+ *
+ * An accordion's panel and a collapsible's content fold open and shut
+ * over the time a press takes, rather than appearing at once — both are
+ * a `<details>`, so one set of rules does for the two.
+ *
+ * `::details-content` is the box a `<details>` hides its content in,
+ * and `content-visibility` is how it hides it — so that has to wait out
+ * the fold, or a closing panel would vanish before it had shrunk. The
+ * pseudo-element is kept to rules of its own: a browser that does not
+ * know it drops the whole rule, and the content opens at once as it
+ * always has.
+ * ------------------------------------------------------------------ */
+
+.su-accordion-item,
+.su-collapsible {
+  /* Lets the content run its height to and from `auto`. */
+  interpolate-size: allow-keywords;
+}
+
+.su-accordion-item::details-content,
+.su-collapsible::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition: block-size var(--su-neu-press),
+    content-visibility var(--su-neu-press) allow-discrete;
+}
+
+.su-accordion-item[open]::details-content,
+.su-collapsible[open]::details-content {
+  block-size: auto;
+}
+
+/* The chevron turns with it. */
+.su-accordion-item > summary::after,
+.su-collapsible-trigger::after {
+  transition: transform var(--su-neu-press);
+}
+
+/* The core's reduced-motion rule is on `su-` classes, and none of these
+   pseudo-elements has one of its own. Two rules, for the reason above:
+   the chevrons' must not be dropped along with the rest. */
+@media (prefers-reduced-motion: reduce) {
+  .su-accordion-item::details-content,
+  .su-collapsible::details-content {
+    transition: none;
+  }
+
+  .su-accordion-item > summary::after,
+  .su-collapsible-trigger::after {
+    transition: none;
+  }
 }
 
 /* ------------------------------------------------------------------ *
@@ -706,8 +888,12 @@ button.su-chip:hover {
   border-top-color: transparent;
 }
 
+/* A tab being chosen sinks in over the time a button does, the pill's
+   fill with it; the core's colour and line keep their own pace. */
 .su-tab {
   border-radius: var(--su-radius-md);
+  transition: color var(--su-transition), border-color var(--su-transition),
+    background-color var(--su-neu-press), box-shadow var(--su-neu-press);
 }
 
 /* The core's own selectors for the selected tab, in all three forms. */

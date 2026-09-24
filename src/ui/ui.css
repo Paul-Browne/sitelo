@@ -332,6 +332,7 @@
   --su-c-soft-fg: var(--su-primary-soft-fg);
   --su-c-border: var(--su-primary-border);
   --su-c-ring: var(--su-primary-ring);
+  --su-c-focus: var(--su-primary);
 }
 
 .su-c-neutral {
@@ -344,6 +345,7 @@
   --su-c-soft-fg: var(--su-neutral-soft-fg);
   --su-c-border: var(--su-neutral-border);
   --su-c-ring: var(--su-neutral-ring);
+  --su-c-focus: var(--su-neutral);
 }
 
 .su-c-success {
@@ -356,6 +358,7 @@
   --su-c-soft-fg: var(--su-success-soft-fg);
   --su-c-border: var(--su-success-border);
   --su-c-ring: var(--su-success-ring);
+  --su-c-focus: var(--su-success);
 }
 
 .su-c-warning {
@@ -368,6 +371,7 @@
   --su-c-soft-fg: var(--su-warning-soft-fg);
   --su-c-border: var(--su-warning-border);
   --su-c-ring: var(--su-warning-ring);
+  --su-c-focus: var(--su-warning);
 }
 
 .su-c-danger {
@@ -380,6 +384,7 @@
   --su-c-soft-fg: var(--su-danger-soft-fg);
   --su-c-border: var(--su-danger-border);
   --su-c-ring: var(--su-danger-ring);
+  --su-c-focus: var(--su-danger);
 }
 
 /* ------------------------------------------------------------------ *
@@ -403,7 +408,13 @@
   border: 0;
 }
 
-/* One focus treatment for the whole library. */
+/*
+ * One focus treatment for the whole library. Its colour is the
+ * palette's own `--su-c-focus` — its base colour here, but a token of
+ * its own so a theme can draw focus in something else without touching
+ * the fills. Set on every palette, not only the one a theme changes, so
+ * a coloured control inside a neutral one never inherits the neutral's.
+ */
 .su-btn:focus-visible,
 .su-icon-btn:focus-visible,
 .su-input:focus-visible,
@@ -421,7 +432,7 @@
 .su-collapsible-trigger:focus-visible,
 .su-switch input:focus-visible + .su-switch-track,
 .su-check input:focus-visible + .su-check-box {
-  outline: 2px solid var(--su-c, var(--su-primary));
+  outline: 2px solid var(--su-c-focus, var(--su-primary));
   outline-offset: 2px;
 }
 
@@ -434,7 +445,7 @@
  * would take the ring's corners instead.
  */
 .su-accordion-item > summary:focus-visible {
-  outline: 2px solid var(--su-c, var(--su-primary));
+  outline: 2px solid var(--su-c-focus, var(--su-primary));
   outline-offset: -2px;
 }
 
@@ -2623,7 +2634,7 @@ svg.su-theme-icon-moon {
   }
 
   .su-carousel-slide::scroll-marker:focus-visible {
-    outline: 2px solid var(--su-c, var(--su-primary));
+    outline: 2px solid var(--su-c-focus, var(--su-primary));
     outline-offset: 2px;
   }
 
@@ -2672,7 +2683,7 @@ svg.su-theme-icon-moon {
 
   .su-carousel--arrows > .su-carousel-track::scroll-button(inline-start):focus-visible,
   .su-carousel--arrows > .su-carousel-track::scroll-button(inline-end):focus-visible {
-    outline: 2px solid var(--su-c, var(--su-primary));
+    outline: 2px solid var(--su-c-focus, var(--su-primary));
     outline-offset: 2px;
   }
 }
@@ -2765,7 +2776,7 @@ svg.su-theme-icon-moon {
 }
 
 .su-slider:focus-visible {
-  outline: 2px solid var(--su-c, var(--su-primary));
+  outline: 2px solid var(--su-c-focus, var(--su-primary));
   outline-offset: 4px;
 }
 

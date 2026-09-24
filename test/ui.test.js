@@ -1178,6 +1178,20 @@ function rulesIn(css) {
   );
 }
 
+test('every palette names its own focus colour', () => {
+  // The token inherits, so a palette that left it unset would take the
+  // focus colour of whatever palette it sits inside — a danger button
+  // in a neutral card ringing in the neutral's.
+  const rules = rulesIn(ui.stylesheet({ minify: false }));
+  const palettes = rules.filter(({ selectors }) => selectors.length === 1 && /^\.su-c-[a-z]+$/.test(selectors[0]));
+
+  assert.ok(palettes.length >= 5, 'the palettes are found');
+  for (const { selectors, body } of palettes) {
+    const name = selectors[0].slice('.su-c-'.length);
+    assert.match(body, new RegExp(`--su-c-focus:\\s*var\\(--su-${name}\\)`), `${selectors[0]} sets --su-c-focus`);
+  }
+});
+
 test('an accordion header’s focus ring is drawn inside the accordion’s clip', () => {
   /*
    * `.su-accordion` clips to its radius and a header runs its full
@@ -1195,7 +1209,7 @@ test('an accordion header’s focus ring is drawn inside the accordion’s clip'
   const ring = bodyOf('.su-accordion-item > summary:focus-visible');
   const offset = /outline-offset:\s*(-?[\d.]+)px/.exec(ring);
 
-  assert.match(ring, /outline:\s*2px solid var\(--su-c, var\(--su-primary\)\)/, 'the library’s own ring');
+  assert.match(ring, /outline:\s*2px solid var\(--su-c-focus, var\(--su-primary\)\)/, 'the library’s own ring');
   assert.ok(offset && Number(offset[1]) <= -2, 'drawn at least its own width inside the header');
 
   const inner = 'calc(var(--su-radius-lg) - var(--su-border-width))';
