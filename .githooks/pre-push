@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# Refuse a push whose lockfiles CI's `npm ci` would refuse.
+#
+# A local install keeps dropping @emnapi/core and @emnapi/runtime from
+# package-lock.json — the root's, and those of examples/islands and
+# examples/wordpress-astro — and CI only finds out at its install step,
+# after the push. test/lockfile.test.js asks npm the same question here,
+# with a dry run that fetches nothing. If it fails, run
+# `npm install --package-lock-only` beside each lockfile it names.
+#
+# Enabled per clone with `git config core.hooksPath .githooks`.
+# `git push --no-verify` skips it.
+
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+exec node --test test/lockfile.test.js

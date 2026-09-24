@@ -12,7 +12,8 @@ import { fileURLToPath } from 'node:url';
  * lockfile never shows up as a failing test, only as a red install step
  * after the push. This asks npm the same question here, first.
  *
- * It has broken the same way twice, in d4ff060 and again in bd118de: a
+ * It has broken the same way three times — d4ff060, bd118de and 92281ec
+ * — which is why `.githooks/pre-push` runs this file on its own: a
  * local install rewrote package-lock.json without @emnapi/core and
  * @emnapi/runtime. Those are what the wasm32 fallbacks of sharp and of
  * knip's oxc bindings depend on, and npm skips installing them on a Mac,
