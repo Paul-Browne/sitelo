@@ -2254,6 +2254,11 @@ a.feature-card:hover h3 {
   font-family: var(--su-font-sans);
 }
 
+/* The ground the superneon page tells a site to paint its body with. */
+.ui-preset-stage[data-preset-stage='superneon'] {
+  background: var(--su-sn-backdrop);
+}
+
 .ui-preset-stage .preset-card-actions {
   flex-direction: column;
   align-items: stretch;

@@ -78,6 +78,8 @@ head(
         a({ href: '/ru/ui/theming/neumorphism' }, 'Неоморфизм'),
         ', ',
         a({ href: '/ru/ui/theming/neubrutalism' }, 'Необрутализм'),
+        ', ',
+        a({ href: '/ru/ui/theming/superneon' }, 'Superneon'),
         '.',
       ),
       p(
@@ -242,7 +244,7 @@ head(
       h2('Пропсы'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism' | 'neubrutalism'", '', 'Переоформить все компоненты пресетом, подключённым или встроенным после основной таблицы.'],
+        ['preset', "'neumorphism' | 'neubrutalism' | 'superneon'", '', 'Переоформить все компоненты пресетом, подключённым или встроенным после основной таблицы.'],
         ['inline', 'boolean', 'false', 'Выдать сам CSS, а не ссылку на него.'],
         ['hash', 'boolean', 'true', 'Добавить в имя файла хеш содержимого. Только для ссылки.'],
         ['base', 'string', "'/su/'", 'Указывает URL в другое место; этот файл размещаете вы сами. Только для ссылки.'],

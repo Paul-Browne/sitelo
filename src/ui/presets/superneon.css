@@ -1,0 +1,737 @@
+/*!
+ * sitelo-ui preset — superneon.
+ *
+ * Near-black violet, hairline edges and light that comes from inside:
+ * the filled buttons are dark pills with a neon rim and a halo in their
+ * palette's colours, the big headings are lit from above in a gradient,
+ * and anything chosen or switched on glows. Linked after `ui.css` by
+ * `styles({ preset: 'superneon' })`.
+ *
+ * A glow is decoration, never the thing text is read against, so none
+ * of it costs any contrast: every label still sits on a flat colour
+ * that clears AA. What stands in for a solid fill is the pill, and the
+ * pill is the same near-black in both themes — on a light page it is
+ * the darkest thing there, which is what makes the rim read as lit.
+ *
+ * Dark is the look this comes from. Light keeps its pill, rims and
+ * halos and puts them on a pale lavender page.
+ *
+ * Each palette gains two slots, `glow` and `glowEnd`: the two ends of
+ * its rim and halo. `theme({ primary: { glow, glowEnd } })` sets them.
+ */
+
+:root {
+  /* The pill a solid button is, and its label. Not themed: the pill is
+     dark on a light page too. */
+  --su-sn-pill: #16151e;
+  --su-sn-pill-hover: #1f1c2b;
+  --su-sn-pill-active: #0f0e15;
+  --su-sn-pill-fg: #f3f0ff;
+  --su-sn-pill-edge: #2c2840;
+
+  /* The inner light along a pill's top and bottom edges. */
+  --su-sn-sheen: rgba(205, 196, 243, 0.25);
+
+  /* The display face for headings. Nothing is downloaded: load Geist on
+     the page and it is used, or the system face stands in. */
+  --su-sn-font-display: Geist, 'Inter Display', var(--su-font-sans);
+
+  --su-shadow-sm: var(--su-sn-shadow-sm);
+  --su-shadow-md: var(--su-sn-shadow-md);
+  --su-shadow-lg: var(--su-sn-shadow-lg);
+
+  --su-radius-sm: 0.25rem;
+  --su-radius-md: 0.375rem;
+  --su-radius-lg: 0.75rem;
+
+  --su-sn-field: #ffffff;
+  --su-sn-edge: #b9a9ff;
+  --su-sn-shade: rgba(38, 24, 92, 0.14);
+  --su-sn-halo: rgba(151, 95, 255, 0.3);
+  --su-sn-aura: rgba(151, 95, 255, 0.14);
+  --su-sn-heading-from: #120f19;
+  --su-sn-heading-to: #4a3a8c;
+
+  --su-bg: #f7f5fd;
+  --su-bg-subtle: #f1eefb;
+  --su-surface: #ffffff;
+  --su-surface-2: #f1eefb;
+  --su-surface-hover: #e9e4fa;
+  --su-border: #e4dff4;
+  --su-border-strong: #cbc3e6;
+  --su-text: #120f19;
+  --su-text-muted: #4a4463;
+  --su-text-subtle: #5c5677;
+  --su-overlay: rgba(8, 5, 18, 0.45);
+
+  --su-primary: #6246ea;
+  --su-primary-hover: #5436d6;
+  --su-primary-active: #4729bd;
+  --su-primary-fg: #ffffff;
+  --su-primary-soft: #ece6ff;
+  --su-primary-soft-hover: #ddd3ff;
+  --su-primary-soft-fg: #3a1fae;
+  --su-primary-border: #c7baff;
+  --su-primary-ring: rgba(98, 70, 234, 0.3);
+
+  --su-neutral: #3a3452;
+  --su-neutral-hover: #2e2944;
+  --su-neutral-active: #231f36;
+  --su-neutral-fg: #ffffff;
+  --su-neutral-soft: #ece8f8;
+  --su-neutral-soft-hover: #e2ddf3;
+  --su-neutral-soft-fg: #2e2944;
+  --su-neutral-border: #d3cceb;
+  --su-neutral-ring: rgba(58, 52, 82, 0.28);
+
+  --su-success: #11764a;
+  --su-success-hover: #0d6540;
+  --su-success-active: #0a5434;
+  --su-success-fg: #ffffff;
+  --su-success-soft: #d9f5e7;
+  --su-success-soft-hover: #c6eed9;
+  --su-success-soft-fg: #0a4f31;
+  --su-success-border: #9fdcbf;
+  --su-success-ring: rgba(17, 118, 74, 0.3);
+
+  --su-warning: #9a4f00;
+  --su-warning-hover: #854400;
+  --su-warning-active: #703900;
+  --su-warning-fg: #ffffff;
+  --su-warning-soft: #ffefd4;
+  --su-warning-soft-hover: #ffe4b8;
+  --su-warning-soft-fg: #673600;
+  --su-warning-border: #f3c98d;
+  --su-warning-ring: rgba(154, 79, 0, 0.3);
+
+  --su-danger: #c21f4f;
+  --su-danger-hover: #a91a45;
+  --su-danger-active: #8f153a;
+  --su-danger-fg: #ffffff;
+  --su-danger-soft: #ffe3eb;
+  --su-danger-soft-hover: #ffd0dd;
+  --su-danger-soft-fg: #86112f;
+  --su-danger-border: #f5a9bf;
+  --su-danger-ring: rgba(194, 31, 79, 0.3);
+
+  /* The two ends of each palette's rim and halo. Light, so they read as
+     lit on the dark pill in either theme; nothing sits on a glow, so it
+     needs no contrast. */
+  --su-primary-glow: #975fff;
+  --su-primary-glow-end: #f66c8a;
+  --su-neutral-glow: #cdc4f3;
+  --su-neutral-glow-end: #8f86b8;
+  --su-success-glow: #2ee6a0;
+  --su-success-glow-end: #5cc8ff;
+  --su-warning-glow: #ffb547;
+  --su-warning-glow-end: #f66c8a;
+  --su-danger-glow: #f66c8a;
+  --su-danger-glow-end: #d62fec;
+}
+
+/*
+ * The composites are declared wherever a theme can change, not only on
+ * `:root`: a custom property inherits with its `var()`s already worked
+ * out, so a shadow made on `:root` would carry the light theme's shade
+ * into a `data-su-theme="dark"` subtree.
+ *
+ * `--su-sn-backdrop` is the page's ground with a violet light falling
+ * on it from above, for `body { background: var(--su-sn-backdrop) }`.
+ */
+:root,
+[data-theme],
+[data-su-theme] {
+  --su-sn-shadow-sm: 0 1px 2px var(--su-sn-shade);
+  --su-sn-shadow-md: 0 1px 2px var(--su-sn-shade), 0 10px 28px -10px var(--su-sn-shade),
+    0 0 36px -14px var(--su-sn-halo);
+  --su-sn-shadow-lg: 0 2px 4px var(--su-sn-shade), 0 24px 56px -18px var(--su-sn-shade),
+    0 0 64px -18px var(--su-sn-halo);
+  --su-sn-backdrop: radial-gradient(64rem 32rem at 50% -12rem, var(--su-sn-aura), transparent 70%)
+    var(--su-bg);
+}
+
+/*
+ * The same two blocks as the core's dark tokens, with the same selectors:
+ * those outrank `:root`, so anything the core sets for dark — the
+ * shadows included — has to be set again here, where being later wins.
+ */
+[data-theme='dark']:not([data-su-theme='light']),
+[data-su-theme='dark'] {
+  --su-shadow-sm: var(--su-sn-shadow-sm);
+  --su-shadow-md: var(--su-sn-shadow-md);
+  --su-shadow-lg: var(--su-sn-shadow-lg);
+
+  --su-sn-field: #17141f;
+  --su-sn-edge: #463b7a;
+  --su-sn-shade: rgba(0, 0, 0, 0.6);
+  --su-sn-halo: rgba(151, 95, 255, 0.4);
+  --su-sn-aura: rgba(151, 95, 255, 0.22);
+  --su-sn-heading-from: #e9e4fa;
+  --su-sn-heading-to: #cdc4f3;
+
+  --su-bg: #080512;
+  --su-bg-subtle: #0d0a17;
+  --su-surface: #120f19;
+  --su-surface-2: #16151e;
+  --su-surface-hover: #1c1a26;
+  --su-border: #221f2c;
+  --su-border-strong: #312d42;
+  --su-text: #e9e4fa;
+  --su-text-muted: #b3acd0;
+  --su-text-subtle: #8f89ab;
+  --su-overlay: rgba(4, 2, 10, 0.72);
+
+  --su-primary: #a996ff;
+  --su-primary-hover: #b9a9ff;
+  --su-primary-active: #9a85ff;
+  --su-primary-fg: #0c0818;
+  --su-primary-soft: #261f4a;
+  --su-primary-soft-hover: #2f2759;
+  --su-primary-soft-fg: #d6ccff;
+  --su-primary-border: #4b3f8f;
+  --su-primary-ring: rgba(169, 150, 255, 0.4);
+
+  --su-neutral: #cdc4f3;
+  --su-neutral-hover: #dcd5f8;
+  --su-neutral-active: #bfb4ee;
+  --su-neutral-fg: #080512;
+  --su-neutral-soft: #211e2c;
+  --su-neutral-soft-hover: #2a2638;
+  --su-neutral-soft-fg: #e9e4fa;
+  --su-neutral-border: #34304a;
+  --su-neutral-ring: rgba(205, 196, 243, 0.32);
+
+  --su-success: #5edba0;
+  --su-success-hover: #7ae3b2;
+  --su-success-active: #45d08e;
+  --su-success-fg: #03190e;
+  --su-success-soft: #0e3526;
+  --su-success-soft-hover: #134333;
+  --su-success-soft-fg: #a8efcc;
+  --su-success-border: #1f5c43;
+  --su-success-ring: rgba(94, 219, 160, 0.36);
+
+  --su-warning: #ffc266;
+  --su-warning-hover: #ffcf85;
+  --su-warning-active: #ffb547;
+  --su-warning-fg: #241500;
+  --su-warning-soft: #3a2a0b;
+  --su-warning-soft-hover: #47340f;
+  --su-warning-soft-fg: #ffdea3;
+  --su-warning-border: #6b5220;
+  --su-warning-ring: rgba(255, 194, 102, 0.36);
+
+  --su-danger: #ff8fab;
+  --su-danger-hover: #ffa6bc;
+  --su-danger-active: #ff7799;
+  --su-danger-fg: #2a0611;
+  --su-danger-soft: #451525;
+  --su-danger-soft-hover: #55192d;
+  --su-danger-soft-fg: #ffc6d4;
+  --su-danger-border: #74304a;
+  --su-danger-ring: rgba(255, 143, 171, 0.36);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-su-theme='light']) {
+    --su-shadow-sm: var(--su-sn-shadow-sm);
+    --su-shadow-md: var(--su-sn-shadow-md);
+    --su-shadow-lg: var(--su-sn-shadow-lg);
+
+    --su-sn-field: #17141f;
+    --su-sn-edge: #463b7a;
+    --su-sn-shade: rgba(0, 0, 0, 0.6);
+    --su-sn-halo: rgba(151, 95, 255, 0.4);
+    --su-sn-aura: rgba(151, 95, 255, 0.22);
+    --su-sn-heading-from: #e9e4fa;
+    --su-sn-heading-to: #cdc4f3;
+
+    --su-bg: #080512;
+    --su-bg-subtle: #0d0a17;
+    --su-surface: #120f19;
+    --su-surface-2: #16151e;
+    --su-surface-hover: #1c1a26;
+    --su-border: #221f2c;
+    --su-border-strong: #312d42;
+    --su-text: #e9e4fa;
+    --su-text-muted: #b3acd0;
+    --su-text-subtle: #8f89ab;
+    --su-overlay: rgba(4, 2, 10, 0.72);
+
+    --su-primary: #a996ff;
+    --su-primary-hover: #b9a9ff;
+    --su-primary-active: #9a85ff;
+    --su-primary-fg: #0c0818;
+    --su-primary-soft: #261f4a;
+    --su-primary-soft-hover: #2f2759;
+    --su-primary-soft-fg: #d6ccff;
+    --su-primary-border: #4b3f8f;
+    --su-primary-ring: rgba(169, 150, 255, 0.4);
+
+    --su-neutral: #cdc4f3;
+    --su-neutral-hover: #dcd5f8;
+    --su-neutral-active: #bfb4ee;
+    --su-neutral-fg: #080512;
+    --su-neutral-soft: #211e2c;
+    --su-neutral-soft-hover: #2a2638;
+    --su-neutral-soft-fg: #e9e4fa;
+    --su-neutral-border: #34304a;
+    --su-neutral-ring: rgba(205, 196, 243, 0.32);
+
+    --su-success: #5edba0;
+    --su-success-hover: #7ae3b2;
+    --su-success-active: #45d08e;
+    --su-success-fg: #03190e;
+    --su-success-soft: #0e3526;
+    --su-success-soft-hover: #134333;
+    --su-success-soft-fg: #a8efcc;
+    --su-success-border: #1f5c43;
+    --su-success-ring: rgba(94, 219, 160, 0.36);
+
+    --su-warning: #ffc266;
+    --su-warning-hover: #ffcf85;
+    --su-warning-active: #ffb547;
+    --su-warning-fg: #241500;
+    --su-warning-soft: #3a2a0b;
+    --su-warning-soft-hover: #47340f;
+    --su-warning-soft-fg: #ffdea3;
+    --su-warning-border: #6b5220;
+    --su-warning-ring: rgba(255, 194, 102, 0.36);
+
+    --su-danger: #ff8fab;
+    --su-danger-hover: #ffa6bc;
+    --su-danger-active: #ff7799;
+    --su-danger-fg: #2a0611;
+    --su-danger-soft: #451525;
+    --su-danger-soft-hover: #55192d;
+    --su-danger-soft-fg: #ffc6d4;
+    --su-danger-border: #74304a;
+    --su-danger-ring: rgba(255, 143, 171, 0.36);
+  }
+}
+
+/* A glow is bound to a palette the way the core binds the rest of it. */
+.su-c-primary { --su-c-glow: var(--su-primary-glow); --su-c-glow-end: var(--su-primary-glow-end); }
+.su-c-neutral { --su-c-glow: var(--su-neutral-glow); --su-c-glow-end: var(--su-neutral-glow-end); }
+.su-c-success { --su-c-glow: var(--su-success-glow); --su-c-glow-end: var(--su-success-glow-end); }
+.su-c-warning { --su-c-glow: var(--su-warning-glow); --su-c-glow-end: var(--su-warning-glow-end); }
+.su-c-danger { --su-c-glow: var(--su-danger-glow); --su-c-glow-end: var(--su-danger-glow-end); }
+
+/* ------------------------------------------------------------------ *
+ * Type
+ *
+ * Headings in the display face, set tight, and the three largest lit
+ * from above: a gradient from the lighter end down, clipped to the
+ * letters. Only where clipping to text works — without it the letters
+ * would be the transparent they are painted in.
+ * ------------------------------------------------------------------ */
+
+.su-text--h1,
+.su-text--h2,
+.su-text--h3,
+.su-text--h4,
+.su-text--h5,
+.su-text--h6,
+.su-card-title {
+  font-family: var(--su-sn-font-display);
+  font-weight: var(--su-weight-medium);
+}
+
+.su-text--h1,
+.su-text--h2 { letter-spacing: -0.04em; }
+
+.su-text--h3,
+.su-text--h4 { letter-spacing: -0.02em; }
+
+.su-text--h5,
+.su-text--h6,
+.su-card-title { letter-spacing: -0.01em; }
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .su-text--h1,
+  .su-text--h2,
+  .su-text--h3 {
+    background-image: linear-gradient(180deg, var(--su-sn-heading-from), var(--su-sn-heading-to));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* A tag over a heading, in the primary's colour. */
+.su-text--overline {
+  color: var(--su-primary);
+  font-weight: var(--su-weight-medium);
+  letter-spacing: 0.06em;
+}
+
+/* ------------------------------------------------------------------ *
+ * Card
+ *
+ * A hairline and a flat ground; the elevated card has a violet light
+ * rising from under its bottom edge, and one that can be clicked picks
+ * up a halo when pointed at.
+ * ------------------------------------------------------------------ */
+
+.su-card--elevated {
+  border-color: var(--su-border);
+  background: radial-gradient(120% 70% at 50% 135%, var(--su-sn-aura), transparent 65%) var(--su-surface);
+}
+
+.su-card--interactive:hover {
+  border-color: var(--su-sn-edge);
+  box-shadow: var(--su-shadow-lg);
+}
+
+/* ------------------------------------------------------------------ *
+ * Button
+ *
+ * Every button is a pill. The solid one is the dark pill, whatever its
+ * palette: lit along its inner edges, ringed in a gradient between the
+ * palette's two glows and haloed in them. The ring is a border painted
+ * through a second background clipped to the border box, so it follows
+ * the pill's curve exactly. Pointing at it turns the light up; a press
+ * turns it down.
+ * ------------------------------------------------------------------ */
+
+.su-btn {
+  border-radius: var(--su-radius-full);
+}
+
+.su-btn--solid {
+  --su-sn-fill: var(--su-sn-pill);
+  border-color: transparent;
+  background: linear-gradient(var(--su-sn-fill), var(--su-sn-fill)) padding-box,
+    linear-gradient(135deg, var(--su-c-glow), var(--su-c-glow-end)) border-box;
+  color: var(--su-sn-pill-fg);
+  box-shadow: inset 0 2px 4px var(--su-sn-sheen), inset 0 -2px 4px var(--su-sn-sheen),
+    -6px 0 18px -6px var(--su-c-glow), 6px 0 18px -6px var(--su-c-glow-end);
+}
+
+.su-btn--solid:hover {
+  --su-sn-fill: var(--su-sn-pill-hover);
+  background: linear-gradient(var(--su-sn-fill), var(--su-sn-fill)) padding-box,
+    linear-gradient(135deg, var(--su-c-glow), var(--su-c-glow-end)) border-box;
+  box-shadow: inset 0 2px 5px var(--su-sn-sheen), inset 0 -2px 5px var(--su-sn-sheen),
+    -8px 0 26px -4px var(--su-c-glow), 8px 0 26px -4px var(--su-c-glow-end);
+}
+
+.su-btn--solid:active {
+  --su-sn-fill: var(--su-sn-pill-active);
+  background: linear-gradient(var(--su-sn-fill), var(--su-sn-fill)) padding-box,
+    linear-gradient(135deg, var(--su-c-glow), var(--su-c-glow-end)) border-box;
+  box-shadow: inset 0 2px 4px var(--su-sn-sheen), inset 0 -2px 4px var(--su-sn-sheen),
+    -2px 0 8px -4px var(--su-c-glow), 2px 0 8px -4px var(--su-c-glow-end);
+}
+
+.su-btn--soft {
+  box-shadow: inset 0 1px 0 var(--su-sn-sheen);
+}
+
+.su-btn--outline:hover {
+  box-shadow: 0 0 18px -6px var(--su-c-glow);
+}
+
+/* Joined pills: rounded at the two ends of the row, as the core rounds
+   its own at its corner radius. */
+.su-btn-group > .su-btn:first-child {
+  border-start-start-radius: var(--su-radius-full);
+  border-end-start-radius: var(--su-radius-full);
+}
+
+.su-btn-group > .su-btn:last-child {
+  border-start-end-radius: var(--su-radius-full);
+  border-end-end-radius: var(--su-radius-full);
+}
+
+/*
+ * A segmented control is a well with the choices sitting in it, and the
+ * chosen one filled with its palette's own colour — the periwinkle of
+ * neutral, by default. Each choice is a pill of its own, clear of its
+ * neighbours, so there is no shared line to overlap.
+ */
+.su-toggle-group {
+  width: fit-content;
+  max-width: 100%;
+  gap: 0.125rem;
+  padding: 0.1875rem;
+  border: var(--su-border-width) solid var(--su-border);
+  border-radius: var(--su-radius-full);
+  background: var(--su-surface-2);
+}
+
+.su-btn-group.su-toggle-group > .su-btn {
+  margin: 0;
+  border-color: transparent;
+  border-radius: var(--su-radius-full);
+  background: transparent;
+  color: var(--su-text-muted);
+  box-shadow: none;
+}
+
+.su-btn-group.su-toggle-group > .su-btn:hover {
+  background: var(--su-surface-hover);
+  color: var(--su-text);
+}
+
+.su-btn-group.su-toggle-group > .su-toggle-btn[aria-pressed='true'],
+.su-btn-group.su-toggle-group > .su-toggle-btn[aria-current] {
+  background: var(--su-c);
+  color: var(--su-c-fg);
+  box-shadow: 0 0 16px -6px var(--su-c-glow);
+}
+
+/* ------------------------------------------------------------------ *
+ * Form controls
+ *
+ * Single-line fields are pills, like the buttons beside them; a
+ * textarea keeps corners, since a pill's ends would cut into its
+ * lines. Focus lights the field from its edge.
+ * ------------------------------------------------------------------ */
+
+.su-input,
+.su-textarea {
+  background: var(--su-sn-field);
+}
+
+.su-select {
+  background-color: var(--su-sn-field);
+}
+
+.su-input,
+.su-select {
+  border-radius: var(--su-radius-full);
+  padding-inline: calc(var(--su-control-padding-x, 0.75rem) + 0.25rem);
+}
+
+/* The core's end padding and arrow, moved in by the same quarter. */
+.su-select {
+  padding-inline-end: 2.5rem;
+  background-position: right 1.3rem top 55%, right 1rem top 55%;
+}
+
+.su-textarea {
+  border-radius: var(--su-radius-lg);
+}
+
+.su-input:hover:not([disabled]),
+.su-textarea:hover:not([disabled]),
+.su-select:hover:not([disabled]) {
+  border-color: var(--su-sn-edge);
+}
+
+.su-input:focus,
+.su-textarea:focus,
+.su-select:focus {
+  box-shadow: 0 0 0 var(--su-ring-width) var(--su-primary-ring), 0 0 24px -6px var(--su-primary-glow);
+}
+
+/* An invalid field keeps its red line when pointed at. */
+.su-field--invalid .su-input:hover:not([disabled]),
+.su-field--invalid .su-textarea:hover:not([disabled]),
+.su-field--invalid .su-select:hover:not([disabled]),
+.su-input[aria-invalid='true']:hover:not([disabled]),
+.su-textarea[aria-invalid='true']:hover:not([disabled]),
+.su-select[aria-invalid='true']:hover:not([disabled]) {
+  border-color: var(--su-danger);
+}
+
+.su-field--invalid .su-input:focus,
+.su-field--invalid .su-textarea:focus,
+.su-field--invalid .su-select:focus {
+  box-shadow: 0 0 0 var(--su-ring-width) var(--su-danger-ring), 0 0 24px -6px var(--su-danger-glow);
+}
+
+/* The pill's ends go to whichever part of the group is at that end. */
+.su-adornment--start {
+  border-start-start-radius: var(--su-radius-full);
+  border-end-start-radius: var(--su-radius-full);
+  padding-inline-start: 1rem;
+}
+
+.su-adornment--end {
+  border-start-end-radius: var(--su-radius-full);
+  border-end-end-radius: var(--su-radius-full);
+  padding-inline-end: 1rem;
+}
+
+.su-check-box {
+  background: var(--su-sn-field);
+}
+
+.su-check input:checked + .su-check-box {
+  box-shadow: 0 0 12px -2px var(--su-c-glow, var(--su-primary-glow));
+}
+
+/*
+ * A switch is a slot with a hairline round it and a dim ball in it;
+ * switched on, the slot fills with the palette's two glows and the ball
+ * turns white. The track gives up as much padding as its line takes, so
+ * the thumb's travel is the core's.
+ */
+.su-switch-track {
+  padding: calc(0.15rem - var(--su-border-width));
+  border: var(--su-border-width) solid var(--su-border-strong);
+  background: var(--su-surface-2);
+  transition: background-color var(--su-transition), box-shadow var(--su-transition);
+}
+
+.su-switch-thumb {
+  background: var(--su-text-subtle);
+  box-shadow: none;
+}
+
+.su-switch input:checked + .su-switch-track {
+  border-color: transparent;
+  background: linear-gradient(
+    135deg,
+    var(--su-c-glow, var(--su-primary-glow)),
+    var(--su-c-glow-end, var(--su-primary-glow-end))
+  );
+  box-shadow: 0 0 14px -3px var(--su-c-glow, var(--su-primary-glow));
+}
+
+.su-switch input:checked + .su-switch-track .su-switch-thumb {
+  background: #ffffff;
+}
+
+.su-slider::-webkit-slider-runnable-track {
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-border-strong);
+}
+
+.su-slider::-moz-range-track {
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-border-strong);
+}
+
+.su-slider::-webkit-slider-thumb {
+  box-shadow: 0 0 14px -2px var(--su-c-glow, var(--su-primary-glow));
+}
+
+.su-slider::-moz-range-thumb {
+  box-shadow: 0 0 14px -2px var(--su-c-glow, var(--su-primary-glow));
+}
+
+/* ------------------------------------------------------------------ *
+ * Data display and feedback
+ * ------------------------------------------------------------------ */
+
+/* A chip is set as a tag: small capitals, spaced out. */
+.su-chip {
+  font-weight: var(--su-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.su-badge {
+  box-shadow: 0 0 0 2px var(--su-surface), 0 0 10px -1px var(--su-c-glow, var(--su-danger-glow));
+}
+
+.su-avatar {
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-border);
+}
+
+/* The dark pill again, with a violet halo. */
+.su-tooltip::after {
+  padding: 0.4rem 0.8rem;
+  border: var(--su-border-width) solid var(--su-sn-pill-edge);
+  border-radius: var(--su-radius-full);
+  background: var(--su-sn-pill);
+  color: var(--su-sn-pill-fg);
+  box-shadow: inset 0 1px 2px var(--su-sn-sheen), 0 0 18px -4px var(--su-primary-glow);
+}
+
+.su-alert {
+  border-color: var(--su-c-border, var(--su-border));
+  border-radius: var(--su-radius-lg);
+  box-shadow: inset 0 1px 0 var(--su-sn-sheen);
+}
+
+.su-toasts > * {
+  box-shadow: inset 0 1px 0 var(--su-sn-sheen), var(--su-shadow-lg);
+}
+
+.su-progress-bar {
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-border);
+}
+
+.su-progress-fill {
+  background: linear-gradient(
+    90deg,
+    var(--su-c-glow, var(--su-primary-glow)),
+    var(--su-c-glow-end, var(--su-primary-glow-end))
+  );
+}
+
+.su-kbd {
+  box-shadow: inset 0 -1px 0 var(--su-border-strong), inset 0 1px 0 var(--su-sn-sheen);
+}
+
+/* ------------------------------------------------------------------ *
+ * Accordion
+ *
+ * The questions in the display face, and an open item lit from its
+ * lower corner.
+ * ------------------------------------------------------------------ */
+
+.su-accordion-item > summary {
+  font-family: var(--su-sn-font-display);
+  font-size: var(--su-text-md);
+  letter-spacing: -0.01em;
+}
+
+.su-accordion-item[open] {
+  background: radial-gradient(90% 120% at 0% 110%, var(--su-sn-aura), transparent 70%);
+}
+
+/* ------------------------------------------------------------------ *
+ * Steps and timeline
+ * ------------------------------------------------------------------ */
+
+.su-step--complete .su-step-marker {
+  box-shadow: 0 0 12px -3px var(--su-primary-glow);
+}
+
+.su-step--current .su-step-marker {
+  box-shadow: 0 0 0 var(--su-ring-width) var(--su-primary-ring), 0 0 16px -2px var(--su-primary-glow);
+}
+
+/* Only a coloured marker glows; a plain one has no light of its own. */
+.su-timeline-marker {
+  box-shadow: 0 0 12px -2px var(--su-c-glow, transparent);
+}
+
+/* ------------------------------------------------------------------ *
+ * Navigation
+ * ------------------------------------------------------------------ */
+
+/* A hairline ring each, on the page's ground rather than the grey a
+   `<button>` would otherwise bring with it. */
+.su-page-link {
+  border-radius: var(--su-radius-full);
+  border-color: var(--su-border);
+  background: transparent;
+}
+
+.su-page-link[aria-current='page'] {
+  border-color: transparent;
+  box-shadow: 0 0 16px -4px var(--su-c-glow, var(--su-primary-glow));
+}
+
+/*
+ * Pills sit on a hairline each, and the one you are on is filled with
+ * its palette's colour and glows — the line goes clear, so choosing one
+ * moves nothing.
+ */
+.su-tabs--pills .su-tab {
+  border: var(--su-border-width) solid var(--su-border);
+}
+
+.su-tabs--pills .su-tab[aria-current='page'],
+.su-tabs--pills .su-tab-input:checked + .su-tab,
+.su-tabs--pills.su-tabs--target > .su-tab:target,
+.su-tabs--pills.su-tabs--target:not(:has(> .su-tab:target)) > .su-tab--default {
+  border-color: transparent;
+  background: var(--su-c, var(--su-primary));
+  color: var(--su-c-fg, var(--su-primary-fg));
+  box-shadow: 0 0 16px -4px var(--su-c-glow, var(--su-primary-glow));
+}

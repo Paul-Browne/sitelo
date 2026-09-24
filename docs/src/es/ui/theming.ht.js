@@ -78,6 +78,8 @@ head(
         a({ href: '/es/ui/theming/neumorphism' }, 'Neumorfismo'),
         ', ',
         a({ href: '/es/ui/theming/neubrutalism' }, 'Neobrutalismo'),
+        ', ',
+        a({ href: '/es/ui/theming/superneon' }, 'Superneon'),
         '.',
       ),
       p(
@@ -243,7 +245,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism' | 'neubrutalism'", '', 'Reestiliza todos los componentes con un preset, enlazado o incrustado después de la hoja principal.'],
+        ['preset', "'neumorphism' | 'neubrutalism' | 'superneon'", '', 'Reestiliza todos los componentes con un preset, enlazado o incrustado después de la hoja principal.'],
         ['inline', 'boolean', 'false', 'Emite el CSS en sí en vez de un enlace a él.'],
         ['hash', 'boolean', 'true', 'Añade al nombre del archivo un hash del contenido. Solo enlazado.'],
         ['base', 'string', "'/su/'", 'Apunta la URL a otro sitio; esa copia la alojas tú. Solo enlazado.'],

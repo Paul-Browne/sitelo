@@ -662,6 +662,13 @@ shadow. In dark mode the ink turns cream. `--su-nb-ink` and
 `--su-nb-lift` set the line colour and how far a control stands off the
 page.
 
+`superneon` is near-black violet with hairline edges and neon light —
+solid buttons are dark pills ringed and haloed in a gradient, the big
+headings are lit from above, and anything chosen glows. Light mode keeps
+the dark pills on a pale lavender page. Each palette gains `glow` and
+`glowEnd`, the two ends of that gradient, and `var(--su-sn-backdrop)`
+is the page's ground with a violet light falling on it.
+
 ### Icons
 
 `icon()` returns an inline `<svg>` from a set of 99 glyphs, drawn on one

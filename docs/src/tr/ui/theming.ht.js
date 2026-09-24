@@ -78,6 +78,8 @@ head(
         a({ href: '/tr/ui/theming/neumorphism' }, 'Neumorfizm'),
         ', ',
         a({ href: '/tr/ui/theming/neubrutalism' }, 'Neobrütalizm'),
+        ', ',
+        a({ href: '/tr/ui/theming/superneon' }, 'Superneon'),
         '.',
       ),
       p(
@@ -243,7 +245,7 @@ head(
       h2('Proplar'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism' | 'neubrutalism'", '', 'Her bileşeni bir hazır ayarla yeniden biçimlendirir; çekirdek stil sayfasından sonra bağlanır ya da satır içine gömülür.'],
+        ['preset', "'neumorphism' | 'neubrutalism' | 'superneon'", '', 'Her bileşeni bir hazır ayarla yeniden biçimlendirir; çekirdek stil sayfasından sonra bağlanır ya da satır içine gömülür.'],
         ['inline', 'boolean', 'false', 'Ona bir bağlantı yerine CSS’in kendisini üretir.'],
         ['hash', 'boolean', 'true', 'Dosya adını içerikle özetler. Yalnızca bağlantılı.'],
         ['base', 'string', "'/su/'", 'URL’i başka yere yöneltir; o kopyayı siz barındırırsınız. Yalnızca bağlantılı.'],

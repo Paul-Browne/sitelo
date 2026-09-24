@@ -1802,7 +1802,12 @@ a.su-list-item:hover,
   padding-inline: 0.5rem;
   border-radius: var(--su-radius-md);
   border: var(--su-border-width) solid transparent;
+  /* Without an `href` this is a `<button>`, which would otherwise keep
+     the user agent's grey face and its own font. */
+  appearance: none;
+  background: transparent;
   color: var(--su-text-muted);
+  font: inherit;
   font-size: var(--su-text-sm);
   text-decoration: none;
   /* A link has the pointer already; without an `href` this is a button,

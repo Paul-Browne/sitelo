@@ -78,6 +78,8 @@ head(
         a({ href: '/pl/ui/theming/neumorphism' }, 'Neumorfizm'),
         ', ',
         a({ href: '/pl/ui/theming/neubrutalism' }, 'Neobrutalizm'),
+        ', ',
+        a({ href: '/pl/ui/theming/superneon' }, 'Superneon'),
         '.',
       ),
       p(
@@ -242,7 +244,7 @@ head(
       h2('Propsy'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism' | 'neubrutalism'", '', 'Zmienia wygląd każdego komponentu presetem, dołączonym albo wstawionym po głównym arkuszu.'],
+        ['preset', "'neumorphism' | 'neubrutalism' | 'superneon'", '', 'Zmienia wygląd każdego komponentu presetem, dołączonym albo wstawionym po głównym arkuszu.'],
         ['inline', 'boolean', 'false', 'Wypuść sam CSS zamiast odnośnika do niego.'],
         ['hash', 'boolean', 'true', 'Wstaw skrót treści w nazwę pliku. Tylko postać z odnośnikiem.'],
         ['base', 'string', "'/su/'", 'Skieruj adres gdzie indziej; tamtą kopię hostujesz Ty. Tylko postać z odnośnikiem.'],

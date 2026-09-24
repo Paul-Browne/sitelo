@@ -77,6 +77,8 @@ head(
         a({ href: '/zh/ui/theming/neumorphism' }, '新拟态'),
         '、',
         a({ href: '/zh/ui/theming/neubrutalism' }, '新粗野主义'),
+        ', ',
+        a({ href: '/zh/ui/theming/superneon' }, 'Superneon'),
         '。',
       ),
       p(
@@ -242,7 +244,7 @@ head(
       h2('属性'),
       p(code('styles()'), '：'),
       propsTable([
-        ['preset', "'neumorphism' | 'neubrutalism'", '', '用预设重新设计每个组件，链接或内联在核心样式表之后。'],
+        ['preset', "'neumorphism' | 'neubrutalism' | 'superneon'", '', '用预设重新设计每个组件，链接或内联在核心样式表之后。'],
         ['inline', 'boolean', 'false', '直接产出 CSS 本身，而不是指向它的链接。'],
         ['hash', 'boolean', 'true', '在文件名里加上内容哈希。仅链接时有效。'],
         ['base', 'string', "'/su/'", '把 URL 指向别处；那份文件由你自己托管。仅链接时有效。'],
