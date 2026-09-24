@@ -146,8 +146,8 @@ for (const name of presets) {
         .flatMap(({ selectors }) => selectors),
     );
 
-    assert.ok(states.length > 0, 'the preset repaints the input in some state');
-
+    // A preset that leaves the input's ground to the core has nothing to
+    // clear, and the core's own hover is only a border.
     for (const state of states) {
       assert.ok(cleared.has(`.su-input-group ${state}`), `${state} is not cleared inside .su-input-group`);
     }

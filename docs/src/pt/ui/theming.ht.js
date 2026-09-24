@@ -77,6 +77,8 @@ head(
       p(
         'Cada preset tem a sua própria página, com todos os componentes redesenhados ao vivo: ',
         a({ href: '/pt/ui/theming/neumorphism' }, 'Neumorfismo'),
+        ', ',
+        a({ href: '/pt/ui/theming/neubrutalism' }, 'Neobrutalismo'),
         '.',
       ),
       p(
@@ -244,7 +246,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism'", '', 'Muda o estilo de todos os componentes com um preset, ligado ou inline depois da folha principal.'],
+        ['preset', "'neumorphism' | 'neubrutalism'", '', 'Muda o estilo de todos os componentes com um preset, ligado ou inline depois da folha principal.'],
         ['inline', 'boolean', 'false', 'Emite o próprio CSS em vez de uma ligação para ele.'],
         ['hash', 'boolean', 'true', 'Acrescenta ao nome do ficheiro um hash do conteúdo. Só ligado.'],
         ['base', 'string', "'/su/'", 'Aponta o URL para outro lado; essa cópia alojas tu. Só ligado.'],

@@ -76,6 +76,8 @@ head(
       p(
         'Setiap preset punya halamannya sendiri, dengan semua komponen ditata ulang secara langsung: ',
         a({ href: '/id/ui/theming/neumorphism' }, 'Neumorfisme'),
+        ', ',
+        a({ href: '/id/ui/theming/neubrutalism' }, 'Neobrutalisme'),
         '.',
       ),
       p(
@@ -241,7 +243,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism'", '', 'Menata ulang setiap komponen dengan sebuah preset, ditautkan atau disisipkan setelah lembar inti.'],
+        ['preset', "'neumorphism' | 'neubrutalism'", '', 'Menata ulang setiap komponen dengan sebuah preset, ditautkan atau disisipkan setelah lembar inti.'],
         ['inline', 'boolean', 'false', 'Menghasilkan CSS-nya sendiri alih-alih tautan kepadanya.'],
         ['hash', 'boolean', 'true', 'Memberi hash konten pada nama berkasnya. Hanya untuk yang bertautan.'],
         ['base', 'string', "'/su/'", 'Mengarahkan URL-nya ke tempat lain; salinan itu Anda yang menghosting. Hanya untuk yang bertautan.'],

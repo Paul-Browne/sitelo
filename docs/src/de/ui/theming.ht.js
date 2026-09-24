@@ -76,6 +76,8 @@ head(
       p(
         'Jedes Preset hat eine eigene Seite, auf der jede Komponente live neu gestaltet wird: ',
         a({ href: '/de/ui/theming/neumorphism' }, 'Neumorphismus'),
+        ', ',
+        a({ href: '/de/ui/theming/neubrutalism' }, 'Neubrutalismus'),
         '.',
       ),
       p(
@@ -241,7 +243,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism'", '', 'Jede Komponente mit einem Preset neu gestalten, nach dem Kern-Stylesheet verlinkt oder eingebettet.'],
+        ['preset', "'neumorphism' | 'neubrutalism'", '', 'Jede Komponente mit einem Preset neu gestalten, nach dem Kern-Stylesheet verlinkt oder eingebettet.'],
         ['inline', 'boolean', 'false', 'Das CSS selbst ausgeben statt eines Links darauf.'],
         ['hash', 'boolean', 'true', 'Hash des Inhalts in den Dateinamen aufnehmen. Nur verlinkt.'],
         ['base', 'string', "'/su/'", 'Zeigt die URL woandershin; diese Kopie hostest du selbst. Nur verlinkt.'],

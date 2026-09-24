@@ -1,0 +1,718 @@
+/*!
+ * sitelo-ui preset — neubrutalism.
+ *
+ * Flat colour, thick ink lines and hard shadows: every surface is
+ * outlined, and anything that stands off the page casts a solid block of
+ * ink down and to the right, with no blur. A press pushes a control into
+ * its own shadow. Linked after `ui.css` by
+ * `styles({ preset: 'neubrutalism' })`.
+ *
+ * The look is loud but it is not hard to read — ink on cream is the
+ * highest contrast there is — so there is less to give up than with
+ * neumorphism. The palettes' fills are bright pastels for the soft
+ * variants, where dark text sits, and the solids stay dark enough to
+ * carry a white label and to read as text on the page.
+ *
+ * In dark mode the ink turns cream: a black shadow on a dark ground is
+ * no shadow at all.
+ */
+
+:root {
+  /* The one colour every line and every shadow is drawn in. */
+  --su-nb-ink: #111111;
+
+  /* How far a raised control stands off the page, and so how far a
+     press moves it. */
+  --su-nb-lift: 4px;
+
+  /* Quick: a hard shadow snaps, it does not give like a soft one. */
+  --su-nb-press: 90ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  --su-shadow-sm: var(--su-nb-shadow-sm);
+  --su-shadow-md: var(--su-nb-shadow-md);
+  --su-shadow-lg: var(--su-nb-shadow-lg);
+
+  --su-border-width: 2px;
+  --su-radius-sm: 0.25rem;
+  --su-radius-md: 0.375rem;
+  --su-radius-lg: 0.5rem;
+
+  --su-bg: #fbf6e9;
+  --su-bg-subtle: #f7f0de;
+  --su-surface: #ffffff;
+  --su-surface-2: #f4eedd;
+  --su-surface-hover: #f7f1e1;
+  --su-border: var(--su-nb-ink);
+  --su-border-strong: var(--su-nb-ink);
+  --su-text: #111111;
+  --su-text-muted: #3d3a33;
+  --su-text-subtle: #57534a;
+  --su-overlay: rgba(17, 17, 17, 0.5);
+
+  --su-primary: #3c4ff0;
+  --su-primary-hover: #3141d6;
+  --su-primary-active: #2836b8;
+  --su-primary-fg: #ffffff;
+  --su-primary-soft: #b4bdff;
+  --su-primary-soft-hover: #a0abff;
+  --su-primary-soft-fg: #141c6e;
+  --su-primary-ring: rgba(60, 79, 240, 0.35);
+
+  --su-neutral: #2e2c28;
+  --su-neutral-hover: #221f1b;
+  --su-neutral-active: #161412;
+  --su-neutral-fg: #ffffff;
+  --su-neutral-soft: #ebe3cf;
+  --su-neutral-soft-hover: #e1d7bf;
+  --su-neutral-soft-fg: #26241f;
+  --su-neutral-ring: rgba(46, 44, 40, 0.3);
+
+  --su-success: #11793a;
+  --su-success-hover: #0d6630;
+  --su-success-active: #0a5427;
+  --su-success-fg: #ffffff;
+  --su-success-soft: #8fe3ad;
+  --su-success-soft-hover: #78db9b;
+  --su-success-soft-fg: #063d1b;
+  --su-success-ring: rgba(17, 121, 58, 0.32);
+
+  --su-warning: #a64b00;
+  --su-warning-hover: #8f4000;
+  --su-warning-active: #783600;
+  --su-warning-fg: #ffffff;
+  --su-warning-soft: #ffd644;
+  --su-warning-soft-hover: #ffcc1f;
+  --su-warning-soft-fg: #402600;
+  --su-warning-ring: rgba(166, 75, 0, 0.32);
+
+  --su-danger: #d02030;
+  --su-danger-hover: #b81a29;
+  --su-danger-active: #9c1522;
+  --su-danger-fg: #ffffff;
+  --su-danger-soft: #ffa3ab;
+  --su-danger-soft-hover: #ff8e98;
+  --su-danger-soft-fg: #640a14;
+  --su-danger-ring: rgba(208, 32, 48, 0.32);
+}
+
+/*
+ * The composite shadows are declared wherever a theme can change, not
+ * only on `:root`. A custom property inherits its value with the `var()`s
+ * already substituted, so a shadow worked out on `:root` would carry the
+ * light theme's ink into a `data-su-theme="dark"` subtree. Declared here,
+ * it is worked out again at every theme boundary.
+ *
+ * A pressed shadow is the raised one at nothing rather than `none`, so
+ * the two animate into each other.
+ */
+:root,
+[data-theme],
+[data-su-theme] {
+  --su-nb-shadow-sm: 2px 2px 0 var(--su-nb-ink);
+  --su-nb-shadow-md: var(--su-nb-lift) var(--su-nb-lift) 0 var(--su-nb-ink);
+  --su-nb-shadow-lg: calc(var(--su-nb-lift) + 2px) calc(var(--su-nb-lift) + 2px) 0 var(--su-nb-ink);
+  --su-nb-pressed: 0 0 0 var(--su-nb-ink);
+}
+
+/*
+ * The same two blocks as the core's dark tokens, with the same selectors:
+ * those outrank `:root`, so anything the core sets for dark — the
+ * shadows included — has to be set again here, where being later wins.
+ *
+ * The solids go light and carry a dark label, as the core's do; the
+ * soft fills go deep, so their light text still reads on the page.
+ */
+[data-theme='dark']:not([data-su-theme='light']),
+[data-su-theme='dark'] {
+  --su-nb-ink: #f3eee2;
+
+  --su-shadow-sm: var(--su-nb-shadow-sm);
+  --su-shadow-md: var(--su-nb-shadow-md);
+  --su-shadow-lg: var(--su-nb-shadow-lg);
+
+  --su-bg: #161618;
+  --su-bg-subtle: #1b1b1e;
+  --su-surface: #212124;
+  --su-surface-2: #2a2a2e;
+  --su-surface-hover: #2d2d32;
+  --su-border: var(--su-nb-ink);
+  --su-border-strong: var(--su-nb-ink);
+  --su-text: #f3eee2;
+  --su-text-muted: #cfc9bb;
+  --su-text-subtle: #aca699;
+  --su-overlay: rgba(0, 0, 0, 0.7);
+
+  --su-primary: #97a3ff;
+  --su-primary-hover: #abb5ff;
+  --su-primary-active: #8492ff;
+  --su-primary-fg: #0d1140;
+  --su-primary-soft: #28307c;
+  --su-primary-soft-hover: #313a8d;
+  --su-primary-soft-fg: #d3d8ff;
+  --su-primary-ring: rgba(151, 163, 255, 0.4);
+
+  --su-neutral: #d6cfbf;
+  --su-neutral-hover: #e3ddcf;
+  --su-neutral-active: #c7bfad;
+  --su-neutral-fg: #161618;
+  --su-neutral-soft: #3a3833;
+  --su-neutral-soft-hover: #45423c;
+  --su-neutral-soft-fg: #ebe5d8;
+  --su-neutral-ring: rgba(214, 207, 191, 0.34);
+
+  --su-success: #5fd48a;
+  --su-success-hover: #78dd9c;
+  --su-success-active: #49c677;
+  --su-success-fg: #04230f;
+  --su-success-soft: #124a27;
+  --su-success-soft-hover: #175a30;
+  --su-success-soft-fg: #a9efc2;
+  --su-success-ring: rgba(95, 212, 138, 0.36);
+
+  --su-warning: #f2b937;
+  --su-warning-hover: #f6c95e;
+  --su-warning-active: #e6a91c;
+  --su-warning-fg: #2a1a00;
+  --su-warning-soft: #4d3a05;
+  --su-warning-soft-hover: #5c4507;
+  --su-warning-soft-fg: #ffe08a;
+  --su-warning-ring: rgba(242, 185, 55, 0.36);
+
+  --su-danger: #ff8a93;
+  --su-danger-hover: #ffa2a9;
+  --su-danger-active: #fb737e;
+  --su-danger-fg: #300509;
+  --su-danger-soft: #5c1a20;
+  --su-danger-soft-hover: #6d2027;
+  --su-danger-soft-fg: #ffc7cc;
+  --su-danger-ring: rgba(255, 138, 147, 0.36);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-su-theme='light']) {
+    --su-nb-ink: #f3eee2;
+
+    --su-shadow-sm: var(--su-nb-shadow-sm);
+    --su-shadow-md: var(--su-nb-shadow-md);
+    --su-shadow-lg: var(--su-nb-shadow-lg);
+
+    --su-bg: #161618;
+    --su-bg-subtle: #1b1b1e;
+    --su-surface: #212124;
+    --su-surface-2: #2a2a2e;
+    --su-surface-hover: #2d2d32;
+    --su-border: var(--su-nb-ink);
+    --su-border-strong: var(--su-nb-ink);
+    --su-text: #f3eee2;
+    --su-text-muted: #cfc9bb;
+    --su-text-subtle: #aca699;
+    --su-overlay: rgba(0, 0, 0, 0.7);
+
+    --su-primary: #97a3ff;
+    --su-primary-hover: #abb5ff;
+    --su-primary-active: #8492ff;
+    --su-primary-fg: #0d1140;
+    --su-primary-soft: #28307c;
+    --su-primary-soft-hover: #313a8d;
+    --su-primary-soft-fg: #d3d8ff;
+    --su-primary-ring: rgba(151, 163, 255, 0.4);
+
+    --su-neutral: #d6cfbf;
+    --su-neutral-hover: #e3ddcf;
+    --su-neutral-active: #c7bfad;
+    --su-neutral-fg: #161618;
+    --su-neutral-soft: #3a3833;
+    --su-neutral-soft-hover: #45423c;
+    --su-neutral-soft-fg: #ebe5d8;
+    --su-neutral-ring: rgba(214, 207, 191, 0.34);
+
+    --su-success: #5fd48a;
+    --su-success-hover: #78dd9c;
+    --su-success-active: #49c677;
+    --su-success-fg: #04230f;
+    --su-success-soft: #124a27;
+    --su-success-soft-hover: #175a30;
+    --su-success-soft-fg: #a9efc2;
+    --su-success-ring: rgba(95, 212, 138, 0.36);
+
+    --su-warning: #f2b937;
+    --su-warning-hover: #f6c95e;
+    --su-warning-active: #e6a91c;
+    --su-warning-fg: #2a1a00;
+    --su-warning-soft: #4d3a05;
+    --su-warning-soft-hover: #5c4507;
+    --su-warning-soft-fg: #ffe08a;
+    --su-warning-ring: rgba(242, 185, 55, 0.36);
+
+    --su-danger: #ff8a93;
+    --su-danger-hover: #ffa2a9;
+    --su-danger-active: #fb737e;
+    --su-danger-fg: #300509;
+    --su-danger-soft: #5c1a20;
+    --su-danger-soft-hover: #6d2027;
+    --su-danger-soft-fg: #ffc7cc;
+    --su-danger-ring: rgba(255, 138, 147, 0.36);
+  }
+}
+
+/*
+ * Every palette's line is the ink. Bound on the palette classes rather
+ * than set as each palette's `border` token, so a coloured outline, a
+ * pressed toggle and an outlined chip or alert all draw it without being
+ * named one by one.
+ */
+.su-c-primary,
+.su-c-neutral,
+.su-c-success,
+.su-c-warning,
+.su-c-danger {
+  --su-c-border: var(--su-nb-ink);
+}
+
+/* Neutral's own colour is next to the ink here, and a focus outline in
+   it would read as one more border. It rings in the primary instead, as
+   a field does; a coloured control still rings in its own. */
+.su-c-neutral { --su-c-focus: var(--su-primary); }
+
+/* ------------------------------------------------------------------ *
+ * Card
+ *
+ * Every card is outlined and stands off the page. One that can be
+ * clicked lifts further when pointed at and goes down flat when pressed.
+ * ------------------------------------------------------------------ */
+
+.su-card {
+  box-shadow: var(--su-shadow-md);
+  transition: box-shadow var(--su-nb-press), translate var(--su-nb-press);
+}
+
+.su-card--elevated {
+  border-color: var(--su-border);
+  box-shadow: var(--su-shadow-lg);
+}
+
+/* Flat is the one that lies on the page: outlined, and no shadow. */
+.su-card--flat {
+  border-color: var(--su-border);
+  box-shadow: none;
+}
+
+/* Lifted up and to the left by what the shadow grows by, so the shadow
+   stays where it was and only the card moves. */
+.su-card--interactive:hover {
+  border-color: var(--su-border);
+  box-shadow: var(--su-shadow-lg);
+  transform: none;
+  translate: -2px -2px;
+}
+
+.su-card--interactive:active {
+  box-shadow: var(--su-nb-pressed);
+  translate: var(--su-nb-lift) var(--su-nb-lift);
+}
+
+/* ------------------------------------------------------------------ *
+ * Button
+ *
+ * Outlined and raised, all three filled variants: the colour is the
+ * difference between them, not the shape. Pointing at a button changes
+ * its colour only — a button that moved on hover would slide out from
+ * under a pointer resting on its edge, and back, and out. A press is
+ * what moves it, down into its own shadow.
+ * ------------------------------------------------------------------ */
+
+.su-btn {
+  font-weight: var(--su-weight-semibold);
+  transition: background-color var(--su-transition), border-color var(--su-transition),
+    color var(--su-transition), box-shadow var(--su-nb-press), translate var(--su-nb-press);
+}
+
+.su-btn--solid,
+.su-btn--soft,
+.su-btn--outline {
+  border-color: var(--su-nb-ink);
+  box-shadow: var(--su-shadow-md);
+}
+
+.su-btn--outline {
+  background: var(--su-surface);
+}
+
+/* The core's hover draws the line in the palette's colour. */
+.su-btn--outline:hover {
+  border-color: var(--su-nb-ink);
+}
+
+/*
+ * Down into the shadow, and held there by a toggle that is on. A
+ * ghost has no shadow to go into, and a link is text.
+ */
+.su-btn--solid:active,
+.su-btn--soft:active,
+.su-btn--outline:active,
+.su-toggle-btn[aria-pressed='true'],
+.su-toggle-btn[aria-current] {
+  box-shadow: var(--su-nb-pressed);
+  translate: var(--su-nb-lift) var(--su-nb-lift);
+}
+
+/*
+ * Joined buttons share one line between them and one shadow under the
+ * lot: a shadow on each would fall across its neighbour. The core
+ * overlaps them by a pixel, for its own one-pixel line.
+ *
+ * As wide as its buttons, even where a column would stretch it: the
+ * shadow is the group's, and would run on under the empty space.
+ */
+.su-btn-group {
+  width: fit-content;
+  max-width: 100%;
+  border-radius: var(--su-radius-md);
+  box-shadow: var(--su-shadow-md);
+}
+
+.su-btn-group > .su-btn + .su-btn {
+  margin-inline-start: calc(var(--su-border-width) * -1);
+}
+
+.su-btn-group > .su-btn,
+.su-btn-group > .su-btn:active,
+.su-btn-group > .su-toggle-btn[aria-pressed='true'],
+.su-btn-group > .su-toggle-btn[aria-current] {
+  box-shadow: none;
+  translate: none;
+}
+
+/*
+ * A segmented control's choice is printed in reverse — the ink as the
+ * fill, the page as the label — rather than pressed: a joined button
+ * has nowhere of its own to go down to.
+ */
+.su-toggle-group > .su-toggle-btn[aria-pressed='true'],
+.su-toggle-group > .su-toggle-btn[aria-current],
+.su-toggle-group > .su-toggle-btn[aria-pressed='true']:hover,
+.su-toggle-group > .su-toggle-btn[aria-current]:hover {
+  background: var(--su-nb-ink);
+  color: var(--su-surface);
+}
+
+/* ------------------------------------------------------------------ *
+ * Form controls
+ *
+ * The core already draws every field's line in `--su-border-strong`,
+ * which is the ink here; what is left is to keep it the ink in every
+ * state the core recolours, and to put a shadow on a field in use.
+ * ------------------------------------------------------------------ */
+
+.su-input:hover:not([disabled]),
+.su-textarea:hover:not([disabled]),
+.su-select:hover:not([disabled]) {
+  border-color: var(--su-nb-ink);
+}
+
+.su-select {
+  box-shadow: var(--su-shadow-sm);
+}
+
+/*
+ * Focused, a field stands up off the page, in place of the core's
+ * translucent ring; the outline the library puts on every control is
+ * still what says where focus is.
+ */
+.su-input:focus,
+.su-textarea:focus,
+.su-select:focus,
+.su-field--invalid .su-input:focus,
+.su-field--invalid .su-textarea:focus,
+.su-field--invalid .su-select:focus {
+  border-color: var(--su-nb-ink);
+  box-shadow: var(--su-shadow-md);
+}
+
+.su-input[disabled],
+.su-textarea[disabled],
+.su-select[disabled] {
+  box-shadow: none;
+}
+
+/* An invalid field keeps its red line in every state the rules above
+   would otherwise ink over. */
+.su-field--invalid .su-input:hover:not([disabled]),
+.su-field--invalid .su-textarea:hover:not([disabled]),
+.su-field--invalid .su-select:hover:not([disabled]),
+.su-input[aria-invalid='true']:hover:not([disabled]),
+.su-textarea[aria-invalid='true']:hover:not([disabled]),
+.su-select[aria-invalid='true']:hover:not([disabled]),
+.su-field--invalid .su-input:focus,
+.su-field--invalid .su-textarea:focus,
+.su-field--invalid .su-select:focus,
+.su-input[aria-invalid='true']:focus,
+.su-textarea[aria-invalid='true']:focus,
+.su-select[aria-invalid='true']:focus {
+  border-color: var(--su-danger);
+}
+
+/* With adornments the group is the field, so the shadow goes under all
+   of it rather than under the input alone, whose right-hand edge would
+   cast onto the adornment beside it. */
+.su-input-group:has(.su-adornment) {
+  border-radius: var(--su-radius-md);
+  transition: box-shadow var(--su-nb-press);
+}
+
+.su-input-group:has(.su-adornment):has(.su-input:focus) {
+  box-shadow: var(--su-shadow-md);
+}
+
+.su-input-group:has(.su-adornment) .su-input:focus {
+  box-shadow: none;
+}
+
+.su-input,
+.su-textarea,
+.su-select {
+  transition: border-color var(--su-transition), box-shadow var(--su-nb-press);
+}
+
+.su-check-box {
+  box-shadow: var(--su-shadow-sm);
+}
+
+.su-check input:checked + .su-check-box {
+  border-color: var(--su-nb-ink);
+}
+
+/*
+ * A switch is a slot with a block in it. The track takes the line and
+ * gives up its padding for it, and the thumb is exactly as tall as what
+ * is left inside, so it is concentric with the track's rounded end and
+ * its line meets the track's evenly all the way round. A smaller thumb
+ * sits flush on the left and short at the top and bottom, and the two
+ * lines read as one thicker one on that side.
+ *
+ * The travel is unchanged: the inside is 2.5rem less the two lines
+ * wide, and the thumb 1.4rem less them, which leaves the core's 1.1rem.
+ */
+.su-switch-track {
+  padding: 0;
+  border: var(--su-border-width) solid var(--su-nb-ink);
+  background: var(--su-surface-2);
+}
+
+.su-switch-thumb {
+  width: calc(1.4rem - 2 * var(--su-border-width));
+  height: calc(1.4rem - 2 * var(--su-border-width));
+  border: var(--su-border-width) solid var(--su-nb-ink);
+  background: var(--su-surface);
+  box-shadow: none;
+}
+
+/*
+ * The track is a slot with a line round it, and the knob a block
+ * standing up out of it. Sized border-box, so the lines are inside the
+ * sizes given, and centred on the track's content box, which the line
+ * sits outside of.
+ */
+.su-slider {
+  --su-slider-track: var(--su-surface);
+}
+
+.su-slider::-webkit-slider-runnable-track {
+  box-sizing: content-box;
+  height: 0.6rem;
+  border: var(--su-border-width) solid var(--su-nb-ink);
+}
+
+.su-slider::-moz-range-track {
+  box-sizing: content-box;
+  height: 0.6rem;
+  border: var(--su-border-width) solid var(--su-nb-ink);
+}
+
+.su-slider::-webkit-slider-thumb {
+  box-sizing: border-box;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-top: -0.4rem;
+  border: var(--su-border-width) solid var(--su-nb-ink);
+  border-radius: var(--su-radius-sm);
+  box-shadow: var(--su-shadow-sm);
+}
+
+.su-slider::-moz-range-thumb {
+  box-sizing: border-box;
+  width: 1.4rem;
+  height: 1.4rem;
+  border: var(--su-border-width) solid var(--su-nb-ink);
+  border-radius: var(--su-radius-sm);
+  box-shadow: var(--su-shadow-sm);
+}
+
+/* ------------------------------------------------------------------ *
+ * Data display and feedback
+ * ------------------------------------------------------------------ */
+
+.su-chip {
+  border-color: var(--su-nb-ink);
+  font-weight: var(--su-weight-semibold);
+}
+
+.su-avatar {
+  border: var(--su-border-width) solid var(--su-nb-ink);
+}
+
+/* A line of ink round it, in place of the core's ring of the page. */
+.su-badge {
+  box-shadow: 0 0 0 var(--su-border-width) var(--su-nb-ink);
+}
+
+.su-tooltip::after {
+  padding: 0.4rem 0.65rem;
+  border: var(--su-border-width) solid var(--su-nb-ink);
+  background: var(--su-surface);
+  color: var(--su-text);
+  font-weight: var(--su-weight-semibold);
+  box-shadow: var(--su-shadow-sm);
+}
+
+.su-alert {
+  border-color: var(--su-nb-ink);
+  box-shadow: var(--su-shadow-md);
+}
+
+/* A toast floats over the page, so it takes the tallest shadow there
+   is, as the core's does — restated after `.su-alert` above, which would
+   otherwise bring it down to an alert's. */
+.su-toasts > * {
+  box-shadow: var(--su-shadow-lg);
+}
+
+.su-progress-bar {
+  height: calc(var(--su-progress-height, 0.5rem) + 2 * var(--su-border-width));
+  border: var(--su-border-width) solid var(--su-nb-ink);
+  background: var(--su-surface);
+}
+
+/* The fill ends on a line of its own. A shadow rather than a border: at
+   nothing it sits against the bar's own line and disappears into it. */
+.su-progress-fill {
+  box-shadow: var(--su-border-width) 0 0 var(--su-nb-ink);
+}
+
+.su-progress-fill:dir(rtl) {
+  box-shadow: calc(var(--su-border-width) * -1) 0 0 var(--su-nb-ink);
+}
+
+/* Inline code is read in the middle of a sentence, where a line as
+   heavy as a button's would shout over the words round it. */
+.su-code {
+  border-width: 1px;
+}
+
+.su-kbd {
+  border-bottom-width: var(--su-border-width);
+  box-shadow: var(--su-shadow-sm);
+}
+
+/* ------------------------------------------------------------------ *
+ * Accordion
+ *
+ * One outlined block, raised like a card. An open item's header is
+ * filled and ruled off from its answer.
+ * ------------------------------------------------------------------ */
+
+.su-accordion {
+  box-shadow: var(--su-shadow-md);
+}
+
+.su-accordion-item[open] > summary,
+.su-accordion-item[open] > summary:hover {
+  border-bottom: var(--su-border-width) solid var(--su-nb-ink);
+  background: var(--su-c-soft, var(--su-primary-soft));
+}
+
+.su-accordion-item[open] > .su-accordion-panel {
+  padding-top: var(--su-space-md);
+}
+
+/* ------------------------------------------------------------------ *
+ * Steps and timeline
+ * ------------------------------------------------------------------ */
+
+.su-step--current .su-step-marker,
+.su-step--complete .su-step-marker {
+  border-color: var(--su-nb-ink);
+}
+
+.su-step--current .su-step-marker {
+  box-shadow: var(--su-shadow-sm);
+}
+
+/* Outlined in ink rather than cut out of the line in the page's colour,
+   and filled with the page when it has no colour of its own — the core
+   fills it with the border colour, which here is the ink. */
+.su-timeline-marker {
+  border-color: var(--su-nb-ink);
+  background: var(--su-c, var(--su-surface));
+}
+
+/* ------------------------------------------------------------------ *
+ * Navigation
+ * ------------------------------------------------------------------ */
+
+.su-pagination {
+  gap: var(--su-space-sm);
+}
+
+.su-page-link {
+  border-color: var(--su-nb-ink);
+  background: var(--su-surface);
+  color: var(--su-text);
+  box-shadow: var(--su-shadow-sm);
+  transition: background-color var(--su-transition), color var(--su-transition),
+    box-shadow var(--su-nb-press), translate var(--su-nb-press);
+}
+
+/* The page you are on is held down, like a toggle that is on. */
+.su-page-link:active,
+.su-page-link[aria-current='page'] {
+  box-shadow: var(--su-nb-pressed);
+  translate: 2px 2px;
+}
+
+/*
+ * The underline of the tab you are on is laid over the strip's own line
+ * rather than beside it, and is twice as thick, so it reads against the
+ * ink. The core overlaps the two by a pixel, for its one-pixel line.
+ */
+.su-tab {
+  margin-bottom: calc(var(--su-border-width) * -1);
+  border-bottom-width: calc(var(--su-border-width) * 2);
+}
+
+/* The core's own selectors for the selected tab, in all three forms. */
+.su-tab[aria-current='page'],
+.su-tab-input:checked + .su-tab,
+.su-tabs--target > .su-tab:target,
+.su-tabs--target:not(:has(> .su-tab:target)) > .su-tab--default {
+  color: var(--su-text);
+}
+
+/*
+ * A pill is outlined only when it is chosen, and then it is raised:
+ * the rest are labels on the page. Squared to the buttons' corners, and
+ * with a line that is there in every state, so choosing one moves
+ * nothing.
+ */
+.su-tabs--pills .su-tab {
+  border: var(--su-border-width) solid transparent;
+  border-radius: var(--su-radius-md);
+}
+
+.su-tabs--pills .su-tab[aria-current='page'],
+.su-tabs--pills .su-tab-input:checked + .su-tab,
+.su-tabs--pills.su-tabs--target > .su-tab:target,
+.su-tabs--pills.su-tabs--target:not(:has(> .su-tab:target)) > .su-tab--default {
+  border-color: var(--su-nb-ink);
+  box-shadow: var(--su-shadow-sm);
+}

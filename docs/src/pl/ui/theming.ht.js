@@ -76,6 +76,8 @@ head(
       p(
         'Każdy preset ma własną stronę, na której wszystkie komponenty są przestylowane na żywo: ',
         a({ href: '/pl/ui/theming/neumorphism' }, 'Neumorfizm'),
+        ', ',
+        a({ href: '/pl/ui/theming/neubrutalism' }, 'Neobrutalizm'),
         '.',
       ),
       p(
@@ -240,7 +242,7 @@ head(
       h2('Propsy'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism'", '', 'Zmienia wygląd każdego komponentu presetem, dołączonym albo wstawionym po głównym arkuszu.'],
+        ['preset', "'neumorphism' | 'neubrutalism'", '', 'Zmienia wygląd każdego komponentu presetem, dołączonym albo wstawionym po głównym arkuszu.'],
         ['inline', 'boolean', 'false', 'Wypuść sam CSS zamiast odnośnika do niego.'],
         ['hash', 'boolean', 'true', 'Wstaw skrót treści w nazwę pliku. Tylko postać z odnośnikiem.'],
         ['base', 'string', "'/su/'", 'Skieruj adres gdzie indziej; tamtą kopię hostujesz Ty. Tylko postać z odnośnikiem.'],

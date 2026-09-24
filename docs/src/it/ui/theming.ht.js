@@ -76,6 +76,8 @@ head(
       p(
         'Ogni preset ha una pagina tutta sua, con ogni componente ridisegnato dal vivo: ',
         a({ href: '/it/ui/theming/neumorphism' }, 'Neumorfismo'),
+        ', ',
+        a({ href: '/it/ui/theming/neubrutalism' }, 'Neobrutalismo'),
         '.',
       ),
       p(
@@ -241,7 +243,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism'", '', 'Ridisegna ogni componente con un preset, collegato o inline dopo il foglio principale.'],
+        ['preset', "'neumorphism' | 'neubrutalism'", '', 'Ridisegna ogni componente con un preset, collegato o inline dopo il foglio principale.'],
         ['inline', 'boolean', 'false', 'Emetti il CSS stesso invece di un link a esso.'],
         ['hash', 'boolean', 'true', 'Metti un hash del contenuto nel nome del file. Solo forma collegata.'],
         ['base', 'string', "'/su/'", 'Punta l’URL altrove; quella copia la ospiti tu. Solo forma collegata.'],

@@ -78,6 +78,8 @@ head(
       p(
         'Each preset has a page of its own, with every component restyled live: ',
         a({ href: '/ui/theming/neumorphism' }, 'Neumorphism'),
+        ', ',
+        a({ href: '/ui/theming/neubrutalism' }, 'Neubrutalism'),
         '.',
       ),
       p(
@@ -243,7 +245,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism'", '', 'Restyle every component with a preset, linked or inlined after the core sheet.'],
+        ['preset', "'neumorphism' | 'neubrutalism'", '', 'Restyle every component with a preset, linked or inlined after the core sheet.'],
         ['inline', 'boolean', 'false', 'Emit the CSS itself rather than a link to it.'],
         ['hash', 'boolean', 'true', 'Content-hash the file name. Linked only.'],
         ['base', 'string', "'/su/'", 'Point the URL elsewhere; that copy is yours to host. Linked only.'],

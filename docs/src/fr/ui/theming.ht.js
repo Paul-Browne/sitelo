@@ -76,6 +76,8 @@ head(
       p(
         'Chaque préréglage a sa propre page, où tous les composants sont restylés en direct : ',
         a({ href: '/fr/ui/theming/neumorphism' }, 'Neumorphisme'),
+        ', ',
+        a({ href: '/fr/ui/theming/neubrutalism' }, 'Néo-brutalisme'),
         '.',
       ),
       p(
@@ -241,7 +243,7 @@ head(
       h2('Props'),
       p(code('styles()'), ' :'),
       propsTable([
-        ['preset', "'neumorphism'", '', 'Restyle chaque composant avec un préréglage, lié ou intégré après la feuille principale.'],
+        ['preset', "'neumorphism' | 'neubrutalism'", '', 'Restyle chaque composant avec un préréglage, lié ou intégré après la feuille principale.'],
         ['inline', 'boolean', 'false', 'Émet le CSS lui-même plutôt qu’un lien vers lui.'],
         ['hash', 'boolean', 'true', 'Ajoute au nom de fichier une empreinte du contenu. Lien uniquement.'],
         ['base', 'string', "'/su/'", 'Pointe l’URL ailleurs ; cette copie est à vous d’héberger. Lien uniquement.'],

@@ -656,6 +656,12 @@ head(styles({ preset: 'neumorphism' }))
 it by light and shade — with text kept at WCAG AA and the focus outline
 kept on. It needs the page's background to be `var(--su-bg)`.
 
+`neubrutalism` is flat colour and thick ink — every surface outlined,
+hard shadows with no blur, and controls that press down into their own
+shadow. In dark mode the ink turns cream. `--su-nb-ink` and
+`--su-nb-lift` set the line colour and how far a control stands off the
+page.
+
 ### Icons
 
 `icon()` returns an inline `<svg>` from a set of 99 glyphs, drawn on one
