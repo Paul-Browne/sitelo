@@ -93,6 +93,9 @@
     inset 2px 2px 4px var(--su-neu-dark), inset -2px -2px 4px var(--su-neu-light);
   --su-neu-inset: 0 0 0 transparent, 0 0 0 transparent,
     inset 3px 3px 7px var(--su-neu-dark), inset -3px -3px 7px var(--su-neu-light);
+
+  /* A line cut into the page: the divider's, and the one under tabs. */
+  --su-neu-groove: linear-gradient(to bottom, var(--su-neu-dark) 50%, var(--su-neu-light) 50%);
 }
 
 /*
@@ -1058,7 +1061,7 @@ button.su-chip:hover {
 .su-divider::before,
 .su-divider::after {
   height: 2px;
-  background: linear-gradient(to bottom, var(--su-neu-dark) 50%, var(--su-neu-light) 50%);
+  background: var(--su-neu-groove);
 }
 
 .su-divider--vertical::before,
@@ -1096,16 +1099,29 @@ button.su-chip:hover {
   box-shadow: var(--su-neu-inset-sm);
 }
 
-/* The selected tab is pressed in rather than underlined: an inset
-   shadow cannot be clipped by the strip's own scrolling. */
+/*
+ * The selected tab is pressed in rather than underlined: an inset
+ * shadow cannot be clipped by the strip's own scrolling. The line under
+ * the tabs is still there, cut in like a divider rather than drawn —
+ * without it a row of pills reads as buttons, not tabs.
+ *
+ * A background rather than a border, since a border is one colour and
+ * the groove is two; and a background stays put while the strip
+ * scrolls, so the line runs its whole width.
+ */
 .su-tablist {
   border-bottom-color: transparent;
+  padding-bottom: var(--su-space-sm);
+  background: var(--su-neu-groove) bottom / 100% 2px no-repeat;
 }
 
 /* Tabs whose panels follow them have no strip to rule under: the line
-   is the top of each panel instead. */
+   is the top of each panel instead, in pills too, where the core has
+   none. */
 .su-tabs--panels > .su-tabpanel {
+  margin-top: var(--su-space-sm);
   border-top-color: transparent;
+  background: var(--su-neu-groove) top / 100% 2px no-repeat;
 }
 
 /* A tab being chosen sinks in over the time a button does; the core's

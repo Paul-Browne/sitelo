@@ -1,4 +1,5 @@
 import { DEFAULT_LOCALE, localePath } from './i18n.js'
+import { isDraft } from './drafts.js'
 
 /**
  * Sidebar entries per locale. `href` is the English path; `docNav()` and
@@ -1011,7 +1012,7 @@ export function docNav(lang = DEFAULT_LOCALE) {
 export function uiNav(lang = DEFAULT_LOCALE) {
   const items = UI_LABELS[lang] ?? UI_LABELS[DEFAULT_LOCALE]
 
-  return items.map((item) =>
+  return items.filter((item) => !isDraft(item.href ?? '')).map((item) =>
     item.heading
       ? item
       : {

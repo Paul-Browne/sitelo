@@ -1,6 +1,7 @@
 import { a, div, h2, li, p, span, ul } from 'javascript-to-html'
 import { code, uiLayout } from '../../lib/zh.js'
 import { preview } from '../../lib/ui-demo.js'
+import { isDraft } from '../../lib/drafts.js'
 
 /**
  * 每个组件页面一张卡片，分组方式和组件参考表完全一致。
@@ -175,7 +176,7 @@ export default () =>
 
       ...GROUPS.flatMap(([group, components]) => [
         h2(group),
-        ul({ class: 'ui-gallery' }, ...components.map(galleryCard)),
+        ul({ class: 'ui-gallery' }, ...components.filter(([href]) => !isDraft(href)).map(galleryCard)),
       ]),
 
       h2('接入方式'),

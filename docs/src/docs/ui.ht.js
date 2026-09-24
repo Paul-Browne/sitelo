@@ -17,6 +17,7 @@ import {
 import { code, codeBlock } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
 import { uiSnippets } from '../lib/snippets/ui.js'
+import { DRAFT_EXPORTS } from '../lib/drafts.js'
 
 const s = uiSnippets('en')
 
@@ -247,7 +248,7 @@ export default () =>
           thead(tr(th('Group'), th('Components'))),
           tbody(
             ...GROUPS.map(([group, names]) =>
-              tr(td(group), td(names.map((name) => code(name)).join(', '))),
+              tr(td(group), td(names.filter((name) => !DRAFT_EXPORTS.has(name)).map((name) => code(name)).join(', '))),
             ),
           ),
         ),

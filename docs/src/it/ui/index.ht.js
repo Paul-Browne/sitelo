@@ -1,6 +1,7 @@
 import { a, div, h2, li, p, span, ul } from 'javascript-to-html'
 import { code, uiLayout } from '../../lib/it.js'
 import { preview } from '../../lib/ui-demo.js'
+import { isDraft } from '../../lib/drafts.js'
 
 /**
  * Una scheda per ogni pagina di componente, raggruppate esattamente come
@@ -178,7 +179,7 @@ export default () =>
 
       ...GROUPS.flatMap(([group, components]) => [
         h2(group),
-        ul({ class: 'ui-gallery' }, ...components.map(galleryCard)),
+        ul({ class: 'ui-gallery' }, ...components.filter(([href]) => !isDraft(href)).map(galleryCard)),
       ]),
 
       h2('Come si comincia'),

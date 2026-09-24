@@ -2,6 +2,7 @@ import { a, div, h2, li, p, span, ul } from 'javascript-to-html'
 import { code } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
 import { preview } from '../lib/ui-demo.js'
+import { isDraft } from '../lib/drafts.js'
 
 /**
  * One card per component page, grouped exactly as the component
@@ -178,7 +179,7 @@ export default () =>
 
       ...GROUPS.flatMap(([group, components]) => [
         h2(group),
-        ul({ class: 'ui-gallery' }, ...components.map(galleryCard)),
+        ul({ class: 'ui-gallery' }, ...components.filter(([href]) => !isDraft(href)).map(galleryCard)),
       ]),
 
       h2('Getting set up'),

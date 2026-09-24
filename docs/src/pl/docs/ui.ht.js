@@ -16,6 +16,7 @@ import {
 } from 'javascript-to-html'
 import { code, codeBlock, docsLayout } from '../../lib/pl.js'
 import { uiSnippets } from '../../lib/snippets/ui.js'
+import { DRAFT_EXPORTS } from '../../lib/drafts.js'
 
 const s = uiSnippets('pl')
 
@@ -259,7 +260,7 @@ export default () =>
           thead(tr(th('Grupa'), th('Komponenty'))),
           tbody(
             ...GROUPS.map(([group, names]) =>
-              tr(td(group), td(names.map((name) => code(name)).join(', '))),
+              tr(td(group), td(names.filter((name) => !DRAFT_EXPORTS.has(name)).map((name) => code(name)).join(', '))),
             ),
           ),
         ),

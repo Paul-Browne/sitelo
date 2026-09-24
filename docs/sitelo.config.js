@@ -1,6 +1,10 @@
+import { draftPageGlobs } from './src/lib/drafts.js'
+
 export default {
   site: 'https://sitelo.dev',
   pagefind: true,
+  /* Written but unpublished pages; see `src/lib/drafts.js`. */
+  exclude: draftPageGlobs(),
   /*
    * Flat `docs.html` rather than `docs/index.html`. GitHub Pages serves
    * `/docs` from `docs.html` directly; with the directory form it 301s
