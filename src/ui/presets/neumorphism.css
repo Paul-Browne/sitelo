@@ -686,14 +686,151 @@ button.su-chip:hover {
   box-shadow: var(--su-neu-raised-sm);
 }
 
+/*
+ * A tooltip is a raised bubble of the page, with a tail pointing at
+ * what it is about. The tail is a square turned on its corner, half of
+ * it under the bubble; drawn above the bubble, so the bubble's own
+ * shadow does not cut a line where the two meet. Its shadow is the
+ * bubble's, which the turn points straight down — or, below the
+ * control, the highlight pointed straight up.
+ */
 .su-tooltip::after {
+  padding: 0.45rem 0.7rem;
+  border-radius: var(--su-radius-md);
   background: var(--su-surface);
   color: var(--su-text);
+  font-weight: var(--su-weight-semibold);
   box-shadow: var(--su-neu-raised-sm);
 }
 
+.su-tooltip[data-su-tooltip]::before {
+  content: '';
+  position: absolute;
+  z-index: 41;
+  /* Its centre on the bubble's edge, 0.5rem above the control. */
+  bottom: calc(100% + 0.5rem - 0.3rem);
+  left: 50%;
+  width: 0.6rem;
+  height: 0.6rem;
+  background: var(--su-surface);
+  box-shadow: 3px 3px 7px var(--su-neu-dark);
+  /*
+   * Only the half outside the bubble. The half under it is the bubble's
+   * own colour, but its shadow's blur would reach up past its edges and
+   * trace the diamond on the bubble's face. Cut along the diagonal that
+   * the turn lays on the bubble's edge, and out past the box on the far
+   * side, so the shadow below is kept.
+   *
+   * Cut a pixel and a half inside the bubble rather than on its edge:
+   * two anti-aliased edges meeting exactly let a hairline of the shadow
+   * between them show through. 1px on each axis before the turn is √2
+   * across it — too little for the shadow's blur to trace anything.
+   */
+  clip-path: polygon(
+    calc(150% - 1px) calc(-50% - 1px),
+    250% 250%,
+    calc(-50% - 1px) calc(150% - 1px)
+  );
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%) translateY(0.25rem) rotate(45deg);
+  transition: opacity var(--su-transition), transform var(--su-transition);
+}
+
+.su-tooltip--bottom[data-su-tooltip]::before {
+  bottom: auto;
+  top: calc(100% + 0.5rem - 0.3rem);
+  box-shadow: -3px -3px 7px var(--su-neu-light);
+  clip-path: polygon(
+    calc(150% + 1px) calc(-50% + 1px),
+    calc(-50% + 1px) calc(150% + 1px),
+    -150% -150%
+  );
+  transform: translateX(-50%) translateY(-0.25rem) rotate(45deg);
+}
+
+/* With the bubble: the core's own selectors for showing it. */
+.su-tooltip[data-su-tooltip]:hover::before,
+.su-tooltip[data-su-tooltip]:focus-within::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) rotate(45deg);
+}
+
+/*
+ * An alert is the page raised, like a card, rather than a tint laid on
+ * it: the palette is carried by the icon and the title instead of the
+ * ground. The title keeps the soft palette's foreground, which clears
+ * 4.5:1 on this surface — the preset's contrast test holds it there. An
+ * outline keeps its line; a solid keeps its colour, filled the way a
+ * solid button is.
+ */
 .su-alert {
   box-shadow: var(--su-neu-raised-sm);
+}
+
+.su-alert--soft,
+.su-alert--outline {
+  background: var(--su-surface);
+  color: var(--su-text);
+}
+
+.su-alert--soft .su-alert-title,
+.su-alert--outline .su-alert-title {
+  color: var(--su-c-soft-fg, var(--su-text));
+}
+
+.su-alert--soft .su-alert-icon,
+.su-alert--outline .su-alert-icon {
+  color: var(--su-c, var(--su-text-muted));
+}
+
+.su-alert--solid {
+  background: linear-gradient(145deg, var(--su-c), var(--su-c-active));
+}
+
+/* The close button is a small raised button of its own, pressed in when
+   it is pressed, in the same time a button takes. Not on a solid, where
+   a grey stud would sit on the colour. */
+.su-alert--soft .su-alert-dismiss,
+.su-alert--outline .su-alert-dismiss {
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  /* Centred on the first line rather than hanging below it. */
+  margin-block: -0.3rem;
+  padding: 0;
+  border-radius: var(--su-radius-full);
+  background: var(--su-surface);
+  color: var(--su-text-muted);
+  opacity: 1;
+  box-shadow: var(--su-neu-raised-sm);
+  transition: box-shadow var(--su-neu-press), color var(--su-transition);
+}
+
+.su-alert--soft .su-alert-dismiss:hover,
+.su-alert--outline .su-alert-dismiss:hover {
+  color: var(--su-text);
+  box-shadow: var(--su-neu-raised);
+}
+
+.su-alert--soft .su-alert-dismiss:active,
+.su-alert--outline .su-alert-dismiss:active {
+  box-shadow: var(--su-neu-inset-sm);
+}
+
+/*
+ * A toast floats over the page, so it takes the tallest lift there is,
+ * as the core's does — restated after `.su-alert` above, which would
+ * otherwise bring it down to an alert's. And on the surface, not the
+ * core's tint over it: the core names the soft one on its own.
+ */
+.su-toasts > * {
+  box-shadow: var(--su-neu-raised-lg);
+}
+
+.su-toasts > .su-alert--soft {
+  background: var(--su-surface);
 }
 
 .su-progress-bar {
@@ -849,6 +986,82 @@ button.su-chip:hover {
 
 .su-timeline-marker {
   box-shadow: var(--su-neu-raised-sm);
+}
+
+/* ------------------------------------------------------------------ *
+ * Steps
+ *
+ * The timeline's groove and studs, with the step's state in how each
+ * stud sits: one still to come is pressed in, waiting, the one you are
+ * on stands up out of the page, and one done is raised and filled the
+ * way a solid button is. The groove behind a finished step is filled too — shaded as a
+ * well in a colour, not the page's pale one. Advancing a flow from
+ * `/su/steps.js` is three class names, so all of it moves at a press's
+ * pace.
+ * ------------------------------------------------------------------ */
+
+.su-step-marker {
+  border-color: transparent;
+  box-shadow: var(--su-neu-inset-sm);
+  transition: box-shadow var(--su-neu-press), color var(--su-neu-press);
+}
+
+.su-step--current .su-step-marker {
+  border-color: transparent;
+  background: var(--su-surface);
+  box-shadow: var(--su-neu-raised-sm);
+}
+
+.su-step--complete .su-step-marker {
+  border-color: transparent;
+  background: linear-gradient(145deg, var(--su-primary), var(--su-primary-active));
+  box-shadow: var(--su-neu-raised-sm);
+}
+
+/* A groove rather than a rule, centred on the marker the way the
+   timeline's is. Down the side here, across in the block below. */
+.su-step:not(:last-child)::after {
+  inset-inline-start: calc(var(--su-step-marker) / 2 - 3px);
+  width: 6px;
+  border-radius: var(--su-radius-full);
+  background: var(--su-surface);
+  box-shadow: var(--su-neu-inset-sm);
+  transition: background-color var(--su-neu-press), box-shadow var(--su-neu-press);
+}
+
+.su-step--complete:not(:last-child)::after {
+  background: var(--su-primary);
+  box-shadow: var(--su-neu-inset-fill);
+}
+
+/* The core's own breakpoint and selector for the row. */
+@media (width > 40rem) {
+  .su-steps:not(.su-steps--vertical) .su-step:not(:last-child)::after {
+    top: calc(var(--su-step-marker) / 2 - 3px);
+    height: 6px;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Divider
+ *
+ * A line cut into the page rather than drawn on it: its upper half is
+ * the shade, falling from the top left, and its lower half the light
+ * catching the cut's far edge. A vertical one is the same cut turned,
+ * shade on the left.
+ * ------------------------------------------------------------------ */
+
+.su-divider::before,
+.su-divider::after {
+  height: 2px;
+  background: linear-gradient(to bottom, var(--su-neu-dark) 50%, var(--su-neu-light) 50%);
+}
+
+.su-divider--vertical::before,
+.su-divider--vertical::after {
+  width: 2px;
+  height: auto;
+  background: linear-gradient(to right, var(--su-neu-dark) 50%, var(--su-neu-light) 50%);
 }
 
 /* ------------------------------------------------------------------ *
