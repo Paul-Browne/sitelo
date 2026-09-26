@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: '部署',
     description:
-      '把 sitelo 站点部署到 Netlify、Vercel、Cloudflare Pages、AWS Amplify、GitHub Pages 或任意静态托管。',
+      '把 sitelo 站点部署到 Netlify、Vercel、Cloudflare Pages、AWS Amplify、GitHub Pages、Railway 或任意静态托管。',
     activeHref: '/zh/docs/deployment',
     children: [
       p(
@@ -78,6 +78,38 @@ export default () =>
         '）？构建时加上 ',
         code('--base /repo/'),
         '。',
+      ),
+      h2('Railway'),
+      p(
+        'Railway 运行的是 Node 服务器，所以除了提供构建产物，还能在每次请求时渲染',
+        a({ href: '/zh/docs/islands' }, '服务端区块'),
+        '。可直接部署的起步项目在 ',
+        a(
+          {
+            href: 'https://github.com/paul-browne/sitelo/tree/main/examples/railway',
+            rel: 'noopener',
+          },
+          'examples/railway',
+        ),
+        ' 中：',
+        code('railway.json'),
+        ' 用 ',
+        code('npm run build'),
+        ' 构建并启动 ',
+        code('server.js'),
+        '，由它提供 ',
+        code('dist/'),
+        ' 并渲染 ',
+        code('src/islands/'),
+        '。',
+      ),
+      codeBlock('railway.json', s.railway, 'json'),
+      p(
+        '直接从 sitelo 仓库部署？把服务的根目录设为 ',
+        code('/examples/railway'),
+        '，配置文件路径设为 ',
+        code('/examples/railway/railway.json'),
+        ' —— Railway 不会在根目录下查找配置文件。',
       ),
       h2('发布之前'),
       ul(

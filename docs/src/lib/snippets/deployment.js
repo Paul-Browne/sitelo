@@ -92,6 +92,19 @@ frontend:
     paths:
       - node_modules/**/*`,
 
+    railway: `{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "RAILPACK",
+    "buildCommand": "npm run build"
+  },
+  "deploy": {
+    "startCommand": "npm start",
+    "healthcheckPath": "/",
+    "restartPolicyType": "ON_FAILURE"
+  }
+}`,
+
     ghPages: `# ${t.ghPages}
 name: Deploy
 on:

@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Wdrożenie',
     description:
-      'Wdróż witrynę sitelo na Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages albo dowolny hosting statyczny.',
+      'Wdróż witrynę sitelo na Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway albo dowolny hosting statyczny.',
     activeHref: '/pl/docs/deployment',
     children: [
       p(
@@ -78,6 +78,38 @@ export default () =>
         ')? Buduj z ',
         code('--base /repo/'),
         '.',
+      ),
+      h2('Railway'),
+      p(
+        'Railway uruchamia serwer Node, więc poza serwowaniem buildu może renderować ',
+        a({ href: '/pl/docs/islands' }, 'wyspy serwerowe'),
+        ' przy każdym żądaniu. Gotowy do wdrożenia starter znajdziesz w ',
+        a(
+          {
+            href: 'https://github.com/paul-browne/sitelo/tree/main/examples/railway',
+            rel: 'noopener',
+          },
+          'examples/railway',
+        ),
+        ': ',
+        code('railway.json'),
+        ' buduje przez ',
+        code('npm run build'),
+        ' i uruchamia ',
+        code('server.js'),
+        ', który serwuje ',
+        code('dist/'),
+        ' i renderuje ',
+        code('src/islands/'),
+        '.',
+      ),
+      codeBlock('railway.json', s.railway, 'json'),
+      p(
+        'Wdrażasz prosto z repozytorium sitelo? Ustaw katalog główny usługi na ',
+        code('/examples/railway'),
+        ', a ścieżkę pliku konfiguracyjnego na ',
+        code('/examples/railway/railway.json'),
+        ' — Railway nie szuka pliku konfiguracyjnego w katalogu głównym.',
       ),
       h2('Zanim opublikujesz'),
       ul(

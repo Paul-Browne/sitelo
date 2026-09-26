@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Развёртывание',
     description:
-      'Разверните сайт на sitelo в Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages или на любом статическом хостинге.',
+      'Разверните сайт на sitelo в Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway или на любом статическом хостинге.',
     activeHref: '/ru/docs/deployment',
     children: [
       p(
@@ -78,6 +78,38 @@ export default () =>
         ')? Собирайте с ',
         code('--base /repo/'),
         '.',
+      ),
+      h2('Railway'),
+      p(
+        'Railway запускает Node-сервер, поэтому кроме раздачи сборки он может рендерить ',
+        a({ href: '/ru/docs/islands' }, 'серверные острова'),
+        ' на каждый запрос. Готовый к развёртыванию стартер лежит в ',
+        a(
+          {
+            href: 'https://github.com/paul-browne/sitelo/tree/main/examples/railway',
+            rel: 'noopener',
+          },
+          'examples/railway',
+        ),
+        ': ',
+        code('railway.json'),
+        ' собирает через ',
+        code('npm run build'),
+        ' и запускает ',
+        code('server.js'),
+        ', который раздаёт ',
+        code('dist/'),
+        ' и рендерит ',
+        code('src/islands/'),
+        '.',
+      ),
+      codeBlock('railway.json', s.railway, 'json'),
+      p(
+        'Разворачиваете прямо из репозитория sitelo? Укажите корневой каталог сервиса ',
+        code('/examples/railway'),
+        ' и путь к файлу конфигурации ',
+        code('/examples/railway/railway.json'),
+        ' — Railway не ищет файл конфигурации внутри корневого каталога.',
       ),
       h2('Перед публикацией'),
       ul(

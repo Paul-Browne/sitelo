@@ -1285,6 +1285,9 @@ export default { fetch: (request) => handleIslands(request) }
 Plain Node http/express? Use `createIslandsNodeHandler(options)` —
 same options, `(req, res, next)` signature. For Netlify / Vercel rewrite
 stubs, see [`examples/islands`](./examples/islands).
+For a starter that deploys to [Railway](https://railway.com) as-is —
+Node server, `railway.json` and all — see
+[`examples/railway`](./examples/railway).
 
 ### Loading strategies
 

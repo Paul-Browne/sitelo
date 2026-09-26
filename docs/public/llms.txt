@@ -122,6 +122,7 @@ Component library shipped with sitelo, at the `sitelo/ui` entry point. Component
 - Host: `createIslandsHandler` / `createIslandsNodeHandler` / `createIslandsFromDirectory` from `sitelo/islands/server`
 - Dev + preview: `sitelo` / `sitelo preview` serve `/_sitelo/islands/<name>` automatically
 - Production: Node host, or Netlify/Vercel stubs in https://sitelo.dev/examples/islands
+- Railway-ready starter (Node host + railway.json): https://github.com/paul-browne/sitelo/tree/main/examples/railway
 
 ## Deploy
 
@@ -133,6 +134,7 @@ Static site = publish `dist/`. Example host configs: https://sitelo.dev/examples
 - Local JSON files as data: https://sitelo.dev/examples/json
 - WordPress REST API: https://sitelo.dev/examples/wordpress
 - Server islands: https://sitelo.dev/examples/islands
+- Server islands on Railway: https://github.com/paul-browne/sitelo/tree/main/examples/railway
 
 ## AI guidance
 

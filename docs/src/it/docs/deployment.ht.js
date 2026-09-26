@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Deploy',
     description:
-      'Pubblica un sito sitelo su Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages o qualunque host statico.',
+      'Pubblica un sito sitelo su Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway o qualunque host statico.',
     activeHref: '/it/docs/deployment',
     children: [
       p(
@@ -78,6 +78,38 @@ export default () =>
         ')? Fai la build con ',
         code('--base /repo/'),
         '.',
+      ),
+      h2('Railway'),
+      p(
+        'Railway esegue un server Node, quindi oltre a servire la build può renderizzare le ',
+        a({ href: '/it/docs/islands' }, 'island server'),
+        ' a ogni richiesta. Uno starter pronto da pubblicare si trova in ',
+        a(
+          {
+            href: 'https://github.com/paul-browne/sitelo/tree/main/examples/railway',
+            rel: 'noopener',
+          },
+          'examples/railway',
+        ),
+        ': ',
+        code('railway.json'),
+        ' fa la build con ',
+        code('npm run build'),
+        ' e avvia ',
+        code('server.js'),
+        ', che serve ',
+        code('dist/'),
+        ' e renderizza ',
+        code('src/islands/'),
+        '.',
+      ),
+      codeBlock('railway.json', s.railway, 'json'),
+      p(
+        'Pubblichi direttamente dal repository di sitelo? Imposta la root directory del servizio su ',
+        code('/examples/railway'),
+        ' e il percorso del file di configurazione su ',
+        code('/examples/railway/railway.json'),
+        ' — Railway non cerca il file di configurazione dentro la root directory.',
       ),
       h2('Prima di pubblicare'),
       ul(
