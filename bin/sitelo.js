@@ -22,6 +22,7 @@ import { clearDataCache, onDataRead } from '../src/data.js';
 import {
   normalizePagefindOptions,
   runPagefind,
+  servePagefind,
 } from '../src/pagefind.js';
 import {
   normalizeBuildReportOptions,
@@ -346,7 +347,39 @@ async function loadSiteloConfig(root) {
   return { ...split, configFile };
 }
 
-async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
+/**
+ * The paths the page validator should take on trust, on top of the
+ * site's own `externalAssets`.
+ *
+ * Pagefind writes `/pagefind/` after the Vite build, so while the pages
+ * are being checked there is never a file behind it — a page that linked
+ * `pagefind-ui.js` failed its own build until a copy turned up in
+ * `public/`, which only an earlier build could have put there.
+ *
+ * @param {unknown} pagefind the `pagefind` option
+ * @param {string | undefined} base
+ * @returns {string[]}
+ */
+function generatedAssetPrefixes(pagefind, base) {
+  if (!normalizePagefindOptions(pagefind)) return [];
+
+  const prefixes = ['/pagefind/'];
+
+  if (typeof base === 'string' && base.startsWith('/') && base !== '/') {
+    prefixes.push(`${base.replace(/\/+$/, '')}/pagefind/`);
+  }
+
+  return prefixes;
+}
+
+/** Whatever a config passed for a list option, as a list. */
+function toList(value) {
+  if (value == null) return [];
+
+  return Array.isArray(value) ? value : [value];
+}
+
+async function resolveSiteloConfig({ root, configFile, command, mode, debug, base }) {
   const {
     pluginOptions,
     viteOptions,
@@ -392,10 +425,15 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
     };
   }
 
+  const generated = generatedAssetPrefixes(pagefind, base ?? viteOptions?.base);
+
   return {
     plugins: [
       htmlPages({
         ...(pluginOptions ?? {}),
+        ...(generated.length
+          ? { externalAssets: [...toList(pluginOptions?.externalAssets), ...generated] }
+          : {}),
         debug: debug || Boolean(pluginOptions?.debug),
       }),
     ],
@@ -578,6 +616,30 @@ function imagesDevPlugin({ root, pagesDir = 'src', publicDir, base, options }) {
 }
 
 /**
+ * Serve `/pagefind/` in dev from the last build's index, `dist/pagefind/`.
+ *
+ * Read off the resolved config, so an `outDir` or `base` set in either
+ * config file is the one used.
+ */
+function pagefindDevPlugin() {
+  return {
+    name: 'sitelo:pagefind-dev',
+
+    configureServer(server) {
+      const { root, base, build, logger } = server.config;
+
+      server.middlewares.use(
+        servePagefind({
+          dir: path.resolve(root, build.outDir, 'pagefind'),
+          base,
+          warn: (message) => logger.warn(message),
+        }),
+      );
+    },
+  };
+}
+
+/**
  * Reload the browser when local JSON data changes.
  *
  * Nothing is configured: `sitelo/data` reports every path a page reads, and
@@ -732,13 +794,14 @@ function buildInlineConfig(cli, command, viteFromSitelo = {}, viteLogging = {}) 
 
 async function runDev(cli) {
   const mode = cli.mode ?? 'development';
-  const { plugins, viteOptions, viteLogging, pluginOptions, images } =
+  const { plugins, viteOptions, viteLogging, pluginOptions, images, pagefind } =
     await resolveSiteloConfig({
       root: cli.root,
       configFile: cli.config,
       command: 'serve',
       mode,
       debug: cli.debug,
+      base: cli.base,
     });
 
   const imageOptions = normalizeImageOptions(images);
@@ -751,6 +814,7 @@ async function runDev(cli) {
           pagesDir: pluginOptions?.pagesDir,
         }),
         dataDevPlugin(),
+        ...(normalizePagefindOptions(pagefind) ? [pagefindDevPlugin()] : []),
         ...(imageOptions?.dev
           ? [
               imagesDevPlugin({
@@ -789,6 +853,7 @@ async function runBuild(cli) {
     command: 'build',
     mode,
     debug: cli.debug,
+    base: cli.base,
   });
 
   const inline = buildInlineConfig(cli, 'build', viteOptions, viteLogging);
@@ -883,6 +948,7 @@ async function runBuild(cli) {
       command: 'serve',
       mode,
       debug: cli.debug,
+      base: cli.base,
     });
 
     await runLighthouse({
@@ -919,6 +985,7 @@ async function runPreview(cli) {
     command: 'serve',
     mode,
     debug: cli.debug,
+    base: cli.base,
   });
 
   const previewServer = await preview(
@@ -943,6 +1010,7 @@ async function runLighthouseAudit(cli) {
       command: 'serve',
       mode,
       debug: cli.debug,
+      base: cli.base,
     });
 
   // Running the command is itself the opt-in, so an unconfigured site gets

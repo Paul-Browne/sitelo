@@ -1,3 +1,4 @@
+import { createReadStream, existsSync, statSync } from 'node:fs'
 import { cp, readFile, rm } from 'node:fs/promises'
 import path from 'node:path'
 import { installCommand } from './package-manager.js'
@@ -65,8 +66,15 @@ function optionalStrings(value, label) {
 export function normalizePagefindOptions(pagefind) {
   if (!pagefind) return null
 
+  /*
+   * `syncPublic` is off unless asked for. It used to default on: every
+   * build deleted `public/pagefind/` and copied the new index there, into
+   * the site's own source, so that `sitelo` (dev) could serve search. Dev
+   * now serves `dist/pagefind/` itself — see `servePagefind` — and
+   * preview always served `dist/`, so the copy has no job left.
+   */
   if (pagefind === true) {
-    return { syncPublic: true }
+    return { syncPublic: false }
   }
 
   if (typeof pagefind !== 'object' || Array.isArray(pagefind)) {
@@ -78,7 +86,7 @@ export function normalizePagefindOptions(pagefind) {
   const options = /** @type {Record<string, unknown>} */ (pagefind)
 
   return {
-    syncPublic: options.syncPublic !== false,
+    syncPublic: optional(options.syncPublic, 'pagefind.syncPublic', 'boolean') ?? false,
     glob: optional(options.glob, 'pagefind.glob', 'string'),
     rootSelector: optional(options.rootSelector, 'pagefind.rootSelector', 'string'),
     excludeSelectors: optionalStrings(options.excludeSelectors, 'pagefind.excludeSelectors'),
@@ -248,15 +256,107 @@ export async function runPagefind({
     await close()
   }
 
-  if (!options.syncPublic || publicDir === false) return
+  if (publicDir === false) return
 
   const publicRoot = path.resolve(root, publicDir ?? 'public')
   const publicPagefind = path.join(publicRoot, 'pagefind')
+  const shown = path.relative(root, publicPagefind) || publicPagefind
+
+  if (!options.syncPublic) {
+    /*
+     * A copy an earlier sitelo made, when this synced by default. It does
+     * no harm — Vite copies it into the build and the index above replaces
+     * it — but it is generated output in the site's source, and nothing
+     * here deletes a folder it is no longer sure it owns. So it says so.
+     */
+    if (existsSync(path.join(publicPagefind, 'pagefind-entry.json'))) {
+      log(
+        `[sitelo] pagefind: ${shown}/ is a copy an earlier sitelo kept there for the dev server. ` +
+          'Dev serves the build\'s own index now, so it can be deleted, with its .gitignore line.',
+      )
+    }
+
+    return
+  }
 
   await rm(publicPagefind, { recursive: true, force: true })
   await cp(outputPath, publicPagefind, { recursive: true })
 
-  log(
-    `[sitelo] pagefind synced → ${path.relative(root, publicPagefind) || publicPagefind} (for sitelo / preview)`,
-  )
+  log(`[sitelo] pagefind synced → ${shown} (syncPublic)`)
+}
+
+/** What the files in a Pagefind bundle are served as. */
+const PAGEFIND_TYPES = {
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.wasm': 'application/wasm',
+}
+
+/**
+ * Dev middleware serving `/pagefind/*` from the last build's index.
+ *
+ * Search needs an index, and an index needs built pages, so dev has always
+ * served whatever the last `sitelo build` produced. It used to find it in
+ * `public/pagefind/`, where every build copied it; it reads `dir` — the
+ * build's own `dist/pagefind/` — directly instead, so nothing is written
+ * into the site's source. A request it has no file for goes on to the
+ * next middleware, where a `public/pagefind/` of the site's own still
+ * answers it.
+ *
+ * @param {{ dir: string, base?: string, warn?: (message: string) => void }} options
+ *   `dir` is the bundle; `base` the path the site is served under
+ * @returns {(req: any, res: any, next: () => void) => void}
+ */
+export function servePagefind({ dir, base = '/', warn = console.warn }) {
+  const prefix = `${base.startsWith('/') ? base.replace(/\/+$/, '') : ''}/pagefind/`
+  let hinted = false
+
+  return (req, res, next) => {
+    const url = String(req.url ?? '').split(/[?#]/)[0]
+
+    if (!url.startsWith(prefix) || (req.method !== 'GET' && req.method !== 'HEAD')) return next()
+
+    let relative
+    try {
+      relative = decodeURIComponent(url.slice(prefix.length))
+    } catch {
+      return next()
+    }
+
+    const file = path.resolve(dir, relative)
+    const inside = path.relative(dir, file)
+
+    // `..` in any spelling stays out of the bundle.
+    if (!inside || inside.startsWith('..') || path.isAbsolute(inside)) return next()
+
+    let stats
+    try {
+      stats = statSync(file)
+    } catch {
+      if (!hinted && !existsSync(dir)) {
+        hinted = true
+        warn(
+          `[sitelo] ${url} is served from the last build's index, and there is none yet at ${dir} — run \`sitelo build\` once.`,
+        )
+      }
+
+      return next()
+    }
+
+    if (!stats.isFile()) return next()
+
+    res.statusCode = 200
+    res.setHeader('Content-Type', PAGEFIND_TYPES[path.extname(file)] ?? 'application/octet-stream')
+    res.setHeader('Content-Length', stats.size)
+    // A rebuild replaces the files under the same names.
+    res.setHeader('Cache-Control', 'no-cache')
+
+    if (req.method === 'HEAD') {
+      res.end()
+      return
+    }
+
+    createReadStream(file).pipe(res)
+  }
 }

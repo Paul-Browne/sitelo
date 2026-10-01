@@ -1440,9 +1440,9 @@ it when you enable search:
 npm install -D pagefind  # or: pnpm add -D pagefind / yarn add -D pagefind
 ```
 
-Then `sitelo build` indexes your site into `dist/pagefind/` (and syncs a
-copy to `public/pagefind/` so the next `sitelo` / `sitelo preview` can
-serve search without rebuilding):
+Then `sitelo build` indexes your site into `dist/pagefind/`, and both
+`sitelo` (dev) and `sitelo preview` serve `/pagefind/` from there — search
+in dev uses the last build's index. Nothing is written into `public/`:
 
 ```js
 // sitelo.config.js
@@ -1476,7 +1476,15 @@ await new Promise((resolve, reject) => {
 new PagefindUI({ element: '#search', showImages: false })
 ```
 
-Gitignore `public/pagefind/`. Full walkthrough:
+A page may also link `/pagefind/pagefind-ui.css` and `pagefind-ui.js`
+directly: the build's missing-asset check knows the index comes after it.
+(If you register the plugin in `vite.config.js` yourself, add
+`externalAssets: ['/pagefind/']` to its options.)
+
+Upgrading from a sitelo that synced the index to `public/pagefind/`? That
+copy is no longer needed — delete it and its `.gitignore` line; the build
+says so while it is there. `pagefind: { syncPublic: true }` keeps the old
+copy-back if something else reads it. Full walkthrough:
 [sitelo.dev/docs/configuration#pagefind-search](https://sitelo.dev/docs/configuration#pagefind-search).
 
 ### Build report

@@ -318,8 +318,8 @@ function closeMenusOnOutsideClick() {
 /**
  * Pagefind search — indexes live under `/pagefind/`.
  * Production: written into `docs/dist` by `docs:build`.
- * Dev: the same bundle is synced to `docs/public/pagefind` so Vite can
- * serve it (re-run `npm run docs:build` or `docs:index` after content changes).
+ * Dev: sitelo serves the last build's `docs/dist/pagefind` (re-run
+ * `npm run docs:build` or `docs:index` after content changes).
  */
 async function initDocsSearch() {
   const mount = document.querySelector('#docs-search')

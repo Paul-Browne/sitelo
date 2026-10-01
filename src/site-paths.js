@@ -94,8 +94,9 @@ export function matchesGlob(relativePath, glob) {
  * Every `.html` file under `dir`, as sorted paths relative to it.
  *
  * `pagefind/` is skipped by default for the same reason pagefind skips it:
- * with `syncPublic`, the previous build's bundle is copied back out of
- * `public/` into the output directory before this runs.
+ * a `public/pagefind/` — kept by `syncPublic`, or left by an older sitelo
+ * that synced by default — is copied into the output directory with the
+ * rest of `public/` before this runs.
  *
  * @param {string} dir
  * @param {{ skip?: string[] }} [options]

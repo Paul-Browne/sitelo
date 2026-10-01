@@ -55,7 +55,11 @@ Left as they were:
 
 - **#16.** A request without props still skips signature checking, which is by design: prop-less islands have nothing to sign. `configureIslands()` is now shared across module copies, so the dev endpoint enforces it. `sitelo preview` and production handlers still need the environment variable or `createIslandsHandler({ secret })`; the README now says so.
 - **#23.** Two fields with the same `name` on one page still get the same generated id, because ids are deterministic on purpose. The docs now say to pass an `id`. Non-Latin labels now get an id.
-- **#30.** `pagefind.syncPublic` still defaults to writing `public/pagefind/`, and `sitelo:ui-runtime` still uses `process.env.SITELO_UI_BASE`. Both are design choices rather than bugs.
+- **#30.** `sitelo:ui-runtime` still uses `process.env.SITELO_UI_BASE`. It's a design choice rather than a bug.
+
+Resolved afterwards:
+
+- **#30.** `pagefind.syncPublic` now defaults to `false`, so a build no longer rewrites `public/pagefind/` in the source tree. `sitelo` (dev) serves `/pagefind/` straight from the last build's `dist/pagefind/`, under the site's `base`, and preview always served `dist/`. Because the index only exists after the Vite build, the missing-asset check now takes `/pagefind/` on trust when `pagefind` is on; before, a page that linked `pagefind-ui.js` failed its first build on a fresh clone. A copy left in `public/pagefind/` by an older version is left alone, and the build prints a note saying it can be deleted. `syncPublic: true` still copies.
 
 ---
 

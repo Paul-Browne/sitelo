@@ -167,15 +167,18 @@ export default {
   );
 });
 
-test('sitelo build with pagefind: true indexes and syncs to public/', async (t) => {
+test('sitelo build with pagefind: true indexes into dist/ and leaves public/ alone', async (t) => {
   const configPath = path.join(fixtureDir, 'sitelo.config.js');
   const originalConfig = fs.readFileSync(configPath, 'utf8');
-  const publicPagefind = path.join(fixtureDir, 'public', 'pagefind');
+  const searchPage = path.join(fixtureDir, 'src', 'search.ht.js');
+  const publicDir = path.join(fixtureDir, 'public');
+  const publicPagefind = path.join(publicDir, 'pagefind');
 
   const cleanup = () => {
     fs.writeFileSync(configPath, originalConfig);
+    fs.rmSync(searchPage, { force: true });
     fs.rmSync(distDir, { recursive: true, force: true });
-    fs.rmSync(publicPagefind, { recursive: true, force: true });
+    fs.rmSync(publicDir, { recursive: true, force: true });
     fs.rmSync(path.join(fixtureDir, '.sitelo'), {
       recursive: true,
       force: true,
@@ -194,16 +197,93 @@ test('sitelo build with pagefind: true indexes and syncs to public/', async (t) 
 `,
   );
 
-  await runBuild(fixtureDir);
+  // A page that links the bundle from its HTML. The page validator used to
+  // fail this on a fresh checkout: nothing is behind /pagefind/ until the
+  // index is written, after the Vite build the validator runs in.
+  fs.writeFileSync(
+    searchPage,
+    "export default () => '<!doctype html><html lang=\"en\"><head><title>Search</title><link rel=\"stylesheet\" href=\"/pagefind/pagefind-ui.css\"><script src=\"/pagefind/pagefind-ui.js\" defer></script></head><body><main data-pagefind-body><h1>Search</h1></main></body></html>'\n",
+  );
+
+  const { stdout } = await runBuild(fixtureDir);
 
   assert.ok(
     fs.existsSync(path.join(distDir, 'pagefind', 'pagefind-ui.js')),
     'expected dist/pagefind/pagefind-ui.js',
   );
-  assert.ok(
-    fs.existsSync(path.join(publicPagefind, 'pagefind-ui.js')),
-    'expected public/pagefind/pagefind-ui.js sync for dev',
+  assert.equal(fs.existsSync(publicDir), false, 'nothing is written into public/');
+  assert.doesNotMatch(stdout, /public\/pagefind/);
+
+  // A copy an earlier sitelo left is pointed out, and left alone.
+  fs.mkdirSync(publicPagefind, { recursive: true });
+  fs.writeFileSync(path.join(publicPagefind, 'pagefind-entry.json'), '{}');
+
+  const { stdout: withLeftover } = await runBuild(fixtureDir);
+
+  assert.match(withLeftover, /pagefind: public\/pagefind\/ is a copy an earlier sitelo kept there/);
+  assert.deepEqual(fs.readdirSync(publicPagefind), ['pagefind-entry.json']);
+
+  // syncPublic still copies, for a site that asks.
+  fs.rmSync(publicDir, { recursive: true, force: true });
+  fs.writeFileSync(
+    configPath,
+    `export default {
+  site: 'https://example.com',
+  pagefind: { syncPublic: true },
+}
+`,
   );
+
+  await runBuild(fixtureDir);
+
+  assert.ok(fs.existsSync(path.join(publicPagefind, 'pagefind-ui.js')), 'syncPublic: true copies');
+});
+
+test('sitelo dev serves search from the last build, under the base', async (t) => {
+  const configPath = path.join(fixtureDir, 'sitelo.config.js');
+  const originalConfig = fs.readFileSync(configPath, 'utf8');
+
+  const cleanup = () => {
+    fs.writeFileSync(configPath, originalConfig);
+    fs.rmSync(distDir, { recursive: true, force: true });
+    fs.rmSync(path.join(fixtureDir, 'public'), { recursive: true, force: true });
+  };
+
+  cleanup();
+  t.after(cleanup);
+
+  fs.writeFileSync(configPath, "export default { site: 'https://example.com', pagefind: true }\n");
+  await runBuild(fixtureDir);
+
+  const port = await new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.once('error', reject);
+    server.listen(0, () => {
+      const { port: free } = server.address();
+      server.close(() => resolve(free));
+    });
+  });
+
+  const child = spawn(
+    process.execPath,
+    [cliPath, 'dev', '--port', String(port), '--strictPort', '--base', '/repo/', '--logLevel', 'error'],
+    { cwd: fixtureDir, env: process.env, stdio: 'ignore' },
+  );
+  t.after(() => child.kill('SIGTERM'));
+
+  const url = `http://localhost:${port}/repo/pagefind/pagefind-ui.js`;
+  const deadline = Date.now() + 15_000;
+  let response;
+
+  while (Date.now() < deadline) {
+    response = await fetch(url).catch(() => null);
+    if (response) break;
+    await new Promise((resolve) => setTimeout(resolve, 150));
+  }
+
+  assert.equal(response?.status, 200);
+  assert.match(response.headers.get('content-type') ?? '', /javascript/);
+  assert.equal(fs.existsSync(path.join(fixtureDir, 'public')), false);
 });
 
 test('sitelo errors when sitelo.config.js and vite.config both register the plugin', async () => {
