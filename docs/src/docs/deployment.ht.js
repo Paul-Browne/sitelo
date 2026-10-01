@@ -9,7 +9,7 @@ export default () =>
   docsLayout({
     title: 'Deployment',
     description:
-      'Deploy a sitelo site to Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, or any static host.',
+      'Deploy a sitelo site to Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway, or any static host.',
     activeHref: '/docs/deployment',
     children: [
       p(
@@ -79,6 +79,38 @@ export default () =>
         ')? Build with ',
         code('--base /repo/'),
         '.',
+      ),
+      h2('Railway'),
+      p(
+        'Railway runs a Node server, so besides serving the build it can render ',
+        a({ href: '/docs/islands' }, 'server islands'),
+        ' on every request. A ready-to-deploy starter lives in ',
+        a(
+          {
+            href: 'https://github.com/paul-browne/sitelo/tree/main/examples/railway',
+            rel: 'noopener',
+          },
+          'examples/railway',
+        ),
+        ': ',
+        code('railway.json'),
+        ' builds with ',
+        code('npm run build'),
+        ' and starts ',
+        code('server.js'),
+        ', which serves ',
+        code('dist/'),
+        ' and renders ',
+        code('src/islands/'),
+        '.',
+      ),
+      codeBlock('railway.json', s.railway, 'json'),
+      p(
+        'Deploying it straight from the sitelo repository? Set the service’s root directory to ',
+        code('/examples/railway'),
+        ' and its config file path to ',
+        code('/examples/railway/railway.json'),
+        ' — Railway does not look for the config file under the root directory.',
       ),
       h2('Before you ship'),
       ul(
