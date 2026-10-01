@@ -121,14 +121,19 @@ export function styles({ preset, ...options } = {}) {
 
 /**
  * A token value can carry no markup — everything here ends up inside a
- * `<style>`, where an unescaped `<` would end the element early.
+ * `<style>`, where an unescaped `<` would end the element early — and no
+ * braces, which would close the rule and start another: a value of
+ * `red}body{display:none` used to hide the page.
  *
  * @param {unknown} value
  * @returns {string}
  */
 function tokenValue(value) {
-  return String(value).replace(/[<>]/g, '')
+  return String(value).replace(/[<>{}]/g, '')
 }
+
+/** A custom property name, with nothing that could end the declaration. */
+const PROPERTY_NAME = /^--[^\s{}<>:;]+$/
 
 /**
  * Flatten `{ primary: { base, hover } }` into `--su-primary` and
@@ -150,6 +155,10 @@ function declarations(tokens, prefix = '') {
     const name = key.startsWith('--')
       ? key
       : `--su-${prefix}${key.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()}`
+
+    // A key is written into the sheet as is, so one that is not a property
+    // name is left out rather than trusted.
+    if (!PROPERTY_NAME.test(name)) continue
 
     if (typeof value === 'object' && !Array.isArray(value)) {
       const { base, ...rest } = /** @type {Record<string, unknown>} */ (value)
@@ -188,7 +197,10 @@ function declarations(tokens, prefix = '') {
  * @param {string} [options.nonce]
  * @returns {string}
  */
-export function theme(tokens = {}, { selector = ':root', dark, nonce } = {}) {
+export function theme(tokens = {}, { selector: rawSelector = ':root', dark, nonce } = {}) {
+  // Written into a `<style>` as is: no `<` to end the element, no braces
+  // to end the rule. `>` stays — it is the child combinator.
+  const selector = String(rawSelector).replace(/[<{}]/g, '')
   const blocks = []
   const light = declarations(tokens)
 
@@ -199,12 +211,38 @@ export function theme(tokens = {}, { selector = ':root', dark, nonce } = {}) {
 
     if (darkDecls.length) {
       const body = `{${darkDecls.join(';')}}`
-      const scope = selector === ':root' ? '' : `${selector} `
+
+      /*
+       * The core sheet's own three conditions, so the overrides switch
+       * exactly when its dark tokens do. Two ways they used not to:
+       *
+       * - `[data-theme='dark']` alone ignored the visitor's own choice. A
+       *   host that sets `data-theme="dark"` and a toggle set to light gave
+       *   the light page these dark values.
+       * - A scoped selector put the attribute *inside* it, `.x
+       *   [data-su-theme='dark']`, where the toggle never writes it, and
+       *   tested `prefers-color-scheme` without asking the root whether
+       *   the visitor had chosen light.
+       *
+       * The scope sits under the condition rather than beside it, and in
+       * `:is()` so a selector list stays one selector — or on the element
+       * itself, when the scope is where the attribute was set.
+       */
+      const on = (condition) =>
+        selector === ':root'
+          ? `${condition}${body}`
+          : `${condition} :is(${selector}),:is(${selector})${condition}${body}`
+
+      const unchosen = ":not([data-theme='light']):not([data-su-theme='light'])"
 
       blocks.push(
-        `${scope}[data-theme='dark']${body}`,
-        `${scope}[data-su-theme='dark']${body}`,
-        `@media (prefers-color-scheme: dark){${selector}:not([data-theme='light']):not([data-su-theme='light'])${body}}`,
+        on(`[data-theme='dark']:not([data-su-theme='light'])`),
+        on(`[data-su-theme='dark']`),
+        `@media (prefers-color-scheme: dark){${
+          selector === ':root'
+            ? `:root${unchosen}${body}`
+            : `:root${unchosen} :is(${selector}),:root:is(${selector})${unchosen}${body}`
+        }}`,
       )
     }
   }
@@ -246,5 +284,10 @@ export function themeScript({ nonce } = {}) {
     "b.setAttribute('aria-pressed',v==='dark')}" +
     "d.readyState==='loading'?d.addEventListener('DOMContentLoaded',p,{once:true}):p()})()"
 
-  return `<script${nonce ? ` nonce="${nonce}"` : ''}>${source}</script>`
+  // Escaped the way javascript-to-html escapes the nonce `styles()` writes.
+  const attribute = nonce
+    ? ` nonce="${String(nonce).replaceAll('&', '&amp;').replaceAll('"', '&#34;').replaceAll('<', '&lt;')}"`
+    : ''
+
+  return `<script${attribute}>${source}</script>`
 }

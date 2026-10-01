@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 
 import {
   a,
+  button as buttonEl,
   caption as captionEl,
   div,
   figcaption,
@@ -161,7 +162,16 @@ export function chip(...args) {
 
   if (href) return a(attrs({ href, ...rest }, own), ...body)
 
-  return el(as, span)(attrs(rest, own), ...body)
+  /*
+   * Something to click is a button — a `<span onclick>` reaches neither
+   * the keyboard nor a screen reader — and a button that is not there to
+   * submit a form says so, the way `button()` does.
+   */
+  const tag = as == null && rest.onclick != null ? buttonEl : el(as, span)
+
+  return tag === buttonEl
+    ? tag({ type: 'button' }, attrs(rest, own), ...body)
+    : tag(attrs(rest, own), ...body)
 }
 
 /**

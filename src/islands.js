@@ -5,8 +5,20 @@ const NAME_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_-]*$/
 /** Loading strategies understood by `sitelo/islands/client`. */
 const LOADING_STRATEGIES = new Set(['load', 'idle', 'visible'])
 
-/** Secret set via {@link configureIslands}; falls back to the environment. */
-let configuredSecret
+/*
+ * The secret set via {@link configureIslands}, falling back to the
+ * environment.
+ *
+ * Held on a well-known symbol rather than in module scope, the way
+ * `sitelo/data` holds its cache: pages run in Vite's module graph and
+ * the dev server's islands endpoint in Node's, so each has its own copy of
+ * this file. A module variable set from a page was never seen by the
+ * endpoint, which then rendered unsigned props the build would refuse.
+ */
+const STATE = (globalThis[Symbol.for('sitelo.islands')] ??= {
+  /** @type {string | undefined} */
+  secret: undefined,
+})
 
 export function isValidIslandName(name) {
   return typeof name === 'string' && NAME_PATTERN.test(name)
@@ -32,7 +44,7 @@ function escapeAttribute(value) {
  * @param {{ secret?: string | null }} options
  */
 export function configureIslands({ secret } = {}) {
-  configuredSecret = secret ?? undefined
+  STATE.secret = secret ?? undefined
 }
 
 /**
@@ -40,7 +52,7 @@ export function configureIslands({ secret } = {}) {
  * @returns {string | undefined}
  */
 export function getIslandsSecret() {
-  return configuredSecret ?? process.env.SITELO_ISLANDS_SECRET ?? undefined
+  return STATE.secret ?? process.env.SITELO_ISLANDS_SECRET ?? undefined
 }
 
 /**

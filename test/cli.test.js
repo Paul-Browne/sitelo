@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
-import { execFile } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
 import fs from 'node:fs';
+import net from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
@@ -344,3 +345,109 @@ test('config errors carry exactly one [sitelo] prefix', async (t) => {
   }
 });
 
+
+async function runCli(args, cwd = fixtureDir) {
+  return execFileAsync(process.execPath, [cliPath, ...args], {
+    cwd,
+    env: process.env,
+    // A regression here starts a server that never exits.
+    timeout: 20_000,
+  }).then(
+    (result) => ({ code: 0, output: `${result.stdout}${result.stderr}` }),
+    (error) => ({ code: error.code, signal: error.signal, output: `${error.stdout ?? ''}${error.stderr ?? ''}` }),
+  );
+}
+
+test('a mistyped command or a stray argument fails instead of starting a server', async () => {
+  const cases = [
+    [['biuld'], /\[sitelo\] Unknown command: biuld \(expected dev, build, preview, lighthouse/],
+    [['build', 'docs'], /\[sitelo\] Unexpected argument: docs \(to point sitelo at another directory, use --root docs\)/],
+    [['dev', '--port', 'abc'], /\[sitelo\] --port must be a port number, got "abc"/],
+    [['dev', '--port', '70000'], /\[sitelo\] --port must be a port number, got "70000"/],
+    [['dev', '--logLevel', 'loud'], /\[sitelo\] --logLevel must be one of info, warn, error, silent, got "loud"/],
+  ];
+
+  for (const [args, expected] of cases) {
+    const result = await runCli(args);
+
+    assert.equal(result.signal ?? null, null, `sitelo ${args.join(' ')} had to be killed`);
+    assert.equal(result.code, 1, `sitelo ${args.join(' ')} exits 1`);
+    assert.match(result.output, expected);
+  }
+});
+
+test('a logLevel set in vite.config reaches the logger', async (t) => {
+  const viteConfig = path.join(fixtureDir, 'vite.config.mjs');
+
+  const cleanup = () => {
+    fs.rmSync(viteConfig, { force: true });
+    fs.rmSync(distDir, { recursive: true, force: true });
+  };
+
+  cleanup();
+  t.after(cleanup);
+
+  fs.writeFileSync(viteConfig, "export default { logLevel: 'silent' }\n");
+
+  const quiet = await runCli(['build']);
+  assert.equal(quiet.code, 0, quiet.output);
+  // The logger sitelo hands Vite used to be made at `info` whatever the
+  // config said, so this printed the whole build.
+  assert.doesNotMatch(quiet.output, /built in|build report/);
+
+  // The flag still wins over the file.
+  const loud = await runCli(['build', '--logLevel', 'info']);
+  assert.match(loud.output, /built in/);
+});
+
+test('sitelo preview resolves the config in production mode, like the build', async (t) => {
+  const viteConfig = path.join(fixtureDir, 'vite.config.mjs');
+  const modes = path.join(fixtureDir, 'modes.txt');
+
+  const cleanup = () => {
+    fs.rmSync(viteConfig, { force: true });
+    fs.rmSync(modes, { force: true });
+    fs.rmSync(distDir, { recursive: true, force: true });
+  };
+
+  cleanup();
+  t.after(cleanup);
+
+  await runBuild(fixtureDir);
+
+  fs.writeFileSync(
+    viteConfig,
+    `import fs from 'node:fs'\nexport default ({ command, mode }) => { fs.appendFileSync(${JSON.stringify(modes)}, \`\${command} \${mode}\\n\`); return {} }\n`,
+  );
+
+  const port = await new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.once('error', reject);
+    server.listen(0, () => {
+      const { port: free } = server.address();
+      server.close(() => resolve(free));
+    });
+  });
+
+  const child = spawn(
+    process.execPath,
+    [cliPath, 'preview', '--port', String(port), '--strictPort', '--logLevel', 'error'],
+    { cwd: fixtureDir, env: process.env, stdio: 'ignore' },
+  );
+  t.after(() => child.kill('SIGTERM'));
+
+  const deadline = Date.now() + 15_000;
+  while (Date.now() < deadline) {
+    const up = await fetch(`http://localhost:${port}/`).then(() => true, () => false);
+    if (up) break;
+    await new Promise((resolve) => setTimeout(resolve, 150));
+  }
+
+  const resolved = fs.readFileSync(modes, 'utf8').trim().split('\n')
+  assert.ok(resolved.length > 0)
+  assert.deepEqual(
+    [...new Set(resolved)],
+    ['serve production'],
+    'every resolution of the config is in production mode',
+  );
+});

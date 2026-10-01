@@ -24,9 +24,11 @@ const MAX_TOASTS = 5
  * @param {object} [options]
  * @param {'primary' | 'neutral' | 'success' | 'warning' | 'danger'} [options.color]
  * @param {number} [options.duration] - Milliseconds; `0` keeps it up.
+ * @param {string} [options.dismissLabel] - What a screen reader calls the
+ *   close button, in the page's language. Default `'Dismiss'`.
  * @returns {HTMLElement | null} `null` when the region is not on the page.
  */
-export function toast(message, { color = 'neutral', duration = 4000 } = {}) {
+export function toast(message, { color = 'neutral', duration = 4000, dismissLabel = 'Dismiss' } = {}) {
   const region = document.getElementById('su-toasts')
 
   if (!region) return null
@@ -45,7 +47,7 @@ export function toast(message, { color = 'neutral', duration = 4000 } = {}) {
 
   dismiss.type = 'button'
   dismiss.className = 'su-alert-dismiss'
-  dismiss.setAttribute('aria-label', 'Dismiss')
+  dismiss.setAttribute('aria-label', String(dismissLabel))
   dismiss.innerHTML = '&times;'
   /*
    * A listener rather than the inline import the server-rendered alerts

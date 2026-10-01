@@ -1398,6 +1398,11 @@
 .su-chip--sm { padding: 0.1rem 0.45rem; }
 .su-chip--lg { padding: 0.36rem 0.8rem; font-size: var(--su-text-sm); }
 
+button.su-chip {
+  font-family: inherit;
+  cursor: pointer;
+}
+
 a.su-chip:hover,
 button.su-chip:hover {
   background: var(--su-c-soft-hover, var(--su-surface-hover));

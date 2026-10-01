@@ -45,6 +45,8 @@ import {
 } from 'vite';
 
 const PLUGIN_NAME = 'vite-plugin-html-pages';
+const COMMANDS = ['dev', 'build', 'preview', 'lighthouse'];
+const LOG_LEVELS = ['info', 'warn', 'error', 'silent'];
 const LOG_PREFIX = '[sitelo]';
 const ISLANDS_ENDPOINT = '/_sitelo/islands';
 const ISLAND_FILE_EXTENSIONS = ['.js', '.mjs', '.ts'];
@@ -73,7 +75,7 @@ Options:
   --assetsDir <dir>       Directory for nested assets (default: assets)
   --emptyOutDir           Force empty outDir on build
   --logLevel <level>      info | warn | error | silent
-  --clearScreen           Allow/disable clear screen when logging
+  --clearScreen [bool]    Allow/disable clear screen when logging
   --host [host]           Expose on network (use 0.0.0.0 for all interfaces)
   --port <port>           Port number
   --strictPort            Exit if port is already in use
@@ -113,18 +115,17 @@ function parseArgs(argv) {
 
   if (args[0] && !args[0].startsWith('-')) {
     const maybeCommand = args.shift();
-    if (
-      ['dev', 'build', 'preview', 'lighthouse', 'help', '--help', '-h'].includes(
-        maybeCommand,
-      )
-    ) {
-      if (maybeCommand === 'help' || maybeCommand === '--help' || maybeCommand === '-h') {
-        result.help = true;
-      } else {
-        result.command = maybeCommand;
-      }
+
+    if (maybeCommand === 'help') {
+      result.help = true;
+    } else if (COMMANDS.includes(maybeCommand)) {
+      result.command = maybeCommand;
     } else {
-      result.positional.push(maybeCommand);
+      // Not a fallback to `dev`: `sitelo biuld` in CI would start a dev
+      // server and wait on it forever.
+      throw new Error(
+        `Unknown command: ${maybeCommand} (expected ${COMMANDS.join(', ')} — see sitelo --help)`,
+      );
     }
   }
 
@@ -175,18 +176,35 @@ function parseArgs(argv) {
       case '--emptyOutDir':
         result.emptyOutDir = true;
         break;
-      case '--logLevel':
-        result.logLevel = next();
+      case '--logLevel': {
+        const level = next();
+        if (!LOG_LEVELS.includes(level)) {
+          throw new Error(
+            `--logLevel must be one of ${LOG_LEVELS.join(', ')}, got "${level}"`,
+          );
+        }
+        result.logLevel = level;
         break;
+      }
       case '--clearScreen':
-        result.clearScreen = true;
+        // Takes an optional `true` / `false`, the way Vite's own flag does.
+        result.clearScreen =
+          args[i + 1] === 'true' || args[i + 1] === 'false'
+            ? next() === 'true'
+            : true;
         break;
       case '--host':
         result.host = args[i + 1] && !args[i + 1].startsWith('-') ? next() : true;
         break;
-      case '--port':
-        result.port = Number(next());
+      case '--port': {
+        const value = next();
+        const port = Number(value);
+        if (!/^\d+$/.test(value) || port > 65535) {
+          throw new Error(`--port must be a port number, got "${value}"`);
+        }
+        result.port = port;
         break;
+      }
       case '--strictPort':
         result.strictPort = true;
         break;
@@ -200,8 +218,11 @@ function parseArgs(argv) {
         if (arg.startsWith('-')) {
           throw new Error(`Unknown option: ${arg}`);
         }
-        result.positional.push(arg);
-        break;
+        // Ignored, it used to be — so `sitelo build docs` built the
+        // working directory and said nothing.
+        throw new Error(
+          `Unexpected argument: ${arg} (to point sitelo at another directory, use --root ${arg})`,
+        );
     }
   }
 
@@ -223,22 +244,30 @@ async function flattenPluginOptions(option) {
   return [resolved];
 }
 
-async function userConfigHasHtmlPagesPlugin({
-  root,
-  configFile,
-  command,
-  mode,
-}) {
+/**
+ * What sitelo needs from the site's own Vite config before handing it to
+ * Vite: whether it registers the pages plugin itself, and how it wants
+ * logging done — the logger sitelo hands Vite has its level fixed when it
+ * is made, so a `logLevel` read only by Vite would never apply.
+ *
+ * @returns {Promise<{ hasPlugin: boolean, logLevel?: string, clearScreen?: boolean }>}
+ */
+async function inspectUserViteConfig({ root, configFile, command, mode }) {
   const loaded = await loadConfigFromFile(
     { command, mode },
     configFile,
     root,
   );
 
-  if (!loaded) return false;
+  if (!loaded) return { hasPlugin: false };
 
   const plugins = await flattenPluginOptions(loaded.config.plugins);
-  return plugins.some((plugin) => plugin.name === PLUGIN_NAME);
+
+  return {
+    hasPlugin: plugins.some((plugin) => plugin.name === PLUGIN_NAME),
+    logLevel: loaded.config.logLevel,
+    clearScreen: loaded.config.clearScreen,
+  };
 }
 
 function findSiteloConfigFile(root) {
@@ -329,12 +358,17 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
     configFile: siteloConfigFile,
   } = await loadSiteloConfig(root);
 
-  const hasPluginInUserConfig = await userConfigHasHtmlPagesPlugin({
+  const userVite = await inspectUserViteConfig({
     root,
     configFile,
     command,
     mode,
   });
+  const hasPluginInUserConfig = userVite.hasPlugin;
+  const viteLogging = {
+    logLevel: userVite.logLevel,
+    clearScreen: userVite.clearScreen,
+  };
 
   if (pluginOptions && hasPluginInUserConfig) {
     const viteConfigLabel = configFile ?? 'vite.config.*';
@@ -348,6 +382,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
     return {
       plugins: [],
       viteOptions,
+      viteLogging,
       pluginOptions,
       pagefind,
       images,
@@ -365,6 +400,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
       }),
     ],
     viteOptions,
+    viteLogging,
     pluginOptions,
     pagefind,
     images,
@@ -398,9 +434,15 @@ function islandsDevPlugin({ root, pagesDir = 'src' }) {
         }
 
         const [pathname, query = ''] = rawUrl.slice(markerIndex).split('?');
-        const name = decodeURIComponent(
-          pathname.slice(ISLANDS_ENDPOINT.length + 1),
-        );
+
+        // Guarded: this middleware is async, so a throw here is a rejection
+        // nothing handles, and `%E0` in the URL used to end the dev server.
+        let name = '';
+        try {
+          name = decodeURIComponent(pathname.slice(ISLANDS_ENDPOINT.length + 1));
+        } catch {
+          // Not a name; answered below.
+        }
 
         if (!isValidIslandName(name)) {
           res.statusCode = 400;
@@ -515,9 +557,13 @@ function imagesDevPlugin({ root, pagesDir = 'src', publicDir, base, options }) {
 
     transformIndexHtml: {
       order: 'post',
-      async handler(html) {
+      async handler(html, ctx) {
         try {
-          return await pipeline.transform(html);
+          // The URL the browser asked for, which is what a relative `src`
+          // on the page resolves against.
+          return await pipeline.transform(html, {
+            url: ctx?.originalUrl ?? ctx?.path,
+          });
         } catch (error) {
           console.warn(
             `${LOG_PREFIX} images disabled for this request: ${
@@ -582,8 +628,8 @@ function dataDevPlugin() {
  * `sitelo preview` and `sitelo lighthouse` share it so an audit measures
  * the same server a visitor would see, islands endpoint included.
  */
-function previewInlineConfig(cli, { viteOptions, pluginOptions, plugins }) {
-  return mergeConfig(buildInlineConfig(cli, 'preview', viteOptions), {
+function previewInlineConfig(cli, { viteOptions, viteLogging, pluginOptions, plugins }) {
+  return mergeConfig(buildInlineConfig(cli, 'preview', viteOptions, viteLogging), {
     plugins: [
       islandsDevPlugin({
         root: cli.root,
@@ -606,9 +652,26 @@ function definedEntries(object) {
   );
 }
 
-function buildInlineConfig(cli, command, viteFromSitelo = {}) {
-  const mode = cli.mode ?? (command === 'build' ? 'production' : 'development');
-  const logLevel = cli.logLevel ?? 'info';
+/**
+ * @param {object} cli
+ * @param {'dev' | 'build' | 'preview'} command
+ * @param {Record<string, any>} [viteFromSitelo] `vite` from sitelo.config.js
+ * @param {{ logLevel?: string, clearScreen?: boolean }} [viteLogging]
+ *   what the site's own vite.config asked for
+ */
+function buildInlineConfig(cli, command, viteFromSitelo = {}, viteLogging = {}) {
+  // Only the dev server is development: `preview` and `lighthouse` serve
+  // the production build, and resolving the config in another mode than
+  // the one it was built in gave them a different `base`, `define` and
+  // `.env` file from the site they were showing.
+  const mode = cli.mode ?? (command === 'dev' ? 'development' : 'production');
+  // The flag wins, then sitelo.config.js `vite`, then vite.config. The
+  // logger below is made at that level, and it decides what is printed:
+  // a level given to Vite alone never applied.
+  const logLevel =
+    cli.logLevel ?? viteFromSitelo?.logLevel ?? viteLogging.logLevel ?? 'info';
+  const clearScreen =
+    cli.clearScreen ?? viteFromSitelo?.clearScreen ?? viteLogging.clearScreen;
 
   /** @type {import('vite').InlineConfig} */
   const cliLayer = {
@@ -616,10 +679,10 @@ function buildInlineConfig(cli, command, viteFromSitelo = {}) {
     configFile: cli.config,
     mode,
     logLevel,
-    clearScreen: cli.clearScreen,
+    ...definedEntries({ clearScreen }),
     customLogger: createLogger(logLevel, {
       prefix: LOG_PREFIX,
-      allowClearScreen: cli.clearScreen !== false,
+      allowClearScreen: clearScreen !== false,
     }),
     ...definedEntries({
       base: cli.base,
@@ -669,7 +732,7 @@ function buildInlineConfig(cli, command, viteFromSitelo = {}) {
 
 async function runDev(cli) {
   const mode = cli.mode ?? 'development';
-  const { plugins, viteOptions, pluginOptions, images } =
+  const { plugins, viteOptions, viteLogging, pluginOptions, images } =
     await resolveSiteloConfig({
       root: cli.root,
       configFile: cli.config,
@@ -681,7 +744,7 @@ async function runDev(cli) {
   const imageOptions = normalizeImageOptions(images);
 
   const server = await createServer(
-    mergeConfig(buildInlineConfig(cli, 'dev', viteOptions), {
+    mergeConfig(buildInlineConfig(cli, 'dev', viteOptions, viteLogging), {
       plugins: [
         islandsDevPlugin({
           root: cli.root,
@@ -713,6 +776,7 @@ async function runBuild(cli) {
   const {
     plugins,
     viteOptions,
+    viteLogging,
     pluginOptions,
     pagefind,
     images,
@@ -727,12 +791,12 @@ async function runBuild(cli) {
     debug: cli.debug,
   });
 
-  const inline = buildInlineConfig(cli, 'build', viteOptions);
+  const inline = buildInlineConfig(cli, 'build', viteOptions, viteLogging);
   const outDir =
     cli.outDir ?? viteOptions?.build?.outDir ?? inline.build?.outDir ?? 'dist';
   const imageOptions = normalizeImageOptions(images);
   const reportOptions =
-    cli.logLevel === 'silent' ? null : normalizeBuildReportOptions(buildReport);
+    inline.logLevel === 'silent' ? null : normalizeBuildReportOptions(buildReport);
   const linkCheckOptions = normalizeLinkCheckOptions(linkCheck);
   // Normalized up front: a typo here should fail before the build starts,
   // not twenty seconds of Lighthouse later.
@@ -746,12 +810,17 @@ async function runBuild(cli) {
   // Prior post-build image output lives under outDir. Drop it before Vite empties
   // outDir so prepare-out-dir does not hit ENOTEMPTY on dist/assets (or similar).
   if (imageOptions) {
-    await fsp
-      .rm(path.join(cli.root, outDir, imageOptions.assetsDir), {
-        recursive: true,
-        force: true,
-      })
-      .catch(() => {});
+    const outPath = path.resolve(cli.root, outDir);
+    const variantsDir = path.resolve(outPath, imageOptions.assetsDir);
+    const relative = path.relative(outPath, variantsDir);
+
+    // `normalizeImageOptions` already refuses an `assetsDir` that leaves
+    // the output; checked again here because this is a recursive delete.
+    if (relative && !relative.startsWith('..') && !path.isAbsolute(relative)) {
+      await fsp
+        .rm(variantsDir, { recursive: true, force: true })
+        .catch(() => {});
+    }
   }
 
   const buildStartedAt = performance.now();
@@ -822,6 +891,7 @@ async function runBuild(cli) {
       options: lighthouseOptions,
       previewConfig: previewInlineConfig(cli, {
         viteOptions,
+        viteLogging,
         pluginOptions,
         plugins: previewPlugins,
       }),
@@ -843,7 +913,7 @@ async function runBuild(cli) {
 
 async function runPreview(cli) {
   const mode = cli.mode ?? 'production';
-  const { plugins, viteOptions, pluginOptions } = await resolveSiteloConfig({
+  const { plugins, viteOptions, viteLogging, pluginOptions } = await resolveSiteloConfig({
     root: cli.root,
     configFile: cli.config,
     command: 'serve',
@@ -852,7 +922,7 @@ async function runPreview(cli) {
   });
 
   const previewServer = await preview(
-    previewInlineConfig(cli, { viteOptions, pluginOptions, plugins }),
+    previewInlineConfig(cli, { viteOptions, viteLogging, pluginOptions, plugins }),
   );
 
   previewServer.printUrls();
@@ -866,7 +936,7 @@ async function runPreview(cli) {
  */
 async function runLighthouseAudit(cli) {
   const mode = cli.mode ?? 'production';
-  const { plugins, viteOptions, pluginOptions, lighthouse } =
+  const { plugins, viteOptions, viteLogging, pluginOptions, lighthouse } =
     await resolveSiteloConfig({
       root: cli.root,
       configFile: cli.config,
@@ -880,6 +950,7 @@ async function runLighthouseAudit(cli) {
   const options = normalizeLighthouseOptions(lighthouse ?? true);
   const previewConfig = previewInlineConfig(cli, {
     viteOptions,
+    viteLogging,
     pluginOptions,
     plugins,
   });

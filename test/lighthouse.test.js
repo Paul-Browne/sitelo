@@ -362,6 +362,17 @@ test('formatFailures: groups by page, no log prefix', () => {
   assert.ok(!message.includes('[sitelo]'))
 })
 
+test('formatFailures: a score that rounds to its threshold shows a decimal', () => {
+  const message = formatFailures([
+    { page: '/', formFactor: 'mobile', category: 'performance', score: 0.896, threshold: 0.9 },
+    { page: '/', formFactor: 'mobile', category: 'seo', score: 0.8, threshold: 1 },
+  ])
+
+  // `90 < 90` said nothing about why it failed.
+  assert.match(message, /performance {2}89\.6 < 90\.0/)
+  assert.match(message, /seo {10}80 < 100/)
+})
+
 test('formatFailures: names the device when both were measured', () => {
   const message = formatFailures(
     [

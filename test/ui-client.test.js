@@ -3,6 +3,8 @@ import { test } from 'node:test';
 
 import * as ui from '../src/ui/index.js';
 import * as badge from '../src/ui/runtime/badge.js';
+import * as menuRuntime from '../src/ui/runtime/menu.js';
+import { toast } from '../src/ui/runtime/toast.js';
 import * as pressed from '../src/ui/runtime/pressed.js';
 import { get, set } from '../src/ui/runtime/progress.js';
 import * as slider from '../src/ui/runtime/slider.js';
@@ -544,4 +546,115 @@ test('an emptied label takes the hidden span with it', () => {
   assert.equal(root.querySelector('.su-visually-hidden'), null);
   assert.equal(root.querySelector('[data-su-badge-value]').getAttribute('aria-hidden'), null);
   assert.equal(root.querySelector('.su-badge').getAttribute('aria-hidden'), 'true');
+});
+
+test('an open menu moves between its items with the arrow keys', (t) => {
+  /*
+   * `role="menu"` tells a screen reader the arrow keys work. They did not:
+   * the module only knew outside clicks and Escape.
+   */
+  const listeners = new Map();
+  const doc = {
+    activeElement: null,
+    addEventListener: (type, fn) => listeners.set(type, fn),
+    removeEventListener: (type) => listeners.delete(type),
+  };
+  const original = globalThis.document;
+  globalThis.document = doc;
+  t.after(() => {
+    globalThis.document = original;
+  });
+
+  const node = (attributes = {}) => {
+    const self = {
+      hasAttribute: (name) => name in attributes,
+      getAttribute: (name) => attributes[name] ?? null,
+      focus: () => {
+        doc.activeElement = self;
+      },
+    };
+    return self;
+  };
+  const summary = node();
+  const items = [
+    node({ role: 'menuitem' }),
+    node({ role: 'menuitem', disabled: '' }),
+    node({ role: 'menuitem' }),
+    node({ role: 'menuitem', 'aria-disabled': 'true' }),
+    node({ role: 'menuitem' }),
+  ];
+  const menu = {
+    open: true,
+    contains: (target) => target === summary || items.includes(target),
+    querySelector: () => summary,
+    querySelectorAll: () => items,
+  };
+
+  const press = (key) => {
+    let prevented = false;
+    listeners.get('keydown')({ key, preventDefault: () => (prevented = true) });
+    return prevented;
+  };
+
+  menuRuntime.toggled(menu);
+  summary.focus();
+
+  assert.equal(press('ArrowDown'), true, 'the page does not scroll as well');
+  assert.equal(doc.activeElement, items[0], 'down from the trigger is the first item');
+  press('ArrowDown');
+  assert.equal(doc.activeElement, items[2], 'disabled items are skipped');
+  press('ArrowDown');
+  assert.equal(doc.activeElement, items[4]);
+  press('ArrowDown');
+  assert.equal(doc.activeElement, items[0], 'and it wraps');
+  press('ArrowUp');
+  assert.equal(doc.activeElement, items[4]);
+  press('Home');
+  assert.equal(doc.activeElement, items[0]);
+  press('End');
+  assert.equal(doc.activeElement, items[4]);
+
+  summary.focus();
+  press('ArrowUp');
+  assert.equal(doc.activeElement, items[4], 'up from the trigger is the last item');
+
+  doc.activeElement = node();
+  assert.equal(press('ArrowDown'), false, 'focus elsewhere on the page is left alone');
+
+  menu.open = false;
+  menuRuntime.toggled(menu);
+  assert.equal(listeners.size, 0, 'closing takes the listeners off');
+});
+
+test('toast() names its close button in the language it is given', (t) => {
+  const make = (tag) => {
+    const node = {
+      tag,
+      attributes: {},
+      children: [],
+      setAttribute: (name, value) => {
+        node.attributes[name] = value;
+      },
+      append: (...nodes) => node.children.push(...nodes),
+      addEventListener() {},
+      remove() {},
+    };
+    return node;
+  };
+  const region = make('div');
+  Object.defineProperty(region, 'firstElementChild', { get: () => region.children[0] });
+
+  const original = globalThis.document;
+  globalThis.document = { getElementById: () => region, createElement: make };
+  t.after(() => {
+    globalThis.document = original;
+  });
+
+  const close = (node) => node.children.find((child) => child.tag === 'button');
+
+  assert.equal(close(toast('Saved', { duration: 0 })).attributes['aria-label'], 'Dismiss');
+  assert.equal(
+    close(toast('Tallennettu', { duration: 0, dismissLabel: 'Sulje' })).attributes['aria-label'],
+    'Sulje',
+  );
 });

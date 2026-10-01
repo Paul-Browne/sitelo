@@ -538,8 +538,16 @@ export function formatFailures(failures, options = {}) {
         ? `${entry.formFactor.padEnd(deviceWidth)}  `
         : ''
 
+      // Rounded alike, 0.896 against 0.9 read as `90 < 90`; one decimal
+      // more shows why it failed.
+      const [score, threshold] =
+        typeof entry.score === 'number' &&
+        formatScore(entry.score) === formatScore(entry.threshold)
+          ? [(entry.score * 100).toFixed(1), (entry.threshold * 100).toFixed(1)]
+          : [formatScore(entry.score), formatScore(entry.threshold)]
+
       lines.push(
-        `    ${device}${entry.category.padEnd(width)}  ${formatScore(entry.score)} < ${formatScore(entry.threshold)}`,
+        `    ${device}${entry.category.padEnd(width)}  ${score} < ${threshold}`,
       )
     }
 

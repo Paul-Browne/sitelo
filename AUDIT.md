@@ -8,38 +8,54 @@
 
 ## Summary
 
-| # | Severity | Area | Finding |
-|---|----------|------|---------|
-| 1 | **High** | images | `sitelo dev` deletes source images from `public/`/`src/` whenever the project path contains a `remote` folder and an image fails to process |
-| 2 | **High** | images | `prune` is on by default and deletes files that are still referenced: relative URLs, `.webmanifest` icons, `apple-touch-icon.png` |
-| 3 | **High** | islands | One malformed request crashes any plain-Node / Express 4 server using `createIslandsNodeHandler` |
-| 4 | **Medium** | CLI | One malformed request crashes `sitelo dev` (`/_sitelo/islands/%E0`) |
-| 5 | **Medium** | images | `images.assetsDir` isn't validated, so `'../x'` makes `sitelo build` `rm -rf` a folder outside `dist/` |
-| 6 | **Medium** | images | The `<img>` rewriter corrupts any tag with `>` in an attribute (for example `alt="a > b"`) |
-| 7 | **Medium** | ui | `textarea({ value })` is written unescaped, so `</textarea>` breaks out (XSS when the value is user data) |
-| 8 | **Medium** | ui | `theme({ dark })` ignores the user's light choice, and with `selector` the dark block is inverted |
-| 9 | **Medium** | ui | Two panel `tabs()` on one page share ids, so clicking one set switches the other; `name` doesn't help |
-| 10 | **Medium** | ui | `modal()` / `drawer()` claim `aria-modal="true"` and "focus containment", but Tab walks out into the page |
-| 11 | **Medium** | images | The dev image pipeline never invalidates, so an edited image keeps its old variant until restart |
-| 12 | Low | CLI | A mistyped command (`sitelo biuld`) silently starts the dev server |
-| 13 | Low | CLI | `sitelo preview` and `sitelo lighthouse` resolve Vite config in `development` mode |
-| 14 | Low | CLI | `--port` isn't validated, `--clearScreen` can't be turned off, and default `logLevel` overrides config |
-| 15 | Low | islands | Island lookup reads inherited object keys (`/_sitelo/islands/toString` returns 200) |
-| 16 | Low | islands | Notes on how props signing is enforced |
-| 17 | Low | images | JPEGs with trailing bytes are rejected as "not decodable" (this is also the trigger for #1) |
-| 18 | Low | images | Relative `<img src>` resolves against the site root, and a full-URL or `./` `base` gives broken variant URLs |
-| 19 | Low | ui | `slider({ showValue })` with no `value` shows the minimum while the thumb sits at the midpoint |
-| 20 | Low | ui | The `choiceGroup()` radiogroup has no accessible name |
-| 21 | Low | ui | `menu()` uses `role="menu"` but has no arrow-key support |
-| 22 | Low | ui | Accessible names are hard-coded in English (pagination, toast) |
-| 23 | Low | ui | `controlId()` produces duplicate ids, and no id at all for non-Latin labels |
-| 24 | Low | ui | `chip()` docs say `onclick` makes a button, but it renders a `<span>` |
-| 25 | Low | ui | `registerIcons()` doesn't reach alert icons or the theme toggle |
-| 26 | Low | ui | `select()` ignores an array `value` (`multiple`), and option labels from values are unescaped |
-| 27 | Low | ui | `steps()` and `/su/steps.js` disagree on a non-numeric `current` |
-| 28 | Low | ui | `theme()` and `themeScript()` sanitising is thin |
-| 29 | Low | links | Percent-encoded paths are reported as broken, and `data-href` / `data-id` are mistaken for `href` / `id` |
-| 30 | Low | misc | Smaller items: data cache shared object, locale-dependent sort, pagefind `close()`, Lighthouse rounding |
+| # | Severity | Area | Finding | Status |
+|---|----------|------|---------|--------|
+| 1 | **High** | images | `sitelo dev` deletes source images from `public/`/`src/` whenever the project path contains a `remote` folder and an image fails to process | Fixed |
+| 2 | **High** | images | `prune` is on by default and deletes files that are still referenced: relative URLs, `.webmanifest` icons, `apple-touch-icon.png` | Fixed |
+| 3 | **High** | islands | One malformed request crashes any plain-Node / Express 4 server using `createIslandsNodeHandler` | Fixed |
+| 4 | **Medium** | CLI | One malformed request crashes `sitelo dev` (`/_sitelo/islands/%E0`) | Fixed |
+| 5 | **Medium** | images | `images.assetsDir` isn't validated, so `'../x'` makes `sitelo build` `rm -rf` a folder outside `dist/` | Fixed |
+| 6 | **Medium** | images | The `<img>` rewriter corrupts any tag with `>` in an attribute (for example `alt="a > b"`) | Fixed |
+| 7 | **Medium** | ui | `textarea({ value })` is written unescaped, so `</textarea>` breaks out (XSS when the value is user data) | Fixed |
+| 8 | **Medium** | ui | `theme({ dark })` ignores the user's light choice, and with `selector` the dark block is inverted | Fixed |
+| 9 | **Medium** | ui | Two panel `tabs()` on one page share ids, so clicking one set switches the other; `name` doesn't help | Fixed |
+| 10 | **Medium** | ui | `modal()` / `drawer()` claim `aria-modal="true"` and "focus containment", but Tab walks out into the page | Fixed (`aria-modal` dropped) |
+| 11 | **Medium** | images | The dev image pipeline never invalidates, so an edited image keeps its old variant until restart | Fixed |
+| 12 | Low | CLI | A mistyped command (`sitelo biuld`) silently starts the dev server | Fixed |
+| 13 | Low | CLI | `sitelo preview` and `sitelo lighthouse` resolve Vite config in `development` mode | Fixed |
+| 14 | Low | CLI | `--port` isn't validated, `--clearScreen` can't be turned off, and default `logLevel` overrides config | Fixed |
+| 15 | Low | islands | Island lookup reads inherited object keys (`/_sitelo/islands/toString` returns 200) | Fixed |
+| 16 | Low | islands | Notes on how props signing is enforced | Partly (see below) |
+| 17 | Low | images | JPEGs with trailing bytes are rejected as "not decodable" (this is also the trigger for #1) | Fixed |
+| 18 | Low | images | Relative `<img src>` resolves against the site root, and a full-URL or `./` `base` gives broken variant URLs | Fixed |
+| 19 | Low | ui | `slider({ showValue })` with no `value` shows the minimum while the thumb sits at the midpoint | Fixed |
+| 20 | Low | ui | The `choiceGroup()` radiogroup has no accessible name | Fixed |
+| 21 | Low | ui | `menu()` uses `role="menu"` but has no arrow-key support | Fixed |
+| 22 | Low | ui | Accessible names are hard-coded in English (pagination, toast) | Fixed |
+| 23 | Low | ui | `controlId()` produces duplicate ids, and no id at all for non-Latin labels | Partly (see below) |
+| 24 | Low | ui | `chip()` docs say `onclick` makes a button, but it renders a `<span>` | Fixed |
+| 25 | Low | ui | `registerIcons()` doesn't reach alert icons or the theme toggle | Fixed |
+| 26 | Low | ui | `select()` ignores an array `value` (`multiple`), and option labels from values are unescaped | Fixed |
+| 27 | Low | ui | `steps()` and `/su/steps.js` disagree on a non-numeric `current` | Fixed |
+| 28 | Low | ui | `theme()` and `themeScript()` sanitising is thin | Fixed |
+| 29 | Low | links | Percent-encoded paths are reported as broken, and `data-href` / `data-id` are mistaken for `href` / `id` | Fixed |
+| 30 | Low | misc | Smaller items: data cache shared object, locale-dependent sort, pagefind `close()`, Lighthouse rounding | Partly (see below) |
+
+## Resolution
+
+Every finding was fixed on this branch, except the parts listed below. Each fix has a regression test that fails on the code as audited and passes now. The exceptions are `--clearScreen false` and `runPagefind` closing Pagefind when it fails; neither could be observed from a test without mocking the package. The suite went from 432 to 468 tests, all passing (one skip, as before, because `chrome-launcher` isn't installed). The reproductions above were re-run against the fixed code, and the UI fixes were re-checked in Chromium.
+
+Where a fix involved a judgement call:
+
+- **#2.** `prune` stays on by default, but it now considers only the originals that a tag was actually rewritten from. One of those is kept if its file name appears anywhere in the build's text files.
+- **#9.** Tab sets without item ids now get ids derived from `name`, the set's `id`, or a digest of the items. A `value` that names an old default id (`tab-2`) still selects its tab.
+- **#10.** `modal()` and `drawer()` no longer claim `aria-modal`. Making them truly modal means `<dialog>` with `showModal()`, which changes how triggers are written (`popovertarget` becomes `command`/`commandfor`), so it's left as a follow-up API decision.
+
+Left as they were:
+
+- **#16.** A request without props still skips signature checking, which is by design: prop-less islands have nothing to sign. `configureIslands()` is now shared across module copies, so the dev endpoint enforces it. `sitelo preview` and production handlers still need the environment variable or `createIslandsHandler({ secret })`; the README now says so.
+- **#23.** Two fields with the same `name` on one page still get the same generated id, because ids are deterministic on purpose. The docs now say to pass an `id`. Non-Latin labels now get an id.
+- **#30.** `pagefind.syncPublic` still defaults to writing `public/pagefind/`, and `sitelo:ui-runtime` still uses `process.env.SITELO_UI_BASE`. Both are design choices rather than bugs.
 
 ---
 

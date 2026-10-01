@@ -162,13 +162,20 @@ export function createIslandsHandler({
 
     if (!url.pathname.startsWith(`${base}/`)) return null;
 
-    const name = decodeURIComponent(url.pathname.slice(base.length + 1));
+    let name = '';
+    try {
+      name = decodeURIComponent(url.pathname.slice(base.length + 1));
+    } catch {
+      // `%E0` and friends: not a name, and not worth throwing over.
+    }
 
     if (!isValidIslandName(name)) {
       return new Response('Invalid island name', { status: 400 });
     }
 
-    const entry = islands[name];
+    // Own entries only: every object answers to `toString` and
+    // `constructor`, and neither of those is an island.
+    const entry = Object.hasOwn(islands, name) ? islands[name] : undefined;
 
     if (!entry) {
       return new Response(`Unknown island: ${name}`, { status: 404 });
@@ -216,38 +223,77 @@ export function createIslandsHandler({
  *
  * Returns `(req, res, next?) => Promise<void>`. Calls `next()` (when
  * given) for requests outside the endpoint.
+ *
+ * The promise never rejects. Neither `http.createServer` nor Express 4
+ * waits on a handler's promise, so a rejection is an unhandled one, and
+ * Node's default for those is to exit: a single `TRACE` request, a `Host`
+ * header that is not a host or a malformed `%` escape used to take the
+ * whole server down. A request this cannot read is answered 400; a
+ * failure past that goes to `next(error)` or becomes a 500.
  */
 export function createIslandsNodeHandler(options) {
   const handler = createIslandsHandler(options);
+  const base = (options.endpoint ?? DEFAULT_ISLANDS_ENDPOINT).replace(/\/+$/, '');
 
   return async function handleNodeRequest(req, res, next) {
-    const host = req.headers.host ?? 'localhost';
-    const protocol = req.socket?.encrypted ? 'https' : 'http';
-
-    const headers = new Headers();
-    for (const [key, value] of Object.entries(req.headers)) {
-      if (typeof value === 'string') headers.set(key, value);
-      else if (Array.isArray(value)) headers.set(key, value.join(', '));
-    }
-
-    const request = new Request(`${protocol}://${host}${req.url}`, {
-      method: req.method,
-      headers,
-    });
-
-    const response = await handler(request);
-
-    if (!response) {
+    const notOurs = () => {
       if (next) return next();
       res.statusCode = 404;
       res.end('Not found');
-      return;
+    };
+
+    /*
+     * Decided from the raw URL, before a WHATWG `Request` is built: that
+     * constructor throws on methods and hosts Node itself accepts, and
+     * none of those requests are this handler's business.
+     */
+    let pathname;
+    try {
+      pathname = new URL(req.url ?? '/', 'http://localhost').pathname;
+    } catch {
+      return notOurs();
     }
 
-    res.statusCode = response.status;
-    response.headers.forEach((value, key) => {
-      res.setHeader(key, value);
-    });
-    res.end(await response.text());
+    if (!pathname.startsWith(`${base}/`)) return notOurs();
+
+    try {
+      let request;
+
+      try {
+        const host = req.headers.host ?? 'localhost';
+        const protocol = req.socket?.encrypted ? 'https' : 'http';
+
+        const headers = new Headers();
+        for (const [key, value] of Object.entries(req.headers)) {
+          if (typeof value === 'string') headers.set(key, value);
+          else if (Array.isArray(value)) headers.set(key, value.join(', '));
+        }
+
+        request = new Request(new URL(req.url ?? '/', `${protocol}://${host}`), {
+          method: req.method,
+          headers,
+        });
+      } catch {
+        res.statusCode = 400;
+        res.end('Bad request');
+        return;
+      }
+
+      const response = await handler(request);
+
+      if (!response) return notOurs();
+
+      res.statusCode = response.status;
+      response.headers.forEach((value, key) => {
+        res.setHeader(key, value);
+      });
+      res.end(await response.text());
+    } catch (error) {
+      if (next) return next(error);
+
+      console.error('[sitelo] islands request failed:', error);
+      if (!res.headersSent) res.statusCode = 500;
+      res.end('Island request failed');
+    }
   };
 }

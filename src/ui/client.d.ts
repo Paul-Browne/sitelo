@@ -23,6 +23,8 @@ export interface ToastOptions {
   color?: 'primary' | 'neutral' | 'success' | 'warning' | 'danger'
   /** Milliseconds before it disappears. `0` keeps it up. Default `4000`. */
   duration?: number
+  /** Accessible name of the close button, in the page's language. Default `'Dismiss'`. */
+  dismissLabel?: string
 }
 
 /**
