@@ -25,9 +25,14 @@ import {
 /**
  * Modal dialog built on the popover API.
  *
- * Opening and closing it — the backdrop, click-outside, Escape, focus
- * containment — is the browser's job here, not a script's: any button
+ * Opening and closing it — the top layer, the backdrop, click-outside
+ * and Escape — is the browser's job here, not a script's: any button
  * with `popovertarget` pointing at the modal's `id` toggles it.
+ *
+ * What a popover does not do is make the page behind it inert: focus
+ * can Tab out of it. So it does not claim `aria-modal`, which tells a
+ * screen reader to hide that page — and with it, the very things the
+ * keyboard can still reach.
  *
  * ```js
  * button({ popovertarget: 'confirm' }, 'Delete…')
@@ -65,7 +70,6 @@ export function modal(...args) {
       id,
       popover: 'auto',
       role: 'dialog',
-      'aria-modal': 'true',
       ...(title == null ? {} : { 'aria-labelledby': titleId }),
     },
     attrs(rest, {
@@ -108,7 +112,8 @@ export function closeButton({ target, label = 'Close', ...rest } = {}) {
 /**
  * Panel that slides in from the edge. Same popover mechanics as
  * {@link modal}, which is what makes it work with the script absent,
- * and the same scroll lock on the page behind it.
+ * the same scroll lock on the page behind it, and for the same reason
+ * no `aria-modal`.
  *
  * @param {...any} args - `drawer({ id, title, side, width, closeLabel, lockScroll }, ...children)`
  * @returns {string}
@@ -137,7 +142,6 @@ export function drawer(...args) {
       id,
       popover: 'auto',
       role: 'dialog',
-      'aria-modal': 'true',
       ...(title == null ? {} : { 'aria-labelledby': titleId }),
     },
     attrs(rest, {

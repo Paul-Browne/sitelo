@@ -67,6 +67,12 @@ test('sitelo dev serves islands at /_sitelo/islands/:name', async (t) => {
 
   const missing = await fetch(`${base}/_sitelo/islands/does-not-exist`);
   assert.equal(missing.status, 404);
+
+  // A malformed escape is a bad name, not a crash: this used to throw out
+  // of an async middleware and end the dev server.
+  const malformed = await fetch(`${base}/_sitelo/islands/%E0`);
+  assert.equal(malformed.status, 400);
+  assert.equal((await fetch(`${base}/`)).status, 200, 'the server is still up');
 });
 
 test('sitelo preview serves islands at /_sitelo/islands/:name', async (t) => {

@@ -256,6 +256,28 @@ test('readJsonCollection: rejects a file that is not a collection', async (t) =>
   )
 })
 
+test('readJsonCollection: sorting by a field does not depend on the machine locale', async (t) => {
+  const dir = createDataDir(t, {
+    'data/words.json': [{ slug: 'z', title: 'zebra' }, { slug: 'a', title: 'äpple' }],
+  })
+
+  // Swedish collates `ä` after `z`; English puts it with `a`. The build
+  // used to sort by whichever the shell it ran in said.
+  const script = `import { readJsonCollection } from ${JSON.stringify(pathToFileURL(path.join(rootDir, 'src', 'data.js')).href)}
+const entries = await readJsonCollection(${JSON.stringify(path.join(dir, 'data', 'words.json'))}, { sort: 'title' })
+console.log(entries.map((entry) => entry.slug).join(','))`
+  const orders = await Promise.all(
+    ['sv_SE.UTF-8', 'en_US.UTF-8'].map(async (locale) => {
+      const { stdout } = await execFileAsync(process.execPath, ['--input-type=module', '-e', script], {
+        env: { ...process.env, LC_ALL: locale, LANG: locale },
+      })
+      return stdout.trim()
+    }),
+  )
+
+  assert.deepEqual(orders, ['a,z', 'a,z'])
+})
+
 test('readJsonCollection: each call gets its own array to sort', async (t) => {
   createDataDir(t, {
     'data/posts/a.json': { title: 'A' },

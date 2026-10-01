@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto'
+
 import {
   a,
   button as buttonEl,
@@ -19,6 +21,7 @@ import {
   colorClass,
   cx,
   el,
+  escapeHtml,
   oneOf,
   parseArgs,
   SIZES,
@@ -151,16 +154,25 @@ function controlId({ id, name, label }) {
 
   if (source == null) return undefined
 
-  const slug = String(source)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+  const slug = (pattern) =>
+    String(source).toLowerCase().replace(pattern, '-').replace(/^-+|-+$/g, '')
 
-  return slug ? `su-${slug}` : undefined
+  /*
+   * ASCII first, so the ids pages already have stay put. A label with no
+   * ASCII letters in it at all — 'Имя', '名前' — used to give no id, and
+   * so a `<label>` tied to nothing; its own letters make one instead.
+   */
+  const made = slug(/[^a-z0-9]+/g) || slug(/[^\p{L}\p{N}]+/gu)
+
+  return made ? `su-${made}` : undefined
 }
 
 /**
  * Label, help text and error message around a control.
+ *
+ * The id comes from `name` or `label` unless you pass one, which is what
+ * keeps a page building to the same HTML — and why two fields with the
+ * same name on one page need an `id` each.
  *
  * Wires `for` and `aria-describedby` for you when the control carries a
  * matching id — which {@link textField} and friends arrange.
@@ -264,8 +276,12 @@ export function textarea(props = {}) {
     attrs(rest, {
       class: cx('su-textarea', size !== 'md' && `su-textarea--${oneOf(size, SIZES, 'md')}`),
     }),
-    // A textarea's value is its content, not an attribute.
-    value == null ? '' : value,
+    /*
+     * A textarea's value is its content, not an attribute — and escaped,
+     * because it is a value: `</textarea>` in it used to end the element
+     * and let whatever followed run as markup.
+     */
+    value == null ? '' : escapeHtml(value),
   )
 }
 
@@ -291,6 +307,13 @@ export function select(...args) {
     ...rest
   } = props
 
+  // An array is several selected, for a `multiple` select.
+  const selected = Array.isArray(value)
+    ? value.map(String)
+    : value == null
+      ? []
+      : [String(value)]
+
   const renderOption = (entry) => {
     if (entry != null && typeof entry === 'object' && Array.isArray(entry.options)) {
       return `<optgroup label="${String(entry.label ?? '').replace(/"/g, '&#34;')}">${entry.options
@@ -305,9 +328,11 @@ export function select(...args) {
       {
         value: optionValue,
         ...(item.disabled ? { disabled: true } : {}),
-        ...(value != null && String(value) === String(optionValue) ? { selected: true } : {}),
+        ...(selected.includes(String(optionValue)) ? { selected: true } : {}),
       },
-      item.label ?? String(optionValue),
+      // A label is markup like any child; a value standing in for one is
+      // text, and is escaped like the attribute it came from.
+      item.label ?? escapeHtml(optionValue),
     )
   }
 
@@ -319,7 +344,7 @@ export function select(...args) {
     placeholder == null
       ? ''
       : optionEl(
-          { value: '', disabled: true, ...(value == null ? { selected: true } : {}) },
+          { value: '', disabled: true, ...(selected.length === 0 ? { selected: true } : {}) },
           placeholder,
         ),
     ...options.map(renderOption),
@@ -469,27 +494,43 @@ export function choiceGroup(...args) {
   const control = type === 'checkbox' ? checkbox : radio
   const selected = Array.isArray(value) ? value.map(String) : value == null ? [] : [String(value)]
 
+  /*
+   * The legend names the group and the help text describes it, by id. A
+   * radiogroup with its legend in a plain `<div>` had no name at all, so a
+   * screen reader announced "radio group" and nothing else.
+   */
+  const base =
+    rest.id ??
+    controlId({ name }) ??
+    `su-g${createHash('sha256').update(JSON.stringify([legend, options])).digest('hex').slice(0, 6)}`
+  const legendId = `${base}-legend`
+  const helpId = `${base}-help`
+
   const items = options.map((entry) => {
     const item = typeof entry === 'object' && entry != null ? entry : { value: entry }
 
     return control({
       name,
       value: item.value,
-      label: item.label ?? String(item.value),
+      label: item.label ?? escapeHtml(item.value),
       checked: selected.includes(String(item.value)),
       ...(item.disabled ? { disabled: true } : {}),
     })
   })
 
   return el(as, div)(
-    { role: type === 'radio' ? 'radiogroup' : 'group' },
+    {
+      role: type === 'radio' ? 'radiogroup' : 'group',
+      ...(legend == null ? {} : { 'aria-labelledby': legendId }),
+      ...(help == null ? {} : { 'aria-describedby': helpId }),
+    },
     attrs(rest, {
       class: cx('su-choice-group', direction === 'row' && 'su-choice-group--row'),
     }),
-    legend == null ? '' : div({ class: 'su-label' }, legend),
+    legend == null ? '' : div({ class: 'su-label', id: legendId }, legend),
     ...items,
     ...children,
-    help == null ? '' : div({ class: 'su-help' }, help),
+    help == null ? '' : div({ class: 'su-help', id: helpId }, help),
   )
 }
 
@@ -543,9 +584,39 @@ export function slider(props = {}) {
     control,
     outputEl(
       { class: 'su-slider-output', ...(id ? { for: id } : {}) },
-      value == null ? min : value,
+      value == null ? rangeDefault(min, max, step) : value,
     ),
   )
+}
+
+/**
+ * Where a range input with no `value` puts its thumb: halfway, snapped
+ * onto the `step` grid counted from `min`, the greater of two equally near
+ * steps — the HTML spec's rule. The readout used to say `min` while the
+ * thumb sat in the middle.
+ *
+ * @param {unknown} min
+ * @param {unknown} max
+ * @param {unknown} step
+ * @returns {unknown}
+ */
+function rangeDefault(min, max, step) {
+  const low = Number(min)
+  const high = Number(max)
+
+  if (!Number.isFinite(low) || !Number.isFinite(high)) return min
+  if (high < low) return low
+
+  let value = low + (high - low) / 2
+  const size = step === 'any' ? Number.NaN : Number(step ?? 1)
+
+  if (Number.isFinite(size) && size > 0) {
+    value = low + Math.round((value - low) / size) * size
+    if (value > high) value -= size
+  }
+
+  // `0.1 * 3` is not `0.3`; the browser prints the short form.
+  return Number(value.toPrecision(12))
 }
 
 /**
@@ -620,7 +691,7 @@ export function toggleGroup(...args) {
           ...(isOn ? { 'aria-current': 'page' } : {}),
           ...(item.disabled ? { disabled: true } : {}),
         },
-        item.label ?? String(item.value),
+        item.label ?? escapeHtml(item.value),
       )
     }
 
@@ -632,7 +703,7 @@ export function toggleGroup(...args) {
         ...(item.value == null ? {} : { value: item.value }),
         ...(item.disabled ? { disabled: true } : {}),
       },
-      item.label ?? String(item.value),
+      item.label ?? escapeHtml(item.value),
     )
   })
 

@@ -686,7 +686,11 @@ test('tabs() gives each set of panel tabs its own radio group', () => {
 test('modal() uses the popover API and labels itself', () => {
   const html = ui.modal({ id: 'confirm', title: 'Sure?' }, 'Body');
 
-  assert.match(html, /id="confirm" popover="auto" role="dialog" aria-modal="true"/);
+  assert.match(html, /id="confirm" popover="auto" role="dialog"/);
+  // A popover leaves the page behind it reachable by Tab, so it must not
+  // tell a screen reader to hide that page.
+  assert.ok(!html.includes('aria-modal'));
+  assert.ok(!ui.drawer({ id: 'nav' }, 'x').includes('aria-modal'));
   assert.match(html, /aria-labelledby="confirm-title"/);
   assert.match(html, /popovertarget="confirm" popovertargetaction="hide"/);
 });
@@ -1645,4 +1649,167 @@ test('components escape quotes in attribute values', () => {
 
   assert.ok(!html.includes('"quoted"'));
   assert.match(html, /&#34;quoted&#34;/);
+});
+
+/* ------------------------------------------------------------------ *
+ * Regressions from the codebase audit
+ * ------------------------------------------------------------------ */
+
+test('textarea() escapes its value, which is text and not markup', () => {
+  const html = ui.textarea({ value: '</textarea><img src=x onerror=alert(1)> & co' });
+
+  assert.equal(
+    html,
+    '<textarea class="su-textarea">&lt;/textarea&gt;&lt;img src=x onerror=alert(1)&gt; &amp; co</textarea>',
+  );
+});
+
+test('a value standing in for a label is escaped; a label is still markup', () => {
+  assert.match(ui.select({ options: ['x<b>y</b>'] }), /<option value="x<b>y<\/b>">x&lt;b&gt;y&lt;\/b&gt;<\/option>/);
+  assert.match(ui.select({ options: [{ value: 'v', label: '<b>Bold</b>' }] }), />\s*<b>Bold<\/b><\/option>/);
+  assert.match(ui.choiceGroup({ name: 'n', options: ['a<b'] }), /<span class="su-check-label">a&lt;b<\/span>/);
+  assert.match(ui.toggleGroup({ items: ['a<b'] }), /<span class="su-btn-label">a&lt;b<\/span>/);
+});
+
+test('select() takes an array value for a multiple select', () => {
+  const html = ui.select({ multiple: true, value: ['a', 3], options: ['a', 'b', 3], placeholder: 'Pick' });
+  const selected = [...html.matchAll(/<option value="([^"]*)"[^>]* selected>/g)].map((match) => match[1]);
+
+  assert.deepEqual(selected, ['a', '3']);
+});
+
+test('choiceGroup() is named by its legend and described by its help', () => {
+  const html = ui.choiceGroup({ legend: 'Plan', name: 'plan', help: 'Pick one', options: ['Free', 'Pro'] });
+
+  assert.match(html, /^<div role="radiogroup" aria-labelledby="su-plan-legend" aria-describedby="su-plan-help"/);
+  assert.match(html, /<div class="su-label" id="su-plan-legend">Plan<\/div>/);
+  assert.match(html, /<div class="su-help" id="su-plan-help">Pick one<\/div>/);
+
+  // No name to go on: the ids still exist, and two groups still differ.
+  const a = ui.choiceGroup({ legend: 'A', type: 'checkbox', options: ['x'] });
+  const b = ui.choiceGroup({ legend: 'B', type: 'checkbox', options: ['x'] });
+  const labelledBy = (html) => html.match(/aria-labelledby="([^"]+)"/)[1];
+
+  assert.notEqual(labelledBy(a), labelledBy(b));
+  assert.ok(a.includes(`id="${labelledBy(a)}"`));
+});
+
+test('slider({ showValue }) with no value shows where the browser puts the thumb', () => {
+  const shown = (props) => ui.slider({ showValue: true, ...props }).match(/<output[^>]*>([^<]*)<\/output>/)[1];
+
+  // Halfway, snapped to the step grid from min, the greater of two ties.
+  assert.equal(shown({}), '50');
+  assert.equal(shown({ min: 0, max: 10, step: 3 }), '6');
+  assert.equal(shown({ min: 0, max: 1, step: 0.1 }), '0.5');
+  assert.equal(shown({ min: 10, max: 0 }), '10', 'a max below min leaves the thumb at min');
+  assert.equal(shown({ value: 7 }), '7', 'a value is shown as given');
+});
+
+test('a label with no ASCII letters still gets an id to point the label at', () => {
+  const html = ui.textField({ label: 'Имя' });
+
+  assert.match(html, /<label class="su-label" for="su-имя">Имя<\/label><input type="text" id="su-имя"/);
+  // Ids pages already have are unchanged.
+  assert.match(ui.textField({ label: 'Sähköposti' }), /id="su-s-hk-posti"/);
+});
+
+test('chip() with onclick is a button, and any button chip is type="button"', () => {
+  assert.equal(
+    ui.chip({ onclick: 'filter()' }, 'News'),
+    '<button type="button" onclick="filter()" class="su-chip su-chip--soft su-c-neutral">News</button>',
+  );
+  assert.match(ui.chip({ as: 'button' }, 'News'), /^<button type="button" class="su-chip/);
+  assert.match(ui.chip('News'), /^<span class="su-chip/);
+  assert.match(ui.chip({ href: '/news', onclick: 'track()' }, 'News'), /^<a href="\/news" onclick="track\(\)"/);
+});
+
+test('registerIcons() reaches the glyphs components draw for themselves', (t) => {
+  const marker = (name) => `<circle data-test="${name}" cx="12" cy="12" r="3"/>`;
+
+  ui.registerIcons({ info: marker('info'), sun: marker('sun'), check: marker('check') });
+  t.after(() => ui.registerIcons({ info: null, sun: null, check: null }));
+
+  assert.ok(ui.alert('Heads up').includes('data-test="info"'), 'the alert\'s default glyph');
+  assert.ok(ui.themeToggle().includes('data-test="sun"'), 'the theme toggle');
+  assert.ok(ui.steps({ items: ['a'], current: 1 }).includes('data-test="check"'), 'a completed step');
+});
+
+test('steps() reads current the way /su/steps.js does', () => {
+  const states = (current) => ui.steps({ items: ['a', 'b', 'c'], current }).match(/su-step--\w+/g);
+
+  assert.deepEqual(states('x'), ['su-step--current', 'su-step--upcoming', 'su-step--upcoming']);
+  assert.deepEqual(states(1.7), ['su-step--complete', 'su-step--current', 'su-step--upcoming']);
+  assert.deepEqual(states(-2), ['su-step--current', 'su-step--upcoming', 'su-step--upcoming']);
+  assert.deepEqual(states(3), ['su-step--complete', 'su-step--complete', 'su-step--complete']);
+});
+
+test('pagination() announces its controls in the language it is given', () => {
+  const labels = (props) =>
+    [...ui.pagination({ page: 2, count: 3, href: (page) => `/${page}`, ...props }).matchAll(/aria-label="([^"]+)"/g)]
+      .map((match) => match[1]);
+
+  assert.deepEqual(labels({}), ['Pagination', 'Previous page', 'Page 1', 'Page 2', 'Page 3', 'Next page']);
+  assert.deepEqual(
+    labels({ label: 'Sivutus', previousPageLabel: 'Edellinen sivu', nextPageLabel: 'Seuraava sivu', pageLabel: 'Sivu' }),
+    ['Sivutus', 'Edellinen sivu', 'Sivu 1', 'Sivu 2', 'Sivu 3', 'Seuraava sivu'],
+  );
+  assert.deepEqual(labels({ pageLabel: (page) => `${page}. sivu` }).slice(2, 5), ['1. sivu', '2. sivu', '3. sivu']);
+});
+
+test('two sets of panel tabs on one page share no ids', () => {
+  const items = [{ label: 'One', panel: '1' }, { label: 'Two', panel: '2' }];
+  const ids = (html) => [...html.matchAll(/ id="([^"]+)"/g)].map((match) => match[1]);
+  const fors = (html) => [...html.matchAll(/ for="([^"]+)"/g)].map((match) => match[1]);
+
+  // Different items, nothing else to tell them apart.
+  const a = ui.tabs({ items });
+  const b = ui.tabs({ items: [{ label: 'Three', panel: '3' }, { label: 'Four', panel: '4' }] });
+  assert.deepEqual(ids(a).filter((id) => ids(b).includes(id)), []);
+
+  // The same items, told apart by name — which the docs offered as the
+  // remedy, and which used to leave every id the same.
+  const named = ['set-a', 'set-b'].map((name) => ui.tabs({ name, items }));
+  assert.deepEqual(ids(named[0]).filter((id) => ids(named[1]).includes(id)), []);
+  for (const html of named) {
+    assert.ok(fors(html).every((target) => ids(html).includes(target)), 'every label points into its own set');
+  }
+
+  // A value naming the ids items used to get still picks its tab.
+  assert.match(ui.tabs({ items, value: 'tab-2' }), /id="[^"]+-2-tab"[^>]*checked/);
+});
+
+test('theme({ dark }) switches on the same conditions as the core sheet', () => {
+  const html = ui.theme({ primary: '#f00' }, { dark: { primary: '#0f0' } });
+
+  // A host's data-theme="dark" gives way to the visitor choosing light.
+  assert.ok(html.includes("[data-theme='dark']:not([data-su-theme='light']){--su-primary: #0f0}"));
+  assert.ok(html.includes("[data-su-theme='dark']{--su-primary: #0f0}"));
+  assert.ok(
+    html.includes("@media (prefers-color-scheme: dark){:root:not([data-theme='light']):not([data-su-theme='light']){--su-primary: #0f0}}"),
+  );
+});
+
+test('theme({ selector, dark }) scopes under the condition, not around it', () => {
+  const html = ui.theme({}, { selector: '.a, .b', dark: { primary: '#0f0' } });
+
+  // The attribute is on <html> (or the scope itself), not inside the scope.
+  assert.ok(html.includes("[data-su-theme='dark'] :is(.a, .b),:is(.a, .b)[data-su-theme='dark']{"));
+  assert.ok(
+    html.includes(
+      "@media (prefers-color-scheme: dark){:root:not([data-theme='light']):not([data-su-theme='light']) :is(.a, .b),",
+    ),
+  );
+  assert.ok(!html.includes(".a, .b [data-"), 'a selector list stays one selector');
+});
+
+test('theme() keeps values, names and selectors from breaking out of the rule', () => {
+  const html = ui.theme(
+    { primary: 'red}body{display:none', '--x}body{display:none': 'blue', '--ok': 'url("data:image/svg+xml;utf8,x")' },
+    { selector: '.a</style><script>' },
+  );
+
+  assert.ok(!html.includes('}body{'), html);
+  assert.ok(!html.includes('</style><script>'), html);
+  assert.ok(html.includes('--ok: url("data:image/svg+xml;utf8,x")'), 'a semicolon inside a value is fine');
+  assert.match(ui.themeScript({ nonce: 'a"b' }), /^<script nonce="a&#34;b">/);
 });

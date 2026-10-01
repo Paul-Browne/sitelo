@@ -1053,15 +1053,20 @@ one it resolves.
   dev share it, so nothing is encoded twice.
 
 Images in both `src/` and `public/` are covered — the rewrite runs over the
-built HTML, so it doesn't matter where the file came from.
+built HTML, so it doesn't matter where the file came from. A relative
+`src` resolves against its own page, the way the browser resolves it.
 
 Once a tag is rewritten nothing points at the original any more, so it is
-**pruned** from `dist/` by default. Only genuinely unreferenced files go:
-sitelo scans every HTML, CSS, JS, XML and JSON file in the build, so an
-original linked from `<a href>`, `og:image`, an RSS enclosure, a CSS
-`url()`, or a `data-no-optimize` tag stays. URLs assembled at runtime in
-a script, or rendered by a server island, are the ones it cannot see —
-set `prune: false` (or `exclude` that folder) if you have those.
+**pruned** from `dist/` by default. Only the originals a tag was rewritten
+from are candidates — an `apple-touch-icon.png` or a web manifest's icons,
+which no `<img>` names, are never touched — and one is kept if its file
+name appears anywhere in the build's HTML, CSS, JS, JSON, XML, web
+manifest, feed, text or SVG files, as written or percent-encoded. So an
+original linked from `<a href>` (relative or not), `og:image`, an RSS
+enclosure, a CSS `url()`, or a `data-no-optimize` tag stays. URLs assembled
+at runtime in a script, or rendered by a server island, are the ones it
+cannot see — set `prune: false` (or `exclude` that folder) if you have
+those.
 
 ### Options
 
@@ -1086,7 +1091,7 @@ export default {
 | `dimensions` | `true` | Add `width`/`height` (completes whichever you left off) |
 | `lazy` | `true` | Add `loading="lazy"` and `decoding="async"` |
 | `exclude` | `[]` | Glob(s) or RegExp(s) of image URLs to leave alone |
-| `assetsDir` | `'assets/img'` | Where variants are written inside `dist/` |
+| `assetsDir` | `'assets/img'` | Where variants are written inside `dist/`. Emptied before each build, so it must be a folder of its own there |
 | `cacheDir` | `'node_modules/.sitelo/images'` | Shared dev/build encode cache |
 | `remote` | `false` | Download and optimize `https://` images at build time |
 | `prune` | `true` | Delete originals nothing in `dist/` references after rewriting; `false` keeps them |
@@ -1357,6 +1362,11 @@ import { configureIslands } from 'sitelo/islands'
 
 configureIslands({ secret: process.env.MY_SECRET })
 ```
+
+Called from a module your pages import, that signs the build and is
+checked by `sitelo`'s dev endpoint too. `sitelo preview` and a production
+handler render no pages, so they read `SITELO_ISLANDS_SECRET` — or pass
+`createIslandsHandler({ secret })` yourself.
 
 Signatures are HMAC-SHA256 over the island name *and* its props, so a
 signature issued for one island can't be replayed against another.

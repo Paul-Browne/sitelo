@@ -176,70 +176,77 @@ export async function runPagefind({
   const siteDir = path.resolve(root, outDir)
   const outputPath = path.join(siteDir, 'pagefind')
 
-  const { index, errors: createErrors } = await createIndex({
-    rootSelector: options.rootSelector,
-    excludeSelectors: options.excludeSelectors,
-    forceLanguage: options.forceLanguage,
-    verbose: options.verbose,
-    keepIndexUrl: options.keepIndexUrl,
-    includeCharacters: options.includeCharacters,
-  })
-
-  if (createErrors?.length) {
-    throw new Error(
-      `pagefind failed to start:\n${createErrors.join('\n')}`,
-    )
-  }
-
-  if (!index) {
-    throw new Error('pagefind failed to create an index')
-  }
-
   /*
-   * A `cleanUrls` build is handed to pagefind whole — it walks the directory
-   * and derives `/docs/` from `docs/index.html` itself, which is the URL the
-   * site links. A flat build needs the URL supplied per file instead; see
-   * `addFlatFiles`.
+   * Pagefind runs as a separate service, and only `close()` stops it. Every
+   * error below used to leave it running, which holds a process that
+   * imports this open until the service gives up on its own.
    */
-  let pageCount
+  try {
+    const { index, errors: createErrors } = await createIndex({
+      rootSelector: options.rootSelector,
+      excludeSelectors: options.excludeSelectors,
+      forceLanguage: options.forceLanguage,
+      verbose: options.verbose,
+      keepIndexUrl: options.keepIndexUrl,
+      includeCharacters: options.includeCharacters,
+    })
 
-  if (cleanUrls) {
-    const { errors: dirErrors, page_count: directoryCount } =
-      await index.addDirectory({
-        path: siteDir,
-        ...(options.glob ? { glob: options.glob } : {}),
-      })
-
-    if (dirErrors?.length) {
+    if (createErrors?.length) {
       throw new Error(
-        `pagefind indexing failed:\n${dirErrors.join('\n')}`,
+        `pagefind failed to start:\n${createErrors.join('\n')}`,
       )
     }
 
-    pageCount = directoryCount
-  } else {
-    pageCount = await addFlatFiles(index, siteDir, options)
-  }
+    if (!index) {
+      throw new Error('pagefind failed to create an index')
+    }
 
-  // Write into a clean directory. The bundle is content-hashed, so without
-  // this the fragments and indexes of deleted pages linger in every later
-  // build — and a file left truncated by an interrupted write is never
-  // replaced, which silently breaks search rather than failing the build.
-  await rm(outputPath, { recursive: true, force: true })
+    /*
+     * A `cleanUrls` build is handed to pagefind whole — it walks the directory
+     * and derives `/docs/` from `docs/index.html` itself, which is the URL the
+     * site links. A flat build needs the URL supplied per file instead; see
+     * `addFlatFiles`.
+     */
+    let pageCount
 
-  const { errors: writeErrors } = await index.writeFiles({ outputPath })
+    if (cleanUrls) {
+      const { errors: dirErrors, page_count: directoryCount } =
+        await index.addDirectory({
+          path: siteDir,
+          ...(options.glob ? { glob: options.glob } : {}),
+        })
 
-  if (writeErrors?.length) {
-    throw new Error(
-      `pagefind write failed:\n${writeErrors.join('\n')}`,
+      if (dirErrors?.length) {
+        throw new Error(
+          `pagefind indexing failed:\n${dirErrors.join('\n')}`,
+        )
+      }
+
+      pageCount = directoryCount
+    } else {
+      pageCount = await addFlatFiles(index, siteDir, options)
+    }
+
+    // Write into a clean directory. The bundle is content-hashed, so without
+    // this the fragments and indexes of deleted pages linger in every later
+    // build — and a file left truncated by an interrupted write is never
+    // replaced, which silently breaks search rather than failing the build.
+    await rm(outputPath, { recursive: true, force: true })
+
+    const { errors: writeErrors } = await index.writeFiles({ outputPath })
+
+    if (writeErrors?.length) {
+      throw new Error(
+        `pagefind write failed:\n${writeErrors.join('\n')}`,
+      )
+    }
+
+    log(
+      `[sitelo] pagefind indexed ${pageCount} page${pageCount === 1 ? '' : 's'} → ${path.relative(root, outputPath) || outputPath}`,
     )
+  } finally {
+    await close()
   }
-
-  await close()
-
-  log(
-    `[sitelo] pagefind indexed ${pageCount} page${pageCount === 1 ? '' : 's'} → ${path.relative(root, outputPath) || outputPath}`,
-  )
 
   if (!options.syncPublic || publicDir === false) return
 

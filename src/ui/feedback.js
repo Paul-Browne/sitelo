@@ -1,22 +1,22 @@
 import { button, div, p as pEl, span } from 'javascript-to-html'
 
 import { handler } from './handlers.js'
-import { icon } from './icons.js'
+import { icon as drawIcon } from './icons.js'
 import { attrs, colorClass, cx, oneOf, parseArgs, space } from './internal.js'
 
 /**
- * Default glyph per alert color.
+ * Default glyph name per alert color.
  *
  * `neutral` deliberately shares the informational glyph: a quiet alert
  * is still telling you something, and there is no drawing for "no
  * particular sentiment" that reads as anything but noise.
  */
 const ALERT_ICONS = {
-  primary: icon('info'),
-  neutral: icon('info'),
-  success: icon('check-circle'),
-  warning: icon('alert-triangle'),
-  danger: icon('x-circle'),
+  primary: 'info',
+  neutral: 'info',
+  success: 'check-circle',
+  warning: 'alert-triangle',
+  danger: 'x-circle',
 }
 
 const ALERT_VARIANTS = ['soft', 'outline', 'solid']
@@ -43,7 +43,9 @@ export function alert(...args) {
   } = props
 
   const palette = colorClass(color)
-  const glyph = icon === false ? '' : icon || ALERT_ICONS[palette.slice('su-c-'.length)]
+  // Drawn per call rather than once at import, so a glyph replaced with
+  // `registerIcons()` reaches the alerts too.
+  const glyph = icon === false ? '' : icon || drawIcon(ALERT_ICONS[palette.slice('su-c-'.length)])
   const urgent = color === 'danger' || color === 'warning'
 
   return div(

@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto'
+
 import {
   a,
   button as buttonEl,
@@ -90,7 +92,11 @@ function pageWindow(page, count, siblings) {
  * `/blog/2` and `/blog?page=2` alike. Without it the numbers render as
  * buttons carrying `data-su-page`, for a script to pick up.
  *
- * @param {object} [props] - `{ page, count, href, siblings, color, label, previousLabel, nextLabel }`
+ * `previousLabel` and `nextLabel` are what the arrows show;
+ * `previousPageLabel`, `nextPageLabel` and `pageLabel` are what a screen
+ * reader says for them, in the page's own language.
+ *
+ * @param {object} [props] - `{ page, count, href, siblings, color, label, previousLabel, nextLabel, previousPageLabel, nextPageLabel, pageLabel }`
  * @returns {string}
  */
 export function pagination(props = {}) {
@@ -103,8 +109,14 @@ export function pagination(props = {}) {
     label = 'Pagination',
     previousLabel = '‹',
     nextLabel = '›',
+    previousPageLabel = 'Previous page',
+    nextPageLabel = 'Next page',
+    pageLabel = (number) => `Page ${number}`,
     ...rest
   } = props
+
+  const nameOfPage =
+    typeof pageLabel === 'function' ? pageLabel : (number) => `${pageLabel} ${number}`
 
   const current = Math.min(Math.max(1, Number(page) || 1), Math.max(1, Number(count) || 1))
   const total = Math.max(1, Number(count) || 1)
@@ -137,7 +149,7 @@ export function pagination(props = {}) {
       : li(
           link(entry, String(entry), {
             ...(entry === current ? { 'aria-current': 'page' } : {}),
-            'aria-label': `Page ${entry}`,
+            'aria-label': String(nameOfPage(entry)),
           }),
         ),
   )
@@ -147,9 +159,9 @@ export function pagination(props = {}) {
     attrs(rest, { class: colorClass(color) }),
     ol(
       { class: 'su-pagination' },
-      li(link(current > 1 ? current - 1 : null, previousLabel, { 'aria-label': 'Previous page' })),
+      li(link(current > 1 ? current - 1 : null, previousLabel, { 'aria-label': String(previousPageLabel) })),
       ...items,
-      li(link(current < total ? current + 1 : null, nextLabel, { 'aria-label': 'Next page' })),
+      li(link(current < total ? current + 1 : null, nextLabel, { 'aria-label': String(nextPageLabel) })),
     ),
   )
 }
@@ -196,10 +208,26 @@ export function tabs(...args) {
     ...rest
   } = props
 
+  /*
+   * What an item with no id of its own is called. The radios, labels and
+   * panels all take their ids from it, so two sets on one page have to
+   * differ here: with every set numbered `tab-1`, `tab-2`…, a label in
+   * the second pointed at a radio in the first, and clicking it switched
+   * the wrong set. `name` or the set's own `id` when there is one, else
+   * a digest of the items — the same page builds to the same HTML, and
+   * two different sets get different ids without being told about each
+   * other.
+   */
+  const prefix = String(
+    name ??
+      rest.id ??
+      `su-t${createHash('sha256').update(JSON.stringify(items)).digest('hex').slice(0, 6)}`,
+  )
+
   const normalized = items.map((entry, index) => {
     const item = typeof entry === 'object' && entry != null ? entry : { label: entry }
 
-    return { id: item.id ?? `tab-${index + 1}`, ...item }
+    return { id: item.id ?? `${prefix}-${index + 1}`, ...item }
   })
 
   const panelled = normalized.some((item) => item.panel != null)
@@ -218,6 +246,8 @@ export function tabs(...args) {
     })
   const active =
     normalized.find((item) => item.id === value) ??
+    // The ids an item without one used to get, which a `value` may name.
+    normalized.find((item, index) => items[index]?.id == null && value === `tab-${index + 1}`) ??
     normalized.find((item) => item.active) ??
     normalized[0]
 
@@ -298,12 +328,15 @@ export function tabs(...args) {
 
   /*
    * What makes the radios one group, and what keeps two sets of tabs on
-   * the same page from becoming one. It is derived from the first id so
-   * that the same page builds to the same HTML; a page that gives its
-   * items ids — and the ids are in the markup either way — gets
-   * distinct groups without asking for them.
+   * the same page from becoming one. It is derived from the first id when
+   * the items carry their own — the ids are in the markup either way —
+   * and is the digest-based prefix above when they do not, so the same
+   * page builds to the same HTML and two sets get distinct groups
+   * without asking for them.
    */
-  const group = String(name ?? `su-${normalized[0]?.id ?? 'tabs'}`)
+  const group = String(
+    name ?? (items[0]?.id == null ? prefix : `su-${normalized[0].id}`),
+  )
 
   return div(
     attrs({ role: 'group', 'aria-label': String(label), ...rest }, { class: className }),
@@ -397,15 +430,8 @@ export function navLink(...args) {
  * toggle, small enough that the default weight goes spindly next to the
  * button's own text.
  */
-const SUN_ICON = icon('sun', {
-  class: 'su-theme-icon su-theme-icon-sun',
-  'stroke-width': 2,
-})
-
-const MOON_ICON = icon('moon', {
-  class: 'su-theme-icon su-theme-icon-moon',
-  'stroke-width': 2,
-})
+const themeIcon = (name) =>
+  icon(name, { class: `su-theme-icon su-theme-icon-${name}`, 'stroke-width': 2 })
 
 /**
  * Light/dark toggle.
@@ -438,6 +464,7 @@ export function themeToggle(props = {}) {
     attrs(rest, {
       class: cx('su-btn', `su-btn--${variant}`, 'su-btn--md', 'su-icon-btn', 'su-theme-toggle', colorClass(color, 'neutral')),
     }),
-    span({ class: 'su-btn-icon' }, SUN_ICON, MOON_ICON),
+    // Drawn per call, so a `sun` or `moon` from `registerIcons()` is used.
+    span({ class: 'su-btn-icon' }, themeIcon('sun'), themeIcon('moon')),
   )
 }

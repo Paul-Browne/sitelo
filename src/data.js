@@ -67,6 +67,11 @@ export function resolveDataPath(source, options = {}) {
 /**
  * Parsed contents of one JSON file.
  *
+ * The value is the memoized one, shared with every other page that reads
+ * the file — copy it before mutating it, the same as a collection's
+ * entries. Cloning it for each caller would cost a 500-page build 500
+ * copies of the file.
+ *
  * @param {string | URL} source
  * @param {{ root?: string, cache?: 'auto' | 'memory' | 'none' }} [options]
  * @returns {Promise<any>}
@@ -419,6 +424,16 @@ function slugPicker(slug) {
 }
 
 /**
+ * Collation for `sort` by field name.
+ *
+ * A fixed locale rather than the machine's: `localeCompare` with none
+ * sorts by whatever locale the build happens to run under, so a laptop in
+ * Finland and the CI runner could order the same posts differently. A
+ * site that wants its own language's order passes a compare function.
+ */
+const COLLATOR = new Intl.Collator('en')
+
+/**
  * `sort` is a compare function, or a field name — `'date'` ascending,
  * `'-date'` descending, which is how a blog index wants its posts.
  */
@@ -448,7 +463,7 @@ function comparator(sort) {
     const result =
       typeof left === 'number' && typeof right === 'number'
         ? left - right
-        : String(left).localeCompare(String(right))
+        : COLLATOR.compare(String(left), String(right))
 
     return descending ? -result : result
   }

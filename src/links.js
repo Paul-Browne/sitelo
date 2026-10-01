@@ -4,16 +4,22 @@ import { readdir, readFile, stat } from 'node:fs/promises'
 /** Schemes that never point at a page in this build. */
 const EXTERNAL_SCHEME = /^[a-z][a-z0-9+.-]*:/i
 
+/*
+ * The attribute names are matched whole: `\b` alone also matches after a
+ * hyphen, so `data-href` was read as the link and `data-id` as a fragment
+ * target.
+ */
+
 /** Attributes we follow. Assets are covered by the plugin's own check. */
 const ANCHOR_PATTERN =
-  /<a\b[^>]*?\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi
+  /<a\b[^>]*?(?<![\w-])href\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi
 
 /** `id="…"` on any element, for fragment checking. */
-const ID_PATTERN = /\bid\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi
+const ID_PATTERN = /(?<![\w-])id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi
 
 /** `name="…"` on anchors still works as a fragment target. */
 const ANCHOR_NAME_PATTERN =
-  /<a\b[^>]*?\bname\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi
+  /<a\b[^>]*?(?<![\w-])name\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi
 
 /**
  * @param {unknown} linkCheck `false`, `true`, `'warn'`, `'error'`, or options.
@@ -118,8 +124,20 @@ export function parseInternalLink(href) {
   if (withoutHash === '') return { pathname: '', fragment }
 
   const queryIndex = withoutHash.indexOf('?')
-  const pathname =
+  const raw =
     queryIndex === -1 ? withoutHash : withoutHash.slice(0, queryIndex)
+
+  /*
+   * Decoded like the fragment, because the files it is compared against
+   * are named the way the browser decodes the URL: `/my%20post/` is the
+   * `my post/` directory, and used to be reported as missing.
+   */
+  let pathname = raw
+  try {
+    pathname = decodeURI(raw)
+  } catch {
+    // A malformed escape stays as written, and will not match a file.
+  }
 
   return { pathname, fragment }
 }

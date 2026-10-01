@@ -419,7 +419,9 @@ export type SelectOption =
 
 export interface SelectProps extends BaseProps {
   options?: SelectOption[]
-  value?: string | number
+  /** The selected option's value, or several with `multiple`. */
+  value?: string | number | Array<string | number>
+  multiple?: boolean
   /** Disabled first option, selected when `value` is absent. */
   placeholder?: string
   size?: Size
@@ -553,6 +555,8 @@ export interface ChipProps extends BaseProps {
   size?: Size
   href?: string
   dot?: boolean
+  /** Renders a `<button type="button">` when given without `href` or `as`. */
+  onclick?: string
   as?: string
 }
 
@@ -739,8 +743,17 @@ export interface PaginationProps extends BaseProps {
   siblings?: number
   color?: Color
   label?: string
+  /** What the arrows show. Default `‹` and `›`. */
   previousLabel?: Child
   nextLabel?: Child
+  /** What a screen reader says for the arrows. Default `'Previous page'` and `'Next page'`. */
+  previousPageLabel?: string
+  nextPageLabel?: string
+  /**
+   * What a screen reader says for a page number: a function of it, or a
+   * word put in front of it. Default `(n) => \`Page ${n}\``.
+   */
+  pageLabel?: string | ((page: number) => string)
 }
 
 export function pagination(props?: PaginationProps): string
@@ -768,9 +781,10 @@ export interface TabsProps extends BaseProps {
   /** Accessible name for the group. Panel form only. */
   label?: string
   /**
-   * The radio group's `name`. Defaults to the first item's id, which
-   * only needs overriding if two sets of panel tabs on one page would
-   * otherwise share it.
+   * The radio group's `name`, and the prefix of the ids an item without
+   * its own is given. Defaults to the first item's id when items carry
+   * ids, and otherwise to one derived from the items — so two different
+   * sets on one page never share either.
    */
   name?: string
   /**

@@ -166,7 +166,7 @@ export function statGroup(...args) {
  * marker renders it at 0.85rem — at that size the default weight is a
  * hairline on a filled circle.
  */
-const STEP_TICK = iconSvg('check', { 'stroke-width': 3.4 })
+const stepTick = () => iconSvg('check', { 'stroke-width': 3.4 })
 
 /**
  * A numbered flow, with the steps behind you marked done.
@@ -179,7 +179,14 @@ const STEP_TICK = iconSvg('check', { 'stroke-width': 3.4 })
  */
 export function steps(props = {}) {
   const { items = [], current = 0, direction = 'horizontal', label, ...rest } = props
-  const active = Number(current)
+  /*
+   * The rule `/su/steps.js` applies, so a flow renders the way it would
+   * after `setStep()` with the same value: a whole number, and step zero
+   * for anything that is not a number. A `current` of `'x'` used to mark
+   * every step upcoming here and step zero current in the browser.
+   */
+  const requested = Number(current)
+  const active = Number.isFinite(requested) ? Math.max(0, Math.trunc(requested)) : 0
 
   const rendered = items.map((entry, index) => {
     const item = typeof entry === 'object' && entry != null ? entry : { title: entry }
@@ -200,7 +207,8 @@ export function steps(props = {}) {
         // advances in the browser is three class names — `/su/steps.js`
         // never has to know how a completed step is drawn.
         span({ class: 'su-step-number' }, String(index + 1)),
-        STEP_TICK,
+        // Per call, so a `check` from `registerIcons()` is the one drawn.
+        stepTick(),
       ),
       div(
         { class: 'su-step-content' },

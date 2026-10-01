@@ -351,3 +351,40 @@ test('runLinkCheck reports a clean pass', async (t) => {
   assert.deepEqual(result, { checked: 1, broken: 0 });
   assert.match(logs[0], /checked 1 internal link - all good/);
 });
+
+test('a percent-encoded path matches the file it names', async (t) => {
+  const dir = makeOutDir({
+    'index.html': page(`
+      <a href="/my%20post/">spaces</a>
+      <a href="/caf%C3%A9/">non-ASCII</a>
+      <a href="/docs/r%C3%A9sum%C3%A9.html#top">file and fragment</a>
+      <a href="/nope%20here/">missing</a>
+    `),
+    'my post/index.html': page(''),
+    'café/index.html': page(''),
+    'docs/résumé.html': page('<h1 id="top">x</h1>'),
+  });
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+
+  const { broken } = await check(dir, { checkFragments: true });
+
+  // These three used to be reported broken, and fail a build in error mode.
+  assert.deepEqual(broken.map((entry) => entry.href), ['/nope%20here/']);
+});
+
+test('data-href and data-id are not the link or a fragment target', async (t) => {
+  const dir = makeOutDir({
+    'index.html': page(`
+      <a data-href="/missing" href="/about">real link first in the tag, data-href first in the source</a>
+      <div data-id="ghost"></div>
+      <a href="#ghost">points at a data-id only</a>
+    `),
+    'about/index.html': page(''),
+  });
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+
+  const { broken, checked } = await check(dir, { checkFragments: true });
+
+  assert.equal(checked, 2);
+  assert.deepEqual(broken.map((entry) => [entry.href, entry.reason]), [['#ghost', 'no such fragment']]);
+});

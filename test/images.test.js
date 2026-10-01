@@ -9,12 +9,14 @@ import { test } from 'node:test'
 import sharp from 'sharp'
 
 import {
+  createDevImagePipeline,
   normalizeImageOptions,
   parseAttributes,
   parseVariantHint,
   resolveSizes,
   resolveWidths,
   rewriteHtmlImages,
+  runImages,
 } from '../src/images.js'
 
 const execFileAsync = promisify(execFile)
@@ -73,6 +75,22 @@ test('normalizeImageOptions: rejects invalid values', () => {
   assert.throws(() => normalizeImageOptions({ widths: [0] }), /images\.widths/)
   assert.throws(() => normalizeImageOptions({ formats: [] }), /images\.formats/)
   assert.throws(() => normalizeImageOptions({ formats: ['gif'] }), /unsupported format/)
+})
+
+test('normalizeImageOptions: assetsDir has to stay inside the build output', () => {
+  // The build empties this directory first, so each of these used to be a
+  // recursive delete of something that was not sitelo's: the project, the
+  // whole of dist/, a folder beside it.
+  for (const assetsDir of ['../keep', '..', 'img/../../x', '', '.', '/', './', 'C:/images', 'a\\..\\..\\b']) {
+    assert.throws(
+      () => normalizeImageOptions({ assetsDir }),
+      /"images\.assetsDir" must be a directory inside the build output/,
+      `rejects ${JSON.stringify(assetsDir)}`,
+    )
+  }
+
+  assert.equal(normalizeImageOptions({ assetsDir: '/media/img/' }).assetsDir, 'media/img')
+  assert.equal(normalizeImageOptions({ assetsDir: 'img' }).assetsDir, 'img')
 })
 
 test('normalizeImageOptions: exclude globs become matchers', () => {
@@ -249,6 +267,46 @@ test('rewriteHtmlImages: a failing source is warned about, not fatal', async () 
   assert.equal(html, '<img src="/img/broken.png">')
   assert.equal(warnings.length, 1)
   assert.match(warnings[0], /unsupported image format/)
+})
+
+test('rewriteHtmlImages: a > inside an attribute value does not end the tag', async () => {
+  // javascript-to-html escapes only quotes, so this is what img({ alt }) writes.
+  const { html, rewritten } = await rewriteHtmlImages({
+    html: '<p>before</p><img src="/img/a.png" alt="Revenue > costs, 2025" title=\'a > b\'><p>after</p>',
+    options: normalizeImageOptions(true),
+    resolve: resolveAll,
+    generate: stubGenerate(),
+  })
+
+  assert.equal(rewritten, 1)
+  assert.match(html, /^<p>before<\/p><img src="\/assets\/img\/a-800\.webp" alt="Revenue > costs, 2025" title="a > b" [^<]*><p>after<\/p>$/)
+})
+
+test('rewriteHtmlImages: mapUrl rewrites every variant URL it writes', async () => {
+  const { html } = await rewriteHtmlImages({
+    html: '<img src="/img/a.png"><img src="/img/a.png?w=400">',
+    options: normalizeImageOptions({ formats: ['avif', 'webp'] }),
+    resolve: resolveAll,
+    generate: stubGenerate(['avif', 'webp']),
+    mapUrl: (url) => `..${url}`,
+  })
+
+  assert.ok(!/(?:src|srcset)="\/assets/.test(html), html)
+  assert.ok(!/, \/assets/.test(html), html)
+  assert.match(html, /srcset="\.\.\/assets\/img\/a-400\.avif 400w, \.\.\/assets\/img\/a-800\.avif 800w"/)
+})
+
+test('rewriteHtmlImages: reports the sources it rewrote away from', async () => {
+  const { sources } = await rewriteHtmlImages({
+    html: '<img src="/img/a.png"><img src="/img/b.png" data-no-optimize><img src="/elsewhere.png">',
+    options: normalizeImageOptions(true),
+    resolve: resolveAll,
+    generate: stubGenerate(),
+  })
+
+  // Only a tag that now points at variants makes its original a candidate
+  // for pruning; an opted-out or unresolved one still points at its file.
+  assert.deepEqual([...sources], ['/abs/img/a.png'])
 })
 
 const NONE = { width: null, height: null, fit: null, background: null, position: null, format: null }
@@ -594,4 +652,161 @@ test('sitelo build optimizes referenced images', async (t) => {
     'a rebuild produces the same variant set',
   )
   assert.ok(before > 0)
+})
+
+/**
+ * A project of its own under `test/.tmp`, at a path with a folder named
+ * `remote` in it — the name the pipeline once mistook for its download
+ * cache, deleting whatever image failed to process.
+ */
+function remoteProject(t) {
+  const tmpRoot = path.join(rootDir, 'test', '.tmp')
+  fs.mkdirSync(tmpRoot, { recursive: true })
+  const holder = fs.mkdtempSync(path.join(tmpRoot, 'images-'))
+  t.after(() => fs.rmSync(holder, { recursive: true, force: true }))
+
+  const root = path.join(holder, 'remote', 'site')
+  fs.mkdirSync(path.join(root, 'public'), { recursive: true })
+  fs.mkdirSync(path.join(root, 'src'), { recursive: true })
+  return root
+}
+
+const solid = (width, background = { r: 90, g: 140, b: 210 }) =>
+  sharp({ create: { width, height: Math.round(width * 0.6), channels: 3, background } }).png()
+
+test('dev pipeline: an image that fails is left on disk, wherever the project lives', async (t) => {
+  const root = remoteProject(t)
+  const broken = path.join(root, 'public', 'broken.png')
+  fs.writeFileSync(broken, 'not an image at all')
+
+  const warnings = []
+  const pipeline = createDevImagePipeline({
+    root,
+    options: normalizeImageOptions({ cacheDir: '.cache' }),
+    warn: (message) => warnings.push(message),
+  })
+
+  const html = await pipeline.transform('<img src="/broken.png" alt="">')
+
+  assert.equal(html, '<img src="/broken.png" alt="">')
+  assert.match(warnings.join('\n'), /broken\.png/)
+  assert.equal(fs.readFileSync(broken, 'utf8'), 'not an image at all', 'the source file survives')
+})
+
+test('dev pipeline: an edited image gets new variants without a restart', async (t) => {
+  const root = remoteProject(t)
+  const file = path.join(root, 'public', 'photo.png')
+  const pipeline = createDevImagePipeline({
+    root,
+    options: normalizeImageOptions({ cacheDir: '.cache' }),
+    warn: () => {},
+  })
+  const srcOf = async () => (await pipeline.transform('<img src="/photo.png" alt="">')).match(/src="([^"]+)"/)[1]
+
+  await solid(500, { r: 200, g: 30, b: 30 }).toFile(file)
+  const first = await srcOf()
+
+  fs.writeFileSync(file, 'half-written')
+  assert.equal(await srcOf(), '/photo.png', 'a broken revision is skipped…')
+
+  await solid(400, { r: 30, g: 200, b: 30 }).toFile(file)
+  const second = await srcOf()
+
+  assert.notEqual(second, '/photo.png', '…and the next good one is picked up rather than the failure being remembered')
+  assert.notEqual(second, first, 'the edit shows up as a different variant')
+  assert.match(second, /-400\.webp$/)
+})
+
+test('sitelo build prunes only the originals it replaced', async (t) => {
+  const root = remoteProject(t)
+  const pub = (...parts) => path.join(root, 'public', ...parts)
+  const page = (route, body) => {
+    const dir = path.join(root, 'src', ...route)
+    fs.mkdirSync(dir, { recursive: true })
+    fs.writeFileSync(
+      path.join(dir, 'index.ht.js'),
+      `export default () => ${JSON.stringify(`<!doctype html><html lang="en"><head><title>t</title><link rel="manifest" href="/site.webmanifest"></head><body>${body}</body></html>`)}`,
+    )
+  }
+
+  fs.mkdirSync(pub('icons'), { recursive: true })
+  fs.mkdirSync(pub('blog', 'post'), { recursive: true })
+  await solid(180).toFile(pub('apple-touch-icon.png'))
+  await solid(192).toFile(pub('icons', 'icon-192.png'))
+  fs.writeFileSync(pub('site.webmanifest'), JSON.stringify({ icons: [{ src: '/icons/icon-192.png' }] }))
+  await solid(1000).toFile(pub('hero.png'))
+  await solid(600).toFile(pub('blog', 'post', 'cover.png'))
+  fs.writeFileSync(pub('broken.png'), 'not an image at all')
+  fs.writeFileSync(path.join(root, 'sitelo.config.js'), "export default { images: { cacheDir: '.cache' } }\n")
+
+  page([], '<img src="/hero.png" alt="Hero"><img src="/broken.png" alt="Broken">')
+  page(['blog', 'post'], '<img src="cover.png" alt="Cover"><a href="cover.png">Full size</a>')
+
+  await execFileAsync(process.execPath, [cliPath, 'build', '--root', root], { env: process.env })
+
+  const dist = (...parts) => path.join(root, 'dist', ...parts)
+  const post = fs.readFileSync(dist('blog', 'post', 'index.html'), 'utf8')
+
+  assert.equal(fs.existsSync(dist('hero.png')), false, 'an original only a rewritten tag used is pruned')
+  assert.ok(fs.existsSync(dist('apple-touch-icon.png')), 'a file no tag pointed at is not a candidate')
+  assert.ok(fs.existsSync(dist('icons', 'icon-192.png')), 'nor is one a web manifest lists')
+  assert.match(post, /<img src="\/assets\/img\/cover\.[a-f0-9]+-600\.webp" alt="Cover"/, 'a relative src resolves against its page')
+  assert.ok(fs.existsSync(dist('blog', 'post', 'cover.png')), 'an original a relative link still points at stays')
+  assert.ok(fs.existsSync(dist('broken.png')), 'an image that failed is left for the page that uses it')
+  assert.ok(fs.existsSync(pub('broken.png')), 'and the source is never touched')
+})
+
+test('dev pipeline: a JPEG with data after its end marker is still optimized', async (t) => {
+  const root = remoteProject(t)
+  const jpeg = await sharp({ create: { width: 800, height: 600, channels: 3, background: { r: 200, g: 120, b: 40 } } })
+    .jpeg()
+    .toBuffer()
+
+  // What a phone's motion photo looks like: a complete JPEG, then a video.
+  fs.writeFileSync(path.join(root, 'public', 'motion.jpg'), Buffer.concat([jpeg, Buffer.from('ftypmp42 and then a video')]))
+  // And one that really is cut short.
+  fs.writeFileSync(path.join(root, 'public', 'cut.jpg'), jpeg.subarray(0, jpeg.length >> 1))
+
+  const warnings = []
+  const pipeline = createDevImagePipeline({
+    root,
+    options: normalizeImageOptions({ cacheDir: '.cache' }),
+    warn: (message) => warnings.push(message),
+  })
+  const html = await pipeline.transform('<img src="/motion.jpg" alt=""><img src="/cut.jpg" alt="">')
+
+  assert.match(html, /<img src="\/_sitelo\/images\/motion\.[a-f0-9]+-800\.webp"/)
+  assert.match(html, /<img src="\/cut\.jpg" alt="">/)
+  assert.match(warnings.join('\n'), /cut\.jpg: not a decodable raster image/)
+})
+
+test('runImages: variant URLs follow a full-URL or relative base', async (t) => {
+  const build = async (base) => {
+    const root = remoteProject(t)
+    const dist = path.join(root, 'dist')
+    fs.mkdirSync(path.join(dist, 'blog'), { recursive: true })
+    await solid(600).toFile(path.join(dist, 'a.png'))
+    fs.writeFileSync(path.join(dist, 'index.html'), '<img src="/a.png" alt="">')
+    fs.writeFileSync(path.join(dist, 'blog', 'index.html'), '<img src="../a.png" alt="">')
+
+    await runImages({
+      root,
+      outDir: 'dist',
+      base,
+      options: normalizeImageOptions({ cacheDir: '.cache', prune: false }),
+      log: () => {},
+      warn: (message) => assert.fail(message),
+    })
+
+    return ['index.html', path.join('blog', 'index.html')].map((file) => fs.readFileSync(path.join(dist, file), 'utf8'))
+  }
+
+  const [cdnHome, cdnBlog] = await build('https://cdn.example/site/')
+  assert.match(cdnHome, /src="https:\/\/cdn\.example\/site\/assets\/img\/a\.[a-f0-9]+-600\.webp"/)
+  assert.match(cdnBlog, /src="https:\/\/cdn\.example\/site\/assets\/img\/a\.[a-f0-9]+-600\.webp"/)
+
+  const [relHome, relBlog] = await build('./')
+  assert.match(relHome, /src="assets\/img\/a\.[a-f0-9]+-600\.webp"/)
+  assert.match(relBlog, /src="\.\.\/assets\/img\/a\.[a-f0-9]+-600\.webp"/, 'relative to the page, one level down')
+  assert.match(relBlog, /srcset="\.\.\/assets\/img\/a\.[a-f0-9]+-400\.webp 400w, \.\.\/assets/)
 })

@@ -159,6 +159,24 @@ export function normalizeImageOptions(images) {
     throw new Error('"images.assetsDir" must be a directory path')
   }
 
+  /*
+   * The build empties this directory before every run, so it has to be a
+   * directory of its own inside the output. `''` or `.` is the output
+   * itself, and a `..` anywhere can reach the project — `'../public'` used
+   * to delete the site's own images.
+   */
+  const assetsPath = assetsDir.replace(/^\/+|\/+$/g, '')
+  const segments = assetsPath.split(/[\\/]+/)
+  if (
+    /^[a-z]:/i.test(assetsPath) ||
+    segments.includes('..') ||
+    segments.every((segment) => segment === '' || segment === '.')
+  ) {
+    throw new Error(
+      `"images.assetsDir" must be a directory inside the build output, e.g. 'assets/img' — got ${JSON.stringify(assetsDir)}`,
+    )
+  }
+
   const cacheDir = options.cacheDir ?? DEFAULT_CACHE_DIR
   if (typeof cacheDir !== 'string') {
     throw new Error('"images.cacheDir" must be a directory path')
@@ -181,7 +199,7 @@ export function normalizeImageOptions(images) {
     dimensions: options.dimensions !== false,
     lazy: options.lazy !== false,
     exclude,
-    assetsDir: assetsDir.replace(/^\/+|\/+$/g, ''),
+    assetsDir: assetsPath,
     cacheDir,
     remote: options.remote === true,
     prune: options.prune !== false,
@@ -279,6 +297,18 @@ function createLimiter(limit) {
 
 function hash(value, length = 8) {
   return createHash('sha256').update(value).digest('hex').slice(0, length)
+}
+
+/**
+ * Whether `file` sits somewhere below `dir` — not `dir` itself, and not a
+ * sibling that merely shares its prefix (`/out` vs `/output`).
+ * @param {string} dir
+ * @param {string} file
+ */
+function isInside(dir, file) {
+  const relative = path.relative(dir, file)
+
+  return relative !== '' && !relative.startsWith('..') && !path.isAbsolute(relative)
 }
 
 function isExternalUrl(url) {
@@ -484,20 +514,67 @@ function looksLikeRaster(buffer) {
 }
 
 /**
+ * Whether a JPEG's image data runs to its end-of-image marker.
+ *
+ * Found by walking the segments rather than by looking at the last two
+ * bytes: plenty of complete JPEGs carry data after the marker — a phone's
+ * motion photo appends its video there — and an `FF D9` inside an EXIF
+ * thumbnail is not the end of the picture, so it is skipped with its
+ * segment.
+ *
+ * @param {Buffer} buffer
+ */
+function jpegIsComplete(buffer) {
+  let i = 2
+
+  while (i + 1 < buffer.length) {
+    if (buffer[i] !== 0xff) return false
+
+    const marker = buffer[i + 1]
+
+    if (marker === 0xd9) return true
+    // Fill bytes before a marker, and the markers that carry no length.
+    if (marker === 0xff) {
+      i += 1
+      continue
+    }
+    if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) {
+      i += 2
+      continue
+    }
+    if (i + 3 >= buffer.length) return false
+
+    i += 2 + buffer.readUInt16BE(i + 2)
+
+    // A scan is followed by entropy-coded data, which runs to the next
+    // marker that is neither a stuffed `FF 00` nor a restart.
+    if (marker === 0xda) {
+      while (i + 1 < buffer.length) {
+        if (buffer[i] !== 0xff) {
+          i += 1
+          continue
+        }
+
+        const next = buffer[i + 1]
+
+        if (next === 0x00 || (next >= 0xd0 && next <= 0xd7)) i += 2
+        else if (next === 0xff) i += 1
+        else break
+      }
+    }
+  }
+
+  return false
+}
+
+/**
  * Header checks miss truncated downloads; those can SIGBUS when libvips mmaps them.
  * @param {Buffer} buffer
  */
 function looksLikeCompleteRaster(buffer) {
   if (!looksLikeRaster(buffer)) return false
 
-  // JPEG must end with the EOI marker.
-  if (buffer[0] === 0xff && buffer[1] === 0xd8) {
-    return (
-      buffer.length >= 4 &&
-      buffer[buffer.length - 2] === 0xff &&
-      buffer[buffer.length - 1] === 0xd9
-    )
-  }
+  if (buffer[0] === 0xff && buffer[1] === 0xd8) return jpegIsComplete(buffer)
 
   // PNG must contain an IEND chunk.
   if (buffer[0] === 0x89 && buffer[1] === 0x50) {
@@ -597,12 +674,18 @@ export function resolveSizes(intrinsic, hint, widths) {
  * }} args
  */
 function createImageProcessor({ sharp, options, cacheDir, outputDir, urlPrefix }) {
-  /** @type {Map<string, Promise<null | object>>} */
+  /**
+   * Source path → the revision last read and the decode of it. One entry
+   * per file: an edit replaces it rather than adding another.
+   * @type {Map<string, { stamp: string, promise: Promise<null | object> }>}
+   */
   const sources = new Map()
   /** @type {Map<string, Promise<object>>} */
   const variants = new Map()
   /** @type {Map<string, Promise<null | object>>} */
   const inFlight = new Map()
+  /** Where {@link fetchRemoteImage} keeps downloads: the only files this may delete. */
+  const remoteDir = path.join(cacheDir, 'remote')
   const stats = { sources: 0, variants: 0, originalBytes: 0, variantBytes: 0 }
   const sourceLimit = createLimiter(options.concurrency)
   const encodeLimit = createLimiter(options.concurrency)
@@ -689,7 +772,8 @@ function createImageProcessor({ sharp, options, cacheDir, outputDir, urlPrefix }
       stats.variantBytes += buffer.length
 
       return {
-        url: joinUrl(urlPrefix, fileName),
+        // Not `joinUrl`: the prefix may be a whole URL (a CDN `base`).
+        url: `${urlPrefix.replace(/\/+$/, '')}/${fileName}`,
         width,
         format,
         bytes: buffer.length,
@@ -701,14 +785,32 @@ function createImageProcessor({ sharp, options, cacheDir, outputDir, urlPrefix }
   }
 
   /**
-   * Read and decode one source file. Memoized so a page that references the
-   * same image at several pinned widths reads and probes it once.
+   * Which revision of a file this is: its size and modification time.
+   *
+   * The dev server is one process that outlives edits to the images it
+   * serves, so a path alone is not a cache key — an edited picture kept
+   * its old variants, and one that failed once stayed failed, until the
+   * server was restarted. A build reads each file once and pays one
+   * `stat` per tag for the same guarantee.
    * @param {string} sourcePath
+   */
+  async function revisionOf(sourcePath) {
+    const { size, mtimeMs } = await fs.stat(sourcePath)
+
+    return `${size}:${mtimeMs}`
+  }
+
+  /**
+   * Read and decode one revision of a source file. Memoized so a page that
+   * references the same image at several pinned widths reads and probes it
+   * once.
+   * @param {string} sourcePath
+   * @param {string} stamp from {@link revisionOf}
    * @returns {Promise<null | { source: Buffer, metadata: any, sourceHash: string, name: string }>}
    */
-  function loadSource(sourcePath) {
+  function loadSource(sourcePath, stamp) {
     const existing = sources.get(sourcePath)
-    if (existing) return existing
+    if (existing?.stamp === stamp) return existing.promise
 
     const promise = (async () => {
       const source = await fs.readFile(sourcePath)
@@ -737,7 +839,7 @@ function createImageProcessor({ sharp, options, cacheDir, outputDir, urlPrefix }
       }
     })()
 
-    sources.set(sourcePath, promise)
+    sources.set(sourcePath, { stamp, promise })
     return promise
   }
 
@@ -754,15 +856,22 @@ function createImageProcessor({ sharp, options, cacheDir, outputDir, urlPrefix }
    *   height: number
    * }>}
    */
-  function generate(sourcePath, hint = NO_HINT) {
-    const key = [sourcePath, hint.width, hint.height, hint.fit, hint.background, hint.position, hint.format]
+  async function generate(sourcePath, hint = NO_HINT) {
+    const stamp = await revisionOf(sourcePath)
+    const prefix = `${sourcePath}\0`
+    const key = [stamp, hint.width, hint.height, hint.fit, hint.background, hint.position, hint.format]
       .map((part) => part ?? '')
       .join('\0')
-    const existing = inFlight.get(key)
+    const existing = inFlight.get(prefix + key)
     if (existing) return existing
 
+    // Results for an earlier revision of this file can never be asked for again.
+    for (const stale of inFlight.keys()) {
+      if (stale.startsWith(prefix) && !stale.startsWith(`${prefix}${stamp}\0`)) inFlight.delete(stale)
+    }
+
     const promise = sourceLimit(async () => {
-      const loaded = await loadSource(sourcePath)
+      const loaded = await loadSource(sourcePath, stamp)
       if (!loaded) return null
 
       const { source, metadata, sourceHash, name } = loaded
@@ -803,13 +912,19 @@ function createImageProcessor({ sharp, options, cacheDir, outputDir, urlPrefix }
         height: largest.height ?? Math.round((metadata.height / metadata.width) * largest.width),
       }
     }).catch(async (error) => {
-      if (sourcePath.includes(`${path.sep}remote${path.sep}`)) {
+      /*
+       * A download that will not decode is thrown away so the next run
+       * fetches it again. Only a download: this used to test for a
+       * `remote` folder anywhere in the path, and deleted the site's own
+       * images whenever the project happened to live under one.
+       */
+      if (isInside(remoteDir, sourcePath)) {
         await fs.unlink(sourcePath).catch(() => {})
       }
       throw error
     })
 
-    inFlight.set(key, promise)
+    inFlight.set(prefix + key, promise)
     return promise
   }
 
@@ -885,8 +1000,8 @@ function toPositiveInt(value) {
   return Number.isInteger(parsed) && parsed > 0 ? parsed : null
 }
 
-function srcsetFor(variants) {
-  return variants.map((variant) => `${variant.url} ${variant.width}w`).join(', ')
+function srcsetFor(variants, mapUrl = (url) => url) {
+  return variants.map((variant) => `${mapUrl(variant.url)} ${variant.width}w`).join(', ')
 }
 
 /**
@@ -914,12 +1029,17 @@ function pictureRanges(html) {
  *   resolve: (url: string) => Promise<string | null> | string | null
  *   generate: (sourcePath: string, hint?: VariantHint) => Promise<null | object>
  *   onWarn?: (message: string) => void
- * }} args
- * @returns {Promise<{ html: string, rewritten: number }>}
+ *   mapUrl?: (url: string) => string
+ * }} args `mapUrl` rewrites each variant URL on its way into the page —
+ *   for a site built with a relative `base`, where it depends on the page
+ * @returns {Promise<{ html: string, rewritten: number, sources: Set<string> }>}
+ *   `sources` holds the path of every file a tag was rewritten away from.
  */
-export async function rewriteHtmlImages({ html, options, resolve, generate, onWarn }) {
-  const tags = [...html.matchAll(/<img\b[^>]*>/gi)]
-  if (tags.length === 0) return { html, rewritten: 0 }
+export async function rewriteHtmlImages({ html, options, resolve, generate, onWarn, mapUrl = (url) => url }) {
+  // Quote-aware: a `>` inside an attribute value — `alt="costs > revenue"`,
+  // which javascript-to-html writes as is — does not end the tag.
+  const tags = [...html.matchAll(/<img\b(?:[^>"']|"[^"]*"|'[^']*')*>/gi)]
+  if (tags.length === 0) return { html, rewritten: 0, sources: new Set() }
 
   const ranges = pictureRanges(html)
   const insidePicture = (index) =>
@@ -986,7 +1106,7 @@ export async function rewriteHtmlImages({ html, options, resolve, generate, onWa
       const pinned = hint.width !== null || hint.height !== null
 
       const imgAttributes = new Map(attributes)
-      imgAttributes.set('src', result.fallback.url)
+      imgAttributes.set('src', mapUrl(result.fallback.url))
       if (!pinned) imgAttributes.set('sizes', sizes)
 
       if (options.dimensions) {
@@ -1008,11 +1128,12 @@ export async function rewriteHtmlImages({ html, options, resolve, generate, onWa
       }
 
       if (result.ladders.length === 1) {
-        if (!pinned) imgAttributes.set('srcset', srcsetFor(result.ladders[0].variants))
+        if (!pinned) imgAttributes.set('srcset', srcsetFor(result.ladders[0].variants, mapUrl))
         return {
           index: match.index,
           length: tag.length,
           html: `<img${serializeAttributes(imgAttributes)}>`,
+          source: sourcePath,
         }
       }
 
@@ -1021,19 +1142,20 @@ export async function rewriteHtmlImages({ html, options, resolve, generate, onWa
         .slice(0, -1)
         .map((ladder) =>
           pinned
-            ? `<source type="${MIME_BY_FORMAT[ladder.format]}" srcset="${ladder.variants[0].url}">`
-            : `<source type="${MIME_BY_FORMAT[ladder.format]}" srcset="${srcsetFor(ladder.variants)}" sizes="${String(sizes).replace(/"/g, '&quot;')}">`,
+            ? `<source type="${MIME_BY_FORMAT[ladder.format]}" srcset="${mapUrl(ladder.variants[0].url)}">`
+            : `<source type="${MIME_BY_FORMAT[ladder.format]}" srcset="${srcsetFor(ladder.variants, mapUrl)}" sizes="${String(sizes).replace(/"/g, '&quot;')}">`,
         )
         .join('')
 
       if (!pinned) {
-        imgAttributes.set('srcset', srcsetFor(result.ladders[result.ladders.length - 1].variants))
+        imgAttributes.set('srcset', srcsetFor(result.ladders[result.ladders.length - 1].variants, mapUrl))
       }
 
       return {
         index: match.index,
         length: tag.length,
         html: `<picture>${sources}<img${serializeAttributes(imgAttributes)}></picture>`,
+        source: sourcePath,
       }
     },
   )
@@ -1041,40 +1163,63 @@ export async function rewriteHtmlImages({ html, options, resolve, generate, onWa
   let output = ''
   let cursor = 0
   let rewritten = 0
+  /** @type {Set<string>} */
+  const sources = new Set()
 
   for (const replacement of replacements) {
     if (!replacement) continue
     output += html.slice(cursor, replacement.index) + replacement.html
     cursor = replacement.index + replacement.length
     rewritten += 1
+    if (replacement.source) sources.add(replacement.source)
   }
 
   output += html.slice(cursor)
 
-  return { html: output, rewritten }
+  return { html: output, rewritten, sources }
 }
 
 /**
- * Resolve a root-relative URL against the directories sitelo serves from.
+ * Resolve an image URL against the directories sitelo serves from.
+ *
+ * A root-relative URL is looked up as it stands, less any path `base`. A
+ * relative one is resolved against the page it sits in, the way the
+ * browser will: `cover.png` on `/blog/post/` is `/blog/post/cover.png`,
+ * not a `cover.png` at the root that happens to share the name.
+ *
  * @param {{ root: string, dirs: Array<string | false | undefined>, base?: string }} args
+ * @returns {(url: string, from?: string) => string | null} `from` is the
+ *   URL path of the page the reference is on; `/` when omitted
  */
 function createSourceResolver({ root, dirs, base = '/' }) {
-  const basePrefix = base.replace(/\/+$/, '')
+  // Only a path base prefixes URLs on the page. A full-URL base makes them
+  // external, and a relative one (`./`) makes them relative.
+  const basePrefix = base.startsWith('/') ? base.replace(/\/+$/, '') : ''
   const roots = dirs.flatMap((dir) =>
     typeof dir === 'string' && dir.length > 0 ? [path.resolve(root, dir)] : [],
   )
 
-  return (url) => {
+  return (url, from = '/') => {
     if (isExternalUrl(url) || url.startsWith('data:')) return null
 
-    const [pathname] = url.split(/[?#]/)
+    let [pathname] = url.split(/[?#]/)
     if (!RASTER_EXTENSIONS.has(path.extname(pathname).toLowerCase())) return null
 
-    let relative = pathname
-    if (basePrefix && relative.startsWith(`${basePrefix}/`)) {
-      relative = relative.slice(basePrefix.length)
+    if (!pathname.startsWith('/')) {
+      const pageDir = from.endsWith('/') ? from : `${path.posix.dirname(from)}/`
+      pathname = path.posix.join(pageDir, pathname)
     }
-    relative = decodeURIComponent(relative.replace(/^\/+/, ''))
+
+    if (basePrefix && pathname.startsWith(`${basePrefix}/`)) {
+      pathname = pathname.slice(basePrefix.length)
+    }
+
+    let relative
+    try {
+      relative = decodeURIComponent(pathname.replace(/^\/+/, ''))
+    } catch {
+      return null
+    }
 
     if (!relative || relative.includes('..')) return null
 
@@ -1086,6 +1231,29 @@ function createSourceResolver({ root, dirs, base = '/' }) {
 
     return null
   }
+}
+
+/**
+ * Where variant URLs start, for the `base` the site is built with.
+ *
+ * A path base goes in front (`/repo/assets/img`) and a full URL is kept
+ * whole (`https://cdn.example/assets/img`). A relative base (`./`) has no
+ * one answer — it depends on the page — so variants are written
+ * root-relative here and made relative per page by the caller.
+ *
+ * @param {string} base
+ * @param {string} assetsDir
+ */
+function variantUrlPrefix(base, assetsDir) {
+  if (isUrlBase(base)) return `${base.replace(/\/+$/, '')}/${assetsDir}`
+  if (!base.startsWith('/')) return joinUrl(assetsDir)
+
+  return joinUrl(base, assetsDir)
+}
+
+/** A `base` that is a whole URL — `https://cdn.example/` or `//cdn.example/`. */
+function isUrlBase(base) {
+  return /^(?:[a-z][a-z0-9+.-]*:)?\/\//i.test(base)
 }
 
 /**
@@ -1283,30 +1451,76 @@ function createImageProgressLogger({
   }
 }
 
+/** Every text file a reference to an image can sit in. */
+const REFERENCE_EXTENSIONS = new Set([
+  '.html',
+  '.htm',
+  '.css',
+  '.js',
+  '.mjs',
+  '.cjs',
+  '.json',
+  '.webmanifest',
+  '.xml',
+  '.rss',
+  '.atom',
+  '.txt',
+  '.svg',
+])
+
 /**
- * Remove source images that nothing references any more. Only runs with
- * `images.prune`, and only for files no remaining HTML or CSS points at.
- * @param {{ distDir: string, options: ImageOptions, log: (message: string) => void }} args
+ * Remove the originals this run rewrote away from, once nothing else in
+ * the build mentions them.
+ *
+ * Only the files a tag was actually rewritten from are candidates. Pruning
+ * used to consider every raster in `dist/`, and so deleted what no `<img>`
+ * ever pointed at: an `apple-touch-icon.png` a phone asks for by name, the
+ * icons a `.webmanifest` lists, an image another site hotlinks.
+ *
+ * A candidate is kept if its file name appears in any text file in the
+ * build — as written, percent-encoded or entity-encoded — not only its
+ * root-relative URL. That keeps one linked as `photo.jpg` from a page in
+ * the same folder, or as `/my%20photo.jpg`, at the price of sometimes
+ * keeping a file whose name merely appears. Variant names never contain
+ * the original's (`hero.png` becomes `hero.1a2b3c4d-800.webp`), so a
+ * rewritten tag does not count as a mention of its own source.
+ *
+ * @param {{ distDir: string, options: ImageOptions, candidates: Iterable<string>, log: (message: string) => void }} args
  */
-async function pruneOriginals({ distDir, options, log }) {
-  const documents = await walk(distDir, new Set(['.html', '.css', '.xml', '.json', '.js']))
+async function pruneOriginals({ distDir, options, candidates, log }) {
+  const assetsRoot = path.join(distDir, options.assetsDir)
+  const originals = [...new Set(candidates)].filter(
+    (file) => isInside(distDir, file) && !isInside(assetsRoot, file),
+  )
+
+  if (originals.length === 0) return
+
+  const documents = await walk(distDir, REFERENCE_EXTENSIONS)
   const haystack = (
     await Promise.all(documents.map((file) => fs.readFile(file, 'utf8').catch(() => '')))
   ).join('\n')
 
-  const assetsRoot = path.join(distDir, options.assetsDir)
-  const images = (await walk(distDir, RASTER_EXTENSIONS)).filter(
-    (file) => !file.startsWith(assetsRoot),
-  )
-
   let removed = 0
   let bytes = 0
 
-  for (const image of images) {
-    const url = `/${path.relative(distDir, image).split(path.sep).join('/')}`
-    if (haystack.includes(url)) continue
+  for (const image of originals) {
+    const name = path.basename(image)
+    const spellings = new Set([
+      name,
+      encodeURIComponent(name),
+      encodeURI(name),
+      name.replaceAll('&', '&amp;'),
+    ])
 
-    const { size } = await fs.stat(image)
+    if ([...spellings].some((spelling) => haystack.includes(spelling))) continue
+
+    let size
+    try {
+      ;({ size } = await fs.stat(image))
+    } catch {
+      continue
+    }
+
     await fs.rm(image)
     removed += 1
     bytes += size
@@ -1370,22 +1584,28 @@ export async function runImages({
     options,
     cacheDir,
     outputDir: path.join(distDir, options.assetsDir),
-    urlPrefix: joinUrl(base, options.assetsDir),
+    urlPrefix: variantUrlPrefix(base, options.assetsDir),
   })
 
   // Everything referenced by a built page already lives in dist/, whether it
   // came from public/ or from src/.
   const resolveLocal = createSourceResolver({ root: distDir, dirs: ['.'], base })
 
-  const resolve = async (url) => {
+  /** @param {string} url @param {string} page the page's URL path */
+  const resolve = async (url, page) => {
     if (isHttpUrl(url)) {
       if (!options.remote) return null
       return fetchRemoteImage({ url, cacheDir, onWarn: warn })
     }
-    return resolveLocal(url)
+    return resolveLocal(url, page)
   }
 
+  // With a relative `base` the page is where a variant URL starts from.
+  const relativeBase = !base.startsWith('/') && !isUrlBase(base)
+
   let rewrittenTags = 0
+  /** Originals some tag was rewritten away from: the only prune candidates. */
+  const replaced = new Set()
 
   if (options.remote) {
     log(
@@ -1406,11 +1626,17 @@ export async function runImages({
   await mapWithConcurrency(htmlFiles, options.concurrency, async (file) => {
     try {
       const html = await fs.readFile(file, 'utf8')
+      // The URL path the file is served at, so a relative `src` resolves
+      // the way the browser will resolve it.
+      const page = `/${path.relative(distDir, file).split(path.sep).join('/')}`
       const result = await rewriteHtmlImages({
         html,
         options,
-        resolve,
+        resolve: (url) => resolve(url, page),
         generate: processor.generate,
+        ...(relativeBase
+          ? { mapUrl: (url) => path.posix.relative(path.posix.dirname(page), url) }
+          : {}),
         onWarn: (message) =>
           warn(`[sitelo] images (${path.relative(distDir, file)}): ${message}`),
       })
@@ -1418,6 +1644,7 @@ export async function runImages({
       if (result.rewritten === 0) return
 
       rewrittenTags += result.rewritten
+      for (const source of result.sources) replaced.add(source)
       await fs.writeFile(file, result.html)
     } finally {
       logProgress?.pageDone()
@@ -1440,7 +1667,7 @@ export async function runImages({
   )
 
   if (options.prune) {
-    await pruneOriginals({ distDir, options, log })
+    await pruneOriginals({ distDir, options, candidates: replaced, log })
   }
 }
 
@@ -1493,7 +1720,14 @@ export function createDevImagePipeline({
     return processorPromise
   }
 
-  async function transform(html) {
+  /**
+   * @param {string} html
+   * @param {{ url?: string }} [context] the URL the page was requested at,
+   *   so a relative `src` resolves against it
+   */
+  async function transform(html, context = {}) {
+    const page = (context.url ?? '/').split(/[?#]/)[0] || '/'
+
     if (disabled) return html
 
     let processor
@@ -1518,7 +1752,7 @@ export function createDevImagePipeline({
         if (isHttpUrl(url)) {
           return options.remote ? fetchRemoteImage({ url, cacheDir, onWarn: warn }) : null
         }
-        return resolveLocal(url)
+        return resolveLocal(url, page)
       },
       generate: processor.generate,
       onWarn: (message) => warn(`[sitelo] images: ${message}`),
@@ -1537,10 +1771,15 @@ export function createDevImagePipeline({
     }
 
     const [pathname] = rawUrl.slice(markerIndex + DEV_URL_PREFIX.length + 1).split('?')
-    const fileName = path.basename(decodeURIComponent(pathname))
+    let fileName = ''
+    try {
+      fileName = path.basename(decodeURIComponent(pathname))
+    } catch {
+      // A malformed escape names no file we wrote.
+    }
     const filePath = path.join(outputDir, fileName)
 
-    if (!filePath.startsWith(outputDir) || !fsSync.existsSync(filePath)) {
+    if (!fileName || !filePath.startsWith(outputDir) || !fsSync.existsSync(filePath)) {
       res.statusCode = 404
       res.end('Not found')
       return

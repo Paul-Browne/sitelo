@@ -155,3 +155,17 @@ test('handler picks up the secret from the environment', async (t) => {
 
   assert.equal(forged.status, 403);
 });
+
+test('a secret configured in one copy of the module is seen by every other', async (t) => {
+  /*
+   * Pages run in Vite's module graph and the dev server's islands endpoint
+   * in Node's, so each loads its own copy of islands.js. A secret set from
+   * a page used to stay in the page's copy, and the endpoint rendered
+   * unsigned props the production handler refuses.
+   */
+  const other = await import(`../src/islands.js?copy=${Date.now()}`);
+
+  withSecret(t, SECRET);
+
+  assert.equal(other.getIslandsSecret(), SECRET);
+});
