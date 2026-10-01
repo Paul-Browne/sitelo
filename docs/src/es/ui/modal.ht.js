@@ -5,17 +5,19 @@ export default () =>
   uiLayout({
     title: 'Modal',
     description:
-      'Un diálogo construido sobre la API de popover: el navegador se encarga de abrirlo, del fondo, del clic fuera y de Escape.',
+      'Un <dialog> de verdad, abierto en modo modal: el navegador se encarga del fondo, del foco, de Escape y del clic fuera.',
     activeHref: '/es/ui/modal',
     children: [
       p(
-        'Un modal es un elemento ',
-        code('popover'),
-        '. Cualquier botón cuyo ',
-        code('popovertarget'),
-        ' coincida con el ',
+        'Un modal es un ',
+        code('<dialog>'),
+        '. Cualquier botón con ',
+        code('commandfor'),
+        ' apuntando al ',
         code('id'),
-        ' del modal lo abre — sin script por ningún lado, incluidos el fondo, el cierre al pulsar fuera, Escape y el manejo del foco, de todo lo cual se ocupa el navegador.',
+        ' del modal y ',
+        code("command: 'show-modal'"),
+        ' lo abre en modo modal: la página de detrás queda inerte, así que el foco y el lector de pantalla se quedan dentro. Sin script por ningún lado: el fondo, Escape y el clic fuera son cosa del navegador.',
       ),
       p(
         'Por eso el ',
@@ -26,7 +28,7 @@ export default () =>
       h2('Modal básico'),
       p('Todos los modales de esta página se abren de verdad: pruébalos.'),
       demo(`fragment(
-  button({ popovertarget: 'demo-basic' }, 'Abrir modal'),
+  button({ commandfor: 'demo-basic', command: 'show-modal' }, 'Abrir modal'),
   modal({ id: 'demo-basic', title: '¿Recompilar el sitio?' },
     'Esto ejecuta sitelo build y vuelve a publicar dist/.',
   ),
@@ -35,11 +37,11 @@ export default () =>
       h2('Con pie'),
       p(
         'Un botón de cerrar es cualquier botón que apunte al mismo id con ',
-        code('popovertargetaction="hide"'),
+        code("command: 'close'"),
         '.',
       ),
       demo(`fragment(
-  button({ color: 'danger', popovertarget: 'demo-confirm' }, 'Eliminar página…'),
+  button({ color: 'danger', commandfor: 'demo-confirm', command: 'show-modal' }, 'Eliminar página…'),
   modal({
     id: 'demo-confirm',
     title: '¿Eliminar esta página?',
@@ -47,8 +49,8 @@ export default () =>
       button({
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'demo-confirm',
-        popovertargetaction: 'hide',
+        commandfor: 'demo-confirm',
+        command: 'close',
       }, 'Cancelar'),
       button({ color: 'danger' }, 'Eliminar'),
     ),
@@ -58,9 +60,9 @@ export default () =>
       h2('Tamaños'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm', wrap: true },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-sm' }, 'Pequeño'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-md' }, 'Mediano'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-lg' }, 'Grande'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'demo-sm', command: 'show-modal' }, 'Pequeño'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'demo-md', command: 'show-modal' }, 'Mediano'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'demo-lg', command: 'show-modal' }, 'Grande'),
   ),
   modal({ id: 'demo-sm', size: 'sm', title: 'Pequeño' }, 'size: sm — unas 24rem.'),
   modal({ id: 'demo-md', title: 'Mediano' }, 'El valor por defecto — unas 32rem.'),
@@ -69,12 +71,12 @@ export default () =>
 
       h2('Formularios dentro de un modal'),
       demo(`fragment(
-  button({ variant: 'soft', popovertarget: 'demo-form' }, 'Página nueva…'),
+  button({ variant: 'soft', commandfor: 'demo-form', command: 'show-modal' }, 'Página nueva…'),
   modal({
     id: 'demo-form',
     title: 'Página nueva',
     footer: stack({ direction: 'row', gap: 'sm' },
-      button({ variant: 'ghost', color: 'neutral', popovertarget: 'demo-form', popovertargetaction: 'hide' }, 'Cancelar'),
+      button({ variant: 'ghost', color: 'neutral', commandfor: 'demo-form', command: 'close' }, 'Cancelar'),
       button({ type: 'submit' }, 'Crear'),
     ),
   },
@@ -88,10 +90,12 @@ export default () =>
       h2('Sin botón de cerrar'),
       p(
         code('closable: false'),
-        ' quita la × de la esquina. Escape y el clic fuera lo siguen cerrando: un popover no se puede volver realmente bloqueante, y de todos modos ese suele ser el comportamiento correcto.',
+        ' quita la × de la esquina. Escape y el clic fuera lo siguen cerrando; con ',
+        code("closedby: 'closerequest'"),
+        ' solo lo cierra Escape.',
       ),
       demo(`fragment(
-  button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-bare' }, 'Sin botón de cerrar'),
+  button({ variant: 'outline', color: 'neutral', commandfor: 'demo-bare', command: 'show-modal' }, 'Sin botón de cerrar'),
   modal({ id: 'demo-bare', title: 'Pulsa Escape', closable: false },
     'O haz clic en cualquier sitio fuera de este diálogo.',
   ),
@@ -100,11 +104,11 @@ export default () =>
       h2('Contenido largo'),
       p('El cuerpo se desplaza; la cabecera y el pie se quedan quietos.'),
       demo(`fragment(
-  button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-long' }, 'Modal largo'),
+  button({ variant: 'outline', color: 'neutral', commandfor: 'demo-long', command: 'show-modal' }, 'Modal largo'),
   modal({
     id: 'demo-long',
     title: 'Notas de la versión',
-    footer: button({ popovertarget: 'demo-long', popovertargetaction: 'hide' }, 'Cerrar'),
+    footer: button({ commandfor: 'demo-long', command: 'close' }, 'Cerrar'),
   },
     stack({ gap: 'md' },
       ...Array.from({ length: 12 }, (unused, index) =>
@@ -116,19 +120,19 @@ export default () =>
 
       h2('Desplazamiento del fondo'),
       p(
-        'La página que hay detrás de un modal abierto no se desplaza. Eso es lo único que la API de popover te deja a ti, y aquí está hecho en CSS: sin script y sin nada que inicializar. Pasa ',
+        'La página que hay detrás de un modal abierto no se desplaza. Eso es lo único que un diálogo modal te deja a ti, y aquí está hecho en CSS: sin script y sin nada que inicializar. Pasa ',
         code('lockScroll: false'),
         ' para dejar que el fondo se desplace como siempre.',
       ),
 
       h2('Soporte de navegadores'),
       p(
-        'La API de popover está disponible en todos los navegadores actuales. En uno demasiado viejo como para conocerla, el modal se dibuja en línea dentro de la página en vez de encima: visible y utilizable, solo que sin superponerse. No desaparece nada.',
+        'Abrir un diálogo con el command de un botón funciona en todos los navegadores actuales: Chrome 135, Firefox 144 y Safari 26.2 en adelante. En uno anterior, button() añade un onclick que descarga unos cientos de bytes de /su/dialog.js para hacer lo mismo, solo allí y solo en el primer clic. Safari aún no cierra un diálogo al pulsar fuera (closedby), y ahí también se encarga ese mismo archivo.',
       ),
 
       h2('Props'),
       propsTable([
-        ['id', 'string', '', 'Obligatorio. Aquello a lo que apunta el popovertarget de un disparador.'],
+        ['id', 'string', '', 'Obligatorio. Aquello a lo que apunta el commandfor de un disparador.'],
         ['title', 'Child', '', 'Encabezado, y nombre accesible del diálogo.'],
         ['size', "'sm' | 'md' | 'lg'", "'md'", 'Ancho máximo.'],
         ['footer', 'Child', '', 'Fila inferior, sobre su propia banda teñida.'],

@@ -94,7 +94,7 @@ export default () =>
       p(
         'Pola yang lazim: tautan di bilah pada desktop, sebuah tombol yang membuka ',
         code('drawer()'),
-        ' di ponsel. Lacinya adalah popover, jadi tombolnya tidak butuh skrip.',
+        ' di ponsel. Lacinya adalah <dialog> yang dibuka tombol lewat command, jadi tidak butuh skrip.',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },
@@ -105,7 +105,7 @@ export default () =>
         label: 'Buka navigasi',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'app-bar-drawer',
+        commandfor: 'app-bar-drawer', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),

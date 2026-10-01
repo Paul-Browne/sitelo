@@ -13,7 +13,7 @@ import {
   textarea as textareaEl,
 } from 'javascript-to-html'
 
-import { handler } from './handlers.js'
+import { commandFallback, handler } from './handlers.js'
 import { icon as glyph } from './icons.js'
 import {
   attrs,
@@ -94,6 +94,9 @@ export function button(...args) {
       type: type || 'button',
       ...(disabled ? { disabled: true } : {}),
       ...(loading ? { 'aria-busy': 'true' } : {}),
+      // `commandfor` + `command` open and close dialogs with no script, and
+      // this stands in for them in a browser from before they existed.
+      ...commandFallback(rest),
     },
     attrs(rest, own),
     leading,

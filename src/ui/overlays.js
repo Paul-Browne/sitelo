@@ -2,6 +2,7 @@ import {
   a,
   button as buttonEl,
   details,
+  dialog,
   div,
   h2,
   li,
@@ -10,7 +11,7 @@ import {
   ul,
 } from 'javascript-to-html'
 
-import { handler } from './handlers.js'
+import { commandFallback, dismissFallback, handler } from './handlers.js'
 import {
   attrs,
   BUTTON_VARIANTS,
@@ -23,21 +24,27 @@ import {
 } from './internal.js'
 
 /**
- * Modal dialog built on the popover API.
+ * Modal dialog: a `<dialog>`, opened modally.
  *
- * Opening and closing it — the top layer, the backdrop, click-outside
- * and Escape — is the browser's job here, not a script's: any button
- * with `popovertarget` pointing at the modal's `id` toggles it.
- *
- * What a popover does not do is make the page behind it inert: focus
- * can Tab out of it. So it does not claim `aria-modal`, which tells a
- * screen reader to hide that page — and with it, the very things the
- * keyboard can still reach.
+ * A button with `commandfor` naming the modal's `id` and
+ * `command="show-modal"` opens it, and that is the browser's job rather
+ * than a script's — the top layer and backdrop, the page behind it going
+ * inert so focus and a screen reader both stay inside, Escape, and with
+ * `closedby="any"` a click outside.
  *
  * ```js
- * button({ popovertarget: 'confirm' }, 'Delete…')
+ * button({ commandfor: 'confirm', command: 'show-modal' }, 'Delete…')
  * modal({ id: 'confirm', title: 'Delete this page?' }, 'This cannot be undone.')
  * ```
+ *
+ * Every current browser has those invoker commands. For one that does
+ * not, `button()` adds an `onclick` that fetches `/su/dialog.js` there
+ * and nowhere else; the dialog carries the same kind of guard for a
+ * click outside, which Safari does not yet do natively. Pass
+ * `closedby: 'closerequest'` to keep it open on outside clicks.
+ *
+ * It used to be a `popover`, opened with `popovertarget` — which put it on
+ * top of the page without making the page inert, so Tab walked out of it.
  *
  * While it is open the page behind it does not scroll — the class this
  * renders is what the stylesheet keys that off, so it holds without a
@@ -60,17 +67,17 @@ export function modal(...args) {
   } = props
 
   if (!id) {
-    throw new Error('modal() needs an `id` — it is what a trigger\'s popovertarget points at.')
+    throw new Error('modal() needs an `id` — it is what a trigger\'s commandfor points at.')
   }
 
   const titleId = `${id}-title`
 
-  return div(
+  return dialog(
     {
       id,
-      popover: 'auto',
-      role: 'dialog',
+      closedby: 'any',
       ...(title == null ? {} : { 'aria-labelledby': titleId }),
+      onclick: dismissFallback(),
     },
     attrs(rest, {
       class: cx(
@@ -92,17 +99,22 @@ export function modal(...args) {
 }
 
 /**
- * The `×` that closes a modal or drawer.
+ * The `×` that closes a modal or drawer: `command="close"` on the dialog
+ * `target` names, with the same fallback `button()` adds for a browser
+ * without invoker commands.
  *
  * @param {object} props - `{ target, label }`
  * @returns {string}
  */
 export function closeButton({ target, label = 'Close', ...rest } = {}) {
+  const wiring = target ? { commandfor: target, command: 'close' } : {}
+
   return buttonEl(
     {
       type: 'button',
       'aria-label': String(label),
-      ...(target ? { popovertarget: target, popovertargetaction: 'hide' } : {}),
+      ...wiring,
+      ...commandFallback({ ...wiring, ...rest }),
     },
     attrs(rest, { class: 'su-modal-close' }),
     '&times;',
@@ -110,10 +122,9 @@ export function closeButton({ target, label = 'Close', ...rest } = {}) {
 }
 
 /**
- * Panel that slides in from the edge. Same popover mechanics as
- * {@link modal}, which is what makes it work with the script absent,
- * the same scroll lock on the page behind it, and for the same reason
- * no `aria-modal`.
+ * Panel that slides in from the edge: a `<dialog>` opened modally, the
+ * same as {@link modal} — the same `command="show-modal"` trigger, the
+ * same inert page behind it and the same scroll lock, in another shape.
  *
  * @param {...any} args - `drawer({ id, title, side, width, closeLabel, lockScroll }, ...children)`
  * @returns {string}
@@ -132,17 +143,17 @@ export function drawer(...args) {
   } = props
 
   if (!id) {
-    throw new Error('drawer() needs an `id` — it is what a trigger\'s popovertarget points at.')
+    throw new Error('drawer() needs an `id` — it is what a trigger\'s commandfor points at.')
   }
 
   const titleId = `${id}-title`
 
-  return div(
+  return dialog(
     {
       id,
-      popover: 'auto',
-      role: 'dialog',
+      closedby: 'any',
       ...(title == null ? {} : { 'aria-labelledby': titleId }),
+      onclick: dismissFallback(),
     },
     attrs(rest, {
       class: cx(
@@ -244,7 +255,7 @@ export function menuItem(...args) {
         ...children,
       )
     : el(as, buttonEl)(
-        { type: 'button', role: 'menuitem' },
+        { type: 'button', role: 'menuitem', ...commandFallback(rest) },
         attrs(rest, { class: 'su-menu-item' }),
         icon ?? '',
         ...children,

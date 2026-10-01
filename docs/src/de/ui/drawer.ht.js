@@ -5,17 +5,19 @@ export default () =>
   uiLayout({
     title: 'Drawer',
     description:
-      'Ein Panel, das von der Kante hereinkommt — dieselbe Popover-Mechanik wie ein Modal, andere Form.',
+      'Ein Panel, das von der Kante hereinkommt — dasselbe <dialog>-Element wie ein Modal, andere Form.',
     activeHref: '/de/ui/drawer',
     children: [
       p(
         'Ein Drawer ist ein Panel über die volle Höhe, an einer Seite verankert. Wie ',
         code('modal()'),
         ' ist er ein ',
-        code('popover'),
+        code('<dialog>'),
         ': ein Button mit passendem ',
-        code('popovertarget'),
-        ' öffnet ihn, und der Browser kümmert sich um Hintergrund, Klick nach außen und Escape.',
+        code('commandfor'),
+        ' und ',
+        code("command: 'show-modal'"),
+        ' öffnet ihn, und der Browser kümmert sich um Hintergrund, Fokus, Klick nach außen und Escape.',
       ),
       p(
         'Auf einer statischen Website ist sein häufigster Job das Navigationsmenü am Telefon.',
@@ -23,7 +25,7 @@ export default () =>
 
       h2('Einfacher Drawer'),
       demo(`fragment(
-  button({ popovertarget: 'drawer-basic' }, 'Drawer öffnen'),
+  button({ commandfor: 'drawer-basic', command: 'show-modal' }, 'Drawer öffnen'),
   drawer({ id: 'drawer-basic', title: 'Einstellungen' },
     stack({ gap: 'md' },
       toggle({ label: 'Pagefind-Suche', checked: true }),
@@ -36,8 +38,8 @@ export default () =>
       h2('Seiten'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-start' }, 'Vom Anfang'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-end' }, 'Vom Ende'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-start', command: 'show-modal' }, 'Vom Anfang'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-end', command: 'show-modal' }, 'Vom Ende'),
   ),
   drawer({ id: 'drawer-start', side: 'start', title: 'Anfang' },
     text({ variant: 'small', tone: 'muted' }, 'An der vorderen Kante verankert — links in einer Sprache, die von links nach rechts läuft.'),
@@ -51,8 +53,8 @@ export default () =>
       p('Jede CSS-Länge. Sie ist auf 90 % des Viewports gedeckelt, sodass ein breiter Drawer auch auf ein Telefon passt.'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-narrow' }, 'Schmal'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-wide' }, 'Breit'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-narrow', command: 'show-modal' }, 'Schmal'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-wide', command: 'show-modal' }, 'Breit'),
   ),
   drawer({ id: 'drawer-narrow', width: '14rem', title: 'Schmal' },
     text({ variant: 'small', tone: 'muted' }, 'width: 14rem'),
@@ -72,7 +74,7 @@ export default () =>
         label: 'Navigation öffnen',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'drawer-nav',
+        commandfor: 'drawer-nav', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),
@@ -89,7 +91,7 @@ export default () =>
 
       h2('Ein Filter-Panel'),
       demo(`fragment(
-  button({ variant: 'soft', color: 'neutral', popovertarget: 'drawer-filters' }, 'Filter'),
+  button({ variant: 'soft', color: 'neutral', commandfor: 'drawer-filters', command: 'show-modal' }, 'Filter'),
   drawer({ id: 'drawer-filters', title: 'Filter', width: '22rem' },
     stack({ gap: 'lg' },
       choiceGroup({
@@ -110,7 +112,7 @@ export default () =>
         options: ['routing', 'data', 'islands'],
       }),
       stack({ direction: 'row', gap: 'sm' },
-        button({ variant: 'ghost', color: 'neutral', popovertarget: 'drawer-filters', popovertargetaction: 'hide' }, 'Abbrechen'),
+        button({ variant: 'ghost', color: 'neutral', commandfor: 'drawer-filters', command: 'close' }, 'Abbrechen'),
         button('Anwenden'),
       ),
     ),
@@ -119,7 +121,7 @@ export default () =>
 
       h2('Props'),
       propsTable([
-        ['id', 'string', '', 'Pflicht. Worauf das popovertarget eines Auslösers zeigt.'],
+        ['id', 'string', '', 'Pflicht. Worauf das commandfor eines Auslösers zeigt.'],
         ['title', 'Child', '', 'Überschrift und zugänglicher Name des Dialogs.'],
         ['side', "'start' | 'end'", "'end'", 'An welcher Kante er verankert ist.'],
         ['width', 'string', "'20rem'", 'Panelbreite, gedeckelt bei 90vw.'],

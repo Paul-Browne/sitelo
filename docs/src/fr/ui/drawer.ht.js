@@ -5,17 +5,19 @@ export default () =>
   uiLayout({
     title: 'Tiroir',
     description:
-      'Un panneau qui entre par le bord — mêmes mécaniques de popover qu’une modale, forme différente.',
+      'Un panneau qui entre par le bord — le même <dialog> qu’une modale, forme différente.',
     activeHref: '/fr/ui/drawer',
     children: [
       p(
         'Un tiroir est un panneau pleine hauteur ancré sur un côté. Comme ',
         code('modal()'),
         ', c’est un ',
-        code('popover'),
+        code('<dialog>'),
         ' : un bouton avec le ',
-        code('popovertarget'),
-        ' correspondant l’ouvre, et le navigateur gère le fond, le clic à l’extérieur et Échap.',
+        code('commandfor'),
+        ' correspondant et ',
+        code("command: 'show-modal'"),
+        ' l’ouvre, et le navigateur gère le fond, le focus, le clic à l’extérieur et Échap.',
       ),
       p(
         'Sur un site statique, son rôle le plus courant est le menu de navigation sur téléphone.',
@@ -23,7 +25,7 @@ export default () =>
 
       h2('Tiroir de base'),
       demo(`fragment(
-  button({ popovertarget: 'drawer-basic' }, 'Ouvrir le tiroir'),
+  button({ commandfor: 'drawer-basic', command: 'show-modal' }, 'Ouvrir le tiroir'),
   drawer({ id: 'drawer-basic', title: 'Paramètres' },
     stack({ gap: 'md' },
       toggle({ label: 'Recherche Pagefind', checked: true }),
@@ -36,8 +38,8 @@ export default () =>
       h2('Côtés'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-start' }, 'Depuis le début'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-end' }, 'Depuis la fin'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-start', command: 'show-modal' }, 'Depuis le début'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-end', command: 'show-modal' }, 'Depuis la fin'),
   ),
   drawer({ id: 'drawer-start', side: 'start', title: 'Début' },
     text({ variant: 'small', tone: 'muted' }, 'Ancré au bord de départ — la gauche dans une langue qui se lit de gauche à droite.'),
@@ -51,8 +53,8 @@ export default () =>
       p('N’importe quelle longueur CSS. Elle est plafonnée à 90 % de la fenêtre, donc un tiroir large tient encore sur un téléphone.'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-narrow' }, 'Étroit'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-wide' }, 'Large'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-narrow', command: 'show-modal' }, 'Étroit'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-wide', command: 'show-modal' }, 'Large'),
   ),
   drawer({ id: 'drawer-narrow', width: '14rem', title: 'Étroit' },
     text({ variant: 'small', tone: 'muted' }, 'width: 14rem'),
@@ -72,7 +74,7 @@ export default () =>
         label: 'Ouvrir la navigation',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'drawer-nav',
+        commandfor: 'drawer-nav', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),
@@ -89,7 +91,7 @@ export default () =>
 
       h2('Un panneau de filtres'),
       demo(`fragment(
-  button({ variant: 'soft', color: 'neutral', popovertarget: 'drawer-filters' }, 'Filtres'),
+  button({ variant: 'soft', color: 'neutral', commandfor: 'drawer-filters', command: 'show-modal' }, 'Filtres'),
   drawer({ id: 'drawer-filters', title: 'Filtres', width: '22rem' },
     stack({ gap: 'lg' },
       choiceGroup({
@@ -110,7 +112,7 @@ export default () =>
         options: ['routing', 'data', 'islands'],
       }),
       stack({ direction: 'row', gap: 'sm' },
-        button({ variant: 'ghost', color: 'neutral', popovertarget: 'drawer-filters', popovertargetaction: 'hide' }, 'Annuler'),
+        button({ variant: 'ghost', color: 'neutral', commandfor: 'drawer-filters', command: 'close' }, 'Annuler'),
         button('Appliquer'),
       ),
     ),
@@ -119,7 +121,7 @@ export default () =>
 
       h2('Props'),
       propsTable([
-        ['id', 'string', '', 'Obligatoire. Ce que vise le popovertarget d’un déclencheur.'],
+        ['id', 'string', '', 'Obligatoire. Ce que vise le commandfor d’un déclencheur.'],
         ['title', 'Child', '', 'Titre, et nom accessible du dialogue.'],
         ['side', "'start' | 'end'", "'end'", 'Le bord auquel il est ancré.'],
         ['width', 'string', "'20rem'", 'Largeur du panneau, plafonnée à 90vw.'],

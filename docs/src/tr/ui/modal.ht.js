@@ -5,17 +5,19 @@ export default () =>
   uiLayout({
     title: 'Modal',
     description:
-      'Popover API üzerine kurulu bir iletişim kutusu — açılmayı, arka planı, dışarı tıklamayı ve Escape’i tarayıcı halleder.',
+      'Kip olarak açılan gerçek bir <dialog> — arka planı, odağı, Escape’i ve dışarı tıklamayı tarayıcı halleder.',
     activeHref: '/tr/ui/modal',
     children: [
       p(
         'Kip bir ',
-        code('popover'),
+        code('<dialog>'),
         ' öğesidir. ',
-        code('popovertarget'),
+        code('commandfor'),
         ' değeri kipin ',
         code('id'),
-        ' değeriyle eşleşen herhangi bir düğme onu açar — hiçbir yerde betik yok; arka plan, hafif kapatma, Escape ve odak yönetimi dahil, hepsi tarayıcının işi.',
+        ' değerini gösteren ve ',
+        code("command: 'show-modal'"),
+        ' taşıyan herhangi bir düğme onu kip olarak açar: arkadaki sayfa etkisiz (inert) hale gelir, böylece odak ve ekran okuyucu içeride kalır. Hiçbir yerde betik yok; arka plan, Escape ve dışarı tıklama tarayıcının işi.',
       ),
       p(
         code('id'),
@@ -25,7 +27,7 @@ export default () =>
       h2('Temel kip'),
       p('Bu sayfadaki her kip gerçekten açılır — deneyin.'),
       demo(`fragment(
-  button({ popovertarget: 'demo-basic' }, 'Kipi aç'),
+  button({ commandfor: 'demo-basic', command: 'show-modal' }, 'Kipi aç'),
   modal({ id: 'demo-basic', title: 'Site yeniden derlensin mi?' },
     'Bu, sitelo build çalıştırır ve dist/ dizinini yeniden yayımlar.',
   ),
@@ -34,11 +36,11 @@ export default () =>
       h2('Alt bilgiyle'),
       p(
         'Kapatma düğmesi, aynı kimliği gösteren ve ',
-        code('popovertargetaction="hide"'),
+        code("command: 'close'"),
         ' taşıyan herhangi bir düğmedir.',
       ),
       demo(`fragment(
-  button({ color: 'danger', popovertarget: 'demo-confirm' }, 'Sayfayı sil…'),
+  button({ color: 'danger', commandfor: 'demo-confirm', command: 'show-modal' }, 'Sayfayı sil…'),
   modal({
     id: 'demo-confirm',
     title: 'Bu sayfa silinsin mi?',
@@ -46,8 +48,8 @@ export default () =>
       button({
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'demo-confirm',
-        popovertargetaction: 'hide',
+        commandfor: 'demo-confirm',
+        command: 'close',
       }, 'Vazgeç'),
       button({ color: 'danger' }, 'Sil'),
     ),
@@ -57,9 +59,9 @@ export default () =>
       h2('Boyutlar'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm', wrap: true },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-sm' }, 'Küçük'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-md' }, 'Orta'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-lg' }, 'Büyük'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'demo-sm', command: 'show-modal' }, 'Küçük'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'demo-md', command: 'show-modal' }, 'Orta'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'demo-lg', command: 'show-modal' }, 'Büyük'),
   ),
   modal({ id: 'demo-sm', size: 'sm', title: 'Küçük' }, 'size: sm — yaklaşık 24rem.'),
   modal({ id: 'demo-md', title: 'Orta' }, 'Varsayılan — yaklaşık 32rem.'),
@@ -68,12 +70,12 @@ export default () =>
 
       h2('Kip içinde formlar'),
       demo(`fragment(
-  button({ variant: 'soft', popovertarget: 'demo-form' }, 'Yeni sayfa…'),
+  button({ variant: 'soft', commandfor: 'demo-form', command: 'show-modal' }, 'Yeni sayfa…'),
   modal({
     id: 'demo-form',
     title: 'Yeni sayfa',
     footer: stack({ direction: 'row', gap: 'sm' },
-      button({ variant: 'ghost', color: 'neutral', popovertarget: 'demo-form', popovertargetaction: 'hide' }, 'Vazgeç'),
+      button({ variant: 'ghost', color: 'neutral', commandfor: 'demo-form', command: 'close' }, 'Vazgeç'),
       button({ type: 'submit' }, 'Oluştur'),
     ),
   },
@@ -87,10 +89,12 @@ export default () =>
       h2('Kapatma düğmesi olmadan'),
       p(
         code('closable: false'),
-        ' köşedeki × işaretini kaldırır. Escape ve dışarı tıklamak yine kapatır — bir popover gerçekten engelleyici kılınamaz ve zaten çoğunlukla doğru davranış budur.',
+        ' köşedeki × işaretini kaldırır. Escape ve dışarı tıklamak yine kapatır; ',
+        code("closedby: 'closerequest'"),
+        ' ile yalnızca Escape kapatır.',
       ),
       demo(`fragment(
-  button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-bare' }, 'Kapatma düğmesi yok'),
+  button({ variant: 'outline', color: 'neutral', commandfor: 'demo-bare', command: 'show-modal' }, 'Kapatma düğmesi yok'),
   modal({ id: 'demo-bare', title: 'Escape’e basın', closable: false },
     'Ya da bu iletişim kutusunun dışında bir yere tıklayın.',
   ),
@@ -99,11 +103,11 @@ export default () =>
       h2('Uzun içerik'),
       p('Gövde kaydırılır; başlık ve alt bilgi yerinde kalır.'),
       demo(`fragment(
-  button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-long' }, 'Uzun kip'),
+  button({ variant: 'outline', color: 'neutral', commandfor: 'demo-long', command: 'show-modal' }, 'Uzun kip'),
   modal({
     id: 'demo-long',
     title: 'Sürüm notları',
-    footer: button({ popovertarget: 'demo-long', popovertargetaction: 'hide' }, 'Kapat'),
+    footer: button({ commandfor: 'demo-long', command: 'close' }, 'Kapat'),
   },
     stack({ gap: 'md' },
       ...Array.from({ length: 12 }, (unused, index) =>
@@ -115,19 +119,19 @@ export default () =>
 
       h2('Arka planın kaydırılması'),
       p(
-        'Açık bir kipin ardındaki sayfa kaydırılmaz. Popover API’sinin size bıraktığı tek şey budur ve burada CSS ile yapılır — betik yok, başlatılacak bir şey yok. Arka planın her zamanki gibi kaydırılmasına izin vermek için ',
+        'Açık bir kipin ardındaki sayfa kaydırılmaz. Kipli bir iletişim kutusunun size bıraktığı tek şey budur ve burada CSS ile yapılır — betik yok, başlatılacak bir şey yok. Arka planın her zamanki gibi kaydırılmasına izin vermek için ',
         code('lockScroll: false'),
         ' geçirin.',
       ),
 
       h2('Tarayıcı desteği'),
       p(
-        'Popover API’si her güncel tarayıcıda bulunur. Onu bilmeyecek kadar eski bir tarayıcıda kip, sayfanın üstünde değil içinde satır içi işlenir — görünür ve kullanılabilir, yalnızca üste bindirilmemiş. Hiçbir şey kaybolmaz.',
+        'Bir iletişim kutusunu düğmenin command değeriyle açmak her güncel tarayıcıda çalışır — Chrome 135, Firefox 144 ve Safari 26.2 ve sonrası. Daha eski bir tarayıcıda button(), aynı işi yapmak için birkaç yüz baytlık /su/dialog.js dosyasını yükleyen bir onclick ekler — yalnızca orada ve yalnızca ilk tıklamada. Dışarı tıklayınca kapatmayı (closedby) Safari henüz desteklemiyor; orada da bunu aynı dosya üstlenir.',
       ),
 
       h2('Proplar'),
       propsTable([
-        ['id', 'string', '', 'Zorunlu. Bir tetikleyicinin popovertarget değerinin gösterdiği şey.'],
+        ['id', 'string', '', 'Zorunlu. Bir tetikleyicinin commandfor değerinin gösterdiği şey.'],
         ['title', 'Child', '', 'Başlık ve iletişim kutusunun erişilebilir adı.'],
         ['size', "'sm' | 'md' | 'lg'", "'md'", 'En büyük genişlik.'],
         ['footer', 'Child', '', 'Kendi renkli şeridinde alt satır.'],

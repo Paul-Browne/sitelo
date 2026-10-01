@@ -94,7 +94,7 @@ export default () =>
       p(
         'Alışıldık kalıp: masaüstünde çubuktaki bağlantılar, telefonda bir ',
         code('drawer()'),
-        ' açan bir düğme. Çekmece bir popover’dır, bu yüzden düğmenin betiğe ihtiyacı yoktur.',
+        ' açan bir düğme. Çekmece, düğmenin command ile açtığı bir <dialog>’dur, bu yüzden betiğe ihtiyaç yoktur.',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },
@@ -105,7 +105,7 @@ export default () =>
         label: 'Gezinmeyi aç',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'app-bar-drawer',
+        commandfor: 'app-bar-drawer', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),

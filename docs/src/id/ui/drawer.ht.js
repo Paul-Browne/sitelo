@@ -5,17 +5,19 @@ export default () =>
   uiLayout({
     title: 'Laci',
     description:
-      'Panel yang masuk dari tepi — mekanika popover yang sama dengan modal, bentuk yang berbeda.',
+      'Panel yang masuk dari tepi — <dialog> yang sama dengan modal, bentuk yang berbeda.',
     activeHref: '/id/ui/drawer',
     children: [
       p(
         'Laci adalah panel setinggi penuh yang ditambatkan pada satu sisi. Seperti ',
         code('modal()'),
         ', ia adalah sebuah ',
-        code('popover'),
+        code('<dialog>'),
         ': tombol dengan ',
-        code('popovertarget'),
-        ' yang cocok membukanya, dan peramban menangani latarnya, klik di luar, serta Escape.',
+        code('commandfor'),
+        ' yang cocok dan ',
+        code("command: 'show-modal'"),
+        ' membukanya, dan peramban menangani latarnya, fokus, klik di luar, serta Escape.',
       ),
       p(
         'Tugas terseringnya di situs statis adalah menu navigasi di ponsel.',
@@ -23,7 +25,7 @@ export default () =>
 
       h2('Laci dasar'),
       demo(`fragment(
-  button({ popovertarget: 'drawer-basic' }, 'Buka laci'),
+  button({ commandfor: 'drawer-basic', command: 'show-modal' }, 'Buka laci'),
   drawer({ id: 'drawer-basic', title: 'Pengaturan' },
     stack({ gap: 'md' },
       toggle({ label: 'Pencarian Pagefind', checked: true }),
@@ -36,8 +38,8 @@ export default () =>
       h2('Sisi'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-start' }, 'Dari awal'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-end' }, 'Dari akhir'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-start', command: 'show-modal' }, 'Dari awal'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-end', command: 'show-modal' }, 'Dari akhir'),
   ),
   drawer({ id: 'drawer-start', side: 'start', title: 'Awal' },
     text({ variant: 'small', tone: 'muted' }, 'Ditambatkan pada tepi awal — sebelah kiri dalam bahasa yang ditulis kiri ke kanan.'),
@@ -51,8 +53,8 @@ export default () =>
       p('Panjang CSS apa pun. Ia dibatasi pada 90% viewport, jadi laci lebar tetap muat di ponsel.'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-narrow' }, 'Sempit'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-wide' }, 'Lebar'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-narrow', command: 'show-modal' }, 'Sempit'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-wide', command: 'show-modal' }, 'Lebar'),
   ),
   drawer({ id: 'drawer-narrow', width: '14rem', title: 'Sempit' },
     text({ variant: 'small', tone: 'muted' }, 'width: 14rem'),
@@ -72,7 +74,7 @@ export default () =>
         label: 'Buka navigasi',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'drawer-nav',
+        commandfor: 'drawer-nav', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),
@@ -89,7 +91,7 @@ export default () =>
 
       h2('Panel filter'),
       demo(`fragment(
-  button({ variant: 'soft', color: 'neutral', popovertarget: 'drawer-filters' }, 'Filter'),
+  button({ variant: 'soft', color: 'neutral', commandfor: 'drawer-filters', command: 'show-modal' }, 'Filter'),
   drawer({ id: 'drawer-filters', title: 'Filter', width: '22rem' },
     stack({ gap: 'lg' },
       choiceGroup({
@@ -110,7 +112,7 @@ export default () =>
         options: ['routing', 'data', 'islands'],
       }),
       stack({ direction: 'row', gap: 'sm' },
-        button({ variant: 'ghost', color: 'neutral', popovertarget: 'drawer-filters', popovertargetaction: 'hide' }, 'Batal'),
+        button({ variant: 'ghost', color: 'neutral', commandfor: 'drawer-filters', command: 'close' }, 'Batal'),
         button('Terapkan'),
       ),
     ),
@@ -128,7 +130,7 @@ export default () =>
 
       h2('Props'),
       propsTable([
-        ['id', 'string', '', 'Wajib. Apa yang ditunjuk popovertarget sebuah pemicu.'],
+        ['id', 'string', '', 'Wajib. Apa yang ditunjuk commandfor sebuah pemicu.'],
         ['title', 'Child', '', 'Judul, sekaligus nama dialognya yang dapat diakses.'],
         ['side', "'start' | 'end'", "'end'", 'Pada tepi mana ia ditambatkan.'],
         ['width', 'string', "'20rem'", 'Lebar panel, dibatasi pada 90vw.'],

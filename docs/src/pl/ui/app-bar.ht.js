@@ -94,7 +94,7 @@ export default () =>
       p(
         'Typowy wzorzec: odnośniki w pasku na desktopie, przycisk otwierający ',
         code('drawer()'),
-        ' na telefonie. Szuflada jest popoverem, więc przycisk nie potrzebuje skryptu.',
+        ' na telefonie. Szuflada to <dialog>, który przycisk otwiera przez command, więc nie potrzebuje skryptu.',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },
@@ -105,7 +105,7 @@ export default () =>
         label: 'Otwórz nawigację',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'app-bar-drawer',
+        commandfor: 'app-bar-drawer', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),

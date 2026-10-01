@@ -105,9 +105,9 @@ const GROUPS = [
       `themeToggle()`],
   ]],
   ['Warstwy', [
-    ['/pl/ui/modal', 'Okno modalne', 'Okno dialogowe na API popover — nigdzie żadnego skryptu.',
+    ['/pl/ui/modal', 'Okno modalne', 'Prawdziwy <dialog> otwierany modalnie — nigdzie żadnego skryptu.',
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Otwórz okno')`],
-    ['/pl/ui/drawer', 'Szuflada', 'Panel od krawędzi, ta sama mechanika popovera.',
+    ['/pl/ui/drawer', 'Szuflada', 'Panel od krawędzi, ten sam <dialog> co okno modalne.',
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Otwórz szufladę')`],
     ['/pl/ui/menu', 'Menu', 'Lista rozwijana na details, otwieranie i zamykanie za darmo.',
       `chip({ color: 'neutral' }, 'Akcje ▾')`],

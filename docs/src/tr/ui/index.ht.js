@@ -105,9 +105,9 @@ const GROUPS = [
       `themeToggle()`],
   ]],
   ['Katmanlar', [
-    ['/tr/ui/modal', 'Modal', 'Popover API üzerinde bir iletişim kutusu — hiçbir yerde betik yok.',
+    ['/tr/ui/modal', 'Modal', 'Kip olarak açılan bir <dialog> — hiçbir yerde betik yok.',
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Kipi aç')`],
-    ['/tr/ui/drawer', 'Çekmece', 'Kenardan bir panel, aynı popover işleyişi.',
+    ['/tr/ui/drawer', 'Çekmece', 'Kenardan bir panel, bir kiple aynı <dialog>.',
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Çekmeceyi aç')`],
     ['/tr/ui/menu', 'Menü', 'details üzerine kurulu bir açılır menü, açma ve kapama bedava.',
       `chip({ color: 'neutral' }, 'Eylemler ▾')`],

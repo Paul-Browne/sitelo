@@ -94,7 +94,7 @@ export default () =>
       p(
         'Обычный приём: ссылки в панели на десктопе и кнопка, открывающая ',
         code('drawer()'),
-        ' на телефоне. Боковая панель — это popover, так что кнопке скрипт не нужен.',
+        ' на телефоне. Боковая панель — это <dialog>, который кнопка открывает через command, так что скрипт не нужен.',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },
@@ -105,7 +105,7 @@ export default () =>
         label: 'Открыть навигацию',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'app-bar-drawer',
+        commandfor: 'app-bar-drawer', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),

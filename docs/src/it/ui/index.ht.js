@@ -106,9 +106,9 @@ const GROUPS = [
       `themeToggle()`],
   ]],
   ['Sovrapposizioni', [
-    ['/it/ui/modal', 'Modale', 'Una finestra di dialogo sull’API popover — nessuno script.',
+    ['/it/ui/modal', 'Modale', 'Un <dialog> aperto in modo modale — nessuno script.',
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Apri il modale')`],
-    ['/it/ui/drawer', 'Pannello laterale', 'Un pannello dal bordo, stessa meccanica popover.',
+    ['/it/ui/drawer', 'Pannello laterale', 'Un pannello dal bordo, lo stesso <dialog> di un modale.',
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Apri il pannello')`],
     ['/it/ui/menu', 'Menu', 'Un menu a tendina costruito su details, apertura e chiusura gratis.',
       `chip({ color: 'neutral' }, 'Azioni ▾')`],

@@ -5,17 +5,19 @@ export default () =>
   uiLayout({
     title: 'Modal',
     description:
-      'Dialog yang dibangun di atas API popover — peramban menangani pembukaan, latar, klik di luar, dan Escape.',
+      '<dialog> sungguhan yang dibuka secara modal — peramban menangani latar, fokus, Escape, dan klik di luar.',
     activeHref: '/id/ui/modal',
     children: [
       p(
-        'Modal adalah elemen ',
-        code('popover'),
-        '. Tombol mana pun yang ',
-        code('popovertarget'),
-        '-nya cocok dengan ',
+        'Modal adalah sebuah ',
+        code('<dialog>'),
+        '. Tombol mana pun dengan ',
+        code('commandfor'),
+        ' yang menunjuk ',
         code('id'),
-        ' modalnya akan membukanya — tanpa skrip di mana pun, termasuk latar, penutupan ringan, Escape, dan penanganan fokus, yang semuanya dimiliki peramban.',
+        ' modalnya dan ',
+        code("command: 'show-modal'"),
+        ' akan membukanya secara modal: halaman di belakangnya menjadi inert, jadi fokus dan pembaca layar tetap di dalam. Tanpa skrip di mana pun — latar, Escape, dan klik di luar semuanya dimiliki peramban.',
       ),
       p(
         'Itulah sebabnya ',
@@ -26,7 +28,7 @@ export default () =>
       h2('Modal dasar'),
       p('Setiap modal di halaman ini benar-benar terbuka — cobalah.'),
       demo(`fragment(
-  button({ popovertarget: 'demo-basic' }, 'Buka modal'),
+  button({ commandfor: 'demo-basic', command: 'show-modal' }, 'Buka modal'),
   modal({ id: 'demo-basic', title: 'Bangun ulang situsnya?' },
     'Ini menjalankan sitelo build dan menerbitkan ulang dist/.',
   ),
@@ -35,11 +37,11 @@ export default () =>
       h2('Dengan kaki'),
       p(
         'Tombol tutup adalah tombol mana pun yang menunjuk id yang sama dengan ',
-        code('popovertargetaction="hide"'),
+        code("command: 'close'"),
         '.',
       ),
       demo(`fragment(
-  button({ color: 'danger', popovertarget: 'demo-confirm' }, 'Hapus halaman…'),
+  button({ color: 'danger', commandfor: 'demo-confirm', command: 'show-modal' }, 'Hapus halaman…'),
   modal({
     id: 'demo-confirm',
     title: 'Hapus halaman ini?',
@@ -47,8 +49,8 @@ export default () =>
       button({
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'demo-confirm',
-        popovertargetaction: 'hide',
+        commandfor: 'demo-confirm',
+        command: 'close',
       }, 'Batal'),
       button({ color: 'danger' }, 'Hapus'),
     ),
@@ -58,9 +60,9 @@ export default () =>
       h2('Ukuran'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm', wrap: true },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-sm' }, 'Kecil'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-md' }, 'Sedang'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-lg' }, 'Besar'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'demo-sm', command: 'show-modal' }, 'Kecil'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'demo-md', command: 'show-modal' }, 'Sedang'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'demo-lg', command: 'show-modal' }, 'Besar'),
   ),
   modal({ id: 'demo-sm', size: 'sm', title: 'Kecil' }, 'size: sm — sekitar 24rem.'),
   modal({ id: 'demo-md', title: 'Sedang' }, 'Bawaannya — sekitar 32rem.'),
@@ -69,12 +71,12 @@ export default () =>
 
       h2('Formulir di dalam modal'),
       demo(`fragment(
-  button({ variant: 'soft', popovertarget: 'demo-form' }, 'Halaman baru…'),
+  button({ variant: 'soft', commandfor: 'demo-form', command: 'show-modal' }, 'Halaman baru…'),
   modal({
     id: 'demo-form',
     title: 'Halaman baru',
     footer: stack({ direction: 'row', gap: 'sm' },
-      button({ variant: 'ghost', color: 'neutral', popovertarget: 'demo-form', popovertargetaction: 'hide' }, 'Batal'),
+      button({ variant: 'ghost', color: 'neutral', commandfor: 'demo-form', command: 'close' }, 'Batal'),
       button({ type: 'submit' }, 'Buat'),
     ),
   },
@@ -88,10 +90,12 @@ export default () =>
       h2('Tanpa tombol tutup'),
       p(
         code('closable: false'),
-        ' membuang × di sudutnya. Escape dan klik di luar tetap menutupnya — popover tidak bisa dibuat benar-benar menghalangi, dan itu biasanya justru perilaku yang tepat.',
+        ' membuang × di sudutnya. Escape dan klik di luar tetap menutupnya; dengan ',
+        code("closedby: 'closerequest'"),
+        ' hanya Escape yang menutupnya.',
       ),
       demo(`fragment(
-  button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-bare' }, 'Tanpa tombol tutup'),
+  button({ variant: 'outline', color: 'neutral', commandfor: 'demo-bare', command: 'show-modal' }, 'Tanpa tombol tutup'),
   modal({ id: 'demo-bare', title: 'Tekan Escape', closable: false },
     'Atau klik di mana saja di luar dialog ini.',
   ),
@@ -100,11 +104,11 @@ export default () =>
       h2('Konten panjang'),
       p('Badannya bergulir; kepala dan kakinya tetap di tempat.'),
       demo(`fragment(
-  button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-long' }, 'Modal panjang'),
+  button({ variant: 'outline', color: 'neutral', commandfor: 'demo-long', command: 'show-modal' }, 'Modal panjang'),
   modal({
     id: 'demo-long',
     title: 'Catatan rilis',
-    footer: button({ popovertarget: 'demo-long', popovertargetaction: 'hide' }, 'Tutup'),
+    footer: button({ commandfor: 'demo-long', command: 'close' }, 'Tutup'),
   },
     stack({ gap: 'md' },
       ...Array.from({ length: 12 }, (unused, index) =>
@@ -116,19 +120,19 @@ export default () =>
 
       h2('Penggulungan latar'),
       p(
-        'Halaman di belakang modal yang terbuka tidak tergulir. Itulah satu-satunya hal yang diserahkan API popover kepada Anda, dan di sini ia dikerjakan dengan CSS — tanpa skrip, dan tanpa apa pun yang perlu diinisialisasi. Berikan ',
+        'Halaman di belakang modal yang terbuka tidak tergulir. Itulah satu-satunya hal yang diserahkan dialog modal kepada Anda, dan di sini ia dikerjakan dengan CSS — tanpa skrip, dan tanpa apa pun yang perlu diinisialisasi. Berikan ',
         code('lockScroll: false'),
         ' agar latarnya tergulir seperti biasa.',
       ),
 
       h2('Dukungan peramban'),
       p(
-        'API popover tersedia di setiap peramban masa kini. Pada peramban yang terlalu tua untuk mengenalnya, modalnya dirender sebaris di dalam halaman alih-alih di atasnya — terlihat dan bisa dipakai, hanya saja tidak menumpang di atas. Tidak ada yang hilang.',
+        'Membuka dialog lewat command sebuah tombol didukung setiap peramban masa kini — Chrome 135, Firefox 144, dan Safari 26.2 ke atas. Di peramban yang lebih tua, button() menambahkan onclick yang memuat beberapa ratus bita /su/dialog.js untuk melakukan hal yang sama — hanya di sana, dan hanya pada klik pertama. Safari belum menutup dialog saat diklik di luar (closedby), dan berkas yang sama menanganinya di sana.',
       ),
 
       h2('Props'),
       propsTable([
-        ['id', 'string', '', 'Wajib. Apa yang ditunjuk popovertarget sebuah pemicu.'],
+        ['id', 'string', '', 'Wajib. Apa yang ditunjuk commandfor sebuah pemicu.'],
         ['title', 'Child', '', 'Judul, sekaligus nama dialognya yang dapat diakses.'],
         ['size', "'sm' | 'md' | 'lg'", "'md'", 'Lebar maksimum.'],
         ['footer', 'Child', '', 'Baris bawah, pada pita berwarnanya sendiri.'],

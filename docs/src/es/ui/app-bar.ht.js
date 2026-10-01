@@ -94,7 +94,7 @@ export default () =>
       p(
         'El patrón habitual: enlaces en la barra en escritorio y un botón que abre un ',
         code('drawer()'),
-        ' en el móvil. El panel es un popover, así que el botón no necesita script.',
+        ' en el móvil. El panel es un <dialog> que el botón abre con un command, así que no necesita script.',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },
@@ -105,7 +105,7 @@ export default () =>
         label: 'Abrir la navegación',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'app-bar-drawer',
+        commandfor: 'app-bar-drawer', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),

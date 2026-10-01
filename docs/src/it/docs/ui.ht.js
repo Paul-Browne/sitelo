@@ -183,8 +183,8 @@ export default () =>
       h2('JavaScript, e quanto poco ce n’è'),
       p(
         'Alla maggior parte dei componenti non serve affatto. Il modale e il pannello laterale sono elementi ',
-        code('popover'),
-        ', quindi apertura, sfondo, clic fuori ed Escape li gestisce il browser. La fisarmonica è ',
+        code('<dialog>'),
+        ' che un pulsante apre con un command, quindi sfondo, focus, Escape e clic fuori li gestisce il browser. La fisarmonica è ',
         code('<details name>'),
         '. I menu sono ',
         code('<details>'),
@@ -220,7 +220,7 @@ export default () =>
       ),
       codeBlock('Un form', s.form, 'javascript'),
       p(
-        'Un modale è un popover e il suo innesco è un qualunque pulsante che punta al suo id:',
+        'Un modale è un <dialog> e il suo innesco è un qualunque pulsante il cui commandfor punta al suo id:',
       ),
       codeBlock('Un modale', s.modal, 'javascript'),
       p('Le schede arrivano in due forme — link, oppure pannelli:'),

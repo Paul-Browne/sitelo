@@ -750,8 +750,14 @@ icon('logo')
 
 ### JavaScript
 
-Most components need none. Modals and drawers are `popover` elements,
-so the browser handles opening, the backdrop, click-outside and Escape.
+Most components need none. Modals and drawers are `<dialog>` elements
+that a button opens with `commandfor` and `command="show-modal"`, so the
+browser handles the backdrop, keeping focus inside, Escape and a click
+outside — `button({ commandfor: 'confirm', command: 'show-modal' })`. In
+a browser from before those commands, `button()` adds a fallback that
+loads `/su/dialog.js` there and nowhere else. (They used to be popovers
+opened with `popovertarget`, which no longer opens them; `sitelo dev`
+and `sitelo build` warn about any trigger still written that way.)
 Accordions are `<details name>`, menus are `<details>`, tooltips are
 CSS, and tabs whose panels swap in place are a radio group — the tab is
 a `<label>`, the panel that follows the checked radio is the one CSS

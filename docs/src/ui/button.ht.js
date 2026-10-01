@@ -149,7 +149,7 @@ export default () =>
         ', ',
         code('onclick'),
         ', ',
-        code('popovertarget'),
+        code('commandfor'),
         ' and the rest.',
       ),
       propsTable([

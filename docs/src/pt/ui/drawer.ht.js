@@ -5,17 +5,19 @@ export default () =>
   uiLayout({
     title: 'Painel lateral',
     description:
-      'Um painel que entra pela berma — a mesma mecânica de popover de um modal, com outra forma.',
+      'Um painel que entra pela berma — o mesmo <dialog> de um modal, com outra forma.',
     activeHref: '/pt/ui/drawer',
     children: [
       p(
         'Um painel lateral ocupa toda a altura e está ancorado a um dos lados. Tal como o ',
         code('modal()'),
         ', é um ',
-        code('popover'),
+        code('<dialog>'),
         ': um botão com o ',
-        code('popovertarget'),
-        ' correspondente abre-o, e o navegador trata do fundo, do clique fora e do Escape.',
+        code('commandfor'),
+        ' correspondente e ',
+        code("command: 'show-modal'"),
+        ' abre-o, e o navegador trata do fundo, do foco, do clique fora e do Escape.',
       ),
       p(
         'Num site estático o seu trabalho mais comum é o menu de navegação no telemóvel.',
@@ -23,7 +25,7 @@ export default () =>
 
       h2('Painel básico'),
       demo(`fragment(
-  button({ popovertarget: 'drawer-basic' }, 'Abrir painel'),
+  button({ commandfor: 'drawer-basic', command: 'show-modal' }, 'Abrir painel'),
   drawer({ id: 'drawer-basic', title: 'Definições' },
     stack({ gap: 'md' },
       toggle({ label: 'Pesquisa Pagefind', checked: true }),
@@ -36,8 +38,8 @@ export default () =>
       h2('Lados'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-start' }, 'Do início'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-end' }, 'Do fim'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-start', command: 'show-modal' }, 'Do início'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-end', command: 'show-modal' }, 'Do fim'),
   ),
   drawer({ id: 'drawer-start', side: 'start', title: 'Início' },
     text({ variant: 'small', tone: 'muted' }, 'Ancorado à berma inicial — a esquerda numa língua que se lê da esquerda para a direita.'),
@@ -51,8 +53,8 @@ export default () =>
       p('Qualquer comprimento CSS. Fica limitada a 90 % da janela, por isso um painel largo ainda cabe num telemóvel.'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-narrow' }, 'Estreito'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-wide' }, 'Largo'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-narrow', command: 'show-modal' }, 'Estreito'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-wide', command: 'show-modal' }, 'Largo'),
   ),
   drawer({ id: 'drawer-narrow', width: '14rem', title: 'Estreito' },
     text({ variant: 'small', tone: 'muted' }, 'width: 14rem'),
@@ -72,7 +74,7 @@ export default () =>
         label: 'Abrir a navegação',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'drawer-nav',
+        commandfor: 'drawer-nav', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),
@@ -89,7 +91,7 @@ export default () =>
 
       h2('Um painel de filtros'),
       demo(`fragment(
-  button({ variant: 'soft', color: 'neutral', popovertarget: 'drawer-filters' }, 'Filtros'),
+  button({ variant: 'soft', color: 'neutral', commandfor: 'drawer-filters', command: 'show-modal' }, 'Filtros'),
   drawer({ id: 'drawer-filters', title: 'Filtros', width: '22rem' },
     stack({ gap: 'lg' },
       choiceGroup({
@@ -110,7 +112,7 @@ export default () =>
         options: ['routing', 'data', 'islands'],
       }),
       stack({ direction: 'row', gap: 'sm' },
-        button({ variant: 'ghost', color: 'neutral', popovertarget: 'drawer-filters', popovertargetaction: 'hide' }, 'Cancelar'),
+        button({ variant: 'ghost', color: 'neutral', commandfor: 'drawer-filters', command: 'close' }, 'Cancelar'),
         button('Aplicar'),
       ),
     ),
@@ -119,7 +121,7 @@ export default () =>
 
       h2('Props'),
       propsTable([
-        ['id', 'string', '', 'Obrigatório. Aquilo para onde aponta o popovertarget de um acionador.'],
+        ['id', 'string', '', 'Obrigatório. Aquilo para onde aponta o commandfor de um acionador.'],
         ['title', 'Child', '', 'Cabeçalho, e nome acessível do diálogo.'],
         ['side', "'start' | 'end'", "'end'", 'A que berma está ancorado.'],
         ['width', 'string', "'20rem'", 'Largura do painel, limitada a 90vw.'],

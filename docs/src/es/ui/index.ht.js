@@ -106,9 +106,9 @@ const GROUPS = [
       `themeToggle()`],
   ]],
   ['Superposiciones', [
-    ['/es/ui/modal', 'Modal', 'Un diálogo sobre la API de popover, sin script por ningún lado.',
+    ['/es/ui/modal', 'Modal', 'Un <dialog> abierto en modo modal, sin script por ningún lado.',
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Abrir modal')`],
-    ['/es/ui/drawer', 'Panel lateral', 'Un panel desde el borde, con la misma mecánica de popover.',
+    ['/es/ui/drawer', 'Panel lateral', 'Un panel desde el borde, el mismo <dialog> que un modal.',
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Abrir panel')`],
     ['/es/ui/menu', 'Menú', 'Un desplegable sobre details: abrir y cerrar salen gratis.',
       `chip({ color: 'neutral' }, 'Acciones ▾')`],

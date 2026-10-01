@@ -501,7 +501,7 @@ card(
 
     modal: `import { button, modal } from 'sitelo/ui'
 
-button({ popovertarget: 'confirm' }, '${t.deleteEllipsis}')
+button({ commandfor: 'confirm', command: 'show-modal' }, '${t.deleteEllipsis}')
 
 modal({
   id: 'confirm',

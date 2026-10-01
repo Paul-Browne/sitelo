@@ -4,17 +4,19 @@ import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
 export default () =>
   uiLayout({
     title: '抽屉',
-    description: '从边缘滑入的面板——和模态框一样的 popover 机制，只是形状不同。',
+    description: '从边缘滑入的面板——和模态框一样的 <dialog>，只是形状不同。',
     activeHref: '/zh/ui/drawer',
     children: [
       p(
         '抽屉是贴在某一侧、占满高度的面板。和 ',
         code('modal()'),
         ' 一样，它是一个 ',
-        code('popover'),
+        code('<dialog>'),
         '：带有对应 ',
-        code('popovertarget'),
-        ' 的按钮打开它，遮罩、点击外部关闭和 Esc 都由浏览器负责。',
+        code('commandfor'),
+        ' 和 ',
+        code("command: 'show-modal'"),
+        ' 的按钮打开它，遮罩、焦点、点击外部关闭和 Esc 都由浏览器负责。',
       ),
       p(
         '在静态站点上，它最常见的活儿是手机上的导航菜单。',
@@ -22,7 +24,7 @@ export default () =>
 
       h2('基础抽屉'),
       demo(`fragment(
-  button({ popovertarget: 'drawer-basic' }, '打开抽屉'),
+  button({ commandfor: 'drawer-basic', command: 'show-modal' }, '打开抽屉'),
   drawer({ id: 'drawer-basic', title: '设置' },
     stack({ gap: 'md' },
       toggle({ label: 'Pagefind 搜索', checked: true }),
@@ -35,8 +37,8 @@ export default () =>
       h2('方位'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-start' }, '从起始侧'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-end' }, '从末尾侧'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-start', command: 'show-modal' }, '从起始侧'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-end', command: 'show-modal' }, '从末尾侧'),
   ),
   drawer({ id: 'drawer-start', side: 'start', title: '起始侧' },
     text({ variant: 'small', tone: 'muted' }, '贴在起始边缘——在从左到右的语言里就是左边。'),
@@ -50,8 +52,8 @@ export default () =>
       p('任意 CSS 长度。它最多为视口的 90%，所以再宽的抽屉在手机上也放得下。'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-narrow' }, '窄'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-wide' }, '宽'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-narrow', command: 'show-modal' }, '窄'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-wide', command: 'show-modal' }, '宽'),
   ),
   drawer({ id: 'drawer-narrow', width: '14rem', title: '窄' },
     text({ variant: 'small', tone: 'muted' }, 'width: 14rem'),
@@ -71,7 +73,7 @@ export default () =>
         label: '打开导航',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'drawer-nav',
+        commandfor: 'drawer-nav', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),
@@ -88,7 +90,7 @@ export default () =>
 
       h2('筛选面板'),
       demo(`fragment(
-  button({ variant: 'soft', color: 'neutral', popovertarget: 'drawer-filters' }, '筛选'),
+  button({ variant: 'soft', color: 'neutral', commandfor: 'drawer-filters', command: 'show-modal' }, '筛选'),
   drawer({ id: 'drawer-filters', title: '筛选', width: '22rem' },
     stack({ gap: 'lg' },
       choiceGroup({
@@ -109,7 +111,7 @@ export default () =>
         options: ['routing', 'data', 'islands'],
       }),
       stack({ direction: 'row', gap: 'sm' },
-        button({ variant: 'ghost', color: 'neutral', popovertarget: 'drawer-filters', popovertargetaction: 'hide' }, '取消'),
+        button({ variant: 'ghost', color: 'neutral', commandfor: 'drawer-filters', command: 'close' }, '取消'),
         button('应用'),
       ),
     ),
@@ -118,7 +120,7 @@ export default () =>
 
       h2('属性'),
       propsTable([
-        ['id', 'string', '', '必填。触发按钮的 popovertarget 所指向的目标。'],
+        ['id', 'string', '', '必填。触发按钮的 commandfor 所指向的目标。'],
         ['title', 'Child', '', '标题，同时也是对话框的无障碍名称。'],
         ['side', "'start' | 'end'", "'end'", '贴在哪一侧边缘。'],
         ['width', 'string', "'20rem'", '面板宽度，上限为 90vw。'],

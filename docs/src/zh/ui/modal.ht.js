@@ -4,17 +4,19 @@ import { code, demo, propsTable, uiLayout } from '../../lib/zh.js'
 export default () =>
   uiLayout({
     title: '模态框',
-    description: '基于 popover API 的对话框——打开、遮罩、点击外部和 Esc 都交给浏览器。',
+    description: '真正的 <dialog>，以模态方式打开——遮罩、焦点、Esc 和点击外部都交给浏览器。',
     activeHref: '/zh/ui/modal',
     children: [
       p(
         '模态框就是一个 ',
-        code('popover'),
-        ' 元素。任何 ',
-        code('popovertarget'),
-        ' 与模态框 ',
+        code('<dialog>'),
+        ' 元素。任何带有指向模态框 ',
         code('id'),
-        ' 匹配的按钮都能打开它——全程没有脚本，遮罩、点击外部关闭、Esc 和焦点处理统统归浏览器管。',
+        ' 的 ',
+        code('commandfor'),
+        ' 和 ',
+        code("command: 'show-modal'"),
+        ' 的按钮都能以模态方式打开它：背后的页面变为惰性（inert），焦点和读屏器都会留在对话框内。全程没有脚本，遮罩、Esc 和点击外部关闭统统归浏览器管。',
       ),
       p(
         '这也是 ',
@@ -25,7 +27,7 @@ export default () =>
       h2('基础模态框'),
       p('本页每个模态框都是真能打开的——试试看。'),
       demo(`fragment(
-  button({ popovertarget: 'demo-basic' }, '打开模态框'),
+  button({ commandfor: 'demo-basic', command: 'show-modal' }, '打开模态框'),
   modal({ id: 'demo-basic', title: '重新构建站点？' },
     '这会运行 sitelo build 并重新发布 dist/。',
   ),
@@ -34,11 +36,11 @@ export default () =>
       h2('带页脚'),
       p(
         '所谓关闭按钮，就是任何指向同一个 id 并带上 ',
-        code('popovertargetaction="hide"'),
+        code("command: 'close'"),
         ' 的按钮。',
       ),
       demo(`fragment(
-  button({ color: 'danger', popovertarget: 'demo-confirm' }, '删除页面…'),
+  button({ color: 'danger', commandfor: 'demo-confirm', command: 'show-modal' }, '删除页面…'),
   modal({
     id: 'demo-confirm',
     title: '要删除这个页面吗？',
@@ -46,8 +48,8 @@ export default () =>
       button({
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'demo-confirm',
-        popovertargetaction: 'hide',
+        commandfor: 'demo-confirm',
+        command: 'close',
       }, '取消'),
       button({ color: 'danger' }, '删除'),
     ),
@@ -57,9 +59,9 @@ export default () =>
       h2('尺寸'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm', wrap: true },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-sm' }, '小'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-md' }, '中'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-lg' }, '大'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'demo-sm', command: 'show-modal' }, '小'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'demo-md', command: 'show-modal' }, '中'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'demo-lg', command: 'show-modal' }, '大'),
   ),
   modal({ id: 'demo-sm', size: 'sm', title: '小' }, 'size: sm——大约 24rem。'),
   modal({ id: 'demo-md', title: '中' }, '默认值——大约 32rem。'),
@@ -68,12 +70,12 @@ export default () =>
 
       h2('模态框里的表单'),
       demo(`fragment(
-  button({ variant: 'soft', popovertarget: 'demo-form' }, '新建页面…'),
+  button({ variant: 'soft', commandfor: 'demo-form', command: 'show-modal' }, '新建页面…'),
   modal({
     id: 'demo-form',
     title: '新建页面',
     footer: stack({ direction: 'row', gap: 'sm' },
-      button({ variant: 'ghost', color: 'neutral', popovertarget: 'demo-form', popovertargetaction: 'hide' }, '取消'),
+      button({ variant: 'ghost', color: 'neutral', commandfor: 'demo-form', command: 'close' }, '取消'),
       button({ type: 'submit' }, '创建'),
     ),
   },
@@ -87,10 +89,12 @@ export default () =>
       h2('不带关闭按钮'),
       p(
         code('closable: false'),
-        ' 会去掉角落里的 ×。Esc 和点击外部仍然能关掉它——popover 没法做成真正的强制阻断，而且多数情况下这本来就是对的行为。',
+        ' 会去掉角落里的 ×。Esc 和点击外部仍然能关掉它；加上 ',
+        code("closedby: 'closerequest'"),
+        ' 后就只有 Esc 能关。',
       ),
       demo(`fragment(
-  button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-bare' }, '没有关闭按钮'),
+  button({ variant: 'outline', color: 'neutral', commandfor: 'demo-bare', command: 'show-modal' }, '没有关闭按钮'),
   modal({ id: 'demo-bare', title: '请按 Esc', closable: false },
     '或者点这个对话框以外的任何地方。',
   ),
@@ -99,11 +103,11 @@ export default () =>
       h2('长内容'),
       p('主体会滚动，头部和页脚待着不动。'),
       demo(`fragment(
-  button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-long' }, '很长的模态框'),
+  button({ variant: 'outline', color: 'neutral', commandfor: 'demo-long', command: 'show-modal' }, '很长的模态框'),
   modal({
     id: 'demo-long',
     title: '发布说明',
-    footer: button({ popovertarget: 'demo-long', popovertargetaction: 'hide' }, '关闭'),
+    footer: button({ commandfor: 'demo-long', command: 'close' }, '关闭'),
   },
     stack({ gap: 'md' },
       ...Array.from({ length: 12 }, (unused, index) =>
@@ -115,19 +119,19 @@ export default () =>
 
       h2('背景滚动'),
       p(
-        '模态框打开时，它背后的页面不会滚动。这是 popover API 唯一留给你自己处理的部分，而这里是用 CSS 做的——没有脚本，也没有什么需要初始化。传 ',
+        '模态框打开时，它背后的页面不会滚动。这是模态对话框唯一留给你自己处理的部分，而这里是用 CSS 做的——没有脚本，也没有什么需要初始化。传 ',
         code('lockScroll: false'),
         ' 就能让背景照常滚动。',
       ),
 
       h2('浏览器支持'),
       p(
-        'popover API 在所有当前的浏览器里都可用。如果浏览器老到不认识它，模态框会内联渲染在页面里，而不是浮在上面：仍然看得见、用得了，只是没有覆盖效果。什么都不会消失。',
+        '用按钮的 command 打开对话框，所有当前的浏览器都支持——Chrome 135、Firefox 144、Safari 26.2 及更新版本。在更旧的浏览器里，button() 会加上一个 onclick，加载几百字节的 /su/dialog.js 来完成同样的事——只在那里，而且只在第一次点击时。Safari 目前还不支持点击外部关闭（closedby），在那里同样由这个文件处理。',
       ),
 
       h2('属性'),
       propsTable([
-        ['id', 'string', '', '必填。触发按钮的 popovertarget 所指向的目标。'],
+        ['id', 'string', '', '必填。触发按钮的 commandfor 所指向的目标。'],
         ['title', 'Child', '', '标题，同时也是对话框的无障碍名称。'],
         ['size', "'sm' | 'md' | 'lg'", "'md'", '最大宽度。'],
         ['footer', 'Child', '', '底部一行，带有自己的浅色底带。'],

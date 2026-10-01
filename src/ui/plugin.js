@@ -177,6 +177,64 @@ const INLINE_SHEET =
   /<style (data-sitelo-ui(?:-([a-z][a-z0-9-]*))?(?:="")?)((?:\s[^>]*)?)>([\s\S]*?)<\/style>/g;
 
 /**
+ * The ids on a page that a `popovertarget` points at and that are
+ * `modal()` or `drawer()` dialogs — which `popovertarget` no longer opens.
+ *
+ * Both were popovers until they became `<dialog>` elements, so every
+ * trigger written for them said `popovertarget`, and a trigger aimed at a
+ * dialog that is not a popover does nothing at all: no error, just a
+ * button that stopped working. This finds those, so the build can say so.
+ * A `<dialog popover>` of the site's own is a real popover target and is
+ * left alone. Element by element, for the reason {@link eventAttributes}
+ * gives: a code sample showing the old trigger is escaped text.
+ *
+ * @param {string} html
+ * @returns {string[]}
+ */
+export function staleDialogTriggers(html) {
+  const dialogs = new Set();
+
+  // Quote-aware, because a tag's own handlers can hold a `>`: the dialog's
+  // is `…then(m=>m.dismiss(this,event))`.
+  for (const [tag] of html.matchAll(/<dialog\b(?:[^>"']|"[^"]*"|'[^']*')*>/gi)) {
+    if (/\spopover(?:[\s=>]|$)/i.test(tag)) continue;
+    if (!/\sclass="[^"]*\bsu-(?:modal|drawer)\b/.test(tag)) continue;
+
+    const id = tag.match(/\sid="([^"]*)"/);
+
+    if (id) dialogs.add(id[1]);
+  }
+
+  if (!dialogs.size) return [];
+
+  const stale = new Set();
+
+  for (const [tag] of html.matchAll(/<[a-z][a-z0-9-]*\b(?:[^>"']|"[^"]*"|'[^']*')*>/gi)) {
+    const id = tag.match(/\spopovertarget="([^"]*)"/)?.[1];
+
+    if (id != null && dialogs.has(id)) stale.add(id);
+  }
+
+  return [...stale];
+}
+
+/**
+ * The warning for one page's stale triggers.
+ *
+ * @param {string} page
+ * @param {string[]} ids
+ */
+function staleTriggerMessage(page, ids) {
+  const list = ids.map((id) => `#${id}`).join(', ');
+
+  return (
+    `[sitelo] ${page}: popovertarget points at ${list}, which modal() and drawer() render as a <dialog> now — ` +
+    `popovertarget no longer opens it. Use commandfor="…" command="show-modal" to open it, and command="close" ` +
+    `in place of popovertargetaction="hide": button({ commandfor: '${ids[0]}', command: 'show-modal' }).`
+  );
+}
+
+/**
  * Where to serve from, resolved on every use rather than captured.
  *
  * `configureUiClient()` can move it from a page module, which runs long
@@ -222,7 +280,25 @@ export function uiClientPrefix({ base } = {}) {
  */
 export function uiRuntime({ base, prune = false } = {}) {
   let outDir;
+  /** @type {{ warn: (message: string) => void }} */
+  let logger = { warn: (message) => console.warn(message) };
+  let serving = false;
+  /** Page and id pairs already warned about, so a reload does not repeat them. */
+  const warned = new Set();
   const keep = typeof prune === 'object' && prune ? prune.keep ?? [] : [];
+
+  /**
+   * @param {string} page
+   * @param {string} html
+   */
+  const warnAboutTriggers = (page, html) => {
+    const ids = staleDialogTriggers(html).filter((id) => !warned.has(`${page}\0${id}`));
+
+    if (!ids.length) return;
+
+    for (const id of ids) warned.add(`${page}\0${id}`);
+    logger.warn(staleTriggerMessage(page, ids));
+  };
 
   return {
     name: 'sitelo:ui-runtime',
@@ -239,6 +315,19 @@ export function uiRuntime({ base, prune = false } = {}) {
 
     configResolved(config) {
       outDir = path.resolve(config.root, config.build.outDir);
+      if (config.logger) logger = config.logger;
+      serving = config.command === 'serve';
+    },
+
+    /*
+     * Dev's half of the warning `writeBundle` gives a build: a page is
+     * rendered here on request, so this is where it can be read.
+     */
+    transformIndexHtml: {
+      order: 'post',
+      handler(html, ctx) {
+        if (serving) warnAboutTriggers(ctx?.path ?? '/', html);
+      },
     },
 
     configureServer(server) {
@@ -284,15 +373,22 @@ export function uiRuntime({ base, prune = false } = {}) {
     writeBundle() {
       const { external, prefix } = target();
 
-      if (external || !outDir || !fs.existsSync(outDir)) return;
+      if (!outDir || !fs.existsSync(outDir)) return;
 
-      const wanted = new Set();
-      /** File name → the sheet whose bytes go under it. */
-      const sheets = new Map();
       const pages = filesUnder(outDir, ['.html']).map((file) => ({
         file,
         html: fs.readFileSync(file, 'utf8'),
       }));
+
+      for (const { file, html } of pages) {
+        warnAboutTriggers(path.relative(outDir, file).split(path.sep).join('/'), html);
+      }
+
+      if (external) return;
+
+      const wanted = new Set();
+      /** File name → the sheet whose bytes go under it. */
+      const sheets = new Map();
 
       for (const { html } of pages) {
         for (const value of eventAttributes(html)) {

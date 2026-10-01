@@ -91,7 +91,7 @@ export function alert(...args) {
  *
  * A `<span>` in a `<div>` rather than a native `<progress>`, which
  * makes this the odd one out in a library that takes `<details>`,
- * `popover` and a real range input wherever it can. Determinate, a
+ * `<dialog>` and a real range input wherever it can. Determinate, a
  * native bar styles up identically. Indeterminate, it has nothing to
  * show: styling one at all means `appearance: none`, that takes the
  * platform's animation with it, `::-webkit-progress-value` is not

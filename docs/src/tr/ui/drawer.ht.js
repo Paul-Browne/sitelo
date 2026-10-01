@@ -5,17 +5,19 @@ export default () =>
   uiLayout({
     title: 'Çekmece',
     description:
-      'Kenardan gelen bir panel — bir kiple aynı popover işleyişi, farklı biçim.',
+      'Kenardan gelen bir panel — bir kiple aynı <dialog>, farklı biçim.',
     activeHref: '/tr/ui/drawer',
     children: [
       p(
         'Çekmece, bir yana sabitlenmiş tam yükseklikte bir paneldir. ',
         code('modal()'),
         ' gibi o da bir ',
-        code('popover'),
+        code('<dialog>'),
         ' öğesidir: eşleşen bir ',
-        code('popovertarget'),
-        ' taşıyan bir düğme onu açar ve arka planı, dışarı tıklamayı ve Escape’i tarayıcı halleder.',
+        code('commandfor'),
+        ' ve ',
+        code("command: 'show-modal'"),
+        ' taşıyan bir düğme onu açar ve arka planı, odağı, dışarı tıklamayı ve Escape’i tarayıcı halleder.',
       ),
       p(
         'Statik bir sitedeki en yaygın işi, telefondaki gezinme menüsüdür.',
@@ -23,7 +25,7 @@ export default () =>
 
       h2('Temel çekmece'),
       demo(`fragment(
-  button({ popovertarget: 'drawer-basic' }, 'Çekmeceyi aç'),
+  button({ commandfor: 'drawer-basic', command: 'show-modal' }, 'Çekmeceyi aç'),
   drawer({ id: 'drawer-basic', title: 'Ayarlar' },
     stack({ gap: 'md' },
       toggle({ label: 'Pagefind araması', checked: true }),
@@ -36,8 +38,8 @@ export default () =>
       h2('Yanlar'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-start' }, 'Baştan'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-end' }, 'Sondan'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-start', command: 'show-modal' }, 'Baştan'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-end', command: 'show-modal' }, 'Sondan'),
   ),
   drawer({ id: 'drawer-start', side: 'start', title: 'Baş' },
     text({ variant: 'small', tone: 'muted' }, 'Öncü kenara sabitlenmiş — soldan sağa bir dilde sol taraf.'),
@@ -51,8 +53,8 @@ export default () =>
       p('Herhangi bir CSS uzunluğu. Görünümün %90’ıyla sınırlıdır, bu yüzden geniş bir çekmece de bir telefona sığar.'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-narrow' }, 'Dar'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-wide' }, 'Geniş'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-narrow', command: 'show-modal' }, 'Dar'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-wide', command: 'show-modal' }, 'Geniş'),
   ),
   drawer({ id: 'drawer-narrow', width: '14rem', title: 'Dar' },
     text({ variant: 'small', tone: 'muted' }, 'width: 14rem'),
@@ -72,7 +74,7 @@ export default () =>
         label: 'Gezinmeyi aç',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'drawer-nav',
+        commandfor: 'drawer-nav', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),
@@ -89,7 +91,7 @@ export default () =>
 
       h2('Bir süzgeç paneli'),
       demo(`fragment(
-  button({ variant: 'soft', color: 'neutral', popovertarget: 'drawer-filters' }, 'Süzgeçler'),
+  button({ variant: 'soft', color: 'neutral', commandfor: 'drawer-filters', command: 'show-modal' }, 'Süzgeçler'),
   drawer({ id: 'drawer-filters', title: 'Süzgeçler', width: '22rem' },
     stack({ gap: 'lg' },
       choiceGroup({
@@ -110,7 +112,7 @@ export default () =>
         options: ['routing', 'data', 'islands'],
       }),
       stack({ direction: 'row', gap: 'sm' },
-        button({ variant: 'ghost', color: 'neutral', popovertarget: 'drawer-filters', popovertargetaction: 'hide' }, 'Vazgeç'),
+        button({ variant: 'ghost', color: 'neutral', commandfor: 'drawer-filters', command: 'close' }, 'Vazgeç'),
         button('Uygula'),
       ),
     ),
@@ -128,7 +130,7 @@ export default () =>
 
       h2('Proplar'),
       propsTable([
-        ['id', 'string', '', 'Zorunlu. Bir tetikleyicinin popovertarget değerinin gösterdiği şey.'],
+        ['id', 'string', '', 'Zorunlu. Bir tetikleyicinin commandfor değerinin gösterdiği şey.'],
         ['title', 'Child', '', 'Başlık ve iletişim kutusunun erişilebilir adı.'],
         ['side', "'start' | 'end'", "'end'", 'Hangi kenara sabitlendiği.'],
         ['width', 'string', "'20rem'", 'Panel genişliği, 90vw ile sınırlı.'],

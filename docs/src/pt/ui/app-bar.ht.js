@@ -94,7 +94,7 @@ export default () =>
       p(
         'O padrão do costume: ligações na barra no computador, um botão que abre um ',
         code('drawer()'),
-        ' no telemóvel. O painel é um popover, por isso o botão não precisa de script.',
+        ' no telemóvel. O painel é um <dialog> que o botão abre com um command, por isso não precisa de script.',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },
@@ -105,7 +105,7 @@ export default () =>
         label: 'Abrir a navegação',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'app-bar-drawer',
+        commandfor: 'app-bar-drawer', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),

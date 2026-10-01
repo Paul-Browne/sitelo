@@ -93,7 +93,7 @@ export default () =>
       p(
         '常见做法：桌面端把链接放在栏里，手机端用一个按钮打开 ',
         code('drawer()'),
-        '。抽屉是 popover，所以按钮不需要脚本。',
+        '。抽屉是一个 <dialog>，按钮通过 command 打开它，所以不需要脚本。',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },
@@ -104,7 +104,7 @@ export default () =>
         label: '打开导航',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'app-bar-drawer',
+        commandfor: 'app-bar-drawer', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),

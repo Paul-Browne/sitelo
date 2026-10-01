@@ -3,6 +3,7 @@ import { test } from 'node:test';
 
 import * as ui from '../src/ui/index.js';
 import * as badge from '../src/ui/runtime/badge.js';
+import * as dialogRuntime from '../src/ui/runtime/dialog.js';
 import * as menuRuntime from '../src/ui/runtime/menu.js';
 import { toast } from '../src/ui/runtime/toast.js';
 import * as pressed from '../src/ui/runtime/pressed.js';
@@ -657,4 +658,85 @@ test('toast() names its close button in the language it is given', (t) => {
     close(toast('Tallennettu', { duration: 0, dismissLabel: 'Sulje' })).attributes['aria-label'],
     'Sulje',
   );
+});
+
+/** A `<dialog>` stub that records what was done to it. */
+function stubDialog(attributes = {}) {
+  const calls = [];
+  const dialog = {
+    open: false,
+    attributes,
+    calls,
+    getAttribute: (name) => attributes[name] ?? null,
+    showModal() {
+      if (dialog.open) throw new Error('already open');
+      dialog.open = true;
+      calls.push('showModal');
+    },
+    close(value) {
+      dialog.open = false;
+      calls.push(['close', value]);
+    },
+    getBoundingClientRect: () => ({ left: 100, right: 300, top: 100, bottom: 200 }),
+  };
+  return dialog;
+}
+
+function stubButton(attributes) {
+  return {
+    hasAttribute: (name) => name in attributes,
+    getAttribute: (name) => attributes[name] ?? null,
+  };
+}
+
+test('dialog.js carries out show-modal and close, and is safe to run twice', (t) => {
+  const target = stubDialog();
+  const original = globalThis.document;
+  globalThis.document = { getElementById: (id) => (id === 'confirm' ? target : null) };
+  t.after(() => {
+    globalThis.document = original;
+  });
+
+  const open = stubButton({ commandfor: 'confirm', command: 'show-modal' });
+  const close = stubButton({ commandfor: 'confirm', command: 'close', value: 'cancel' });
+
+  dialogRuntime.invoke(open);
+  // A browser that ran the command itself and fetched this anyway.
+  dialogRuntime.invoke(open);
+  assert.equal(target.open, true);
+  assert.deepEqual(target.calls, ['showModal']);
+
+  dialogRuntime.invoke(close);
+  dialogRuntime.invoke(close);
+  assert.equal(target.open, false);
+  assert.deepEqual(target.calls, ['showModal', ['close', 'cancel']], 'the value becomes the returnValue, once');
+
+  // request-close falls back to close where requestClose() is missing.
+  target.open = true;
+  dialogRuntime.invoke(stubButton({ commandfor: 'confirm', command: 'request-close' }));
+  assert.equal(target.open, false);
+
+  // A custom command, or a target that is not there, does nothing.
+  target.calls.length = 0;
+  dialogRuntime.invoke(stubButton({ commandfor: 'confirm', command: '--refresh' }));
+  dialogRuntime.invoke(stubButton({ commandfor: 'missing', command: 'show-modal' }));
+  assert.deepEqual(target.calls, []);
+});
+
+test('dialog.js closes on a click outside only, as closedby="any" would', () => {
+  const dialog = stubDialog({ closedby: 'any' });
+  const click = (target, clientX, clientY) => dialogRuntime.dismiss(dialog, { target, clientX, clientY });
+
+  dialog.open = true;
+  click(dialog, 150, 150);
+  assert.equal(dialog.open, true, 'the dialog\'s own padding or border is inside');
+  click({ tagName: 'BUTTON' }, 10, 10);
+  assert.equal(dialog.open, true, 'a click on something in the dialog is not a click outside');
+  click(dialog, 10, 10);
+  assert.equal(dialog.open, false, 'the backdrop closes it');
+
+  const kept = stubDialog({ closedby: 'closerequest' });
+  kept.open = true;
+  dialogRuntime.dismiss(kept, { target: kept, clientX: 10, clientY: 10 });
+  assert.equal(kept.open, true, 'a page that asked for less is not overruled');
 });

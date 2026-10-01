@@ -61,14 +61,14 @@ export default () =>
             ui.menuItem({ href: 'https://github.com/paul-browne/sitelo' }, 'GitHub'),
             ui.menuItem({ href: 'https://sitelo.dev/docs' }, 'Docs'),
             ui.menuSeparator(),
-            ui.menuItem({ popovertarget: 'about' }, 'About this page'),
+            ui.menuItem({ commandfor: 'about', command: 'show-modal' }, 'About this page'),
           ),
           ui.iconButton({
             label: 'Open navigation',
             icon: icons.menu,
             variant: 'ghost',
             color: 'neutral',
-            popovertarget: 'nav-drawer',
+            commandfor: 'nav-drawer', command: 'show-modal',
           }),
         ),
       ),
@@ -374,10 +374,10 @@ export default () =>
           section(
             'overlays',
             'Overlays',
-            'The modal, the drawer and the accordion are the browser’s own — popover and details, no script.',
+            'The modal, the drawer and the accordion are the browser’s own — dialog and details, no script.',
             row(
-              ui.button({ popovertarget: 'confirm' }, 'Open modal'),
-              ui.button({ variant: 'outline', color: 'neutral', popovertarget: 'nav-drawer' }, 'Open drawer'),
+              ui.button({ commandfor: 'confirm', command: 'show-modal' }, 'Open modal'),
+              ui.button({ variant: 'outline', color: 'neutral', commandfor: 'nav-drawer', command: 'show-modal' }, 'Open drawer'),
             ),
             ui.accordion({
               name: 'faq',
@@ -404,7 +404,7 @@ export default () =>
       ui.modal(
         { id: 'confirm', title: 'Delete this page?', footer: ui.stack(
           { direction: 'row', gap: 'sm' },
-          ui.button({ variant: 'ghost', color: 'neutral', popovertarget: 'confirm', popovertargetaction: 'hide' }, 'Cancel'),
+          ui.button({ variant: 'ghost', color: 'neutral', commandfor: 'confirm', command: 'close' }, 'Cancel'),
           ui.button({ color: 'danger' }, 'Delete'),
         ) },
         'This cannot be undone. The generated HTML is removed on the next build.',

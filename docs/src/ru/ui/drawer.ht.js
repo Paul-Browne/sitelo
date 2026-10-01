@@ -5,17 +5,19 @@ export default () =>
   uiLayout({
     title: 'Боковая панель',
     description:
-      'Панель, выезжающая от края: та же механика popover, что и у модального окна, только другой формы.',
+      'Панель, выезжающая от края: тот же <dialog>, что и у модального окна, только другой формы.',
     activeHref: '/ru/ui/drawer',
     children: [
       p(
         'Боковая панель занимает всю высоту и прижата к одной стороне. Как и ',
         code('modal()'),
         ', это ',
-        code('popover'),
+        code('<dialog>'),
         ': кнопка с соответствующим ',
-        code('popovertarget'),
-        ' открывает её, а браузер берёт на себя затемнение, клик снаружи и Escape.',
+        code('commandfor'),
+        ' и ',
+        code("command: 'show-modal'"),
+        ' открывает её, а браузер берёт на себя затемнение, фокус, клик снаружи и Escape.',
       ),
       p(
         'На статическом сайте её самая частая работа — меню навигации на телефоне.',
@@ -23,7 +25,7 @@ export default () =>
 
       h2('Простая панель'),
       demo(`fragment(
-  button({ popovertarget: 'drawer-basic' }, 'Открыть панель'),
+  button({ commandfor: 'drawer-basic', command: 'show-modal' }, 'Открыть панель'),
   drawer({ id: 'drawer-basic', title: 'Настройки' },
     stack({ gap: 'md' },
       toggle({ label: 'Поиск Pagefind', checked: true }),
@@ -36,8 +38,8 @@ export default () =>
       h2('Стороны'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-start' }, 'От начала'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-end' }, 'От конца'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-start', command: 'show-modal' }, 'От начала'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-end', command: 'show-modal' }, 'От конца'),
   ),
   drawer({ id: 'drawer-start', side: 'start', title: 'Начало' },
     text({ variant: 'small', tone: 'muted' }, 'Прижата к начальному краю — левому в языке, который читают слева направо.'),
@@ -51,8 +53,8 @@ export default () =>
       p('Любая CSS-длина. Она ограничена 90 % ширины окна, поэтому широкая панель всё равно помещается на телефоне.'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-narrow' }, 'Узкая'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-wide' }, 'Широкая'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-narrow', command: 'show-modal' }, 'Узкая'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-wide', command: 'show-modal' }, 'Широкая'),
   ),
   drawer({ id: 'drawer-narrow', width: '14rem', title: 'Узкая' },
     text({ variant: 'small', tone: 'muted' }, 'width: 14rem'),
@@ -72,7 +74,7 @@ export default () =>
         label: 'Открыть навигацию',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'drawer-nav',
+        commandfor: 'drawer-nav', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),
@@ -89,7 +91,7 @@ export default () =>
 
       h2('Панель фильтров'),
       demo(`fragment(
-  button({ variant: 'soft', color: 'neutral', popovertarget: 'drawer-filters' }, 'Фильтры'),
+  button({ variant: 'soft', color: 'neutral', commandfor: 'drawer-filters', command: 'show-modal' }, 'Фильтры'),
   drawer({ id: 'drawer-filters', title: 'Фильтры', width: '22rem' },
     stack({ gap: 'lg' },
       choiceGroup({
@@ -110,7 +112,7 @@ export default () =>
         options: ['routing', 'data', 'islands'],
       }),
       stack({ direction: 'row', gap: 'sm' },
-        button({ variant: 'ghost', color: 'neutral', popovertarget: 'drawer-filters', popovertargetaction: 'hide' }, 'Отмена'),
+        button({ variant: 'ghost', color: 'neutral', commandfor: 'drawer-filters', command: 'close' }, 'Отмена'),
         button('Применить'),
       ),
     ),
@@ -119,7 +121,7 @@ export default () =>
 
       h2('Пропсы'),
       propsTable([
-        ['id', 'string', '', 'Обязателен. То, на что указывает popovertarget кнопки-триггера.'],
+        ['id', 'string', '', 'Обязателен. То, на что указывает commandfor кнопки-триггера.'],
         ['title', 'Child', '', 'Заголовок и доступное имя диалога.'],
         ['side', "'start' | 'end'", "'end'", 'К какому краю она прижата.'],
         ['width', 'string', "'20rem'", 'Ширина панели, ограниченная 90vw.'],

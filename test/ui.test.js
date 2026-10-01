@@ -683,16 +683,64 @@ test('tabs() gives each set of panel tabs its own radio group', () => {
  * Overlays
  * ------------------------------------------------------------------ */
 
-test('modal() uses the popover API and labels itself', () => {
+test('modal() is a <dialog> that labels itself and closes on a click outside', () => {
   const html = ui.modal({ id: 'confirm', title: 'Sure?' }, 'Body');
 
-  assert.match(html, /id="confirm" popover="auto" role="dialog"/);
-  // A popover leaves the page behind it reachable by Tab, so it must not
-  // tell a screen reader to hide that page.
-  assert.ok(!html.includes('aria-modal'));
-  assert.ok(!ui.drawer({ id: 'nav' }, 'x').includes('aria-modal'));
-  assert.match(html, /aria-labelledby="confirm-title"/);
-  assert.match(html, /popovertarget="confirm" popovertargetaction="hide"/);
+  // Opened modally, which makes the page behind it inert, so there is no
+  // popover attribute and no role or aria-modal to state by hand.
+  assert.match(
+    html,
+    /^<dialog id="confirm" closedby="any" aria-labelledby="confirm-title" onclick="'closedBy' in HTMLDialogElement\.prototype\|\|import\('\/su\/dialog\.js'\)\.then\(m=>m\.dismiss\(this,event\)\)" class="su-modal su-modal--lock">/,
+  );
+  assert.ok(!/popover|role=|aria-modal/.test(html));
+  assert.match(html, /<button type="button" aria-label="Close" commandfor="confirm" command="close" onclick="[^"]+m\.invoke\(this\)\)" class="su-modal-close">/);
+});
+
+test('drawer() is a <dialog> on the same terms', () => {
+  const html = ui.drawer({ id: 'nav', title: 'Menu' }, 'x');
+
+  assert.match(html, /^<dialog id="nav" closedby="any" aria-labelledby="nav-title" onclick="[^"]+dismiss[^"]+" class="su-drawer su-drawer--lock"/);
+  assert.ok(!/popover|role=|aria-modal/.test(html));
+  assert.match(html, /commandfor="nav" command="close"/);
+});
+
+test('a page can ask a modal to stay open on outside clicks', () => {
+  assert.match(ui.modal({ id: 'a', closedby: 'closerequest' }, 'x'), /^<dialog id="a" closedby="closerequest"/);
+});
+
+test('button() stands in for invoker commands where the browser has none', () => {
+  const html = ui.button({ commandfor: 'confirm', command: 'show-modal' }, 'Delete…');
+
+  // One property lookup wherever the command works natively; the module
+  // is fetched only where it does not.
+  assert.match(
+    html,
+    /onclick="'command' in HTMLButtonElement\.prototype\|\|import\('\/su\/dialog\.js'\)\.then\(m=>m\.invoke\(this\)\)" commandfor="confirm" command="show-modal"/,
+  );
+
+  const fallback = (props) => ui.button(props, 'x').includes('/su/dialog.js');
+
+  assert.equal(fallback({ commandfor: 'a', command: 'close' }), true);
+  assert.equal(fallback({ commandfor: 'a', command: 'toggle-popover' }), true);
+  assert.equal(fallback({ commandfor: 'a', command: '--refresh' }), false, 'a custom command is the page\'s own');
+  assert.equal(fallback({ commandfor: 'a' }), false);
+  assert.equal(fallback({ command: 'show-modal' }), false);
+  assert.match(ui.button({ commandfor: 'a', command: 'close', onclick: 'mine()' }, 'x'), /onclick="mine\(\)"/);
+  assert.ok(!ui.button({ commandfor: 'a', command: 'close', onclick: 'mine()' }, 'x').includes('dialog.js'));
+  assert.equal(fallback({ commandfor: 'a', command: 'show-modal', href: '/x' }), false, 'a link cannot carry a command');
+});
+
+test('menuItem() and closeButton() carry the same fallback', () => {
+  assert.match(ui.menuItem({ commandfor: 'about', command: 'show-modal' }, 'About'), /role="menuitem" onclick="[^"]*dialog\.js/);
+  assert.match(ui.closeButton({ target: 'm' }), /commandfor="m" command="close" onclick="[^"]*dialog\.js/);
+  assert.ok(!ui.closeButton().includes('commandfor'), 'with no target there is nothing to close');
+});
+
+test('the stylesheet opens and locks on the dialog states, not popover ones', () => {
+  assert.ok(!uiCss.includes(':popover-open'));
+  assert.match(uiCss, /\.su-modal\[open\] \{\s*display: flex;/);
+  assert.match(uiCss, /\.su-drawer\[open\] \{\s*display: flex;/);
+  assert.match(uiCss, /html:has\(\.su-modal--lock:modal\),\s*html:has\(\.su-drawer--lock:modal\) \{\s*overflow: hidden;/);
 });
 
 test('modal() locks background scroll unless told not to', () => {

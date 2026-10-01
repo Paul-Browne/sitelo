@@ -29,6 +29,7 @@ export const RUNTIME_MODULES = [
   'alert',
   'badge',
   'carousel',
+  'dialog',
   'grain',
   'helpers',
   'menu',
@@ -101,4 +102,43 @@ export function handler(module, call) {
   const url = `${uiClientBase()}${module}.js`.replaceAll('\\', '\\\\').replaceAll("'", "\\'")
 
   return `import('${url}').then(m=>m.${call})`
+}
+
+/** The commands a browser carries out itself, which `dialog.js` can stand in for. */
+const BUILT_IN_COMMANDS = new Set([
+  'show-modal',
+  'close',
+  'request-close',
+  'toggle-popover',
+  'show-popover',
+  'hide-popover',
+])
+
+/**
+ * An `onclick` for a button with `commandfor` and `command`, for browsers
+ * that predate invoker commands — or nothing, when there is nothing to
+ * stand in for or the caller has an `onclick` of their own.
+ *
+ * Guarded by the test the browser would answer, so wherever the command
+ * works natively the module is never fetched: the handler costs one
+ * property lookup.
+ *
+ * @param {Record<string, unknown>} props - the button's props
+ * @returns {{ onclick?: string }}
+ */
+export function commandFallback(props) {
+  if (props.commandfor == null || props.onclick != null) return {}
+  if (!BUILT_IN_COMMANDS.has(String(props.command))) return {}
+
+  return { onclick: `'command' in HTMLButtonElement.prototype||${handler('dialog', 'invoke(this)')}` }
+}
+
+/**
+ * The `onclick` a `<dialog closedby="any">` carries, closing it on a click
+ * outside in a browser that has dialogs but not `closedby`.
+ *
+ * @returns {string}
+ */
+export function dismissFallback() {
+  return `'closedBy' in HTMLDialogElement.prototype||${handler('dialog', 'dismiss(this,event)')}`
 }

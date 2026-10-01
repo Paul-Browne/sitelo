@@ -106,9 +106,9 @@ const GROUPS = [
       `themeToggle()`],
   ]],
   ['Overlays', [
-    ['/ui/modal', 'Modal', 'A dialog on the popover API — no script anywhere.',
+    ['/ui/modal', 'Modal', 'A <dialog>, opened modally — no script anywhere.',
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Open modal')`],
-    ['/ui/drawer', 'Drawer', 'A panel from the edge, same popover mechanics.',
+    ['/ui/drawer', 'Drawer', 'A panel from the edge, the same <dialog> as a modal.',
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Open drawer')`],
     ['/ui/menu', 'Menu', 'A dropdown built on details, open and close for free.',
       `chip({ color: 'neutral' }, 'Actions ▾')`],

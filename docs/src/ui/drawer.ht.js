@@ -7,17 +7,19 @@ export default () =>
   uiLayout({
     title: 'Drawer',
     description:
-      'A panel that comes in from the edge — same popover mechanics as a modal, different shape.',
+      'A panel that comes in from the edge — the same <dialog> as a modal, in a different shape.',
     activeHref: '/ui/drawer',
     children: [
       p(
         'A drawer is a full-height panel anchored to one side. Like ',
         code('modal()'),
         ', it is a ',
-        code('popover'),
+        code('<dialog>'),
         ': a button with a matching ',
-        code('popovertarget'),
-        ' opens it, and the browser handles the backdrop, the outside click and Escape.',
+        code('commandfor'),
+        ' and ',
+        code("command: 'show-modal'"),
+        ' opens it, and the browser handles the backdrop, focus, the outside click and Escape.',
       ),
       p(
         'Its most common job on a static site is the navigation menu on a phone.',
@@ -25,7 +27,7 @@ export default () =>
 
       h2('Basic drawer'),
       demo(`fragment(
-  button({ popovertarget: 'drawer-basic' }, 'Open drawer'),
+  button({ commandfor: 'drawer-basic', command: 'show-modal' }, 'Open drawer'),
   drawer({ id: 'drawer-basic', title: 'Settings' },
     stack({ gap: 'md' },
       toggle({ label: 'Pagefind search', checked: true }),
@@ -38,8 +40,8 @@ export default () =>
       h2('Sides'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-start' }, 'From the start'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-end' }, 'From the end'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-start', command: 'show-modal' }, 'From the start'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-end', command: 'show-modal' }, 'From the end'),
   ),
   drawer({ id: 'drawer-start', side: 'start', title: 'Start' },
     text({ variant: 'small', tone: 'muted' }, 'Anchored to the leading edge — the left in a left-to-right language.'),
@@ -53,8 +55,8 @@ export default () =>
       p('Any CSS length. It is capped at 90% of the viewport, so a wide drawer still fits a phone.'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-narrow' }, 'Narrow'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-wide' }, 'Wide'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-narrow', command: 'show-modal' }, 'Narrow'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-wide', command: 'show-modal' }, 'Wide'),
   ),
   drawer({ id: 'drawer-narrow', width: '14rem', title: 'Narrow' },
     text({ variant: 'small', tone: 'muted' }, 'width: 14rem'),
@@ -74,7 +76,7 @@ export default () =>
         label: 'Open navigation',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'drawer-nav',
+        commandfor: 'drawer-nav', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),
@@ -91,7 +93,7 @@ export default () =>
 
       h2('A filter panel'),
       demo(`fragment(
-  button({ variant: 'soft', color: 'neutral', popovertarget: 'drawer-filters' }, 'Filters'),
+  button({ variant: 'soft', color: 'neutral', commandfor: 'drawer-filters', command: 'show-modal' }, 'Filters'),
   drawer({ id: 'drawer-filters', title: 'Filters', width: '22rem' },
     stack({ gap: 'lg' },
       choiceGroup({
@@ -112,7 +114,7 @@ export default () =>
         options: ['routing', 'data', 'islands'],
       }),
       stack({ direction: 'row', gap: 'sm' },
-        button({ variant: 'ghost', color: 'neutral', popovertarget: 'drawer-filters', popovertargetaction: 'hide' }, 'Cancel'),
+        button({ variant: 'ghost', color: 'neutral', commandfor: 'drawer-filters', command: 'close' }, 'Cancel'),
         button('Apply'),
       ),
     ),
@@ -130,7 +132,7 @@ export default () =>
 
       h2('Props'),
       propsTable([
-        ['id', 'string', '', 'Required. What a trigger’s popovertarget points at.'],
+        ['id', 'string', '', 'Required. What a trigger’s commandfor points at.'],
         ['title', 'Child', '', 'Heading, and the dialog’s accessible name.'],
         ['side', "'start' | 'end'", "'end'", 'Which edge it is anchored to.'],
         ['width', 'string', "'20rem'", 'Panel width, capped at 90vw.'],

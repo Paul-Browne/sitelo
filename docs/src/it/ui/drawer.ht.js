@@ -5,17 +5,19 @@ export default () =>
   uiLayout({
     title: 'Pannello laterale',
     description:
-      'Un pannello che entra dal bordo — stessa meccanica popover di un modale, forma diversa.',
+      'Un pannello che entra dal bordo — lo stesso <dialog> di un modale, forma diversa.',
     activeHref: '/it/ui/drawer',
     children: [
       p(
         'Un pannello laterale è un pannello a tutta altezza ancorato a un lato. Come ',
         code('modal()'),
         ', è un ',
-        code('popover'),
+        code('<dialog>'),
         ': un pulsante con un ',
-        code('popovertarget'),
-        ' corrispondente lo apre, e il browser si occupa dello sfondo, del clic fuori e di Escape.',
+        code('commandfor'),
+        ' corrispondente e ',
+        code("command: 'show-modal'"),
+        ' lo apre, e il browser si occupa dello sfondo, del focus, del clic fuori e di Escape.',
       ),
       p(
         'Su un sito statico il suo compito più comune è il menu di navigazione su un telefono.',
@@ -23,7 +25,7 @@ export default () =>
 
       h2('Pannello di base'),
       demo(`fragment(
-  button({ popovertarget: 'drawer-basic' }, 'Apri il pannello'),
+  button({ commandfor: 'drawer-basic', command: 'show-modal' }, 'Apri il pannello'),
   drawer({ id: 'drawer-basic', title: 'Impostazioni' },
     stack({ gap: 'md' },
       toggle({ label: 'Ricerca Pagefind', checked: true }),
@@ -36,8 +38,8 @@ export default () =>
       h2('Lati'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-start' }, 'Dall’inizio'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-end' }, 'Dalla fine'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-start', command: 'show-modal' }, 'Dall’inizio'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-end', command: 'show-modal' }, 'Dalla fine'),
   ),
   drawer({ id: 'drawer-start', side: 'start', title: 'Inizio' },
     text({ variant: 'small', tone: 'muted' }, 'Ancorato al bordo iniziale — la sinistra in una lingua che si legge da sinistra a destra.'),
@@ -53,8 +55,8 @@ export default () =>
       ),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-narrow' }, 'Stretto'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-wide' }, 'Largo'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-narrow', command: 'show-modal' }, 'Stretto'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-wide', command: 'show-modal' }, 'Largo'),
   ),
   drawer({ id: 'drawer-narrow', width: '14rem', title: 'Stretto' },
     text({ variant: 'small', tone: 'muted' }, 'width: 14rem'),
@@ -76,7 +78,7 @@ export default () =>
         label: 'Apri la navigazione',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'drawer-nav',
+        commandfor: 'drawer-nav', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),
@@ -93,7 +95,7 @@ export default () =>
 
       h2('Un pannello di filtri'),
       demo(`fragment(
-  button({ variant: 'soft', color: 'neutral', popovertarget: 'drawer-filters' }, 'Filtri'),
+  button({ variant: 'soft', color: 'neutral', commandfor: 'drawer-filters', command: 'show-modal' }, 'Filtri'),
   drawer({ id: 'drawer-filters', title: 'Filtri', width: '22rem' },
     stack({ gap: 'lg' },
       choiceGroup({
@@ -114,7 +116,7 @@ export default () =>
         options: ['routing', 'data', 'islands'],
       }),
       stack({ direction: 'row', gap: 'sm' },
-        button({ variant: 'ghost', color: 'neutral', popovertarget: 'drawer-filters', popovertargetaction: 'hide' }, 'Annulla'),
+        button({ variant: 'ghost', color: 'neutral', commandfor: 'drawer-filters', command: 'close' }, 'Annulla'),
         button('Applica'),
       ),
     ),
@@ -132,7 +134,7 @@ export default () =>
 
       h2('Props'),
       propsTable([
-        ['id', 'string', '', 'Obbligatorio. Ciò a cui punta il popovertarget di un innesco.'],
+        ['id', 'string', '', 'Obbligatorio. Ciò a cui punta il commandfor di un innesco.'],
         ['title', 'Child', '', 'Intestazione, e nome accessibile della finestra di dialogo.'],
         ['side', "'start' | 'end'", "'end'", 'A quale bordo è ancorato.'],
         ['width', 'string', "'20rem'", 'Larghezza del pannello, limitata a 90vw.'],

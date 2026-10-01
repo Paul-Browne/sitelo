@@ -146,7 +146,7 @@ export default () =>
         '、',
         code('onclick'),
         '、',
-        code('popovertarget'),
+        code('commandfor'),
         ' 等等。',
       ),
       propsTable([

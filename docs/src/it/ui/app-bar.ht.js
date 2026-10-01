@@ -94,7 +94,7 @@ export default () =>
       p(
         'Lo schema consueto: i link nella barra su desktop, un pulsante che apre un ',
         code('drawer()'),
-        ' su un telefono. Il pannello è un popover, quindi il pulsante non ha bisogno di alcuno script.',
+        ' su un telefono. Il pannello è un <dialog> che il pulsante apre con un command, quindi non serve alcuno script.',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },
@@ -105,7 +105,7 @@ export default () =>
         label: 'Apri la navigazione',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'app-bar-drawer',
+        commandfor: 'app-bar-drawer', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),

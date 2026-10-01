@@ -2083,18 +2083,24 @@ a.su-list-item:hover,
 /* ------------------------------------------------------------------ *
  * Overlays
  *
- * Modal and drawer use the popover API, so opening and closing them —
- * including light-dismiss and Escape — is the browser's job, not a
- * script's.
+ * Modal and drawer are `<dialog>` elements opened with `showModal()` —
+ * by a button's `command="show-modal"`, so with no script — which puts
+ * them in the top layer and makes the page behind them inert. Escape
+ * closes them, and `closedby="any"` a click outside.
  * ------------------------------------------------------------------ */
 
-.su-modal:popover-open {
+.su-modal[open] {
   display: flex;
 }
 
+/*
+ * `max-width: none` because a modal dialog's own default caps it a little
+ * short of the viewport, and the width below already keeps a margin.
+ */
 .su-modal {
   flex-direction: column;
   width: min(var(--su-modal-width, 32rem), calc(100vw - 2rem));
+  max-width: none;
   max-height: calc(100vh - 4rem);
   padding: 0;
   border: var(--su-border-width) solid var(--su-border);
@@ -2109,18 +2115,18 @@ a.su-list-item:hover,
 .su-modal--lg { --su-modal-width: 48rem; }
 
 /*
- * Scroll lock — the one part of an overlay the popover API leaves
- * undone: the page behind it still scrolls under the backdrop. `:has()`
- * is everywhere the popover API is, so this needs no script either, and
- * `lockScroll: false` drops the class that triggers it.
+ * Scroll lock — the one part of a modal dialog the browser leaves undone:
+ * the page behind it is inert, but it still scrolls under the backdrop.
+ * `:has()` and `:modal` are everywhere `<dialog>` is, so this needs no
+ * script either, and `lockScroll: false` drops the class that triggers it.
  *
  * `scrollbar-gutter` keeps the width the scrollbar was occupying, so a
  * page long enough to need locking does not jump sideways as the
  * scrollbar goes. Where scrollbars overlay the content — macOS, iOS,
  * Android — there is no gutter and nothing to compensate for.
  */
-html:has(.su-modal--lock:popover-open),
-html:has(.su-drawer--lock:popover-open) {
+html:has(.su-modal--lock:modal),
+html:has(.su-drawer--lock:modal) {
   overflow: hidden;
   scrollbar-gutter: stable;
 }
@@ -2178,7 +2184,7 @@ html:has(.su-drawer--lock:popover-open) {
   background: var(--su-surface-hover);
 }
 
-.su-drawer:popover-open {
+.su-drawer[open] {
   display: flex;
 }
 
@@ -2188,6 +2194,7 @@ html:has(.su-drawer--lock:popover-open) {
   inset: 0 0 0 auto;
   margin: 0;
   width: min(var(--su-drawer-width, 20rem), 90vw);
+  max-width: none;
   height: 100%;
   max-height: 100%;
   padding: 0;

@@ -19,7 +19,7 @@
 | 7 | **Medium** | ui | `textarea({ value })` is written unescaped, so `</textarea>` breaks out (XSS when the value is user data) | Fixed |
 | 8 | **Medium** | ui | `theme({ dark })` ignores the user's light choice, and with `selector` the dark block is inverted | Fixed |
 | 9 | **Medium** | ui | Two panel `tabs()` on one page share ids, so clicking one set switches the other; `name` doesn't help | Fixed |
-| 10 | **Medium** | ui | `modal()` / `drawer()` claim `aria-modal="true"` and "focus containment", but Tab walks out into the page | Fixed (`aria-modal` dropped) |
+| 10 | **Medium** | ui | `modal()` / `drawer()` claim `aria-modal="true"` and "focus containment", but Tab walks out into the page | Fixed (now a `<dialog>`) |
 | 11 | **Medium** | images | The dev image pipeline never invalidates, so an edited image keeps its old variant until restart | Fixed |
 | 12 | Low | CLI | A mistyped command (`sitelo biuld`) silently starts the dev server | Fixed |
 | 13 | Low | CLI | `sitelo preview` and `sitelo lighthouse` resolve Vite config in `development` mode | Fixed |
@@ -49,7 +49,7 @@ Where a fix involved a judgement call:
 
 - **#2.** `prune` stays on by default, but it now considers only the originals that a tag was actually rewritten from. One of those is kept if its file name appears anywhere in the build's text files.
 - **#9.** Tab sets without item ids now get ids derived from `name`, the set's `id`, or a digest of the items. A `value` that names an old default id (`tab-2`) still selects its tab.
-- **#10.** `modal()` and `drawer()` no longer claim `aria-modal`. Making them truly modal means `<dialog>` with `showModal()`, which changes how triggers are written (`popovertarget` becomes `command`/`commandfor`), so it's left as a follow-up API decision.
+- **#10.** `modal()` and `drawer()` are now `<dialog>` elements opened with `showModal()`, so the page behind is inert and focus stays inside. Triggers changed from `popovertarget` to `commandfor` plus `command="show-modal"` (and `command="close"`). `button()`, `menuItem()` and `closeButton()` add a fallback that loads `/su/dialog.js` only in browsers without invoker commands, and the dialog does the same for `closedby="any"` where it's missing (Safari). `sitelo dev` and `sitelo build` warn about any `popovertarget` still aimed at one of them. Verified in Chromium on both the native and the fallback path.
 
 Left as they were:
 

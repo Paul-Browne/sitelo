@@ -10,7 +10,8 @@ import {
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
-import { uiClientPrefix, uiRuntime } from '../src/ui/plugin.js';
+import { staleDialogTriggers, uiClientPrefix, uiRuntime } from '../src/ui/plugin.js';
+import * as ui from '../src/ui/index.js';
 import { configureUiClient, RUNTIME_MODULES } from '../src/ui/handlers.js';
 import { styles, stylesheet, stylesUrl } from '../src/ui/styles.js';
 import { grainStylesheet, grainStylesUrl } from '../src/ui-extras/index.js';
@@ -606,4 +607,60 @@ test('an extra’s sheet is pruned on the same terms', () => {
   assert.match(written, /^grain-[0-9a-f]{8}\.css$/);
   assert.match(site.read(`su/${written}`), /\.su-grain\{/);
   assert.ok(site.read('index.html').includes(written));
+});
+
+/* ------------------------------------------------------------------ *
+ * Modal and drawer triggers
+ * ------------------------------------------------------------------ */
+
+test('a button that opens a dialog brings dialog.js into the build', () => {
+  const html = ui.button({ commandfor: 'confirm', command: 'show-modal' }, 'Open') + ui.modal({ id: 'confirm' }, 'x');
+
+  assert.deepEqual(copiedFor(html), ['dialog.js']);
+});
+
+test('a popovertarget aimed at a modal() or drawer() is found; anything else is not', () => {
+  const modal = ui.modal({ id: 'confirm' }, 'x');
+  const drawer = ui.drawer({ id: 'nav' }, 'x');
+
+  assert.deepEqual(
+    staleDialogTriggers(`<button popovertarget="confirm">Open</button><button popovertarget="nav" popovertargetaction="hide">x</button>${modal}${drawer}`),
+    ['confirm', 'nav'],
+  );
+  // A popover of the site's own is a fine target.
+  assert.deepEqual(staleDialogTriggers('<button popovertarget="tip">?</button><div id="tip" popover>Hi</div>'), []);
+  assert.deepEqual(
+    staleDialogTriggers('<button popovertarget="mine">?</button><dialog id="mine" class="su-modal" popover>x</dialog>'),
+    [],
+  );
+  // The new trigger, and the old one shown in a code sample, are not.
+  assert.deepEqual(staleDialogTriggers(`${ui.button({ commandfor: 'confirm', command: 'show-modal' }, 'Open')}${modal}`), []);
+  assert.deepEqual(staleDialogTriggers(`<code>&lt;button popovertarget="confirm"&gt;</code>${modal}`), []);
+});
+
+test('the build and the dev server warn about a trigger that stopped working', () => {
+  const html = `<button popovertarget="confirm">Open</button>${ui.modal({ id: 'confirm' }, 'x')}`;
+  const { root, outDir } = siteWith(html);
+  const before = process.env.SITELO_UI_BASE;
+  const warnings = [];
+  const logger = { warn: (message) => warnings.push(message) };
+
+  try {
+    const build = makePlugin();
+    build.configResolved({ root, build: { outDir }, command: 'build', logger });
+    build.transformIndexHtml.handler(html, { path: '/nested/page' });
+    assert.deepEqual(warnings, [], 'a build warns once, from the files it wrote');
+    build.writeBundle();
+    assert.equal(warnings.length, 1);
+    assert.match(warnings[0], /^\[sitelo\] nested\/page\.html: popovertarget points at #confirm/);
+    assert.match(warnings[0], /commandfor: 'confirm', command: 'show-modal'/);
+
+    const dev = makePlugin();
+    dev.configResolved({ root, build: { outDir }, command: 'serve', logger });
+    dev.transformIndexHtml.handler(html, { path: '/nested/page' });
+    dev.transformIndexHtml.handler(html, { path: '/nested/page' });
+    assert.equal(warnings.length, 2, 'once per page, not once per reload');
+  } finally {
+    restoreEnv(before);
+  }
 });

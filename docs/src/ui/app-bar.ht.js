@@ -96,7 +96,7 @@ export default () =>
       p(
         'The usual pattern: links in the bar on desktop, a button that opens a ',
         code('drawer()'),
-        ' on a phone. The drawer is a popover, so the button needs no script.',
+        ' on a phone. The drawer is a <dialog> the button opens with a command, so it needs no script.',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },
@@ -107,7 +107,7 @@ export default () =>
         label: 'Open navigation',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'app-bar-drawer',
+        commandfor: 'app-bar-drawer', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),

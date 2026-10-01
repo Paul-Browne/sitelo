@@ -94,7 +94,7 @@ export default () =>
       p(
         'Le schéma habituel : des liens dans la barre sur ordinateur, un bouton qui ouvre un ',
         code('drawer()'),
-        ' sur téléphone. Le tiroir est un popover, donc le bouton n’a besoin d’aucun script.',
+        ' sur téléphone. Le tiroir est un <dialog> que le bouton ouvre avec un command, donc aucun script n’est nécessaire.',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },
@@ -105,7 +105,7 @@ export default () =>
         label: 'Ouvrir la navigation',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'app-bar-drawer',
+        commandfor: 'app-bar-drawer', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),

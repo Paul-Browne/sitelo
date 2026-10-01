@@ -183,8 +183,8 @@ export default () =>
       h2('JavaScript i jak mało go tu jest'),
       p(
         'Większość komponentów nie potrzebuje go wcale. Okno modalne i szuflada to elementy ',
-        code('popover'),
-        ', więc otwieraniem, tłem, kliknięciem poza i Escape zajmuje się przeglądarka. Akordeon to ',
+        code('<dialog>'),
+        ' otwierane przez command przycisku, więc tłem, fokusem, Escape i kliknięciem poza zajmuje się przeglądarka. Akordeon to ',
         code('<details name>'),
         '. Menu to ',
         code('<details>'),
@@ -218,7 +218,7 @@ export default () =>
       ),
       codeBlock('Formularz', s.form, 'javascript'),
       p(
-        'Okno modalne to popover, a jego wyzwalaczem jest dowolny przycisk wskazujący na jego id:',
+        'Okno modalne to <dialog>, a jego wyzwalaczem jest dowolny przycisk, którego commandfor wskazuje na jego id:',
       ),
       codeBlock('Okno modalne', s.modal, 'javascript'),
       p('Zakładki występują w dwóch postaciach — odnośniki albo panele:'),

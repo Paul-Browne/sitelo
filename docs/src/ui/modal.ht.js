@@ -7,17 +7,19 @@ export default () =>
   uiLayout({
     title: 'Modal',
     description:
-      'A dialog built on the popover API — the browser handles opening, the backdrop, click-outside and Escape.',
+      'A real <dialog>, opened modally — the browser handles the backdrop, focus, Escape and a click outside.',
     activeHref: '/ui/modal',
     children: [
       p(
         'A modal is a ',
-        code('popover'),
-        ' element. Any button whose ',
-        code('popovertarget'),
-        ' matches the modal’s ',
+        code('<dialog>'),
+        '. Any button with ',
+        code('commandfor'),
+        ' set to the modal’s ',
         code('id'),
-        ' opens it — no script anywhere, including the backdrop, light dismiss, Escape and focus handling, all of which the browser owns.',
+        ' and ',
+        code("command: 'show-modal'"),
+        ' opens it modally: the page behind goes inert, so focus and a screen reader both stay inside. No script anywhere — the backdrop, Escape and a click outside are all the browser’s.',
       ),
       p(
         'That is why ',
@@ -28,7 +30,7 @@ export default () =>
       h2('Basic modal'),
       p('Every modal on this page really opens — try it.'),
       demo(`fragment(
-  button({ popovertarget: 'demo-basic' }, 'Open modal'),
+  button({ commandfor: 'demo-basic', command: 'show-modal' }, 'Open modal'),
   modal({ id: 'demo-basic', title: 'Rebuild the site?' },
     'This runs sitelo build and republishes dist/.',
   ),
@@ -37,11 +39,11 @@ export default () =>
       h2('With a footer'),
       p(
         'A close button is any button pointing at the same id with ',
-        code('popovertargetaction="hide"'),
+        code("command: 'close'"),
         '.',
       ),
       demo(`fragment(
-  button({ color: 'danger', popovertarget: 'demo-confirm' }, 'Delete page…'),
+  button({ color: 'danger', commandfor: 'demo-confirm', command: 'show-modal' }, 'Delete page…'),
   modal({
     id: 'demo-confirm',
     title: 'Delete this page?',
@@ -49,8 +51,8 @@ export default () =>
       button({
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'demo-confirm',
-        popovertargetaction: 'hide',
+        commandfor: 'demo-confirm',
+        command: 'close',
       }, 'Cancel'),
       button({ color: 'danger' }, 'Delete'),
     ),
@@ -60,9 +62,9 @@ export default () =>
       h2('Sizes'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm', wrap: true },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-sm' }, 'Small'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-md' }, 'Medium'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-lg' }, 'Large'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'demo-sm', command: 'show-modal' }, 'Small'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'demo-md', command: 'show-modal' }, 'Medium'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'demo-lg', command: 'show-modal' }, 'Large'),
   ),
   modal({ id: 'demo-sm', size: 'sm', title: 'Small' }, 'size: sm — about 24rem.'),
   modal({ id: 'demo-md', title: 'Medium' }, 'The default — about 32rem.'),
@@ -71,12 +73,12 @@ export default () =>
 
       h2('Forms inside a modal'),
       demo(`fragment(
-  button({ variant: 'soft', popovertarget: 'demo-form' }, 'New page…'),
+  button({ variant: 'soft', commandfor: 'demo-form', command: 'show-modal' }, 'New page…'),
   modal({
     id: 'demo-form',
     title: 'New page',
     footer: stack({ direction: 'row', gap: 'sm' },
-      button({ variant: 'ghost', color: 'neutral', popovertarget: 'demo-form', popovertargetaction: 'hide' }, 'Cancel'),
+      button({ variant: 'ghost', color: 'neutral', commandfor: 'demo-form', command: 'close' }, 'Cancel'),
       button({ type: 'submit' }, 'Create'),
     ),
   },
@@ -90,10 +92,12 @@ export default () =>
       h2('Without a close button'),
       p(
         code('closable: false'),
-        ' drops the × in the corner. Escape and clicking outside still close it — a popover cannot be made truly modal-blocking, and that is usually the right behaviour anyway.',
+        ' drops the × in the corner. Escape and clicking outside still close it; with ',
+        code("closedby: 'closerequest'"),
+        ' only Escape does.',
       ),
       demo(`fragment(
-  button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-bare' }, 'No close button'),
+  button({ variant: 'outline', color: 'neutral', commandfor: 'demo-bare', command: 'show-modal' }, 'No close button'),
   modal({ id: 'demo-bare', title: 'Press Escape', closable: false },
     'Or click anywhere outside this dialog.',
   ),
@@ -102,11 +106,11 @@ export default () =>
       h2('Long content'),
       p('The body scrolls; the header and footer stay put.'),
       demo(`fragment(
-  button({ variant: 'outline', color: 'neutral', popovertarget: 'demo-long' }, 'Long modal'),
+  button({ variant: 'outline', color: 'neutral', commandfor: 'demo-long', command: 'show-modal' }, 'Long modal'),
   modal({
     id: 'demo-long',
     title: 'Release notes',
-    footer: button({ popovertarget: 'demo-long', popovertargetaction: 'hide' }, 'Close'),
+    footer: button({ commandfor: 'demo-long', command: 'close' }, 'Close'),
   },
     stack({ gap: 'md' },
       ...Array.from({ length: 12 }, (unused, index) =>
@@ -118,19 +122,19 @@ export default () =>
 
       h2('Background scrolling'),
       p(
-        'The page behind an open modal does not scroll. That is the one thing the popover API leaves to you, and it is done in CSS here — no script, and nothing to initialise. Pass ',
+        'The page behind an open modal does not scroll. That is the one thing a modal dialog leaves to you, and it is done in CSS here — no script, and nothing to initialise. Pass ',
         code('lockScroll: false'),
         ' to let the background scroll as usual.',
       ),
 
       h2('Browser support'),
       p(
-        'The popover API is available in every current browser. In one too old to know it, the modal renders inline in the page instead of on top of it — visible and usable, just not overlaid. Nothing disappears.',
+        'Opening a dialog from a button’s command works in every current browser — Chrome 135, Firefox 144 and Safari 26.2 or later. In an older one, button() adds an onclick that fetches a few hundred bytes of /su/dialog.js to do the same — only there, and only on the first click. Safari does not close a dialog on a click outside (closedby) yet, and the same file does that there.',
       ),
 
       h2('Props'),
       propsTable([
-        ['id', 'string', '', 'Required. What a trigger’s popovertarget points at.'],
+        ['id', 'string', '', 'Required. What a trigger’s commandfor points at.'],
         ['title', 'Child', '', 'Heading, and the dialog’s accessible name.'],
         ['size', "'sm' | 'md' | 'lg'", "'md'", 'Maximum width.'],
         ['footer', 'Child', '', 'Bottom row, on its own tinted band.'],

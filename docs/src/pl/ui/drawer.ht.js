@@ -5,17 +5,19 @@ export default () =>
   uiLayout({
     title: 'Szuflada',
     description:
-      'Panel wjeżdżający od krawędzi — ta sama mechanika popovera co w oknie modalnym, inny kształt.',
+      'Panel wjeżdżający od krawędzi — ten sam <dialog> co okno modalne, inny kształt.',
     activeHref: '/pl/ui/drawer',
     children: [
       p(
         'Szuflada to panel pełnej wysokości zakotwiczony do jednej strony. Tak jak ',
         code('modal()'),
-        ', jest ',
-        code('popoverem'),
+        ', jest elementem ',
+        code('<dialog>'),
         ': przycisk z pasującym ',
-        code('popovertarget'),
-        ' ją otwiera, a przeglądarka zajmuje się tłem, kliknięciem poza i Escape.',
+        code('commandfor'),
+        ' i ',
+        code("command: 'show-modal'"),
+        ' ją otwiera, a przeglądarka zajmuje się tłem, fokusem, kliknięciem poza i Escape.',
       ),
       p(
         'Jej najczęstszym zadaniem na witrynie statycznej jest menu nawigacji na telefonie.',
@@ -23,7 +25,7 @@ export default () =>
 
       h2('Podstawowa szuflada'),
       demo(`fragment(
-  button({ popovertarget: 'drawer-basic' }, 'Otwórz szufladę'),
+  button({ commandfor: 'drawer-basic', command: 'show-modal' }, 'Otwórz szufladę'),
   drawer({ id: 'drawer-basic', title: 'Ustawienia' },
     stack({ gap: 'md' },
       toggle({ label: 'Wyszukiwanie Pagefind', checked: true }),
@@ -36,8 +38,8 @@ export default () =>
       h2('Strony'),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-start' }, 'Od początku'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-end' }, 'Od końca'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-start', command: 'show-modal' }, 'Od początku'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-end', command: 'show-modal' }, 'Od końca'),
   ),
   drawer({ id: 'drawer-start', side: 'start', title: 'Początek' },
     text({ variant: 'small', tone: 'muted' }, 'Zakotwiczona do krawędzi początkowej — lewej w języku pisanym od lewej do prawej.'),
@@ -53,8 +55,8 @@ export default () =>
       ),
       demo(`fragment(
   stack({ direction: 'row', gap: 'sm' },
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-narrow' }, 'Wąska'),
-    button({ variant: 'outline', color: 'neutral', popovertarget: 'drawer-wide' }, 'Szeroka'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-narrow', command: 'show-modal' }, 'Wąska'),
+    button({ variant: 'outline', color: 'neutral', commandfor: 'drawer-wide', command: 'show-modal' }, 'Szeroka'),
   ),
   drawer({ id: 'drawer-narrow', width: '14rem', title: 'Wąska' },
     text({ variant: 'small', tone: 'muted' }, 'width: 14rem'),
@@ -76,7 +78,7 @@ export default () =>
         label: 'Otwórz nawigację',
         variant: 'ghost',
         color: 'neutral',
-        popovertarget: 'drawer-nav',
+        commandfor: 'drawer-nav', command: 'show-modal',
         icon: icon('menu'),
       }),
     ),
@@ -93,7 +95,7 @@ export default () =>
 
       h2('Panel filtrów'),
       demo(`fragment(
-  button({ variant: 'soft', color: 'neutral', popovertarget: 'drawer-filters' }, 'Filtry'),
+  button({ variant: 'soft', color: 'neutral', commandfor: 'drawer-filters', command: 'show-modal' }, 'Filtry'),
   drawer({ id: 'drawer-filters', title: 'Filtry', width: '22rem' },
     stack({ gap: 'lg' },
       choiceGroup({
@@ -114,7 +116,7 @@ export default () =>
         options: ['routing', 'data', 'islands'],
       }),
       stack({ direction: 'row', gap: 'sm' },
-        button({ variant: 'ghost', color: 'neutral', popovertarget: 'drawer-filters', popovertargetaction: 'hide' }, 'Anuluj'),
+        button({ variant: 'ghost', color: 'neutral', commandfor: 'drawer-filters', command: 'close' }, 'Anuluj'),
         button('Zastosuj'),
       ),
     ),
@@ -132,7 +134,7 @@ export default () =>
 
       h2('Propsy'),
       propsTable([
-        ['id', 'string', '', 'Wymagane. To, na co wskazuje popovertarget wyzwalacza.'],
+        ['id', 'string', '', 'Wymagane. To, na co wskazuje commandfor wyzwalacza.'],
         ['title', 'Child', '', 'Nagłówek i dostępna nazwa okna dialogowego.'],
         ['side', "'start' | 'end'", "'end'", 'Do której krawędzi jest zakotwiczona.'],
         ['width', 'string', "'20rem'", 'Szerokość panelu, ograniczona do 90vw.'],

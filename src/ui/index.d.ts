@@ -358,7 +358,25 @@ export interface ButtonProps extends BaseProps {
   /** Full width. */
   block?: boolean
   type?: 'button' | 'submit' | 'reset'
+  /** The `id` of the element `command` acts on — a `modal()` or `drawer()`, say. */
+  commandfor?: string
+  /**
+   * What the button does to `commandfor`: `'show-modal'` opens a modal or
+   * drawer and `'close'` shuts it, with no script. A browser that predates
+   * these commands gets a fallback that fetches `/su/dialog.js`.
+   */
+  command?: InvokerCommand
 }
+
+/** The commands a browser carries out on a button's `commandfor`, plus a custom `--name`. */
+export type InvokerCommand =
+  | 'show-modal'
+  | 'close'
+  | 'request-close'
+  | 'toggle-popover'
+  | 'show-popover'
+  | 'hide-popover'
+  | `--${string}`
 
 export function button(...args: Args<ButtonProps>): string
 
@@ -820,7 +838,7 @@ export function themeToggle(props?: BaseProps & { label?: string; variant?: Butt
  * -------------------------------------------------------------- */
 
 export interface ModalProps extends BaseProps {
-  /** Required: what a trigger's `popovertarget` points at. */
+  /** Required: what a trigger's `commandfor` points at. */
   id: string
   title?: Child
   size?: Size
@@ -832,9 +850,11 @@ export interface ModalProps extends BaseProps {
 }
 
 export function modal(...args: Args<ModalProps>): string
+/** The × that closes a modal or drawer: `command="close"` on the dialog `target` names. */
 export function closeButton(props?: BaseProps & { target?: string; label?: string }): string
 
 export interface DrawerProps extends BaseProps {
+  /** Required: what a trigger's `commandfor` points at. */
   id: string
   title?: Child
   side?: 'start' | 'end'
@@ -863,7 +883,9 @@ export interface MenuProps extends BaseProps {
 }
 
 export function menu(...args: Args<MenuProps>): string
-export function menuItem(...args: Args<BaseProps & { href?: string; icon?: Child; as?: string }>): string
+export function menuItem(
+  ...args: Args<BaseProps & { href?: string; icon?: Child; as?: string; commandfor?: string; command?: InvokerCommand }>
+): string
 export function menuSeparator(props?: BaseProps): string
 
 export interface AccordionItemData {
