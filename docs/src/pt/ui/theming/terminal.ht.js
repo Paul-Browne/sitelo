@@ -5,22 +5,14 @@ export default () =>
   uiLayout({
     title: 'Terminal',
     description:
-      'Uma só fonte monoespaçada sobre um fundo azul-marinho escuro, à maneira do Advent of Code: ações entre parênteses retos, ligações verdes e um brilho no que está aceso.',
+      'Uma consola de sistema: uma só fonte monoespaçada sobre preto, painéis de linha fina, rótulos em maiúsculas a negrito e um acento ciano, com tudo o que está selecionado em vídeo inverso.',
     activeHref: '/pt/ui/theming/terminal',
     extraHead: [presetPreviewHead('terminal')],
     children: [
       p(
         'O ',
         code('terminal'),
-        ' é uma só fonte monoespaçada sobre um fundo azul-marinho escuro, composta como o Advent of Code: texto cinzento, ligações verdes que se iluminam ao passar o rato, branco para o que importa e um brilho da própria cor nas poucas coisas acesas. Uma ação é uma palavra entre parênteses retos, ',
-        code('[Guardar]'),
-        '; uma caixa de verificação é ',
-        code('[ ]'),
-        ' até passar a ',
-        code('[X]'),
-        ', e um título de segundo nível fica delimitado como ',
-        code('--- Título ---'),
-        '. Nada é arredondado e nada flutua sobre uma sombra suave: uma aresta é uma linha, e um cartão elevado tem linha dupla. O modo escuro é o aspeto original; o modo claro mantém a fonte, os parênteses retos e os cantos retos e imprime-os em azul-marinho sobre papel pálido, sem o brilho.',
+        ' é uma consola de sistema: uma só fonte monoespaçada sobre um fundo preto, painéis de linha fina com o cabeçalho separado por um traço, e cada rótulo — um botão, a legenda de um campo, um separador, o cabeçalho de uma coluna — em maiúsculas a negrito e espaçadas. O ciano é o acento: títulos, títulos de painel, o botão sólido, o foco e tudo o que está selecionado, que é impresso em vídeo inverso, escuro sobre ciano, como um terminal destaca uma linha. As outras paletas são as suas cores de estado, verde, amarelo e vermelho, e um botão de contorno ou uma etiqueta é desenhado na sua cor, linha e texto por igual. Nada é arredondado e nada projeta sombra. O modo escuro é o aspeto original; o modo claro mantém cada linha, cada maiúscula e cada canto reto e imprime-os a preto sobre quase branco.',
       ),
       presetPreview('terminal'),
 
@@ -32,9 +24,9 @@ head(
   styles({ preset: 'terminal' }),
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
-// <link rel="stylesheet" href="/su/terminal-9590922b.css">`, 'javascript'),
+// <link rel="stylesheet" href="/su/terminal-176ac9d8.css">`, 'javascript'),
       p(
-        'Compõe também a página com ele — o fundo, o cinzento e a fonte — e os componentes assentam nela como acima. O preset usa a Source Code Pro quando a página a carrega e, caso contrário, a fonte monoespaçada do sistema; não descarrega nada.',
+        'Compõe também a página com ele — o fundo, a cor do texto e a fonte — e os componentes assentam nela como acima. O preset usa a JetBrains Mono, a IBM Plex Mono ou a Source Code Pro quando a página carrega uma delas e, caso contrário, a fonte monoespaçada do sistema; não descarrega nada.',
       ),
       codeBlock('src/styles.css', `body {
   background: var(--su-bg);
@@ -45,13 +37,11 @@ head(
       h2('As tuas próprias cores'),
       p(
         code('theme()'),
-        ' continua a funcionar por cima, por isso um preset é um ponto de partida e não um fork. O brilho é desenhado na cor do texto onde está, por isso uma paleta que mudes brilha na nova cor — aqui o primário passa a âmbar, como um terminal mais antigo. O sucesso é o dourado de uma estrela, como a referência marca um puzzle resolvido; dá-lhe um verde da mesma forma, se preferires. Dois tokens são do próprio preset: ',
-        code('--su-tm-bright'),
-        ', o branco dos títulos e de tudo o que está escolhido, e ',
-        code('--su-tm-glow'),
-        ', a sombra que as coisas acesas usam, que é ',
-        code('none'),
-        ' no modo claro.',
+        ' continua a funcionar por cima, por isso um preset é um ponto de partida e não um fork — aqui o acento passa a um âmbar de fósforo. Dois tokens são do próprio preset: ',
+        code('--su-tm-tracking'),
+        ', o espaçamento de um rótulo em maiúsculas, e ',
+        code('--su-tm-track'),
+        ', a calha por onde corre uma barra de progresso ou um controlo deslizante.',
       ),
       codeBlock('src/index.ht.js', `head(
   styles({ preset: 'terminal' }),

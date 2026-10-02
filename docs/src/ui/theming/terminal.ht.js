@@ -7,21 +7,13 @@ export default () =>
   uiLayout({
     title: 'Terminal',
     description:
-      'One monospace face on a dark navy ground, after Advent of Code: bracketed actions, green links, and a glow on what is lit.',
+      'A system console: one monospace face on black, hairline panels, labels in bold capitals, and a cyan accent with anything selected printed in reverse.',
     activeHref: '/ui/theming/terminal',
     extraHead: [presetPreviewHead('terminal')],
     children: [
       p(
         code('terminal'),
-        ' is one monospace face on a dark navy ground, set the way Advent of Code is: grey text, green links that brighten when pointed at, white for what matters, and a glow in its own colour on the few things that are lit. An action is a bracketed word, ',
-        code('[Save]'),
-        '; a checkbox is ',
-        code('[ ]'),
-        ' until it is ',
-        code('[X]'),
-        ', and a second-level heading is ruled off as ',
-        code('--- Title ---'),
-        '. Nothing is rounded and nothing floats on a soft shadow: an edge is a line, and an elevated card is ruled double. Dark mode is the original look; light mode keeps the face, the brackets and the square corners and prints them in navy on pale paper, without the glow.',
+        ' is a system console: one monospace face on a black ground, hairline panels with their header ruled off, and every label — a button, a field’s caption, a tab, a column head — set in bold, spaced-out capitals. Cyan is the accent: headings, panel titles, the solid button, focus, and anything selected, which is printed in reverse, dark on cyan, the way a terminal highlights a row. The other palettes are its status colours, green, yellow and red, and an outline button or a tag is drawn in its colour, line and label alike. Nothing is rounded and nothing casts a shadow. Dark mode is the original look; light mode keeps every line, capital and square corner and prints it in black on near-white.',
       ),
       presetPreview('terminal'),
 
@@ -33,9 +25,9 @@ head(
   styles({ preset: 'terminal' }),
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
-// <link rel="stylesheet" href="/su/terminal-9590922b.css">`, 'javascript'),
+// <link rel="stylesheet" href="/su/terminal-176ac9d8.css">`, 'javascript'),
       p(
-        'Set the page in it too — its ground, its grey and its face — and the components sit on it as they do above. The preset uses Source Code Pro when the page loads it, and the system’s own monospace otherwise; it downloads nothing.',
+        'Set the page in it too — its ground, its text colour and its face — and the components sit on it as they do above. The preset uses JetBrains Mono, IBM Plex Mono or Source Code Pro when the page loads one, and the system’s own monospace otherwise; it downloads nothing.',
       ),
       codeBlock('src/styles.css', `body {
   background: var(--su-bg);
@@ -46,13 +38,11 @@ head(
       h2('Your own colours'),
       p(
         code('theme()'),
-        ' still works on top, so a preset is a starting point rather than a fork. A glow is drawn in the colour of the text it is on, so a palette you change glows in its new colour — here the primary turns amber, for an older terminal. Success is the gold of a star, as the reference marks a puzzle solved; give it a green the same way if you would rather. Two tokens are the preset’s own: ',
-        code('--su-tm-bright'),
-        ', the white that headings and anything chosen are set in, and ',
-        code('--su-tm-glow'),
-        ', the shadow a lit thing wears, which is ',
-        code('none'),
-        ' in light mode.',
+        ' still works on top, so a preset is a starting point rather than a fork — here the accent turns to a phosphor amber. Two tokens are the preset’s own: ',
+        code('--su-tm-tracking'),
+        ', how far apart a label in capitals is set, and ',
+        code('--su-tm-track'),
+        ', the slot a progress bar or a slider runs in.',
       ),
       codeBlock('src/index.ht.js', `head(
   styles({ preset: 'terminal' }),

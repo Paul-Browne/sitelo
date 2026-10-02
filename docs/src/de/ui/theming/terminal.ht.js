@@ -5,21 +5,13 @@ export default () =>
   uiLayout({
     title: 'Terminal',
     description:
-      'Eine einzige Monospace-Schrift auf dunklem Marineblau, nach dem Vorbild von Advent of Code: Aktionen in eckigen Klammern, grüne Links und ein Leuchten auf allem, was an ist.',
+      'Eine Systemkonsole: eine einzige Monospace-Schrift auf Schwarz, Panels mit Haarlinien, Beschriftungen in fetten Versalien und ein Cyan-Akzent, bei dem alles Ausgewählte invertiert erscheint.',
     activeHref: '/de/ui/theming/terminal',
     extraHead: [presetPreviewHead('terminal')],
     children: [
       p(
         code('terminal'),
-        ' ist eine einzige Monospace-Schrift auf dunklem Marineblau, gesetzt wie Advent of Code: grauer Text, grüne Links, die beim Darüberfahren aufhellen, Weiß für das Wichtige und ein Leuchten in der eigenen Farbe auf den wenigen Dingen, die an sind. Eine Aktion ist ein Wort in eckigen Klammern, ',
-        code('[Speichern]'),
-        '; eine Checkbox ist ',
-        code('[ ]'),
-        ', bis sie ',
-        code('[X]'),
-        ' ist, und eine Überschrift zweiter Ebene wird als ',
-        code('--- Titel ---'),
-        ' abgesetzt. Nichts ist abgerundet und nichts schwebt auf einem weichen Schatten: Eine Kante ist eine Linie, und eine erhöhte Karte bekommt eine Doppellinie. Der Dunkelmodus ist der ursprüngliche Look; der Hellmodus behält Schrift, Klammern und eckige Ecken und druckt sie in Marineblau auf blassem Papier, ohne das Leuchten.',
+        ' ist eine Systemkonsole: eine einzige Monospace-Schrift auf schwarzem Grund, Panels mit Haarlinien, deren Kopf durch eine Linie abgesetzt ist, und jede Beschriftung – ein Button, die Bezeichnung eines Felds, ein Tab, ein Spaltenkopf – in fetten, gesperrten Versalien. Cyan ist der Akzent: Überschriften, Panel-Titel, der gefüllte Button, der Fokus und alles Ausgewählte, das invertiert erscheint, dunkel auf Cyan, so wie ein Terminal eine Zeile hervorhebt. Die übrigen Paletten sind seine Statusfarben, Grün, Gelb und Rot, und ein Outline-Button oder ein Tag wird in seiner Farbe gezeichnet, Linie und Beschriftung gleichermaßen. Nichts ist abgerundet und nichts wirft einen Schatten. Der Dunkelmodus ist der ursprüngliche Look; der Hellmodus behält jede Linie, jede Versalie und jede eckige Ecke und druckt sie schwarz auf fast Weiß.',
       ),
       presetPreview('terminal'),
 
@@ -31,9 +23,9 @@ head(
   styles({ preset: 'terminal' }),
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
-// <link rel="stylesheet" href="/su/terminal-9590922b.css">`, 'javascript'),
+// <link rel="stylesheet" href="/su/terminal-176ac9d8.css">`, 'javascript'),
       p(
-        'Setz auch die Seite darin – ihren Grund, ihr Grau und ihre Schrift –, dann stehen die Komponenten darauf wie oben. Das Preset nutzt Source Code Pro, wenn die Seite sie lädt, sonst die Monospace-Schrift des Systems; es lädt nichts herunter.',
+        'Setz auch die Seite darin – ihren Grund, ihre Textfarbe und ihre Schrift –, dann stehen die Komponenten darauf wie oben. Das Preset nutzt JetBrains Mono, IBM Plex Mono oder Source Code Pro, wenn die Seite eine davon lädt, sonst die Monospace-Schrift des Systems; es lädt nichts herunter.',
       ),
       codeBlock('src/styles.css', `body {
   background: var(--su-bg);
@@ -44,13 +36,11 @@ head(
       h2('Eigene Farben'),
       p(
         code('theme()'),
-        ' funktioniert weiterhin obendrauf, ein Preset ist also ein Ausgangspunkt und kein Fork. Das Leuchten wird in der Farbe des Textes gezeichnet, auf dem es liegt, also leuchtet eine Palette, die du änderst, in ihrer neuen Farbe – hier wird die Primärfarbe bernsteinfarben, wie bei einem älteren Terminal. Erfolg ist das Gold eines Sterns, so wie das Vorbild ein gelöstes Rätsel markiert; gib ihm auf dieselbe Weise ein Grün, wenn dir das lieber ist. Zwei Tokens gehören dem Preset selbst: ',
-        code('--su-tm-bright'),
-        ', das Weiß, in dem Überschriften und alles Ausgewählte stehen, und ',
-        code('--su-tm-glow'),
-        ', der Schatten, den alles Leuchtende trägt; im Hellmodus ist er ',
-        code('none'),
-        '.',
+        ' funktioniert weiterhin obendrauf, ein Preset ist also ein Ausgangspunkt und kein Fork – hier wird der Akzent zu Phosphor-Bernstein. Zwei Tokens gehören dem Preset selbst: ',
+        code('--su-tm-tracking'),
+        ', wie weit eine Beschriftung in Versalien gesperrt ist, und ',
+        code('--su-tm-track'),
+        ', die Bahn, in der ein Fortschrittsbalken oder Schieberegler läuft.',
       ),
       codeBlock('src/index.ht.js', `head(
   styles({ preset: 'terminal' }),

@@ -5,21 +5,13 @@ export default () =>
   uiLayout({
     title: 'Terminal',
     description:
-      'Koyu lacivert bir zemin üzerinde tek bir eş aralıklı yazı tipi, Advent of Code’daki gibi: köşeli parantez içinde eylemler, yeşil bağlantılar ve yanan şeylerde bir parıltı.',
+      'Bir sistem konsolu: siyah üzerinde tek bir eş aralıklı yazı tipi, ince çizgili paneller, kalın büyük harfli etiketler ve seçilen her şeyin ters renkle gösterildiği bir camgöbeği vurgu.',
     activeHref: '/tr/ui/theming/terminal',
     extraHead: [presetPreviewHead('terminal')],
     children: [
       p(
         code('terminal'),
-        ', koyu lacivert bir zemin üzerinde tek bir eş aralıklı yazı tipidir ve Advent of Code gibi dizilir: gri metin, üzerine gelindiğinde parlayan yeşil bağlantılar, önemli olan için beyaz ve yanan birkaç öğede kendi renginde bir parıltı. Bir eylem köşeli parantez içinde bir sözcüktür, ',
-        code('[Kaydet]'),
-        '; bir onay kutusu ',
-        code('[X]'),
-        ' olana kadar ',
-        code('[ ]'),
-        ' olarak görünür ve ikinci düzey bir başlık ',
-        code('--- Başlık ---'),
-        ' biçiminde çizgilerle ayrılır. Hiçbir şey yuvarlatılmaz ve hiçbir şey yumuşak bir gölgenin üzerinde süzülmez: bir kenar bir çizgidir ve yükseltilmiş bir kart çift çizgiyle çerçevelenir. Koyu kip özgün görünümdür; açık kip yazı tipini, parantezleri ve köşeli kenarları korur ve onları soluk kâğıt üzerine lacivertle basar, parıltı olmadan.',
+        ' bir sistem konsoludur: siyah bir zemin üzerinde tek bir eş aralıklı yazı tipi, başlığı bir çizgiyle ayrılmış ince çizgili paneller ve her etiket — bir düğme, bir alanın açıklaması, bir sekme, bir sütun başlığı — kalın, aralıklı büyük harflerle. Camgöbeği vurgu rengidir: başlıklar, panel başlıkları, dolgulu düğme, odak ve seçilen her şey; seçilen şey, bir terminalin bir satırı vurguladığı gibi ters renkle, camgöbeği üzerine koyu olarak basılır. Diğer paletler durum renkleridir — yeşil, sarı ve kırmızı — ve çerçeveli bir düğme ya da etiket, çizgisi ve yazısıyla birlikte kendi renginde çizilir. Hiçbir şey yuvarlatılmaz ve hiçbir şey gölge düşürmez. Koyu kip özgün görünümdür; açık kip her çizgiyi, her büyük harfi ve her köşeli kenarı korur ve onları neredeyse beyaz üzerine siyahla basar.',
       ),
       presetPreview('terminal'),
 
@@ -31,9 +23,9 @@ head(
   styles({ preset: 'terminal' }),
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
-// <link rel="stylesheet" href="/su/terminal-9590922b.css">`, 'javascript'),
+// <link rel="stylesheet" href="/su/terminal-176ac9d8.css">`, 'javascript'),
       p(
-        'Sayfanın kendisini de bununla dizin — zeminini, grisini ve yazı tipini — bileşenler de yukarıdaki gibi onun üzerine oturur. Hazır ayar, sayfa yüklüyorsa Source Code Pro’yu, yüklemiyorsa sistemin eş aralıklı yazı tipini kullanır; kendisi hiçbir şey indirmez.',
+        'Sayfanın kendisini de bununla dizin — zeminini, metin rengini ve yazı tipini — bileşenler de yukarıdaki gibi onun üzerine oturur. Hazır ayar, sayfa JetBrains Mono, IBM Plex Mono ya da Source Code Pro’dan birini yüklüyorsa onu, yüklemiyorsa sistemin eş aralıklı yazı tipini kullanır; kendisi hiçbir şey indirmez.',
       ),
       codeBlock('src/styles.css', `body {
   background: var(--su-bg);
@@ -44,13 +36,11 @@ head(
       h2('Kendi renkleriniz'),
       p(
         code('theme()'),
-        ' üstünde çalışmayı sürdürür, yani bir hazır ayar bir çatal değil, bir başlangıç noktasıdır. Parıltı, üzerinde bulunduğu metnin renginde çizilir; bu yüzden değiştirdiğiniz bir palet yeni renginde parlar — burada ana renk, eski bir terminaldeki gibi kehribara döner. Başarı rengi bir yıldızın altın rengidir; örnek alınan site çözülmüş bir bulmacayı böyle işaretler. İsterseniz aynı yolla ona yeşil verin. Bu hazır ayar kendine ait iki belirteç ekler: ',
-        code('--su-tm-bright'),
-        ', başlıkların ve seçilen her şeyin beyazı, ve ',
-        code('--su-tm-glow'),
-        ', yanan öğelerin taşıdığı gölge; açık kipte ',
-        code('none'),
-        ' değerindedir.',
+        ' üstünde çalışmayı sürdürür, yani bir hazır ayar bir çatal değil, bir başlangıç noktasıdır — burada vurgu rengi fosfor kehribarına döner. Bu hazır ayar kendine ait iki belirteç ekler: ',
+        code('--su-tm-tracking'),
+        ', büyük harfli bir etiketin harf aralığı, ve ',
+        code('--su-tm-track'),
+        ', bir ilerleme çubuğunun ya da kaydırıcının içinde ilerlediği oluk.',
       ),
       codeBlock('src/index.ht.js', `head(
   styles({ preset: 'terminal' }),

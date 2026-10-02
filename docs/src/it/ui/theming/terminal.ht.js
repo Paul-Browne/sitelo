@@ -5,21 +5,13 @@ export default () =>
   uiLayout({
     title: 'Terminal',
     description:
-      'Un solo carattere monospaziato su uno sfondo blu notte, sul modello di Advent of Code: azioni tra parentesi quadre, link verdi e un bagliore su ciò che è acceso.',
+      'Una console di sistema: un solo carattere monospaziato sul nero, pannelli a filo sottile, etichette in maiuscolo grassetto e un accento ciano, con tutto ciò che è selezionato in negativo.',
     activeHref: '/it/ui/theming/terminal',
     extraHead: [presetPreviewHead('terminal')],
     children: [
       p(
         code('terminal'),
-        ' è un solo carattere monospaziato su uno sfondo blu notte, composto come Advent of Code: testo grigio, link verdi che si illuminano al passaggio del mouse, bianco per ciò che conta e un bagliore del proprio colore sulle poche cose accese. Un’azione è una parola tra parentesi quadre, ',
-        code('[Salva]'),
-        '; una casella di controllo è ',
-        code('[ ]'),
-        ' finché non diventa ',
-        code('[X]'),
-        ', e un titolo di secondo livello è delimitato come ',
-        code('--- Titolo ---'),
-        '. Niente è arrotondato e niente galleggia su un’ombra morbida: un bordo è una linea, e una card in rilievo ha una doppia linea. La modalità scura è l’aspetto originale; quella chiara mantiene il carattere, le parentesi e gli angoli vivi e li stampa in blu notte su carta chiara, senza il bagliore.',
+        ' è una console di sistema: un solo carattere monospaziato su uno sfondo nero, pannelli a filo sottile con l’intestazione separata da una riga, e ogni etichetta — un pulsante, la didascalia di un campo, una scheda, l’intestazione di una colonna — in maiuscolo grassetto e spaziato. Il ciano è l’accento: titoli, titoli dei pannelli, il pulsante pieno, il focus e tutto ciò che è selezionato, stampato in negativo, scuro sul ciano, come un terminale evidenzia una riga. Le altre palette sono i suoi colori di stato, verde, giallo e rosso, e un pulsante a contorno o un tag è disegnato nel suo colore, bordo e testo insieme. Niente è arrotondato e niente proietta ombre. La modalità scura è l’aspetto originale; quella chiara mantiene ogni linea, ogni maiuscola e ogni angolo vivo e li stampa in nero su un quasi bianco.',
       ),
       presetPreview('terminal'),
 
@@ -31,9 +23,9 @@ head(
   styles({ preset: 'terminal' }),
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
-// <link rel="stylesheet" href="/su/terminal-9590922b.css">`, 'javascript'),
+// <link rel="stylesheet" href="/su/terminal-176ac9d8.css">`, 'javascript'),
       p(
-        'Componi anche la pagina con esso — lo sfondo, il grigio e il carattere — e i componenti ci si posano come sopra. Il preset usa Source Code Pro se la pagina la carica, altrimenti il monospaziato di sistema; non scarica nulla.',
+        'Componi anche la pagina con esso — lo sfondo, il colore del testo e il carattere — e i componenti ci si posano come sopra. Il preset usa JetBrains Mono, IBM Plex Mono o Source Code Pro se la pagina ne carica uno, altrimenti il monospaziato di sistema; non scarica nulla.',
       ),
       codeBlock('src/styles.css', `body {
   background: var(--su-bg);
@@ -44,13 +36,11 @@ head(
       h2('I tuoi colori'),
       p(
         code('theme()'),
-        ' continua a funzionare sopra, quindi un preset è un punto di partenza e non un fork. Il bagliore è disegnato nel colore del testo su cui si trova, quindi una palette che cambi si illumina del suo nuovo colore: qui il primario diventa ambra, come un terminale più vecchio. Il successo è l’oro di una stella, come il modello segna un enigma risolto; se preferisci, dagli un verde allo stesso modo. Due token sono del preset stesso: ',
-        code('--su-tm-bright'),
-        ', il bianco dei titoli e di tutto ciò che è scelto, e ',
-        code('--su-tm-glow'),
-        ', l’ombra delle cose accese, che in modalità chiara è ',
-        code('none'),
-        '.',
+        ' continua a funzionare sopra, quindi un preset è un punto di partenza e non un fork: qui l’accento diventa un ambra da fosfori. Due token sono del preset stesso: ',
+        code('--su-tm-tracking'),
+        ', la spaziatura di un’etichetta in maiuscolo, e ',
+        code('--su-tm-track'),
+        ', la guida in cui scorre una barra di avanzamento o un cursore.',
       ),
       codeBlock('src/index.ht.js', `head(
   styles({ preset: 'terminal' }),
