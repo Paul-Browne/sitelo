@@ -80,6 +80,8 @@ head(
         a({ href: '/de/ui/theming/neubrutalism' }, 'Neubrutalismus'),
         ', ',
         a({ href: '/de/ui/theming/superneon' }, 'Superneon'),
+        ', ',
+        a({ href: '/de/ui/theming/terminal' }, 'Terminal'),
         '.',
       ),
       p(
@@ -245,7 +247,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism' | 'neubrutalism' | 'superneon'", '', 'Jede Komponente mit einem Preset neu gestalten, nach dem Kern-Stylesheet verlinkt oder eingebettet.'],
+        ['preset', "'neumorphism' | 'neubrutalism' | 'superneon' | 'terminal'", '', 'Jede Komponente mit einem Preset neu gestalten, nach dem Kern-Stylesheet verlinkt oder eingebettet.'],
         ['inline', 'boolean', 'false', 'Das CSS selbst ausgeben statt eines Links darauf.'],
         ['hash', 'boolean', 'true', 'Hash des Inhalts in den Dateinamen aufnehmen. Nur verlinkt.'],
         ['base', 'string', "'/su/'", 'Zeigt die URL woandershin; diese Kopie hostest du selbst. Nur verlinkt.'],

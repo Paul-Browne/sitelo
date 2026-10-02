@@ -1,0 +1,918 @@
+/*!
+ * sitelo-ui preset — terminal.
+ *
+ * One monospace face on a dark navy ground, the way Advent of Code is
+ * set: grey text, green links that brighten when pointed at, white for
+ * what matters, and a glow in its own colour on the few things that are
+ * lit. An action is a bracketed word — `[Save]` — a checkbox is `[ ]`
+ * until it is `[X]`, and an `h2` is ruled off as `--- Title ---`.
+ * Nothing is rounded and nothing floats on a soft shadow. Linked after
+ * `ui.css` by `styles({ preset: 'terminal' })`.
+ *
+ * Dark is the look this comes from. Light keeps the face, the brackets
+ * and the square corners and prints them in navy on pale paper, where a
+ * glow would only blur the letters — so it has none.
+ *
+ * The brackets, rules and comment marks are all generated content with
+ * empty alternative text, so a screen reader hears the label and not
+ * the punctuation round it. Each `content` is declared twice, the plain
+ * one first: an engine without the `/ alt` syntax drops the second and
+ * keeps the first, rather than dropping the marks altogether.
+ */
+
+:root {
+  /* The one face everything is set in. Nothing is downloaded: load
+     Source Code Pro on the page and it is used, or the system's own
+     monospace stands in. */
+  --su-tm-font: 'Source Code Pro', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
+    'Liberation Mono', monospace;
+
+  --su-font-sans: var(--su-tm-font);
+  --su-font-mono: var(--su-tm-font);
+
+  /* One weight, as a terminal has: what stands out does so by colour. */
+  --su-weight-medium: 400;
+  --su-weight-semibold: 400;
+  --su-weight-bold: 400;
+
+  /* The largest sizes brought in. A monospace face is wide, and a
+     terminal sets its headings apart by colour more than by size. */
+  --su-text-xl: 1.25rem;
+  --su-text-2xl: 1.5rem;
+  --su-text-3xl: 2rem;
+  --su-text-4xl: 2.5rem;
+
+  /* A character grid has no curves. In pixels, so the core's
+     `calc(radius - border)` stays a length. */
+  --su-radius-sm: 0px;
+  --su-radius-md: 0px;
+  --su-radius-lg: 0px;
+  --su-radius-full: 0px;
+
+  /* No soft shadows: an edge is a line. A shadow that draws nothing
+     rather than `none`, so one composed with another stays valid. */
+  --su-shadow-sm: 0 0 #0000;
+  --su-shadow-md: 0 0 #0000;
+  --su-shadow-lg: 0 0 #0000;
+
+  /*
+   * What lights a thing. `--su-tm-glow` is a `text-shadow` in the
+   * colour of the text it is on, as the reference draws its title;
+   * `--su-tm-halo` is how far a lit box's glow reaches. Both are off
+   * here and on in the dark blocks.
+   */
+  --su-tm-glow: none;
+  --su-tm-halo: 0px;
+
+  /* White, in dark: the reference's emphasis. Headings and anything
+     chosen are set in it. */
+  --su-tm-bright: #0f0f23;
+
+  --su-bg: #f5f5fa;
+  --su-bg-subtle: #efeff6;
+  --su-surface: #f5f5fa;
+  --su-surface-2: #ebebf4;
+  --su-surface-hover: #e1e1ee;
+  --su-border: #c8c8da;
+  --su-border-strong: #6e6e88;
+  --su-text: #2a2a40;
+  --su-text-muted: #4a4a62;
+  --su-text-subtle: #5c5c75;
+  --su-overlay: rgba(15, 15, 35, 0.4);
+
+  --su-primary: #006e00;
+  --su-primary-hover: #005c00;
+  --su-primary-active: #004a00;
+  --su-primary-fg: #ffffff;
+  --su-primary-soft: #dcefdc;
+  --su-primary-soft-hover: #cae6ca;
+  --su-primary-soft-fg: #004d00;
+  --su-primary-border: #7dbf7d;
+  --su-primary-ring: rgba(0, 110, 0, 0.3);
+
+  --su-neutral: #3d3d57;
+  --su-neutral-hover: #2a2a40;
+  --su-neutral-active: #1c1c2e;
+  --su-neutral-fg: #ffffff;
+  --su-neutral-soft: #e3e3ee;
+  --su-neutral-soft-hover: #d6d6e5;
+  --su-neutral-soft-fg: #2a2a40;
+  --su-neutral-border: #a9a9c0;
+  --su-neutral-ring: rgba(61, 61, 87, 0.28);
+
+  /* Success is the gold of a star — the reference's own colour for a
+     puzzle solved — kept dark enough here to read on paper. */
+  --su-success: #7a6200;
+  --su-success-hover: #665200;
+  --su-success-active: #524200;
+  --su-success-fg: #ffffff;
+  --su-success-soft: #f4ecc4;
+  --su-success-soft-hover: #ede1a8;
+  --su-success-soft-fg: #4d3d00;
+  --su-success-border: #cdb85a;
+  --su-success-ring: rgba(122, 98, 0, 0.3);
+
+  --su-warning: #a34200;
+  --su-warning-hover: #8a3800;
+  --su-warning-active: #712e00;
+  --su-warning-fg: #ffffff;
+  --su-warning-soft: #fbe3d1;
+  --su-warning-soft-hover: #f7d3b8;
+  --su-warning-soft-fg: #6b2c00;
+  --su-warning-border: #e0a070;
+  --su-warning-ring: rgba(163, 66, 0, 0.3);
+
+  --su-danger: #c8102e;
+  --su-danger-hover: #a80d27;
+  --su-danger-active: #8c0b20;
+  --su-danger-fg: #ffffff;
+  --su-danger-soft: #fadadf;
+  --su-danger-soft-hover: #f5c6ce;
+  --su-danger-soft-fg: #7a0a1c;
+  --su-danger-border: #e8909e;
+  --su-danger-ring: rgba(200, 16, 46, 0.3);
+}
+
+/*
+ * The same two blocks as the core's dark tokens, with the same selectors:
+ * those outrank `:root`, so anything the core sets for dark — the
+ * shadows included — has to be set again here, where being later wins.
+ *
+ * The ground, the text, the code wells and their lines are the
+ * reference's own colours. The solids are its brightest, read in
+ * reverse — navy on the colour — the way a terminal highlights.
+ */
+[data-theme='dark']:not([data-su-theme='light']),
+[data-su-theme='dark'] {
+  --su-shadow-sm: 0 0 #0000;
+  --su-shadow-md: 0 0 #0000;
+  --su-shadow-lg: 0 0 #0000;
+
+  --su-tm-glow: 0 0 2px currentColor, 0 0 5px currentColor;
+  --su-tm-halo: 6px;
+  --su-tm-bright: #ffffff;
+
+  --su-bg: #0f0f23;
+  --su-bg-subtle: #13132b;
+  --su-surface: #0f0f23;
+  --su-surface-2: #10101a;
+  --su-surface-hover: #19193b;
+  --su-border: #333340;
+  --su-border-strong: #666666;
+  --su-text: #cccccc;
+  --su-text-muted: #a3a3b8;
+  --su-text-subtle: #8a8aa3;
+  --su-overlay: rgba(5, 5, 15, 0.75);
+
+  --su-primary: #00cc00;
+  --su-primary-hover: #99ff99;
+  --su-primary-active: #00b300;
+  --su-primary-fg: #0f0f23;
+  --su-primary-soft: #0d2b1e;
+  --su-primary-soft-hover: #123a28;
+  --su-primary-soft-fg: #99ff99;
+  --su-primary-border: #009900;
+  --su-primary-ring: rgba(0, 204, 0, 0.4);
+
+  --su-neutral: #cccccc;
+  --su-neutral-hover: #ffffff;
+  --su-neutral-active: #b3b3b3;
+  --su-neutral-fg: #0f0f23;
+  --su-neutral-soft: #1e1e46;
+  --su-neutral-soft-hover: #28285a;
+  --su-neutral-soft-fg: #e6e6e6;
+  --su-neutral-border: #666666;
+  --su-neutral-ring: rgba(204, 204, 204, 0.32);
+
+  --su-success: #ffff66;
+  --su-success-hover: #ffffcc;
+  --su-success-active: #e6e65c;
+  --su-success-fg: #0f0f23;
+  --su-success-soft: #2b2b1e;
+  --su-success-soft-hover: #38382a;
+  --su-success-soft-fg: #ffff99;
+  --su-success-border: #99993d;
+  --su-success-ring: rgba(255, 255, 102, 0.36);
+
+  --su-warning: #ffa64d;
+  --su-warning-hover: #ffcc99;
+  --su-warning-active: #f2933a;
+  --su-warning-fg: #0f0f23;
+  --su-warning-soft: #34231c;
+  --su-warning-soft-hover: #432d22;
+  --su-warning-soft-fg: #ffcc99;
+  --su-warning-border: #995c26;
+  --su-warning-ring: rgba(255, 166, 77, 0.36);
+
+  --su-danger: #ff6666;
+  --su-danger-hover: #ffb3b3;
+  --su-danger-active: #ff4d4d;
+  --su-danger-fg: #0f0f23;
+  --su-danger-soft: #371a2a;
+  --su-danger-soft-hover: #462136;
+  --su-danger-soft-fg: #ffb3b3;
+  --su-danger-border: #a33d47;
+  --su-danger-ring: rgba(255, 102, 102, 0.36);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-su-theme='light']) {
+    --su-shadow-sm: 0 0 #0000;
+    --su-shadow-md: 0 0 #0000;
+    --su-shadow-lg: 0 0 #0000;
+
+    --su-tm-glow: 0 0 2px currentColor, 0 0 5px currentColor;
+    --su-tm-halo: 6px;
+    --su-tm-bright: #ffffff;
+
+    --su-bg: #0f0f23;
+    --su-bg-subtle: #13132b;
+    --su-surface: #0f0f23;
+    --su-surface-2: #10101a;
+    --su-surface-hover: #19193b;
+    --su-border: #333340;
+    --su-border-strong: #666666;
+    --su-text: #cccccc;
+    --su-text-muted: #a3a3b8;
+    --su-text-subtle: #8a8aa3;
+    --su-overlay: rgba(5, 5, 15, 0.75);
+
+    --su-primary: #00cc00;
+    --su-primary-hover: #99ff99;
+    --su-primary-active: #00b300;
+    --su-primary-fg: #0f0f23;
+    --su-primary-soft: #0d2b1e;
+    --su-primary-soft-hover: #123a28;
+    --su-primary-soft-fg: #99ff99;
+    --su-primary-border: #009900;
+    --su-primary-ring: rgba(0, 204, 0, 0.4);
+
+    --su-neutral: #cccccc;
+    --su-neutral-hover: #ffffff;
+    --su-neutral-active: #b3b3b3;
+    --su-neutral-fg: #0f0f23;
+    --su-neutral-soft: #1e1e46;
+    --su-neutral-soft-hover: #28285a;
+    --su-neutral-soft-fg: #e6e6e6;
+    --su-neutral-border: #666666;
+    --su-neutral-ring: rgba(204, 204, 204, 0.32);
+
+    --su-success: #ffff66;
+    --su-success-hover: #ffffcc;
+    --su-success-active: #e6e65c;
+    --su-success-fg: #0f0f23;
+    --su-success-soft: #2b2b1e;
+    --su-success-soft-hover: #38382a;
+    --su-success-soft-fg: #ffff99;
+    --su-success-border: #99993d;
+    --su-success-ring: rgba(255, 255, 102, 0.36);
+
+    --su-warning: #ffa64d;
+    --su-warning-hover: #ffcc99;
+    --su-warning-active: #f2933a;
+    --su-warning-fg: #0f0f23;
+    --su-warning-soft: #34231c;
+    --su-warning-soft-hover: #432d22;
+    --su-warning-soft-fg: #ffcc99;
+    --su-warning-border: #995c26;
+    --su-warning-ring: rgba(255, 166, 77, 0.36);
+
+    --su-danger: #ff6666;
+    --su-danger-hover: #ffb3b3;
+    --su-danger-active: #ff4d4d;
+    --su-danger-fg: #0f0f23;
+    --su-danger-soft: #371a2a;
+    --su-danger-soft-hover: #462136;
+    --su-danger-soft-fg: #ffb3b3;
+    --su-danger-border: #a33d47;
+    --su-danger-ring: rgba(255, 102, 102, 0.36);
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Type
+ *
+ * Headings at the body's weight and with no tracking taken out — a
+ * monospace face is spaced by its grid. The first-level heading is the
+ * reference's title, green and lit; the rest are set in white, and an
+ * `h2` is ruled off either side as its puzzle titles are.
+ *
+ * A heading given a tone keeps it: the colours here step aside for
+ * `tone: 'muted'` and `'subtle'`, which would otherwise lose to them by
+ * coming earlier.
+ * ------------------------------------------------------------------ */
+
+.su-text--h1,
+.su-text--h2,
+.su-text--h3,
+.su-text--h4,
+.su-text--h5,
+.su-text--h6,
+.su-hero-title,
+.su-stat-value {
+  letter-spacing: 0;
+}
+
+.su-text--h2:not(.su-text--muted):not(.su-text--subtle),
+.su-text--h3:not(.su-text--muted):not(.su-text--subtle),
+.su-text--h4:not(.su-text--muted):not(.su-text--subtle),
+.su-text--h5:not(.su-text--muted):not(.su-text--subtle),
+.su-text--h6:not(.su-text--muted):not(.su-text--subtle) {
+  color: var(--su-tm-bright);
+}
+
+.su-text--h1:not(.su-text--muted):not(.su-text--subtle) {
+  color: var(--su-primary);
+}
+
+.su-text--h1 {
+  text-shadow: var(--su-tm-glow);
+}
+
+.su-text--h2::before {
+  content: '--- ';
+  content: '--- ' / '';
+}
+
+.su-text--h2::after {
+  content: ' ---';
+  content: ' ---' / '';
+}
+
+.su-card-title,
+.su-modal-title,
+.su-empty-title,
+.su-stat-value {
+  color: var(--su-tm-bright);
+}
+
+/*
+ * A tag over a heading reads as a comment, the way the reference sets
+ * its year between comment marks. The slash is escaped, `\2f`: the
+ * minifier takes out anything between an opening and a closing comment
+ * mark without looking at strings, and would take these rules with it.
+ */
+.su-text--overline::before,
+.su-hero-eyebrow::before {
+  content: '\2f* ';
+  content: '\2f* ' / '';
+}
+
+.su-text--overline::after,
+.su-hero-eyebrow::after {
+  content: ' *\2f';
+  content: ' *\2f' / '';
+}
+
+.su-link,
+.su-btn--link {
+  text-underline-offset: 0.25em;
+}
+
+.su-link:hover,
+.su-btn--link:hover {
+  text-shadow: var(--su-tm-glow);
+}
+
+/* ------------------------------------------------------------------ *
+ * Card
+ *
+ * A box drawn in lines. The elevated card is ruled double, as a
+ * terminal draws a dialog; the flat one in dashes. One that can be
+ * clicked does not move when pointed at — its line turns green.
+ * ------------------------------------------------------------------ */
+
+.su-card--elevated {
+  border: 3px double var(--su-border-strong);
+}
+
+.su-card--flat {
+  border-style: dashed;
+  border-color: var(--su-border-strong);
+}
+
+.su-card--interactive:hover {
+  border-color: var(--su-primary);
+  box-shadow: 0 0 var(--su-tm-halo) var(--su-primary-ring);
+  transform: none;
+}
+
+/* ------------------------------------------------------------------ *
+ * Button
+ *
+ * Every button but a lone icon, and a link, is a bracketed word:
+ * `[Save]`. The brackets are the button's own first and last flex
+ * items, so an icon goes inside them, and an icon is one character
+ * from its label, as it would be on a terminal's grid.
+ *
+ * Solid is the word in reverse — navy on the palette's colour — and
+ * lights up when pointed at. Ghost is the reference's own `[Submit]`:
+ * the word in its colour, brightening over the row highlight.
+ * ------------------------------------------------------------------ */
+
+.su-btn {
+  gap: 0;
+  letter-spacing: 0;
+}
+
+.su-btn:not(.su-icon-btn):not(.su-btn--link)::before {
+  content: '[';
+  content: '[' / '';
+}
+
+.su-btn:not(.su-icon-btn):not(.su-btn--link)::after {
+  content: ']';
+  content: ']' / '';
+}
+
+.su-btn > .su-btn-icon + .su-btn-label,
+.su-btn > .su-btn-label + .su-btn-icon {
+  margin-inline-start: 1ch;
+}
+
+.su-btn--solid:hover {
+  box-shadow: 0 0 var(--su-tm-halo) var(--su-c);
+}
+
+/* In the colour itself, which every palette holds to AA on the page;
+   pointed at, it sits on the soft fill, where the soft text is the one
+   held to it. */
+.su-btn--outline {
+  color: var(--su-c);
+}
+
+.su-btn--outline:hover {
+  color: var(--su-c-soft-fg);
+}
+
+.su-btn--ghost {
+  color: var(--su-c);
+}
+
+.su-btn--ghost:hover {
+  background: var(--su-surface-hover);
+  color: var(--su-c-hover);
+  text-shadow: var(--su-tm-glow);
+}
+
+/*
+ * A segmented control is its choices in a row, `[List] [Grid]`, with
+ * no line round each: the chosen one is in reverse, in its palette's
+ * colour — grey, for neutral — as a terminal marks a selection.
+ */
+.su-btn-group.su-toggle-group {
+  gap: var(--su-space-xs);
+}
+
+.su-btn-group.su-toggle-group > .su-btn {
+  margin: 0;
+  padding-inline: 0.5rem;
+  border-color: transparent;
+  background: transparent;
+  color: var(--su-text-muted);
+}
+
+.su-btn-group.su-toggle-group > .su-btn:hover {
+  background: var(--su-surface-hover);
+  color: var(--su-text);
+}
+
+.su-btn-group.su-toggle-group > .su-toggle-btn[aria-pressed='true'],
+.su-btn-group.su-toggle-group > .su-toggle-btn[aria-current] {
+  background: var(--su-c);
+  color: var(--su-c-fg);
+}
+
+/* ------------------------------------------------------------------ *
+ * Form controls
+ *
+ * Fields are the reference's: a dark well inside a grey line, with a
+ * green caret. Focus doubles the line in green and, in dark, lights
+ * it. A disabled field's line is dashed.
+ * ------------------------------------------------------------------ */
+
+.su-input,
+.su-textarea,
+.su-select {
+  background-color: var(--su-surface-2);
+  caret-color: var(--su-primary);
+}
+
+.su-input[disabled],
+.su-textarea[disabled],
+.su-select[disabled] {
+  border-style: dashed;
+}
+
+.su-input:focus,
+.su-textarea:focus,
+.su-select:focus {
+  box-shadow: 0 0 0 var(--su-border-width) var(--su-primary), 0 0 var(--su-tm-halo) var(--su-primary-ring);
+}
+
+.su-field--invalid .su-input:focus,
+.su-field--invalid .su-textarea:focus,
+.su-field--invalid .su-select:focus,
+.su-input[aria-invalid='true']:focus,
+.su-textarea[aria-invalid='true']:focus,
+.su-select[aria-invalid='true']:focus {
+  box-shadow: 0 0 0 var(--su-border-width) var(--su-danger), 0 0 var(--su-tm-halo) var(--su-danger-ring);
+}
+
+/*
+ * A checkbox is `[ ]`, and `[X]` once checked; a radio is `( )` and
+ * `(O)`. The drawn box becomes three characters of text, one line tall
+ * so it needs no offset to sit on the line, and the real input under it
+ * is set in the same face and made as wide, so the two stay one over
+ * the other.
+ */
+.su-check {
+  --su-check-size: calc(var(--su-check-line) * var(--su-check-font));
+}
+
+.su-check input {
+  font: inherit;
+  width: 3ch;
+}
+
+.su-check-box {
+  width: 3ch;
+  border: 0;
+  background: transparent;
+  color: var(--su-text-muted);
+  white-space: pre;
+}
+
+.su-check-box::after,
+.su-check--radio .su-check-box::after {
+  content: '[ ]';
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: none;
+  clip-path: none;
+  transform: none;
+  transition: none;
+}
+
+.su-check--radio .su-check-box::after {
+  content: '( )';
+}
+
+.su-check:hover input:not([disabled]) + .su-check-box {
+  background: var(--su-surface-hover);
+}
+
+.su-check input:checked + .su-check-box {
+  border-color: transparent;
+  background: transparent;
+  color: var(--su-tm-bright);
+  text-shadow: var(--su-tm-glow);
+}
+
+.su-check input:checked + .su-check-box::after {
+  content: '[X]';
+  transform: none;
+}
+
+.su-check--radio input:checked + .su-check-box::after {
+  content: '(O)';
+}
+
+/*
+ * A switch is a slot with a block cursor in it: grey and at the start
+ * while off, in the palette's colour and at the end once on, with the
+ * slot ruled and filled to match. The track gives up as much padding as
+ * its line takes, so the thumb's travel is the core's.
+ */
+.su-switch-track {
+  padding: calc(0.15rem - var(--su-border-width));
+  border: var(--su-border-width) solid var(--su-border-strong);
+  background: var(--su-surface-2);
+  transition: background-color var(--su-transition), border-color var(--su-transition),
+    box-shadow var(--su-transition);
+}
+
+.su-switch-thumb {
+  background: var(--su-text-subtle);
+  box-shadow: none;
+}
+
+.su-switch input:checked + .su-switch-track {
+  border-color: var(--su-c, var(--su-primary));
+  background: var(--su-c-soft, var(--su-primary-soft));
+  box-shadow: 0 0 var(--su-tm-halo) var(--su-c-ring, var(--su-primary-ring));
+}
+
+.su-switch input:checked + .su-switch-track .su-switch-thumb {
+  background: var(--su-c, var(--su-primary));
+}
+
+/* A ruled slot, and a block cursor for the knob: as tall as the core's,
+   and narrower, as a character cell is. */
+.su-slider::-webkit-slider-runnable-track {
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-border-strong);
+}
+
+.su-slider::-moz-range-track {
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-border-strong);
+}
+
+.su-slider::-webkit-slider-thumb {
+  width: 0.7rem;
+  box-shadow: 0 0 var(--su-tm-halo) var(--su-c, var(--su-primary));
+}
+
+.su-slider::-moz-range-thumb {
+  width: 0.7rem;
+  box-shadow: 0 0 var(--su-tm-halo) var(--su-c, var(--su-primary));
+}
+
+/* ------------------------------------------------------------------ *
+ * Data display and feedback
+ * ------------------------------------------------------------------ */
+
+/* An avatar with no colour of its own is filled with the well, which
+   on the dark ground is all but the page: a line says where it is. */
+.su-avatar {
+  border: var(--su-border-width) solid var(--su-border);
+}
+
+.su-alert--soft {
+  border-color: var(--su-c-border, var(--su-border));
+}
+
+/* A bar made of blocks, `[■■■■■   ]`: a ruled slot with a little air
+   inside it, the fill cut into cells. As tall inside as the core's
+   bar, so a height set for that one still holds. */
+.su-progress-bar {
+  height: calc(var(--su-progress-height, 0.5rem) + 2 * (var(--su-border-width) + 2px));
+  padding: 2px;
+  border: var(--su-border-width) solid var(--su-border-strong);
+  background: transparent;
+}
+
+.su-progress-fill {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--su-c, var(--su-primary)) 0 0.5rem,
+    transparent 0.5rem 0.625rem
+  );
+}
+
+/* The cells start from where the bar does. */
+.su-progress-fill:dir(rtl) {
+  background-position: right;
+}
+
+/* ------------------------------------------------------------------ *
+ * Navigation
+ * ------------------------------------------------------------------ */
+
+/*
+ * Page numbers are links in the palette's colour on the page, as the
+ * reference lists its days. The page you are on is in white and in
+ * brackets — `[6]` — so it is marked by more than its colour.
+ */
+.su-page-link {
+  color: var(--su-c, var(--su-primary));
+}
+
+.su-page-link:hover {
+  color: var(--su-c-hover, var(--su-primary-hover));
+}
+
+.su-page-link[aria-current='page'] {
+  background: transparent;
+  color: var(--su-tm-bright);
+  text-shadow: var(--su-tm-glow);
+}
+
+.su-page-link[aria-current='page']::before {
+  content: '[';
+  content: '[' / '';
+}
+
+.su-page-link[aria-current='page']::after {
+  content: ']';
+  content: ']' / '';
+}
+
+/* The core's own selectors for the selected tab, in all three forms. */
+.su-tab[aria-current='page'],
+.su-tab-input:checked + .su-tab,
+.su-tabs--target > .su-tab:target,
+.su-tabs--target:not(:has(> .su-tab:target)) > .su-tab--default {
+  color: var(--su-tm-bright);
+  text-shadow: var(--su-tm-glow);
+}
+
+/* A chosen pill is printed in reverse, like a chosen segment. */
+.su-tabs--pills .su-tab:hover {
+  background: var(--su-surface-hover);
+}
+
+.su-tabs--pills .su-tab[aria-current='page'],
+.su-tabs--pills .su-tab-input:checked + .su-tab,
+.su-tabs--pills.su-tabs--target > .su-tab:target,
+.su-tabs--pills.su-tabs--target:not(:has(> .su-tab:target)) > .su-tab--default {
+  background: var(--su-c, var(--su-primary));
+  color: var(--su-c-fg, var(--su-primary-fg));
+  text-shadow: none;
+}
+
+/* The bar is the reference's header: the name lit in green, and each
+   link a bracketed word — `[About]` — white for the page you are on. */
+.su-appbar-brand {
+  color: var(--su-primary);
+  text-shadow: var(--su-tm-glow);
+}
+
+.su-nav-link {
+  padding-inline: 0.35rem;
+  color: var(--su-c, var(--su-primary));
+}
+
+.su-nav-link::before {
+  content: '[';
+  content: '[' / '';
+}
+
+.su-nav-link::after {
+  content: ']';
+  content: ']' / '';
+}
+
+.su-nav-link:hover {
+  color: var(--su-c-hover, var(--su-primary-hover));
+}
+
+.su-nav-link[aria-current='page'] {
+  background: transparent;
+  color: var(--su-tm-bright);
+  text-shadow: var(--su-tm-glow);
+}
+
+/* Anything floating over the page is ruled in the strong line, since
+   it has no shadow to lift it. */
+.su-menu-list,
+.su-modal,
+.su-drawer,
+.su-toasts > * {
+  border-color: var(--su-border-strong);
+}
+
+/* The item under the pointer or the keys is in reverse, as in a
+   terminal's menus: in the primary, or in its own palette if it has
+   one. */
+.su-menu-item:hover,
+.su-menu-item:focus-visible {
+  background: var(--su-primary);
+  color: var(--su-primary-fg);
+}
+
+.su-menu-item[class*='su-c-']:hover,
+.su-menu-item[class*='su-c-']:focus-visible {
+  background: var(--su-c);
+  color: var(--su-c-fg);
+}
+
+/* ------------------------------------------------------------------ *
+ * Accordion and collapsible
+ *
+ * The turning chevron becomes `[+]`, and `[-]` once open, as a tree
+ * view in a terminal marks a branch.
+ * ------------------------------------------------------------------ */
+
+.su-accordion-item > summary::after,
+.su-collapsible-trigger::after {
+  content: '[+]';
+  content: '[+]' / '';
+  width: auto;
+  height: auto;
+  border: 0;
+  transform: none;
+}
+
+.su-accordion-item > summary::after {
+  color: var(--su-primary);
+  opacity: 1;
+}
+
+.su-accordion-item[open] > summary::after,
+.su-collapsible[open] > .su-collapsible-trigger::after {
+  content: '[-]';
+  content: '[-]' / '';
+  transform: none;
+}
+
+.su-accordion-item[open] > summary {
+  color: var(--su-tm-bright);
+}
+
+/* ------------------------------------------------------------------ *
+ * Steps
+ * ------------------------------------------------------------------ */
+
+.su-step--current .su-step-marker {
+  box-shadow: 0 0 var(--su-tm-halo) var(--su-primary-ring);
+}
+
+/* ------------------------------------------------------------------ *
+ * Hero
+ *
+ * The title is lit like the first-level heading, and ends on a block
+ * cursor that blinks a few times when the page loads and then holds
+ * still: a cursor blinking for ever is movement nobody can stop.
+ * ------------------------------------------------------------------ */
+
+.su-hero-title {
+  color: var(--su-primary);
+  text-shadow: var(--su-tm-glow);
+}
+
+.su-hero-title::after {
+  content: '';
+  display: inline-block;
+  width: 0.55em;
+  height: 0.9em;
+  margin-inline-start: 0.2em;
+  vertical-align: -0.08em;
+  background: currentColor;
+  box-shadow: 0 0 var(--su-tm-halo) currentColor;
+  animation: su-tm-blink 1.1s steps(1, end) 4;
+}
+
+@keyframes su-tm-blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .su-hero-title::after {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Prose
+ *
+ * Markdown set as the reference sets a puzzle: headings in white, an
+ * `h2` ruled off, emphasis in lit white rather than italic, and a list
+ * marked with dashes. The core's selectors, so these win by coming
+ * later.
+ * ------------------------------------------------------------------ */
+
+.su-prose :where(h1, h2, h3, h4, h5, h6):not([class*='su-']) {
+  color: var(--su-tm-bright);
+  letter-spacing: 0;
+}
+
+.su-prose :where(h2):not([class*='su-'])::before {
+  content: '--- ';
+  content: '--- ' / '';
+}
+
+.su-prose :where(h2):not([class*='su-'])::after {
+  content: ' ---';
+  content: ' ---' / '';
+}
+
+.su-prose :where(em):not([class*='su-']) {
+  color: var(--su-tm-bright);
+  font-style: normal;
+  text-shadow: var(--su-tm-glow);
+}
+
+.su-prose :where(strong, b):not([class*='su-']) {
+  color: var(--su-tm-bright);
+}
+
+.su-prose :where(ul):not([class*='su-']) {
+  list-style-type: '- ';
+}
+
+.su-prose :where(a):not([class*='su-']):hover {
+  text-shadow: var(--su-tm-glow);
+}
+
+.su-prose :where(blockquote):not([class*='su-']) {
+  border-inline-start-color: var(--su-border-strong);
+  font-style: normal;
+}
+
+.su-prose :where(hr):not([class*='su-']) {
+  border-top-style: dashed;
+}
+
+/* ------------------------------------------------------------------ *
+ * Mockup
+ *
+ * The phone's island and the macOS lights are quotations of someone
+ * else's hardware, and stay round when nothing else here is.
+ * ------------------------------------------------------------------ */
+
+.su-mockup-notch,
+.su-mockup-notch::after,
+.su-mockup-dots--mac .su-mockup-dot {
+  border-radius: 999px;
+}

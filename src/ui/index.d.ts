@@ -45,7 +45,7 @@ export interface StyleOptions extends StylesUrlOptions {
 }
 
 /** A look for the whole library, linked after the core sheet. */
-export type Preset = 'neubrutalism' | 'neumorphism' | 'superneon'
+export type Preset = 'neubrutalism' | 'neumorphism' | 'superneon' | 'terminal'
 
 export interface CoreStyleOptions extends StyleOptions {
   /** Restyle every component in one of the {@link Preset} looks. */
