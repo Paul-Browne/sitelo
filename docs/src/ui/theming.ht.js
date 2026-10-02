@@ -82,6 +82,8 @@ head(
         a({ href: '/ui/theming/neubrutalism' }, 'Neubrutalism'),
         ', ',
         a({ href: '/ui/theming/superneon' }, 'Superneon'),
+        ', ',
+        a({ href: '/ui/theming/terminal' }, 'Terminal'),
         '.',
       ),
       p(
@@ -247,7 +249,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism' | 'neubrutalism' | 'superneon'", '', 'Restyle every component with a preset, linked or inlined after the core sheet.'],
+        ['preset', "'neumorphism' | 'neubrutalism' | 'superneon' | 'terminal'", '', 'Restyle every component with a preset, linked or inlined after the core sheet.'],
         ['inline', 'boolean', 'false', 'Emit the CSS itself rather than a link to it.'],
         ['hash', 'boolean', 'true', 'Content-hash the file name. Linked only.'],
         ['base', 'string', "'/su/'", 'Point the URL elsewhere; that copy is yours to host. Linked only.'],

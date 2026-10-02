@@ -184,6 +184,7 @@ export const TRANSLATED_PATHS = new Set([
   '/ui/theming/neumorphism',
   '/ui/theming/neubrutalism',
   '/ui/theming/superneon',
+  '/ui/theming/terminal',
 ])
 
 /** Strip any locale prefix, returning the canonical English path. */

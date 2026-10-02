@@ -249,6 +249,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neumorphism', label: 'Neumorphism' },
     { href: '/ui/theming/neubrutalism', label: 'Neubrutalism' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
+    { href: '/ui/theming/terminal', label: 'Terminal' },
   ],
   es: [
     { href: '/ui', label: 'Resumen' },
@@ -314,6 +315,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neumorphism', label: 'Neumorfismo' },
     { href: '/ui/theming/neubrutalism', label: 'Neobrutalismo' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
+    { href: '/ui/theming/terminal', label: 'Terminal' },
   ],
   fr: [
     { href: '/ui', label: 'Vue d’ensemble' },
@@ -379,6 +381,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neumorphism', label: 'Neumorphisme' },
     { href: '/ui/theming/neubrutalism', label: 'Néo-brutalisme' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
+    { href: '/ui/theming/terminal', label: 'Terminal' },
   ],
   de: [
     { href: '/ui', label: 'Überblick' },
@@ -444,6 +447,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neumorphism', label: 'Neumorphismus' },
     { href: '/ui/theming/neubrutalism', label: 'Neubrutalismus' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
+    { href: '/ui/theming/terminal', label: 'Terminal' },
   ],
   ru: [
     { href: '/ui', label: 'Обзор' },
@@ -509,6 +513,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neumorphism', label: 'Неоморфизм' },
     { href: '/ui/theming/neubrutalism', label: 'Необрутализм' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
+    { href: '/ui/theming/terminal', label: 'Терминал' },
   ],
   zh: [
     { href: '/ui', label: '概览' },
@@ -574,6 +579,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neumorphism', label: '新拟态' },
     { href: '/ui/theming/neubrutalism', label: '新粗野主义' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
+    { href: '/ui/theming/terminal', label: '终端' },
   ],
   pt: [
     { href: '/ui', label: 'Visão geral' },
@@ -639,6 +645,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neumorphism', label: 'Neumorfismo' },
     { href: '/ui/theming/neubrutalism', label: 'Neobrutalismo' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
+    { href: '/ui/theming/terminal', label: 'Terminal' },
   ],
   it: [
     { href: '/ui', label: 'Panoramica' },
@@ -704,6 +711,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neumorphism', label: 'Neumorfismo' },
     { href: '/ui/theming/neubrutalism', label: 'Neobrutalismo' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
+    { href: '/ui/theming/terminal', label: 'Terminale' },
   ],
   pl: [
     { href: '/ui', label: 'Przegląd' },
@@ -769,6 +777,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neumorphism', label: 'Neumorfizm' },
     { href: '/ui/theming/neubrutalism', label: 'Neobrutalizm' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
+    { href: '/ui/theming/terminal', label: 'Terminal' },
   ],
   tr: [
     { href: '/ui', label: 'Genel bakış' },
@@ -834,6 +843,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neumorphism', label: 'Neumorfizm' },
     { href: '/ui/theming/neubrutalism', label: 'Neobrütalizm' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
+    { href: '/ui/theming/terminal', label: 'Terminal' },
   ],
   id: [
     { href: '/ui', label: 'Ringkasan' },
@@ -899,6 +909,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neumorphism', label: 'Neumorfisme' },
     { href: '/ui/theming/neubrutalism', label: 'Neobrutalisme' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
+    { href: '/ui/theming/terminal', label: 'Terminal' },
   ],
 
 }

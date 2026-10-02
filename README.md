@@ -669,6 +669,14 @@ the dark pills on a pale lavender page. Each palette gains `glow` and
 `glowEnd`, the two ends of that gradient, and `var(--su-sn-backdrop)`
 is the page's ground with a violet light falling on it.
 
+`terminal` is one monospace face on a dark navy ground, after Advent of
+Code — grey text, green links, white for emphasis and a glow on what is
+lit. Actions are bracketed words, `[Save]`; a checkbox is `[ ]` until it
+is `[X]`; an `h2` is ruled off as `--- Title ---`; nothing is rounded or
+shadowed, and success is the gold of a star. Light mode prints it in navy
+on pale paper, without the glow. Set the page in it too with
+`body { background: var(--su-bg); color: var(--su-text); font-family: var(--su-font-mono) }`.
+
 ### Icons
 
 `icon()` returns an inline `<svg>` from a set of 99 glyphs, drawn on one
