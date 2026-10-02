@@ -428,6 +428,8 @@
 .su-carousel-track:focus-visible,
 .su-carousel-dot:focus-visible,
 .su-menu-item:focus-visible,
+.su-modal-close:focus-visible,
+.su-alert-dismiss:focus-visible,
 .su-list-item-action:focus-visible,
 .su-collapsible-trigger:focus-visible,
 .su-switch input:focus-visible + .su-switch-track,
@@ -2167,15 +2169,27 @@ html:has(.su-drawer--lock:modal) {
   background: var(--su-bg-subtle);
 }
 
+/*
+ * A square with the `×` centred in it, so the focus ring — which a
+ * dialog's close button usually wears from the moment it opens, being
+ * the first thing in it to take focus — is even on all four sides.
+ * The negative margin keeps it from pushing the header taller.
+ */
 .su-modal-close {
   flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  margin-block: -0.25rem;
+  margin-inline-end: -0.35rem;
+  padding: 0;
   background: transparent;
   border: 0;
   color: var(--su-text-subtle);
   font-size: var(--su-text-xl);
   line-height: 1;
   cursor: pointer;
-  padding: 0.1rem 0.3rem;
   border-radius: var(--su-radius-sm);
 }
 
