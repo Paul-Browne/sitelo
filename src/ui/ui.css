@@ -1623,8 +1623,20 @@ a.su-list-item:hover,
   margin-bottom: 0.15rem;
 }
 
+/*
+ * A square with the cross centred in it, as the modal's close button
+ * is. The negative margin centres it on the alert's first line of text
+ * — `--su-text-sm` at `--su-leading-snug`, as `.su-alert` sets — rather
+ * than letting it hang below.
+ */
 .su-alert-dismiss {
   flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-block: calc((var(--su-text-sm) * var(--su-leading-snug) - 1.5rem) / 2);
+  padding: 0;
   background: transparent;
   border: 0;
   color: inherit;
@@ -1632,7 +1644,6 @@ a.su-list-item:hover,
   cursor: pointer;
   font-size: var(--su-text-md);
   line-height: 1;
-  padding: 0.1rem 0.2rem;
   border-radius: var(--su-radius-sm);
 }
 

@@ -658,6 +658,8 @@ test('toast() names its close button in the language it is given', (t) => {
     close(toast('Tallennettu', { duration: 0, dismissLabel: 'Sulje' })).attributes['aria-label'],
     'Sulje',
   );
+  // Written out in the runtime rather than imported — this keeps it the same drawing.
+  assert.equal(close(toast('Saved', { duration: 0 })).innerHTML, ui.icon('close'));
 });
 
 /** A `<dialog>` stub that records what was done to it. */

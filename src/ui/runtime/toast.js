@@ -48,7 +48,13 @@ export function toast(message, { color = 'neutral', duration = 4000, dismissLabe
   dismiss.type = 'button'
   dismiss.className = 'su-alert-dismiss'
   dismiss.setAttribute('aria-label', String(dismissLabel))
-  dismiss.innerHTML = '&times;'
+  /*
+   * The `close` icon written out, rather than imported from the icon set
+   * and with it every other glyph, and not `&times;`, which a font sets
+   * below the middle of the line. A test holds it to `icon('close')`.
+   */
+  dismiss.innerHTML =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="su-icon" aria-hidden="true"><path d="m6 6 12 12"/><path d="m18 6-12 12"/></svg>'
   /*
    * A listener rather than the inline import the server-rendered alerts
    * use: this button is built by a module that is already running, so

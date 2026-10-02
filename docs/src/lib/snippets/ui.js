@@ -470,7 +470,7 @@ head(
     handler: `<!-- rendered by alert({ dismissible: true }) -->
 <button class="su-alert-dismiss"
         onclick="import('/su/alert.js').then(m=>m.dismiss(this))">
-  &times;
+  <svg class="su-icon" …></svg>
 </button>`,
 
     client: `// src/main.js

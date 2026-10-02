@@ -75,7 +75,8 @@ export function alert(...args) {
             onclick: handler('alert', 'dismiss(this)'),
             'aria-label': String(dismissLabel),
           },
-          '&times;',
+          // The icon, not `&times;`, for the reason `closeButton()` gives.
+          drawIcon('close'),
         )
       : '',
   )

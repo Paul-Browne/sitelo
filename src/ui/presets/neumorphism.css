@@ -805,7 +805,7 @@ button.su-chip:hover {
   width: 1.75rem;
   height: 1.75rem;
   /* Centred on the first line rather than hanging below it. */
-  margin-block: -0.3rem;
+  margin-block: calc((var(--su-text-sm) * var(--su-leading-snug) - 1.75rem) / 2);
   padding: 0;
   border-radius: var(--su-radius-full);
   background: var(--su-surface);
