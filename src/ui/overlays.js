@@ -12,6 +12,7 @@ import {
 } from 'javascript-to-html'
 
 import { commandFallback, dismissFallback, handler } from './handlers.js'
+import { icon } from './icons.js'
 import {
   attrs,
   BUTTON_VARIANTS,
@@ -99,7 +100,7 @@ export function modal(...args) {
 }
 
 /**
- * The `×` that closes a modal or drawer: `command="close"` on the dialog
+ * The cross that closes a modal or drawer: `command="close"` on the dialog
  * `target` names, with the same fallback `button()` adds for a browser
  * without invoker commands.
  *
@@ -117,7 +118,10 @@ export function closeButton({ target, label = 'Close', ...rest } = {}) {
       ...commandFallback({ ...wiring, ...rest }),
     },
     attrs(rest, { class: 'su-modal-close' }),
-    '&times;',
+    // The icon rather than `&times;`: a font puts that glyph wherever its
+    // designer chose, usually below the middle of the line, so it sat low
+    // in the square. The drawing is centred on its own grid.
+    icon('close'),
   )
 }
 

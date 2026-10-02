@@ -2170,7 +2170,7 @@ html:has(.su-drawer--lock:modal) {
 }
 
 /*
- * A square with the `×` centred in it, so the focus ring — which a
+ * A square with the cross centred in it, so the focus ring — which a
  * dialog's close button usually wears from the moment it opens, being
  * the first thing in it to take focus — is even on all four sides.
  * The negative margin keeps it from pushing the header taller.
