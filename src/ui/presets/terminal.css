@@ -1,136 +1,120 @@
 /*!
  * sitelo-ui preset — terminal.
  *
- * One monospace face on a dark navy ground, the way Advent of Code is
- * set: grey text, green links that brighten when pointed at, white for
- * what matters, and a glow in its own colour on the few things that are
- * lit. An action is a bracketed word — `[Save]` — a checkbox is `[ ]`
- * until it is `[X]`, and an `h2` is ruled off as `--- Title ---`.
- * Nothing is rounded and nothing floats on a soft shadow. Linked after
+ * A system console: one monospace face on a black ground, hairline
+ * panels with a ruled-off header, and labels set as a terminal sets
+ * them — bold, in capitals, spaced out. Cyan is the accent: headings,
+ * panel titles, the solid button, focus, and anything selected, which
+ * is printed in reverse, dark on cyan, the way a terminal highlights a
+ * row. The other palettes are its status colours — green, yellow, red —
+ * and an outline button or a tag is drawn in its colour, line and label
+ * alike. Nothing is rounded and nothing casts a shadow. Linked after
  * `ui.css` by `styles({ preset: 'terminal' })`.
  *
- * Dark is the look this comes from. Light keeps the face, the brackets
- * and the square corners and prints them in navy on pale paper, where a
- * glow would only blur the letters — so it has none.
- *
- * The brackets, rules and comment marks are all generated content with
- * empty alternative text, so a screen reader hears the label and not
- * the punctuation round it. Each `content` is declared twice, the plain
- * one first: an engine without the `/ alt` syntax drops the second and
- * keeps the first, rather than dropping the marks altogether.
+ * Dark is the look this comes from. Light keeps every line, capital and
+ * square corner and prints it in black on near-white, with the accent
+ * and status colours taken down far enough to be read on paper.
  */
 
 :root {
   /* The one face everything is set in. Nothing is downloaded: load
-     Source Code Pro on the page and it is used, or the system's own
-     monospace stands in. */
-  --su-tm-font: 'Source Code Pro', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
-    'Liberation Mono', monospace;
+     JetBrains Mono, IBM Plex Mono or Source Code Pro on the page and the
+     first of them there is used, or the system's own monospace. */
+  --su-tm-font: 'JetBrains Mono', 'IBM Plex Mono', 'Source Code Pro', ui-monospace, SFMono-Regular,
+    'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
   --su-font-sans: var(--su-tm-font);
   --su-font-mono: var(--su-tm-font);
 
-  /* One weight, as a terminal has: what stands out does so by colour. */
-  --su-weight-medium: 400;
-  --su-weight-semibold: 400;
-  --su-weight-bold: 400;
+  /* How far apart a label in capitals is set. */
+  --su-tm-tracking: 0.08em;
 
-  /* The largest sizes brought in. A monospace face is wide, and a
-     terminal sets its headings apart by colour more than by size. */
+  /* The largest sizes brought in: a monospace face is wide, and a
+     heading in capitals is wider again. */
   --su-text-xl: 1.25rem;
   --su-text-2xl: 1.5rem;
   --su-text-3xl: 2rem;
   --su-text-4xl: 2.5rem;
 
-  /* A character grid has no curves. In pixels, so the core's
-     `calc(radius - border)` stays a length. */
+  /* No curves. In pixels, so the core's `calc(radius - border)` stays a
+     length. */
   --su-radius-sm: 0px;
   --su-radius-md: 0px;
   --su-radius-lg: 0px;
   --su-radius-full: 0px;
 
-  /* No soft shadows: an edge is a line. A shadow that draws nothing
-     rather than `none`, so one composed with another stays valid. */
+  /* No shadows: an edge is a line. A shadow that draws nothing rather
+     than `none`, so one composed with another stays valid. */
   --su-shadow-sm: 0 0 #0000;
   --su-shadow-md: 0 0 #0000;
   --su-shadow-lg: 0 0 #0000;
 
-  /*
-   * What lights a thing. `--su-tm-glow` is a `text-shadow` in the
-   * colour of the text it is on, as the reference draws its title;
-   * `--su-tm-halo` is how far a lit box's glow reaches. Both are off
-   * here and on in the dark blocks.
-   */
-  --su-tm-glow: none;
-  --su-tm-halo: 0px;
+  /* The brightest text, for the smaller headings and what is current;
+     and the slot a progress bar or a slider runs in. */
+  --su-tm-bright: #000000;
+  --su-tm-track: #dcdcdc;
 
-  /* White, in dark: the reference's emphasis. Headings and anything
-     chosen are set in it. */
-  --su-tm-bright: #0f0f23;
+  --su-bg: #fafafa;
+  --su-bg-subtle: #f4f4f4;
+  --su-surface: #fafafa;
+  --su-surface-2: #f0f0f0;
+  --su-surface-hover: #e6e6e6;
+  --su-border: #d4d4d4;
+  --su-border-strong: #8a8a8a;
+  --su-text: #141414;
+  --su-text-muted: #525252;
+  --su-text-subtle: #666666;
+  --su-overlay: rgba(0, 0, 0, 0.4);
 
-  --su-bg: #f5f5fa;
-  --su-bg-subtle: #efeff6;
-  --su-surface: #f5f5fa;
-  --su-surface-2: #ebebf4;
-  --su-surface-hover: #e1e1ee;
-  --su-border: #c8c8da;
-  --su-border-strong: #6e6e88;
-  --su-text: #2a2a40;
-  --su-text-muted: #4a4a62;
-  --su-text-subtle: #5c5c75;
-  --su-overlay: rgba(15, 15, 35, 0.4);
-
-  --su-primary: #006e00;
-  --su-primary-hover: #005c00;
-  --su-primary-active: #004a00;
+  --su-primary: #00708a;
+  --su-primary-hover: #005c72;
+  --su-primary-active: #004a5c;
   --su-primary-fg: #ffffff;
-  --su-primary-soft: #dcefdc;
-  --su-primary-soft-hover: #cae6ca;
-  --su-primary-soft-fg: #004d00;
-  --su-primary-border: #7dbf7d;
-  --su-primary-ring: rgba(0, 110, 0, 0.3);
+  --su-primary-soft: #dff3f7;
+  --su-primary-soft-hover: #c9eaf1;
+  --su-primary-soft-fg: #004a5c;
+  --su-primary-border: #66b3c4;
+  --su-primary-ring: rgba(0, 112, 138, 0.3);
 
-  --su-neutral: #3d3d57;
-  --su-neutral-hover: #2a2a40;
-  --su-neutral-active: #1c1c2e;
+  --su-neutral: #262626;
+  --su-neutral-hover: #141414;
+  --su-neutral-active: #000000;
   --su-neutral-fg: #ffffff;
-  --su-neutral-soft: #e3e3ee;
-  --su-neutral-soft-hover: #d6d6e5;
-  --su-neutral-soft-fg: #2a2a40;
-  --su-neutral-border: #a9a9c0;
-  --su-neutral-ring: rgba(61, 61, 87, 0.28);
+  --su-neutral-soft: #ececec;
+  --su-neutral-soft-hover: #e0e0e0;
+  --su-neutral-soft-fg: #1f1f1f;
+  --su-neutral-border: #a3a3a3;
+  --su-neutral-ring: rgba(38, 38, 38, 0.28);
 
-  /* Success is the gold of a star — the reference's own colour for a
-     puzzle solved — kept dark enough here to read on paper. */
-  --su-success: #7a6200;
-  --su-success-hover: #665200;
-  --su-success-active: #524200;
+  --su-success: #126b37;
+  --su-success-hover: #0e582d;
+  --su-success-active: #0a4623;
   --su-success-fg: #ffffff;
-  --su-success-soft: #f4ecc4;
-  --su-success-soft-hover: #ede1a8;
-  --su-success-soft-fg: #4d3d00;
-  --su-success-border: #cdb85a;
-  --su-success-ring: rgba(122, 98, 0, 0.3);
+  --su-success-soft: #dcf3e3;
+  --su-success-soft-hover: #c7ebd2;
+  --su-success-soft-fg: #0b4f26;
+  --su-success-border: #7cc596;
+  --su-success-ring: rgba(18, 107, 55, 0.3);
 
-  --su-warning: #a34200;
-  --su-warning-hover: #8a3800;
-  --su-warning-active: #712e00;
+  --su-warning: #7d6300;
+  --su-warning-hover: #695300;
+  --su-warning-active: #554300;
   --su-warning-fg: #ffffff;
-  --su-warning-soft: #fbe3d1;
-  --su-warning-soft-hover: #f7d3b8;
-  --su-warning-soft-fg: #6b2c00;
-  --su-warning-border: #e0a070;
-  --su-warning-ring: rgba(163, 66, 0, 0.3);
+  --su-warning-soft: #f6efcc;
+  --su-warning-soft-hover: #efe4b0;
+  --su-warning-soft-fg: #4d3c00;
+  --su-warning-border: #d1bc5c;
+  --su-warning-ring: rgba(125, 99, 0, 0.3);
 
-  --su-danger: #c8102e;
-  --su-danger-hover: #a80d27;
-  --su-danger-active: #8c0b20;
+  --su-danger: #c4262e;
+  --su-danger-hover: #a51f26;
+  --su-danger-active: #87191f;
   --su-danger-fg: #ffffff;
-  --su-danger-soft: #fadadf;
-  --su-danger-soft-hover: #f5c6ce;
-  --su-danger-soft-fg: #7a0a1c;
-  --su-danger-border: #e8909e;
-  --su-danger-ring: rgba(200, 16, 46, 0.3);
+  --su-danger-soft: #fbe1e2;
+  --su-danger-soft-hover: #f6cdcf;
+  --su-danger-soft-fg: #7a161b;
+  --su-danger-border: #e8999c;
+  --su-danger-ring: rgba(196, 38, 46, 0.3);
 }
 
 /*
@@ -138,9 +122,8 @@
  * those outrank `:root`, so anything the core sets for dark — the
  * shadows included — has to be set again here, where being later wins.
  *
- * The ground, the text, the code wells and their lines are the
- * reference's own colours. The solids are its brightest, read in
- * reverse — navy on the colour — the way a terminal highlights.
+ * Every solid is a light colour carrying a near-black label, so the
+ * reverse-video selection reads the same in every palette.
  */
 [data-theme='dark']:not([data-su-theme='light']),
 [data-su-theme='dark'] {
@@ -148,71 +131,70 @@
   --su-shadow-md: 0 0 #0000;
   --su-shadow-lg: 0 0 #0000;
 
-  --su-tm-glow: 0 0 2px currentColor, 0 0 5px currentColor;
-  --su-tm-halo: 6px;
-  --su-tm-bright: #ffffff;
+  --su-tm-bright: #f5f5f5;
+  --su-tm-track: #333333;
 
-  --su-bg: #0f0f23;
-  --su-bg-subtle: #13132b;
-  --su-surface: #0f0f23;
-  --su-surface-2: #10101a;
-  --su-surface-hover: #19193b;
-  --su-border: #333340;
-  --su-border-strong: #666666;
-  --su-text: #cccccc;
-  --su-text-muted: #a3a3b8;
-  --su-text-subtle: #8a8aa3;
-  --su-overlay: rgba(5, 5, 15, 0.75);
+  --su-bg: #050505;
+  --su-bg-subtle: #0a0a0a;
+  --su-surface: #050505;
+  --su-surface-2: #0c0c0c;
+  --su-surface-hover: #141414;
+  --su-border: #333333;
+  --su-border-strong: #5c5c5c;
+  --su-text: #dcdcdc;
+  --su-text-muted: #8c8c8c;
+  --su-text-subtle: #7f7f7f;
+  --su-overlay: rgba(0, 0, 0, 0.75);
 
-  --su-primary: #00cc00;
-  --su-primary-hover: #99ff99;
-  --su-primary-active: #00b300;
-  --su-primary-fg: #0f0f23;
-  --su-primary-soft: #0d2b1e;
-  --su-primary-soft-hover: #123a28;
-  --su-primary-soft-fg: #99ff99;
-  --su-primary-border: #009900;
-  --su-primary-ring: rgba(0, 204, 0, 0.4);
+  --su-primary: #88e8fd;
+  --su-primary-hover: #b3f1fe;
+  --su-primary-active: #6cdcf5;
+  --su-primary-fg: #050505;
+  --su-primary-soft: #0b2a31;
+  --su-primary-soft-hover: #10373f;
+  --su-primary-soft-fg: #a8eefd;
+  --su-primary-border: #6cc4d8;
+  --su-primary-ring: rgba(136, 232, 253, 0.4);
 
-  --su-neutral: #cccccc;
+  --su-neutral: #dcdcdc;
   --su-neutral-hover: #ffffff;
-  --su-neutral-active: #b3b3b3;
-  --su-neutral-fg: #0f0f23;
-  --su-neutral-soft: #1e1e46;
-  --su-neutral-soft-hover: #28285a;
+  --su-neutral-active: #c2c2c2;
+  --su-neutral-fg: #050505;
+  --su-neutral-soft: #1a1a1a;
+  --su-neutral-soft-hover: #242424;
   --su-neutral-soft-fg: #e6e6e6;
-  --su-neutral-border: #666666;
-  --su-neutral-ring: rgba(204, 204, 204, 0.32);
+  --su-neutral-border: #4d4d4d;
+  --su-neutral-ring: rgba(220, 220, 220, 0.32);
 
-  --su-success: #ffff66;
-  --su-success-hover: #ffffcc;
-  --su-success-active: #e6e65c;
-  --su-success-fg: #0f0f23;
-  --su-success-soft: #2b2b1e;
-  --su-success-soft-hover: #38382a;
-  --su-success-soft-fg: #ffff99;
-  --su-success-border: #99993d;
-  --su-success-ring: rgba(255, 255, 102, 0.36);
+  --su-success: #49fb83;
+  --su-success-hover: #8dfdb2;
+  --su-success-active: #2ce86c;
+  --su-success-fg: #050505;
+  --su-success-soft: #0a2a16;
+  --su-success-soft-hover: #0f3a1f;
+  --su-success-soft-fg: #8dfdb2;
+  --su-success-border: #3dcf6d;
+  --su-success-ring: rgba(73, 251, 131, 0.36);
 
-  --su-warning: #ffa64d;
-  --su-warning-hover: #ffcc99;
-  --su-warning-active: #f2933a;
-  --su-warning-fg: #0f0f23;
-  --su-warning-soft: #34231c;
-  --su-warning-soft-hover: #432d22;
-  --su-warning-soft-fg: #ffcc99;
-  --su-warning-border: #995c26;
-  --su-warning-ring: rgba(255, 166, 77, 0.36);
+  --su-warning: #edfc88;
+  --su-warning-hover: #f6fdbb;
+  --su-warning-active: #dbec6a;
+  --su-warning-fg: #050505;
+  --su-warning-soft: #26280c;
+  --su-warning-soft-hover: #333610;
+  --su-warning-soft-fg: #f3fdb0;
+  --su-warning-border: #c8d46f;
+  --su-warning-ring: rgba(237, 252, 136, 0.36);
 
-  --su-danger: #ff6666;
-  --su-danger-hover: #ffb3b3;
-  --su-danger-active: #ff4d4d;
-  --su-danger-fg: #0f0f23;
-  --su-danger-soft: #371a2a;
-  --su-danger-soft-hover: #462136;
-  --su-danger-soft-fg: #ffb3b3;
-  --su-danger-border: #a33d47;
-  --su-danger-ring: rgba(255, 102, 102, 0.36);
+  --su-danger: #fd5654;
+  --su-danger-hover: #fe8a88;
+  --su-danger-active: #f43d3b;
+  --su-danger-fg: #050505;
+  --su-danger-soft: #2e0d0d;
+  --su-danger-soft-hover: #3f1212;
+  --su-danger-soft-fg: #fea3a2;
+  --su-danger-border: #d94b4a;
+  --su-danger-ring: rgba(253, 86, 84, 0.36);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -221,85 +203,133 @@
     --su-shadow-md: 0 0 #0000;
     --su-shadow-lg: 0 0 #0000;
 
-    --su-tm-glow: 0 0 2px currentColor, 0 0 5px currentColor;
-    --su-tm-halo: 6px;
-    --su-tm-bright: #ffffff;
+    --su-tm-bright: #f5f5f5;
+    --su-tm-track: #333333;
 
-    --su-bg: #0f0f23;
-    --su-bg-subtle: #13132b;
-    --su-surface: #0f0f23;
-    --su-surface-2: #10101a;
-    --su-surface-hover: #19193b;
-    --su-border: #333340;
-    --su-border-strong: #666666;
-    --su-text: #cccccc;
-    --su-text-muted: #a3a3b8;
-    --su-text-subtle: #8a8aa3;
-    --su-overlay: rgba(5, 5, 15, 0.75);
+    --su-bg: #050505;
+    --su-bg-subtle: #0a0a0a;
+    --su-surface: #050505;
+    --su-surface-2: #0c0c0c;
+    --su-surface-hover: #141414;
+    --su-border: #333333;
+    --su-border-strong: #5c5c5c;
+    --su-text: #dcdcdc;
+    --su-text-muted: #8c8c8c;
+    --su-text-subtle: #7f7f7f;
+    --su-overlay: rgba(0, 0, 0, 0.75);
 
-    --su-primary: #00cc00;
-    --su-primary-hover: #99ff99;
-    --su-primary-active: #00b300;
-    --su-primary-fg: #0f0f23;
-    --su-primary-soft: #0d2b1e;
-    --su-primary-soft-hover: #123a28;
-    --su-primary-soft-fg: #99ff99;
-    --su-primary-border: #009900;
-    --su-primary-ring: rgba(0, 204, 0, 0.4);
+    --su-primary: #88e8fd;
+    --su-primary-hover: #b3f1fe;
+    --su-primary-active: #6cdcf5;
+    --su-primary-fg: #050505;
+    --su-primary-soft: #0b2a31;
+    --su-primary-soft-hover: #10373f;
+    --su-primary-soft-fg: #a8eefd;
+    --su-primary-border: #6cc4d8;
+    --su-primary-ring: rgba(136, 232, 253, 0.4);
 
-    --su-neutral: #cccccc;
+    --su-neutral: #dcdcdc;
     --su-neutral-hover: #ffffff;
-    --su-neutral-active: #b3b3b3;
-    --su-neutral-fg: #0f0f23;
-    --su-neutral-soft: #1e1e46;
-    --su-neutral-soft-hover: #28285a;
+    --su-neutral-active: #c2c2c2;
+    --su-neutral-fg: #050505;
+    --su-neutral-soft: #1a1a1a;
+    --su-neutral-soft-hover: #242424;
     --su-neutral-soft-fg: #e6e6e6;
-    --su-neutral-border: #666666;
-    --su-neutral-ring: rgba(204, 204, 204, 0.32);
+    --su-neutral-border: #4d4d4d;
+    --su-neutral-ring: rgba(220, 220, 220, 0.32);
 
-    --su-success: #ffff66;
-    --su-success-hover: #ffffcc;
-    --su-success-active: #e6e65c;
-    --su-success-fg: #0f0f23;
-    --su-success-soft: #2b2b1e;
-    --su-success-soft-hover: #38382a;
-    --su-success-soft-fg: #ffff99;
-    --su-success-border: #99993d;
-    --su-success-ring: rgba(255, 255, 102, 0.36);
+    --su-success: #49fb83;
+    --su-success-hover: #8dfdb2;
+    --su-success-active: #2ce86c;
+    --su-success-fg: #050505;
+    --su-success-soft: #0a2a16;
+    --su-success-soft-hover: #0f3a1f;
+    --su-success-soft-fg: #8dfdb2;
+    --su-success-border: #3dcf6d;
+    --su-success-ring: rgba(73, 251, 131, 0.36);
 
-    --su-warning: #ffa64d;
-    --su-warning-hover: #ffcc99;
-    --su-warning-active: #f2933a;
-    --su-warning-fg: #0f0f23;
-    --su-warning-soft: #34231c;
-    --su-warning-soft-hover: #432d22;
-    --su-warning-soft-fg: #ffcc99;
-    --su-warning-border: #995c26;
-    --su-warning-ring: rgba(255, 166, 77, 0.36);
+    --su-warning: #edfc88;
+    --su-warning-hover: #f6fdbb;
+    --su-warning-active: #dbec6a;
+    --su-warning-fg: #050505;
+    --su-warning-soft: #26280c;
+    --su-warning-soft-hover: #333610;
+    --su-warning-soft-fg: #f3fdb0;
+    --su-warning-border: #c8d46f;
+    --su-warning-ring: rgba(237, 252, 136, 0.36);
 
-    --su-danger: #ff6666;
-    --su-danger-hover: #ffb3b3;
-    --su-danger-active: #ff4d4d;
-    --su-danger-fg: #0f0f23;
-    --su-danger-soft: #371a2a;
-    --su-danger-soft-hover: #462136;
-    --su-danger-soft-fg: #ffb3b3;
-    --su-danger-border: #a33d47;
-    --su-danger-ring: rgba(255, 102, 102, 0.36);
+    --su-danger: #fd5654;
+    --su-danger-hover: #fe8a88;
+    --su-danger-active: #f43d3b;
+    --su-danger-fg: #050505;
+    --su-danger-soft: #2e0d0d;
+    --su-danger-soft-hover: #3f1212;
+    --su-danger-soft-fg: #fea3a2;
+    --su-danger-border: #d94b4a;
+    --su-danger-ring: rgba(253, 86, 84, 0.36);
   }
+}
+
+/* ------------------------------------------------------------------ *
+ * Labels
+ *
+ * Everything that names or operates something rather than being read —
+ * a button, a field's label, a tab, a tag, a column head — is set in
+ * capitals and spaced out, most of it bold. Running text keeps its case.
+ * ------------------------------------------------------------------ */
+
+.su-btn,
+.su-label,
+.su-chip,
+.su-tab,
+.su-nav-link,
+.su-page-link,
+.su-menu-item,
+.su-breadcrumbs,
+.su-divider,
+.su-progress-label,
+.su-alert-title,
+.su-accordion-item > summary,
+.su-collapsible-trigger,
+.su-step-title,
+.su-timeline-time,
+.su-stat-label,
+.su-footer-column-title,
+.su-check-label,
+.su-switch-label,
+.su-table thead th {
+  text-transform: uppercase;
+  letter-spacing: var(--su-tm-tracking);
+}
+
+.su-btn,
+.su-label,
+.su-chip,
+.su-tab,
+.su-nav-link,
+.su-progress-label,
+.su-alert-title,
+.su-accordion-item > summary,
+.su-collapsible-trigger,
+.su-step-title,
+.su-table thead th {
+  font-weight: var(--su-weight-bold);
+}
+
+/* A placeholder reads as a prompt for what goes there: `USERNAME`. */
+.su-input::placeholder,
+.su-textarea::placeholder {
+  text-transform: uppercase;
+  letter-spacing: var(--su-tm-tracking);
 }
 
 /* ------------------------------------------------------------------ *
  * Type
  *
- * Headings at the body's weight and with no tracking taken out — a
- * monospace face is spaced by its grid. The first-level heading is the
- * reference's title, green and lit; the rest are set in white, and an
- * `h2` is ruled off either side as its puzzle titles are.
- *
- * A heading given a tone keeps it: the colours here step aside for
- * `tone: 'muted'` and `'subtle'`, which would otherwise lose to them by
- * coming earlier.
+ * Headings in capitals: the two largest, a card's and a dialog's title
+ * in the accent, the rest in the brightest text. A heading given a tone
+ * keeps it — the colours here step aside for `tone: 'muted'` and
+ * `'subtle'`, which would otherwise lose to them by coming earlier.
  * ------------------------------------------------------------------ */
 
 .su-text--h1,
@@ -309,139 +339,103 @@
 .su-text--h5,
 .su-text--h6,
 .su-hero-title,
-.su-stat-value {
-  letter-spacing: 0;
+.su-card-title,
+.su-modal-title,
+.su-empty-title {
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
-.su-text--h2:not(.su-text--muted):not(.su-text--subtle),
-.su-text--h3:not(.su-text--muted):not(.su-text--subtle),
-.su-text--h4:not(.su-text--muted):not(.su-text--subtle),
-.su-text--h5:not(.su-text--muted):not(.su-text--subtle),
-.su-text--h6:not(.su-text--muted):not(.su-text--subtle) {
-  color: var(--su-tm-bright);
-}
-
-.su-text--h1:not(.su-text--muted):not(.su-text--subtle) {
+.su-text--h1:not(.su-text--muted):not(.su-text--subtle),
+.su-text--h2:not(.su-text--muted):not(.su-text--subtle) {
   color: var(--su-primary);
 }
 
-.su-text--h1 {
-  text-shadow: var(--su-tm-glow);
-}
-
-.su-text--h2::before {
-  content: '--- ';
-  content: '--- ' / '';
-}
-
-.su-text--h2::after {
-  content: ' ---';
-  content: ' ---' / '';
-}
-
-.su-card-title,
-.su-modal-title,
-.su-empty-title,
-.su-stat-value {
+.su-text--h3:not(.su-text--muted):not(.su-text--subtle),
+.su-text--h4:not(.su-text--muted):not(.su-text--subtle),
+.su-text--h5:not(.su-text--muted):not(.su-text--subtle),
+.su-text--h6:not(.su-text--muted):not(.su-text--subtle),
+.su-empty-title {
   color: var(--su-tm-bright);
 }
 
-/*
- * A tag over a heading reads as a comment, the way the reference sets
- * its year between comment marks. The slash is escaped, `\2f`: the
- * minifier takes out anything between an opening and a closing comment
- * mark without looking at strings, and would take these rules with it.
- */
+.su-text--h3,
+.su-text--h4,
+.su-text--h5,
+.su-text--h6 {
+  font-weight: var(--su-weight-bold);
+}
+
+/* A panel's title, as the panels in a console are labelled. */
+.su-card-title,
+.su-modal-title {
+  color: var(--su-primary);
+  font-size: var(--su-text-md);
+  font-weight: var(--su-weight-bold);
+  letter-spacing: var(--su-tm-tracking);
+}
+
+/* A tag over a heading reads as a comment: `// SECTION`. */
 .su-text--overline::before,
 .su-hero-eyebrow::before {
-  content: '\2f* ';
-  content: '\2f* ' / '';
+  content: '// ';
+  content: '// ' / '';
 }
 
-.su-text--overline::after,
-.su-hero-eyebrow::after {
-  content: ' *\2f';
-  content: ' *\2f' / '';
+.su-hero-eyebrow {
+  color: var(--su-text-muted);
 }
 
-.su-link,
-.su-btn--link {
-  text-underline-offset: 0.25em;
-}
-
-.su-link:hover,
-.su-btn--link:hover {
-  text-shadow: var(--su-tm-glow);
+.su-stat-value {
+  color: var(--su-tm-bright);
+  letter-spacing: 0;
 }
 
 /* ------------------------------------------------------------------ *
  * Card
  *
- * A box drawn in lines. The elevated card is ruled double, as a
- * terminal draws a dialog; the flat one in dashes. One that can be
- * clicked does not move when pointed at — its line turns green.
+ * A panel: a hairline round it and its header ruled off from its body.
+ * The elevated one is ruled in the strong line, since there is no
+ * shadow to lift it; one that can be clicked does not move when pointed
+ * at — its line turns to the accent.
  * ------------------------------------------------------------------ */
 
-.su-card--elevated {
-  border: 3px double var(--su-border-strong);
+.su-card-header {
+  padding-block: var(--su-space-md);
+  border-bottom: var(--su-border-width) solid var(--su-border);
 }
 
-.su-card--flat {
-  border-style: dashed;
+.su-card-header + .su-card-body {
+  padding-top: var(--su-card-padding, var(--su-space-lg));
+}
+
+.su-card--elevated {
   border-color: var(--su-border-strong);
 }
 
 .su-card--interactive:hover {
   border-color: var(--su-primary);
-  box-shadow: 0 0 var(--su-tm-halo) var(--su-primary-ring);
+  box-shadow: none;
   transform: none;
 }
 
 /* ------------------------------------------------------------------ *
  * Button
  *
- * Every button but a lone icon, and a link, is a bracketed word:
- * `[Save]`. The brackets are the button's own first and last flex
- * items, so an icon goes inside them, and an icon is one character
- * from its label, as it would be on a terminal's grid.
- *
- * Solid is the word in reverse — navy on the palette's colour — and
- * lights up when pointed at. Ghost is the reference's own `[Submit]`:
- * the word in its colour, brightening over the row highlight.
+ * The solid button is the accent with a dark label. An outline button
+ * is drawn in its palette's colour, line and label both — grey for
+ * neutral — and fills with the soft tint when pointed at. Ghost is the
+ * label alone, over the row highlight. A link-styled button keeps the
+ * case and weight of the text it sits in.
  * ------------------------------------------------------------------ */
 
-.su-btn {
-  gap: 0;
-  letter-spacing: 0;
-}
-
-.su-btn:not(.su-icon-btn):not(.su-btn--link)::before {
-  content: '[';
-  content: '[' / '';
-}
-
-.su-btn:not(.su-icon-btn):not(.su-btn--link)::after {
-  content: ']';
-  content: ']' / '';
-}
-
-.su-btn > .su-btn-icon + .su-btn-label,
-.su-btn > .su-btn-label + .su-btn-icon {
-  margin-inline-start: 1ch;
-}
-
-.su-btn--solid:hover {
-  box-shadow: 0 0 var(--su-tm-halo) var(--su-c);
-}
-
-/* In the colour itself, which every palette holds to AA on the page;
-   pointed at, it sits on the soft fill, where the soft text is the one
-   held to it. */
 .su-btn--outline {
+  border-color: var(--su-c-border);
   color: var(--su-c);
 }
 
 .su-btn--outline:hover {
+  border-color: var(--su-c);
   color: var(--su-c-soft-fg);
 }
 
@@ -451,63 +445,69 @@
 
 .su-btn--ghost:hover {
   background: var(--su-surface-hover);
-  color: var(--su-c-hover);
-  text-shadow: var(--su-tm-glow);
+}
+
+.su-btn--link {
+  font-weight: var(--su-weight-medium);
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 /*
- * A segmented control is its choices in a row, `[List] [Grid]`, with
- * no line round each: the chosen one is in reverse, in its palette's
- * colour — grey, for neutral — as a terminal marks a selection.
+ * A toggle that is on is printed in reverse: its palette's colour, with
+ * the dark label — the accent's, for a neutral toggle, which is what a
+ * segmented control is by default. Held through hover, which the core
+ * gives a soft fill the dark label could not be read on.
  */
-.su-btn-group.su-toggle-group {
-  gap: var(--su-space-xs);
-}
-
-.su-btn-group.su-toggle-group > .su-btn {
-  margin: 0;
-  padding-inline: 0.5rem;
-  border-color: transparent;
-  background: transparent;
-  color: var(--su-text-muted);
-}
-
-.su-btn-group.su-toggle-group > .su-btn:hover {
-  background: var(--su-surface-hover);
-  color: var(--su-text);
-}
-
-.su-btn-group.su-toggle-group > .su-toggle-btn[aria-pressed='true'],
-.su-btn-group.su-toggle-group > .su-toggle-btn[aria-current] {
+.su-toggle-btn[aria-pressed='true'],
+.su-toggle-btn[aria-current],
+.su-toggle-btn[aria-pressed='true']:hover,
+.su-toggle-btn[aria-current]:hover {
+  border-color: var(--su-c);
   background: var(--su-c);
   color: var(--su-c-fg);
+}
+
+.su-toggle-btn.su-c-neutral[aria-pressed='true'],
+.su-toggle-btn.su-c-neutral[aria-current],
+.su-toggle-btn.su-c-neutral[aria-pressed='true']:hover,
+.su-toggle-btn.su-c-neutral[aria-current]:hover {
+  border-color: var(--su-primary);
+  background: var(--su-primary);
+  color: var(--su-primary-fg);
+}
+
+/* The chosen segment's line is in front of its neighbours', which the
+   core overlaps it with. */
+.su-btn-group > .su-toggle-btn[aria-pressed='true'],
+.su-btn-group > .su-toggle-btn[aria-current] {
+  z-index: 1;
 }
 
 /* ------------------------------------------------------------------ *
  * Form controls
  *
- * Fields are the reference's: a dark well inside a grey line, with a
- * green caret. Focus doubles the line in green and, in dark, lights
- * it. A disabled field's line is dashed.
+ * A field is a hairline box on the page with an accent caret, and its
+ * label is a small bold caption above it. Focus doubles the line in the
+ * accent. A checkbox or switch label is a caption too, and brightens
+ * once the control is on.
  * ------------------------------------------------------------------ */
+
+.su-label {
+  color: var(--su-text-muted);
+  font-size: var(--su-text-xs);
+}
 
 .su-input,
 .su-textarea,
 .su-select {
-  background-color: var(--su-surface-2);
   caret-color: var(--su-primary);
-}
-
-.su-input[disabled],
-.su-textarea[disabled],
-.su-select[disabled] {
-  border-style: dashed;
 }
 
 .su-input:focus,
 .su-textarea:focus,
 .su-select:focus {
-  box-shadow: 0 0 0 var(--su-border-width) var(--su-primary), 0 0 var(--su-tm-halo) var(--su-primary-ring);
+  box-shadow: 0 0 0 var(--su-border-width) var(--su-primary);
 }
 
 .su-field--invalid .su-input:focus,
@@ -516,81 +516,92 @@
 .su-input[aria-invalid='true']:focus,
 .su-textarea[aria-invalid='true']:focus,
 .su-select[aria-invalid='true']:focus {
-  box-shadow: 0 0 0 var(--su-border-width) var(--su-danger), 0 0 var(--su-tm-halo) var(--su-danger-ring);
+  box-shadow: 0 0 0 var(--su-border-width) var(--su-danger);
 }
 
 /*
- * A checkbox is `[ ]`, and `[X]` once checked; a radio is `( )` and
- * `(O)`. The drawn box becomes three characters of text, one line tall
- * so it needs no offset to sit on the line, and the real input under it
- * is set in the same face and made as wide, so the two stay one over
- * the other.
+ * With an adornment, the group is the field: one box with the prompt in
+ * it — `> USERNAME` — rather than a well beside an input. The line is an
+ * inset shadow on the group, so it takes no room and the group is the
+ * height of a plain field; the parts inside give up their own lines and
+ * ground, and a hover, focus or error colours the whole box.
  */
-.su-check {
-  --su-check-size: calc(var(--su-check-line) * var(--su-check-font));
+.su-input-group:has(.su-adornment) {
+  background: var(--su-surface);
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-border-strong);
+  transition: box-shadow var(--su-transition);
 }
 
-.su-check input {
-  font: inherit;
-  width: 3ch;
-}
-
-.su-check-box {
-  width: 3ch;
-  border: 0;
-  background: transparent;
-  color: var(--su-text-muted);
-  white-space: pre;
-}
-
-.su-check-box::after,
-.su-check--radio .su-check-box::after {
-  content: '[ ]';
-  width: auto;
-  height: auto;
-  border-radius: 0;
-  background: none;
-  clip-path: none;
-  transform: none;
-  transition: none;
-}
-
-.su-check--radio .su-check-box::after {
-  content: '( )';
-}
-
-.su-check:hover input:not([disabled]) + .su-check-box {
-  background: var(--su-surface-hover);
-}
-
-.su-check input:checked + .su-check-box {
+.su-input-group:has(.su-adornment) > .su-adornment,
+.su-input-group:has(.su-adornment) .su-input {
   border-color: transparent;
   background: transparent;
-  color: var(--su-tm-bright);
-  text-shadow: var(--su-tm-glow);
+  box-shadow: none;
 }
 
-.su-check input:checked + .su-check-box::after {
-  content: '[X]';
-  transform: none;
+.su-input-group:has(.su-adornment) > .su-adornment {
+  color: var(--su-primary);
 }
 
-.su-check--radio input:checked + .su-check-box::after {
-  content: '(O)';
+.su-input-group:has(.su-adornment--start) .su-input {
+  padding-inline-start: 0;
+}
+
+.su-input-group:has(.su-adornment--end) .su-input {
+  padding-inline-end: 0;
+}
+
+.su-input-group:has(.su-adornment):hover {
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-text-subtle);
+}
+
+.su-input-group:has(.su-adornment):focus-within {
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-primary), 0 0 0 var(--su-border-width) var(--su-primary);
+}
+
+.su-field--invalid .su-input-group:has(.su-adornment),
+.su-input-group:has(.su-adornment):has(.su-input[aria-invalid='true']) {
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-danger);
+}
+
+.su-field--invalid .su-input-group:has(.su-adornment):focus-within,
+.su-input-group:has(.su-adornment):has(.su-input[aria-invalid='true']):focus-within {
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-danger), 0 0 0 var(--su-border-width) var(--su-danger);
+}
+
+.su-input-group:has(.su-adornment):has(.su-input[disabled]) {
+  background: var(--su-surface-2);
+}
+
+/* A radio stays round, where everything else is square: it is the one
+   shape that tells it from a checkbox before it is chosen. */
+.su-check--radio .su-check-box,
+.su-check--radio .su-check-box::after {
+  border-radius: 50%;
+}
+
+.su-check-label,
+.su-switch-label {
+  color: var(--su-text-muted);
+  transition: color var(--su-transition);
+}
+
+.su-check:has(input:checked) .su-check-label,
+.su-switch:has(input:checked) .su-switch-label {
+  color: var(--su-text);
 }
 
 /*
- * A switch is a slot with a block cursor in it: grey and at the start
- * while off, in the palette's colour and at the end once on, with the
- * slot ruled and filled to match. The track gives up as much padding as
- * its line takes, so the thumb's travel is the core's.
+ * A switch is a ruled slot with a block in it: grey and at the start
+ * while off; once on, the slot fills with its palette's colour and the
+ * block takes the dark label colour, in reverse. The track gives up as
+ * much padding as its line takes, so the thumb's travel is the core's.
  */
 .su-switch-track {
   padding: calc(0.15rem - var(--su-border-width));
   border: var(--su-border-width) solid var(--su-border-strong);
-  background: var(--su-surface-2);
-  transition: background-color var(--su-transition), border-color var(--su-transition),
-    box-shadow var(--su-transition);
+  background: var(--su-surface);
+  transition: background-color var(--su-transition), border-color var(--su-transition);
 }
 
 .su-switch-thumb {
@@ -600,114 +611,145 @@
 
 .su-switch input:checked + .su-switch-track {
   border-color: var(--su-c, var(--su-primary));
-  background: var(--su-c-soft, var(--su-primary-soft));
-  box-shadow: 0 0 var(--su-tm-halo) var(--su-c-ring, var(--su-primary-ring));
-}
-
-.su-switch input:checked + .su-switch-track .su-switch-thumb {
   background: var(--su-c, var(--su-primary));
 }
 
-/* A ruled slot, and a block cursor for the knob: as tall as the core's,
-   and narrower, as a character cell is. */
-.su-slider::-webkit-slider-runnable-track {
-  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-border-strong);
+.su-switch input:checked + .su-switch-track .su-switch-thumb {
+  background: var(--su-c-fg, var(--su-primary-fg));
 }
 
-.su-slider::-moz-range-track {
-  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-border-strong);
+/* A slider runs in the same slot as a progress bar, and its knob is a
+   narrow block, as a character cell is. */
+.su-slider {
+  --su-slider-track: var(--su-tm-track);
 }
 
 .su-slider::-webkit-slider-thumb {
   width: 0.7rem;
-  box-shadow: 0 0 var(--su-tm-halo) var(--su-c, var(--su-primary));
 }
 
 .su-slider::-moz-range-thumb {
   width: 0.7rem;
-  box-shadow: 0 0 var(--su-tm-halo) var(--su-c, var(--su-primary));
 }
 
 /* ------------------------------------------------------------------ *
  * Data display and feedback
  * ------------------------------------------------------------------ */
 
-/* An avatar with no colour of its own is filled with the well, which
-   on the dark ground is all but the page: a line says where it is. */
+/*
+ * A tag is a status: in capitals, in its palette's colour, with a line
+ * of it round the tint — `SYS: OK`. The outline one is the line and the
+ * label on the page.
+ */
+.su-chip {
+  border-color: var(--su-c-border, var(--su-border-strong));
+}
+
+.su-chip--outline {
+  border-color: var(--su-c, var(--su-border-strong));
+  color: var(--su-c, var(--su-text));
+}
+
+/* A count is a box drawn in its colour on the page, not a filled pill;
+   the dot that has no count is still filled. */
+.su-badge {
+  border: var(--su-border-width) solid currentColor;
+  background: var(--su-surface);
+  color: var(--su-c, var(--su-danger));
+}
+
+.su-badge--dot {
+  background: var(--su-c, var(--su-danger));
+}
+
 .su-avatar {
-  border: var(--su-border-width) solid var(--su-border);
+  border: var(--su-border-width) solid var(--su-border-strong);
+  background: var(--su-c-soft, var(--su-surface-2));
+  color: var(--su-c-soft-fg, var(--su-tm-bright));
+}
+
+/*
+ * A table is a listing: column heads in the accent over a rule, rows
+ * with no lines between them, and a row pointed at printed in reverse,
+ * dark on the accent. A line of the page's own colour between cells is
+ * invisible until a row is lit, and then divides its cells.
+ */
+.su-table thead th {
+  background: transparent;
+  color: var(--su-primary);
+}
+
+.su-table td {
+  border-bottom-color: transparent;
+}
+
+.su-table th + th,
+.su-table td + td {
+  border-inline-start: var(--su-border-width) solid var(--su-surface);
+}
+
+.su-table--hover tbody tr:hover td {
+  background: var(--su-primary);
+  color: var(--su-primary-fg);
+}
+
+/* Set straight into a panel, a table runs to its edges, under the
+   header's rule, rather than drawing a second frame inside the first. */
+.su-card > .su-table-wrap {
+  border: 0;
 }
 
 .su-alert--soft {
   border-color: var(--su-c-border, var(--su-border));
 }
 
-/* A bar made of blocks, `[■■■■■   ]`: a ruled slot with a little air
-   inside it, the fill cut into cells. As tall inside as the core's
-   bar, so a height set for that one still holds. */
+/*
+ * A bar is a solid fill running in a dark slot, and its label is a
+ * caption with the value in the bar's own colour: `CPU 42%`.
+ */
 .su-progress-bar {
-  height: calc(var(--su-progress-height, 0.5rem) + 2 * (var(--su-border-width) + 2px));
-  padding: 2px;
+  height: var(--su-progress-height, 0.625rem);
+  background: var(--su-tm-track);
+}
+
+.su-progress-label {
+  color: var(--su-text);
+}
+
+.su-progress-label [data-su-progress-value] {
+  color: var(--su-c, var(--su-primary));
+}
+
+.su-empty-icon {
   border: var(--su-border-width) solid var(--su-border-strong);
   background: transparent;
-}
-
-.su-progress-fill {
-  background: repeating-linear-gradient(
-    90deg,
-    var(--su-c, var(--su-primary)) 0 0.5rem,
-    transparent 0.5rem 0.625rem
-  );
-}
-
-/* The cells start from where the bar does. */
-.su-progress-fill:dir(rtl) {
-  background-position: right;
+  color: var(--su-primary);
 }
 
 /* ------------------------------------------------------------------ *
  * Navigation
  * ------------------------------------------------------------------ */
 
-/*
- * Page numbers are links in the palette's colour on the page, as the
- * reference lists its days. The page you are on is in white and in
- * brackets — `[6]` — so it is marked by more than its colour.
- */
+.su-breadcrumb-item[aria-current='page'] {
+  color: var(--su-tm-bright);
+  font-weight: var(--su-weight-bold);
+}
+
+/* Page numbers are boxes; the page you are on is in reverse. */
 .su-page-link {
-  color: var(--su-c, var(--su-primary));
+  border-color: var(--su-border);
 }
 
 .su-page-link:hover {
-  color: var(--su-c-hover, var(--su-primary-hover));
+  border-color: var(--su-c, var(--su-primary));
+  color: var(--su-c, var(--su-primary));
 }
 
 .su-page-link[aria-current='page'] {
-  background: transparent;
-  color: var(--su-tm-bright);
-  text-shadow: var(--su-tm-glow);
+  border-color: var(--su-c, var(--su-primary));
 }
 
-.su-page-link[aria-current='page']::before {
-  content: '[';
-  content: '[' / '';
-}
-
-.su-page-link[aria-current='page']::after {
-  content: ']';
-  content: ']' / '';
-}
-
-/* The core's own selectors for the selected tab, in all three forms. */
-.su-tab[aria-current='page'],
-.su-tab-input:checked + .su-tab,
-.su-tabs--target > .su-tab:target,
-.su-tabs--target:not(:has(> .su-tab:target)) > .su-tab--default {
-  color: var(--su-tm-bright);
-  text-shadow: var(--su-tm-glow);
-}
-
-/* A chosen pill is printed in reverse, like a chosen segment. */
+/* A chosen pill is in reverse, like a chosen segment. */
 .su-tabs--pills .su-tab:hover {
   background: var(--su-surface-hover);
 }
@@ -718,53 +760,49 @@
 .su-tabs--pills.su-tabs--target:not(:has(> .su-tab:target)) > .su-tab--default {
   background: var(--su-c, var(--su-primary));
   color: var(--su-c-fg, var(--su-primary-fg));
-  text-shadow: none;
 }
 
-/* The bar is the reference's header: the name lit in green, and each
-   link a bracketed word — `[About]` — white for the page you are on. */
+/*
+ * The bar is a console's header: the name in the accent, spaced wide,
+ * and the links in capitals. The page you are on is in the accent on a
+ * raised ground, marked by a bar along its leading edge, as the current
+ * item of a console's sidebar is.
+ */
 .su-appbar-brand {
   color: var(--su-primary);
-  text-shadow: var(--su-tm-glow);
+  font-weight: var(--su-weight-bold);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
 }
 
 .su-nav-link {
-  padding-inline: 0.35rem;
-  color: var(--su-c, var(--su-primary));
-}
-
-.su-nav-link::before {
-  content: '[';
-  content: '[' / '';
-}
-
-.su-nav-link::after {
-  content: ']';
-  content: ']' / '';
+  color: var(--su-text);
 }
 
 .su-nav-link:hover {
-  color: var(--su-c-hover, var(--su-primary-hover));
+  color: var(--su-c, var(--su-primary));
 }
 
 .su-nav-link[aria-current='page'] {
-  background: transparent;
-  color: var(--su-tm-bright);
-  text-shadow: var(--su-tm-glow);
+  background: var(--su-surface-2);
+  color: var(--su-c, var(--su-primary));
+  box-shadow: inset 2px 0 0 var(--su-c, var(--su-primary));
+}
+
+.su-nav-link[aria-current='page']:dir(rtl) {
+  box-shadow: inset -2px 0 0 var(--su-c, var(--su-primary));
 }
 
 /* Anything floating over the page is ruled in the strong line, since
    it has no shadow to lift it. */
 .su-menu-list,
 .su-modal,
-.su-drawer,
-.su-toasts > * {
+.su-drawer {
   border-color: var(--su-border-strong);
 }
 
-/* The item under the pointer or the keys is in reverse, as in a
-   terminal's menus: in the primary, or in its own palette if it has
-   one. */
+/* The item under the pointer or the keys is in reverse: in the accent,
+   or in its own palette if it has one. */
 .su-menu-item:hover,
 .su-menu-item:focus-visible {
   background: var(--su-primary);
@@ -777,11 +815,23 @@
   color: var(--su-c-fg);
 }
 
+/* A dialog is a panel too: its header ruled off, its title in the
+   accent. */
+.su-modal-header {
+  align-items: center;
+  padding-block: var(--su-space-md);
+  border-bottom: var(--su-border-width) solid var(--su-border);
+}
+
+.su-modal-body {
+  padding-top: var(--su-space-lg);
+}
+
 /* ------------------------------------------------------------------ *
  * Accordion and collapsible
  *
- * The turning chevron becomes `[+]`, and `[-]` once open, as a tree
- * view in a terminal marks a branch.
+ * The turning chevron becomes `[+]`, and `[-]` once open, as a tree in
+ * a terminal marks a branch; an open item's header is in the accent.
  * ------------------------------------------------------------------ */
 
 .su-accordion-item > summary::after,
@@ -795,8 +845,8 @@
 }
 
 .su-accordion-item > summary::after {
-  color: var(--su-primary);
   opacity: 1;
+  color: var(--su-text-muted);
 }
 
 .su-accordion-item[open] > summary::after,
@@ -806,29 +856,34 @@
   transform: none;
 }
 
-.su-accordion-item[open] > summary {
-  color: var(--su-tm-bright);
+.su-accordion-item[open] > summary,
+.su-accordion-item[open] > summary::after {
+  color: var(--su-primary);
 }
 
 /* ------------------------------------------------------------------ *
  * Steps
  * ------------------------------------------------------------------ */
 
+.su-step-marker {
+  border-width: var(--su-border-width);
+}
+
 .su-step--current .su-step-marker {
-  box-shadow: 0 0 var(--su-tm-halo) var(--su-primary-ring);
+  background: var(--su-surface);
+  color: var(--su-primary);
 }
 
 /* ------------------------------------------------------------------ *
  * Hero
  *
- * The title is lit like the first-level heading, and ends on a block
- * cursor that blinks a few times when the page loads and then holds
- * still: a cursor blinking for ever is movement nobody can stop.
+ * The title is in capitals in the accent, and ends on a block cursor
+ * that blinks a few times when the page loads and then holds still: a
+ * cursor blinking for ever is movement nobody can stop.
  * ------------------------------------------------------------------ */
 
 .su-hero-title {
   color: var(--su-primary);
-  text-shadow: var(--su-tm-glow);
 }
 
 .su-hero-title::after {
@@ -839,7 +894,6 @@
   margin-inline-start: 0.2em;
   vertical-align: -0.08em;
   background: currentColor;
-  box-shadow: 0 0 var(--su-tm-halo) currentColor;
   animation: su-tm-blink 1.1s steps(1, end) 4;
 }
 
@@ -856,52 +910,27 @@
 /* ------------------------------------------------------------------ *
  * Prose
  *
- * Markdown set as the reference sets a puzzle: headings in white, an
- * `h2` ruled off, emphasis in lit white rather than italic, and a list
- * marked with dashes. The core's selectors, so these win by coming
- * later.
+ * Markdown set like the rest: headings in capitals, the two largest in
+ * the accent, strong text in the brightest. The core's selectors, so
+ * these win by coming later.
  * ------------------------------------------------------------------ */
 
 .su-prose :where(h1, h2, h3, h4, h5, h6):not([class*='su-']) {
   color: var(--su-tm-bright);
-  letter-spacing: 0;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
-.su-prose :where(h2):not([class*='su-'])::before {
-  content: '--- ';
-  content: '--- ' / '';
-}
-
-.su-prose :where(h2):not([class*='su-'])::after {
-  content: ' ---';
-  content: ' ---' / '';
-}
-
-.su-prose :where(em):not([class*='su-']) {
-  color: var(--su-tm-bright);
-  font-style: normal;
-  text-shadow: var(--su-tm-glow);
+.su-prose :where(h1, h2):not([class*='su-']) {
+  color: var(--su-primary);
 }
 
 .su-prose :where(strong, b):not([class*='su-']) {
   color: var(--su-tm-bright);
 }
 
-.su-prose :where(ul):not([class*='su-']) {
-  list-style-type: '- ';
-}
-
-.su-prose :where(a):not([class*='su-']):hover {
-  text-shadow: var(--su-tm-glow);
-}
-
 .su-prose :where(blockquote):not([class*='su-']) {
-  border-inline-start-color: var(--su-border-strong);
   font-style: normal;
-}
-
-.su-prose :where(hr):not([class*='su-']) {
-  border-top-style: dashed;
 }
 
 /* ------------------------------------------------------------------ *

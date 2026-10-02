@@ -5,21 +5,13 @@ export default () =>
   uiLayout({
     title: 'Terminal',
     description:
-      'Une seule police à chasse fixe sur un fond bleu nuit, à la manière d’Advent of Code : des actions entre crochets, des liens verts et une lueur sur ce qui est allumé.',
+      'Une console système : une seule police à chasse fixe sur fond noir, des panneaux au trait fin, des libellés en capitales grasses et un accent cyan, avec tout ce qui est sélectionné en vidéo inverse.',
     activeHref: '/fr/ui/theming/terminal',
     extraHead: [presetPreviewHead('terminal')],
     children: [
       p(
         code('terminal'),
-        ' est une seule police à chasse fixe sur un fond bleu nuit, composée comme Advent of Code : du texte gris, des liens verts qui s’éclairent au survol, du blanc pour ce qui compte et une lueur de sa propre couleur sur les quelques éléments allumés. Une action est un mot entre crochets, ',
-        code('[Enregistrer]'),
-        ' ; une case à cocher est ',
-        code('[ ]'),
-        ' jusqu’à ce qu’elle devienne ',
-        code('[X]'),
-        ', et un titre de second niveau est encadré de tirets, ',
-        code('--- Titre ---'),
-        '. Rien n’est arrondi et rien ne flotte sur une ombre douce : un bord est une ligne, et une carte surélevée a un double trait. Le mode sombre est le rendu d’origine ; le mode clair garde la police, les crochets et les angles droits et les imprime en bleu nuit sur du papier pâle, sans la lueur.',
+        ' est une console système : une seule police à chasse fixe sur fond noir, des panneaux au trait fin dont l’en-tête est séparé par un filet, et chaque libellé — un bouton, l’intitulé d’un champ, un onglet, un en-tête de colonne — en capitales grasses et espacées. Le cyan est l’accent : titres, titres de panneau, bouton plein, focus et tout ce qui est sélectionné, imprimé en vidéo inverse, sombre sur cyan, comme un terminal surligne une ligne. Les autres palettes sont ses couleurs d’état, vert, jaune et rouge, et un bouton à contour ou une étiquette est tracé dans sa couleur, trait et texte compris. Rien n’est arrondi et rien ne projette d’ombre. Le mode sombre est le rendu d’origine ; le mode clair garde chaque trait, chaque capitale et chaque angle droit et l’imprime en noir sur un blanc cassé.',
       ),
       presetPreview('terminal'),
 
@@ -31,9 +23,9 @@ head(
   styles({ preset: 'terminal' }),
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
-// <link rel="stylesheet" href="/su/terminal-9590922b.css">`, 'javascript'),
+// <link rel="stylesheet" href="/su/terminal-176ac9d8.css">`, 'javascript'),
       p(
-        'Composez aussi la page avec — son fond, son gris et sa police — et les composants s’y posent comme ci-dessus. Le préréglage utilise Source Code Pro si la page la charge, sinon la police à chasse fixe du système ; il ne télécharge rien.',
+        'Composez aussi la page avec — son fond, sa couleur de texte et sa police — et les composants s’y posent comme ci-dessus. Le préréglage utilise JetBrains Mono, IBM Plex Mono ou Source Code Pro si la page en charge une, sinon la police à chasse fixe du système ; il ne télécharge rien.',
       ),
       codeBlock('src/styles.css', `body {
   background: var(--su-bg);
@@ -44,13 +36,11 @@ head(
       h2('Vos propres couleurs'),
       p(
         code('theme()'),
-        ' fonctionne toujours par-dessus : un préréglage est un point de départ, pas un fork. La lueur est tracée dans la couleur du texte qui la porte, donc une palette que vous changez luit dans sa nouvelle couleur — ici le primaire passe à l’ambre, comme un terminal plus ancien. Le succès est l’or d’une étoile, comme la référence marque une énigme résolue ; donnez-lui un vert de la même façon si vous préférez. Deux jetons sont propres au préréglage : ',
-        code('--su-tm-bright'),
-        ', le blanc des titres et de tout ce qui est choisi, et ',
-        code('--su-tm-glow'),
-        ', l’ombre que porte ce qui est allumé, qui vaut ',
-        code('none'),
-        ' en mode clair.',
+        ' fonctionne toujours par-dessus : un préréglage est un point de départ, pas un fork — ici l’accent passe à un ambre de phosphore. Deux jetons sont propres au préréglage : ',
+        code('--su-tm-tracking'),
+        ', l’espacement d’un libellé en capitales, et ',
+        code('--su-tm-track'),
+        ', la glissière dans laquelle court une barre de progression ou un curseur.',
       ),
       codeBlock('src/index.ht.js', `head(
   styles({ preset: 'terminal' }),

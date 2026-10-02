@@ -5,21 +5,13 @@ export default () =>
   uiLayout({
     title: 'Terminal',
     description:
-      'Jeden krój o stałej szerokości na ciemnogranatowym tle, na wzór Advent of Code: akcje w nawiasach kwadratowych, zielone linki i poświata na tym, co świeci.',
+      'Konsola systemowa: jeden krój o stałej szerokości na czerni, panele z cienkich linii, etykiety pogrubionymi wersalikami i cyjanowy akcent, a wszystko, co wybrane, w negatywie.',
     activeHref: '/pl/ui/theming/terminal',
     extraHead: [presetPreviewHead('terminal')],
     children: [
       p(
         code('terminal'),
-        ' to jeden krój o stałej szerokości na ciemnogranatowym tle, złożony tak jak Advent of Code: szary tekst, zielone linki, które jaśnieją po najechaniu, biel dla tego, co ważne, i poświata we własnym kolorze na nielicznych świecących elementach. Akcja to słowo w nawiasach kwadratowych, ',
-        code('[Zapisz]'),
-        '; pole wyboru to ',
-        code('[ ]'),
-        ', dopóki nie stanie się ',
-        code('[X]'),
-        ', a nagłówek drugiego poziomu jest odkreślony jako ',
-        code('--- Tytuł ---'),
-        '. Nic nie jest zaokrąglone i nic nie unosi się na miękkim cieniu: krawędź to linia, a podniesiona karta ma podwójną ramkę. Tryb ciemny to oryginalny wygląd; jasny zachowuje krój, nawiasy i proste narożniki i drukuje je granatem na bladym papierze, bez poświaty.',
+        ' to konsola systemowa: jeden krój o stałej szerokości na czarnym tle, panele z cienkich linii z nagłówkiem odkreślonym linią i każda etykieta — przycisk, opis pola, karta, nagłówek kolumny — pogrubionymi, rozstrzelonymi wersalikami. Cyjan jest akcentem: nagłówki, tytuły paneli, pełny przycisk, fokus i wszystko, co wybrane, drukowane w negatywie, ciemnym na cyjanie, tak jak terminal podświetla wiersz. Pozostałe palety to jego kolory stanu, zielony, żółty i czerwony, a przycisk konturowy lub tag rysuje się w jego kolorze — i linię, i tekst. Nic nie jest zaokrąglone i nic nie rzuca cienia. Tryb ciemny to oryginalny wygląd; jasny zachowuje każdą linię, każdy wersalik i każdy prosty narożnik i drukuje je czernią na prawie bieli.',
       ),
       presetPreview('terminal'),
 
@@ -31,9 +23,9 @@ head(
   styles({ preset: 'terminal' }),
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
-// <link rel="stylesheet" href="/su/terminal-9590922b.css">`, 'javascript'),
+// <link rel="stylesheet" href="/su/terminal-176ac9d8.css">`, 'javascript'),
       p(
-        'Złóż w nim także samą stronę — jej tło, jej szarość i jej krój — a komponenty ułożą się na niej jak powyżej. Preset używa Source Code Pro, jeśli strona go wczytuje, a w przeciwnym razie systemowego kroju o stałej szerokości; sam niczego nie pobiera.',
+        'Złóż w nim także samą stronę — jej tło, kolor tekstu i krój — a komponenty ułożą się na niej jak powyżej. Preset używa JetBrains Mono, IBM Plex Mono albo Source Code Pro, jeśli strona wczytuje któryś z nich, a w przeciwnym razie systemowego kroju o stałej szerokości; sam niczego nie pobiera.',
       ),
       codeBlock('src/styles.css', `body {
   background: var(--su-bg);
@@ -44,13 +36,11 @@ head(
       h2('Własne kolory'),
       p(
         code('theme()'),
-        ' dalej działa na wierzchu, więc preset to punkt wyjścia, a nie fork. Poświata jest rysowana kolorem tekstu, na którym leży, więc zmieniona paleta świeci swoim nowym kolorem — tutaj kolor główny staje się bursztynowy, jak w starszym terminalu. Sukces to złoto gwiazdy, tak jak wzór oznacza rozwiązaną zagadkę; jeśli wolisz, nadaj mu zieleń w ten sam sposób. Dwa tokeny należą do samego presetu: ',
-        code('--su-tm-bright'),
-        ', biel nagłówków i wszystkiego, co wybrane, oraz ',
-        code('--su-tm-glow'),
-        ', cień świecących elementów, który w trybie jasnym wynosi ',
-        code('none'),
-        '.',
+        ' dalej działa na wierzchu, więc preset to punkt wyjścia, a nie fork — tutaj akcent zmienia się w bursztyn luminoforu. Dwa tokeny należą do samego presetu: ',
+        code('--su-tm-tracking'),
+        ', rozstrzelenie etykiet pisanych wersalikami, oraz ',
+        code('--su-tm-track'),
+        ', rynna, w której biegnie pasek postępu albo suwak.',
       ),
       codeBlock('src/index.ht.js', `head(
   styles({ preset: 'terminal' }),
