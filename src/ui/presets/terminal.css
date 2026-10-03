@@ -953,10 +953,14 @@ button.su-chip--outline:hover {
 .su-collapsible-trigger::after {
   content: '[+]';
   content: '[+]' / '';
+  flex: none;
   width: auto;
   height: auto;
   border: 0;
   transform: none;
+  /* Three characters that read as one mark: a long question wraps beside
+     it rather than squeezing it onto two lines. */
+  white-space: nowrap;
 }
 
 .su-accordion-item > summary::after {
