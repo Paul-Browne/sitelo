@@ -5,13 +5,13 @@ export default () =>
   uiLayout({
     title: 'Terminal',
     description:
-      'Sebuah konsol sistem: satu huruf monospace di atas hitam, panel bergaris tipis, label berhuruf kapital tebal, dan aksen sian dengan semua yang dipilih ditampilkan terbalik.',
+      'Sebuah konsol sistem: satu fon monospace di atas hitam, panel bergaris tipis, label berhuruf kapital tebal, dan aksen sian dengan pilihan ditampilkan terbalik.',
     activeHref: '/id/ui/theming/terminal',
     extraHead: [presetPreviewHead('terminal')],
     children: [
       p(
         code('terminal'),
-        ' adalah sebuah konsol sistem: satu huruf monospace di atas latar hitam, panel bergaris tipis yang kepalanya dipisahkan garis, dan setiap label — tombol, keterangan isian, tab, kepala kolom — berhuruf kapital tebal dengan jarak lebar. Sian adalah aksennya: judul, judul panel, tombol padat, fokus, dan semua yang dipilih, yang dicetak terbalik, gelap di atas sian, seperti terminal menyorot satu baris. Palet lainnya adalah warna statusnya, hijau, kuning, dan merah, dan tombol bergaris atau tag digambar dengan warnanya, garis maupun tulisannya. Tidak ada yang membulat dan tidak ada yang berbayang. Mode gelap adalah tampilan aslinya; mode terang mempertahankan setiap garis, setiap huruf kapital, dan setiap sudut tegak, lalu mencetaknya hitam di atas hampir putih.',
+        ' adalah sebuah konsol sistem: satu fon monospace di atas latar hitam, panel bergaris tipis yang kepalanya dipisahkan garis, dan setiap label — tombol, label bidang, tab, kepala kolom — berhuruf kapital, kebanyakan tebal. Sian adalah aksennya: judul besar, judul panel, tombol padat, dan fokus. Sebuah pilihan — baris tabel di bawah penunjuk, segmen yang ditekan, tab pil yang dipilih, nomor halaman saat ini, butir menu di bawah penunjuk — dicetak terbalik, gelap di atas sian, seperti terminal menyorot satu baris. Palet sukses, peringatan, dan bahaya adalah warna statusnya, hijau, kuning, dan merah, dan tombol bergaris tepi atau tag digambar dengan warnanya, garis maupun tulisannya. Tidak ada yang membulat selain radio, dan tidak ada yang berbayang. Mode gelap adalah tampilan aslinya; mode terang mempertahankan setiap garis, setiap huruf kapital, dan setiap sudut tegak, lalu mencetaknya hitam di atas hampir putih.',
       ),
       presetPreview('terminal'),
 
@@ -23,9 +23,9 @@ head(
   styles({ preset: 'terminal' }),
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
-// <link rel="stylesheet" href="/su/terminal-176ac9d8.css">`, 'javascript'),
+// <link rel="stylesheet" href="/su/terminal-06767808.css">`, 'javascript'),
       p(
-        'Susun juga halamannya dengan ini — latarnya, warna teksnya, dan hurufnya — dan komponen akan duduk di atasnya seperti di atas. Preset memakai JetBrains Mono, IBM Plex Mono, atau Source Code Pro bila halaman memuat salah satunya, dan huruf monospace sistem bila tidak; preset tidak mengunduh apa pun.',
+        'Susun juga halamannya dengan ini — latarnya, warna teksnya, dan fonnya — dan komponen akan duduk di atasnya seperti di atas. Preset memakai JetBrains Mono, IBM Plex Mono, atau Source Code Pro bila halaman memuat salah satunya, dan fon monospace sistem bila tidak; preset tidak mengunduh apa pun.',
       ),
       codeBlock('src/styles.css', `body {
   background: var(--su-bg);
@@ -36,17 +36,33 @@ head(
       h2('Warna sendiri'),
       p(
         code('theme()'),
-        ' tetap bekerja di atasnya, jadi preset adalah titik awal, bukan fork — di sini aksennya menjadi kuning ambar fosfor. Preset ini menambahkan dua token miliknya sendiri: ',
+        ' tetap bekerja di atasnya, jadi preset adalah titik awal, bukan fork — di sini aksennya menjadi kuning ambar fosfor, termasuk garis-garis yang menggambarnya. Preset ini menambahkan tiga token miliknya sendiri: ',
         code('--su-tm-tracking'),
-        ', jarak huruf label berhuruf kapital, dan ',
+        ', jarak antarhuruf kapital pada label; ',
         code('--su-tm-track'),
-        ', alur tempat bilah kemajuan atau penggeser berjalan.',
+        ', alur tempat bilah kemajuan atau penggeser berjalan; dan ',
+        code('--su-tm-field'),
+        ', garis di sekeliling bidang, yang di mode gelap sama abu-abu samarnya dengan panel — naikkan bila ingin tepi bidang lebih menonjol.',
       ),
       codeBlock('src/index.ht.js', `head(
   styles({ preset: 'terminal' }),
   theme(
-    { primary: { base: '#8a5200', hover: '#734400', active: '#5c3600', soft: '#f6e6cc', softFg: '#4d2e00' } },
-    { dark: { primary: { base: '#ffb000', hover: '#ffd480', active: '#e69e00', soft: '#33260d', softFg: '#ffd480' } } },
+    {
+      primary: {
+        base: '#8a5200', hover: '#734400', active: '#5c3600',
+        soft: '#f6e6cc', softHover: '#efd9b3', softFg: '#4d2e00',
+        border: '#c9a066', ring: 'rgba(138, 82, 0, 0.3)',
+      },
+    },
+    {
+      dark: {
+        primary: {
+          base: '#ffb000', hover: '#ffd480', active: '#e69e00',
+          soft: '#33260d', softHover: '#45330f', softFg: '#ffd480',
+          border: '#d99600', ring: 'rgba(255, 176, 0, 0.4)',
+        },
+      },
+    },
   ),
 )`, 'javascript'),
     ],
