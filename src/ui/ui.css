@@ -1064,6 +1064,90 @@
   background-repeat: no-repeat;
 }
 
+/*
+ * The list a select opens, drawn by the library rather than the system.
+ *
+ * `appearance: base-select` hands the picker to the stylesheet while
+ * leaving the element a real `<select>`: the keys, the announcements,
+ * form submission and `required` are still the browser's. Where an
+ * engine has not shipped it the whole block is skipped and the system's
+ * own picker opens instead, as it always has — which on a phone is the
+ * wheel or sheet a visitor already knows.
+ *
+ * A single-choice select only: a `multiple` one is a list on the page,
+ * not a picker, and keeps its native rendering.
+ *
+ * The list is drawn as a menu is — the same surface, line, shadow and
+ * row highlight — so a preset that restyles `.su-menu-list` through the
+ * tokens restyles this with it.
+ */
+@supports (appearance: base-select) {
+  .su-select:not([multiple]),
+  .su-select:not([multiple])::picker(select) {
+    appearance: base-select;
+  }
+
+  /* The chevron is the background drawn above, so a preset that redraws
+     it still owns it; the engine's own arrow would sit beside it. */
+  .su-select:not([multiple])::picker-icon {
+    display: none;
+  }
+
+  .su-select:not([multiple])::picker(select) {
+    margin-block: 0.35rem;
+    padding: 0.3rem;
+    border: var(--su-border-width) solid var(--su-border);
+    /* The picker inherits the select's tokens, and a preset that makes
+       the select a pill does so through `--su-radius-md`: capped at a
+       card's corner, so the list is a panel rather than a capsule. */
+    border-radius: min(var(--su-radius-md), var(--su-radius-lg));
+    background: var(--su-surface);
+    color: var(--su-text);
+    box-shadow: var(--su-shadow-md);
+  }
+
+  .su-select:not([multiple]) option {
+    gap: var(--su-space-sm);
+    padding: 0.45rem 0.6rem;
+    border-radius: var(--su-radius-sm);
+    color: var(--su-text);
+    font-size: var(--su-control-font-size, var(--su-text-sm));
+    cursor: pointer;
+  }
+
+  /* Under the pointer and under the keys look the same, as in a menu.
+     Focus moves through the options as the arrows do, so the ring is the
+     library's, drawn inward to stay inside the list's rounded edge. */
+  .su-select:not([multiple]) option:hover,
+  .su-select:not([multiple]) option:focus-visible {
+    background: var(--su-surface-hover);
+  }
+
+  .su-select:not([multiple]) option:focus-visible {
+    outline: 2px solid var(--su-c-focus, var(--su-primary));
+    outline-offset: -2px;
+  }
+
+  .su-select:not([multiple]) option:checked {
+    font-weight: var(--su-weight-semibold);
+  }
+
+  .su-select:not([multiple]) option::checkmark {
+    color: var(--su-primary);
+  }
+
+  .su-select:not([multiple]) option:disabled {
+    color: var(--su-text-subtle);
+    cursor: not-allowed;
+  }
+
+  .su-select:not([multiple]) optgroup {
+    color: var(--su-text-muted);
+    font-size: var(--su-text-xs);
+    font-weight: var(--su-weight-semibold);
+  }
+}
+
 .su-input-group {
   display: flex;
   align-items: stretch;

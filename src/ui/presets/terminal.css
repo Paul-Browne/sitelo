@@ -930,6 +930,30 @@ button.su-chip--outline:hover {
   color: var(--su-c-fg);
 }
 
+/*
+ * A select's list, where the engine lets the stylesheet draw it, is a
+ * menu like the one above: ruled in the strong line, and the option
+ * under the pointer or the keys in reverse. Behind the same test as the
+ * core's, since a system picker that honours an option's colours would
+ * otherwise paint every row.
+ */
+@supports (appearance: base-select) {
+  .su-select:not([multiple])::picker(select) {
+    border-color: var(--su-border-strong);
+  }
+
+  .su-select:not([multiple]) option:hover,
+  .su-select:not([multiple]) option:focus-visible {
+    background: var(--su-primary);
+    color: var(--su-primary-fg);
+  }
+
+  .su-select:not([multiple]) option:hover::checkmark,
+  .su-select:not([multiple]) option:focus-visible::checkmark {
+    color: inherit;
+  }
+}
+
 /* A dialog is a panel too: its header ruled off, its title in the
    accent. */
 .su-modal-header {
