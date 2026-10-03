@@ -3,13 +3,15 @@
  *
  * A system console: one monospace face on a black ground, hairline
  * panels with a ruled-off header, and labels set as a terminal sets
- * them — bold, in capitals, spaced out. Cyan is the accent: headings,
- * panel titles, the solid button, focus, and anything selected, which
+ * them — in capitals, most of them bold. Cyan is the accent: the large
+ * headings, panel titles, the solid button and focus; and a selection —
+ * a hovered row, a pressed segment, a chosen pill, the current page —
  * is printed in reverse, dark on cyan, the way a terminal highlights a
- * row. The other palettes are its status colours — green, yellow, red —
- * and an outline button or a tag is drawn in its colour, line and label
- * alike. Nothing is rounded and nothing casts a shadow. Linked after
- * `ui.css` by `styles({ preset: 'terminal' })`.
+ * row. Success, warning and danger are its status colours — green,
+ * yellow, red — and an outline button or a tag is drawn in its colour,
+ * line and label alike. Nothing is rounded but a radio, and nothing
+ * casts a shadow. Linked after `ui.css` by
+ * `styles({ preset: 'terminal' })`.
  *
  * Dark is the look this comes from. Light keeps every line, capital and
  * square corner and prints it in black on near-white, with the accent
@@ -26,8 +28,9 @@
   --su-font-sans: var(--su-tm-font);
   --su-font-mono: var(--su-tm-font);
 
-  /* How far apart a label in capitals is set. */
-  --su-tm-tracking: 0.08em;
+  /* How far apart a label's capitals are set: a monospace face is
+     spaced by its grid already, so only a touch. */
+  --su-tm-tracking: 0.02em;
 
   /* The largest sizes brought in: a monospace face is wide, and a
      heading in capitals is wider again. */
@@ -50,9 +53,14 @@
   --su-shadow-lg: 0 0 #0000;
 
   /* The brightest text, for the smaller headings and what is current;
-     and the slot a progress bar or a slider runs in. */
+     the slot a progress bar or a slider runs in; and the line round a
+     field. In dark that line is the panels' own faint grey, as the
+     console draws it — raise it for a field edge that stands out more.
+     All literal values, not other tokens, so a theme scoped to part of
+     a page resolves them for itself. */
   --su-tm-bright: #000000;
   --su-tm-track: #dcdcdc;
+  --su-tm-field: #8a8a8a;
 
   --su-bg: #fafafa;
   --su-bg-subtle: #f4f4f4;
@@ -133,6 +141,7 @@
 
   --su-tm-bright: #f5f5f5;
   --su-tm-track: #333333;
+  --su-tm-field: #333333;
 
   --su-bg: #050505;
   --su-bg-subtle: #0a0a0a;
@@ -163,7 +172,7 @@
   --su-neutral-soft: #1a1a1a;
   --su-neutral-soft-hover: #242424;
   --su-neutral-soft-fg: #e6e6e6;
-  --su-neutral-border: #4d4d4d;
+  --su-neutral-border: #333333;
   --su-neutral-ring: rgba(220, 220, 220, 0.32);
 
   --su-success: #49fb83;
@@ -205,6 +214,7 @@
 
     --su-tm-bright: #f5f5f5;
     --su-tm-track: #333333;
+    --su-tm-field: #333333;
 
     --su-bg: #050505;
     --su-bg-subtle: #0a0a0a;
@@ -235,7 +245,7 @@
     --su-neutral-soft: #1a1a1a;
     --su-neutral-soft-hover: #242424;
     --su-neutral-soft-fg: #e6e6e6;
-    --su-neutral-border: #4d4d4d;
+    --su-neutral-border: #333333;
     --su-neutral-ring: rgba(220, 220, 220, 0.32);
 
     --su-success: #49fb83;
@@ -275,7 +285,8 @@
  *
  * Everything that names or operates something rather than being read —
  * a button, a field's label, a tab, a tag, a column head — is set in
- * capitals and spaced out, most of it bold. Running text keeps its case.
+ * capitals, most of it bold. Running text keeps its case. A link in a
+ * menu or a bar stays at the core's weight; the one you are on is bold.
  * ------------------------------------------------------------------ */
 
 .su-btn,
@@ -306,7 +317,6 @@
 .su-label,
 .su-chip,
 .su-tab,
-.su-nav-link,
 .su-progress-label,
 .su-alert-title,
 .su-accordion-item > summary,
@@ -423,8 +433,8 @@
  * Button
  *
  * The solid button is the accent with a dark label. An outline button
- * is drawn in its palette's colour, line and label both — grey for
- * neutral — and fills with the soft tint when pointed at. Ghost is the
+ * is drawn in its palette's colour, line and label both — the panels'
+ * grey line, for neutral — and fills with the soft tint when pointed at. Ghost is the
  * label alone, over the row highlight. A link-styled button keeps the
  * case and weight of the text it sits in.
  * ------------------------------------------------------------------ */
@@ -432,6 +442,10 @@
 .su-btn--outline {
   border-color: var(--su-c-border);
   color: var(--su-c);
+}
+
+.su-btn--outline:not(.su-c-neutral) {
+  border-color: var(--su-c);
 }
 
 .su-btn--outline:hover {
@@ -457,7 +471,8 @@
  * A toggle that is on is printed in reverse: its palette's colour, with
  * the dark label — the accent's, for a neutral toggle, which is what a
  * segmented control is by default. Held through hover, which the core
- * gives a soft fill the dark label could not be read on.
+ * gives a soft fill the dark label could not be read on, and set at the
+ * labels' bold rather than the core's lighter pressed weight.
  */
 .su-toggle-btn[aria-pressed='true'],
 .su-toggle-btn[aria-current],
@@ -466,6 +481,7 @@
   border-color: var(--su-c);
   background: var(--su-c);
   color: var(--su-c-fg);
+  font-weight: var(--su-weight-bold);
 }
 
 .su-toggle-btn.su-c-neutral[aria-pressed='true'],
@@ -478,30 +494,41 @@
 }
 
 /* The chosen segment's line is in front of its neighbours', which the
-   core overlaps it with. */
+   core overlaps it with — a hovered one included, which the core lifts
+   to 1. */
 .su-btn-group > .su-toggle-btn[aria-pressed='true'],
 .su-btn-group > .su-toggle-btn[aria-current] {
-  z-index: 1;
+  z-index: 2;
 }
 
 /* ------------------------------------------------------------------ *
  * Form controls
  *
- * A field is a hairline box on the page with an accent caret, and its
- * label is a small bold caption above it. Focus doubles the line in the
- * accent. A checkbox or switch label is a caption too, and brightens
- * once the control is on.
+ * A field is a hairline box on the page with an accent caret, ruled in
+ * `--su-tm-field`, and its label is a bold caption above it, as large as
+ * what is typed in it. Focus doubles the line in the accent. A checkbox
+ * or switch label is a caption too, muted whether the control is on or
+ * off.
  * ------------------------------------------------------------------ */
 
 .su-label {
   color: var(--su-text-muted);
-  font-size: var(--su-text-xs);
 }
 
 .su-input,
 .su-textarea,
 .su-select {
+  border-color: var(--su-tm-field);
   caret-color: var(--su-primary);
+}
+
+/* The arrow is an open chevron, two strokes, rather than the core's
+   filled triangle. */
+.su-select {
+  background-image: linear-gradient(45deg, transparent 42%, currentColor 42% 58%, transparent 58%),
+    linear-gradient(135deg, transparent 42%, currentColor 42% 58%, transparent 58%);
+  background-position: right 1.1rem top 55%, right 0.75rem top 55%;
+  background-size: 0.4rem 0.4rem;
 }
 
 .su-input:focus,
@@ -510,13 +537,28 @@
   box-shadow: 0 0 0 var(--su-border-width) var(--su-primary);
 }
 
+/* An invalid field keeps its red line when pointed at. */
+.su-field--invalid .su-input:hover:not([disabled]),
+.su-field--invalid .su-textarea:hover:not([disabled]),
+.su-field--invalid .su-select:hover:not([disabled]),
+.su-input[aria-invalid='true']:hover:not([disabled]),
+.su-textarea[aria-invalid='true']:hover:not([disabled]),
+.su-select[aria-invalid='true']:hover:not([disabled]) {
+  border-color: var(--su-danger);
+}
+
+/* It is ruled in red already, so focus is a second red line standing
+   off it rather than more of the same one — an outline, which a forced
+   palette keeps. */
 .su-field--invalid .su-input:focus,
 .su-field--invalid .su-textarea:focus,
 .su-field--invalid .su-select:focus,
 .su-input[aria-invalid='true']:focus,
 .su-textarea[aria-invalid='true']:focus,
 .su-select[aria-invalid='true']:focus {
-  box-shadow: 0 0 0 var(--su-border-width) var(--su-danger);
+  box-shadow: none;
+  outline: var(--su-border-width) solid var(--su-danger);
+  outline-offset: 2px;
 }
 
 /*
@@ -528,7 +570,7 @@
  */
 .su-input-group:has(.su-adornment) {
   background: var(--su-surface);
-  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-border-strong);
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-tm-field);
   transition: box-shadow var(--su-transition);
 }
 
@@ -551,7 +593,7 @@
   padding-inline-end: 0;
 }
 
-.su-input-group:has(.su-adornment):hover {
+.su-input-group:has(.su-adornment):not(:has(.su-input[disabled])):hover {
   box-shadow: inset 0 0 0 var(--su-border-width) var(--su-text-subtle);
 }
 
@@ -566,11 +608,22 @@
 
 .su-field--invalid .su-input-group:has(.su-adornment):focus-within,
 .su-input-group:has(.su-adornment):has(.su-input[aria-invalid='true']):focus-within {
-  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-danger), 0 0 0 var(--su-border-width) var(--su-danger);
+  outline: var(--su-border-width) solid var(--su-danger);
+  outline-offset: 2px;
 }
 
 .su-input-group:has(.su-adornment):has(.su-input[disabled]) {
   background: var(--su-surface-2);
+}
+
+/* The field's own invalid outline is the group's here; the input inside
+   it would otherwise draw a second one round itself. */
+.su-input-group:has(.su-adornment) .su-input:focus {
+  outline: none;
+}
+
+.su-input-group:has(.su-input[disabled]) > .su-adornment {
+  color: var(--su-text-subtle);
 }
 
 /* A radio stays round, where everything else is square: it is the one
@@ -583,12 +636,12 @@
 .su-check-label,
 .su-switch-label {
   color: var(--su-text-muted);
-  transition: color var(--su-transition);
 }
 
-.su-check:has(input:checked) .su-check-label,
-.su-switch:has(input:checked) .su-switch-label {
-  color: var(--su-text);
+/* A disabled one fades, as a disabled switch does as a whole: its own
+   colour above stops it inheriting the core's dimmer one. */
+.su-check:has(input[disabled]) .su-check-label {
+  opacity: 0.6;
 }
 
 /*
@@ -650,6 +703,13 @@
   color: var(--su-c, var(--su-text));
 }
 
+/* As a link or a button it fills with the soft tint when pointed at,
+   and takes the soft label that is held to AA on it. */
+a.su-chip--outline:hover,
+button.su-chip--outline:hover {
+  color: var(--su-c-soft-fg, var(--su-text));
+}
+
 /* A count is a box drawn in its colour on the page, not a filled pill;
    the dot that has no count is still filled. */
 .su-badge {
@@ -669,12 +729,14 @@
 }
 
 /*
- * A table is a listing: column heads in the accent over a rule, rows
- * with no lines between them, and a row pointed at printed in reverse,
- * dark on the accent. A line of the page's own colour between cells is
- * invisible until a row is lit, and then divides its cells.
+ * A table is a listing: column heads in the accent, no lines between
+ * the rows, and a row pointed at printed in reverse, dark on the accent.
+ * Each cell has a clear line at its leading edge, which takes the
+ * page's colour when its row is lit, and so divides the lit row into
+ * its cells.
  */
 .su-table thead th {
+  border-bottom-color: transparent;
   background: transparent;
   color: var(--su-primary);
 }
@@ -685,12 +747,37 @@
 
 .su-table th + th,
 .su-table td + td {
-  border-inline-start: var(--su-border-width) solid var(--su-surface);
+  border-inline-start: var(--su-border-width) solid transparent;
 }
 
 .su-table--hover tbody tr:hover td {
   background: var(--su-primary);
   color: var(--su-primary-fg);
+}
+
+.su-table--hover tbody tr:hover td + td {
+  border-inline-start-color: var(--su-surface);
+}
+
+/*
+ * Anything in a lit row that brings its own colour — a link, a toned
+ * text, inline code, a ghost, outline or link button, an outline tag —
+ * takes the row's dark one instead, or it would be the accent on the
+ * accent. A button pointed at keeps its own: its hover fill is one its
+ * own colours are read on.
+ */
+.su-table--hover tbody tr:hover td :is(.su-link, .su-text, .su-code, .su-chip--outline),
+.su-table--hover tbody tr:hover td :is(.su-btn--ghost, .su-btn--outline, .su-btn--link):not(:hover) {
+  color: inherit;
+}
+
+.su-table--hover tbody tr:hover td :is(.su-code, .su-chip--outline),
+.su-table--hover tbody tr:hover td .su-btn--outline:not(:hover) {
+  border-color: currentColor;
+}
+
+.su-table--hover tbody tr:hover td .su-code {
+  background: transparent;
 }
 
 /* Set straight into a panel, a table runs to its edges, under the
@@ -701,6 +788,25 @@
 
 .su-alert--soft {
   border-color: var(--su-c-border, var(--su-border));
+}
+
+/*
+ * The well a flat card and a skeleton are drawn in is all but the page
+ * on this black: the card takes the panels' line, and a skeleton runs
+ * in the progress bar's slot with a lighter band passing along it.
+ */
+.su-card--flat {
+  border-color: var(--su-border);
+}
+
+.su-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--su-tm-track) 25%,
+    color-mix(in srgb, var(--su-tm-track), var(--su-text) 15%) 37%,
+    var(--su-tm-track) 63%
+  );
+  background-size: 400% 100%;
 }
 
 /*
@@ -740,7 +846,8 @@
   border-color: var(--su-border);
 }
 
-.su-page-link:hover {
+/* Not the page you are on, whose dark label would turn to its fill. */
+.su-page-link:not([aria-current='page']):hover {
   border-color: var(--su-c, var(--su-primary));
   color: var(--su-c, var(--su-primary));
 }
@@ -749,9 +856,15 @@
   border-color: var(--su-c, var(--su-primary));
 }
 
-/* A chosen pill is in reverse, like a chosen segment. */
+/* A chosen pill is in reverse, like a chosen segment. A disabled one
+   does not answer the pointer. */
 .su-tabs--pills .su-tab:hover {
   background: var(--su-surface-hover);
+}
+
+.su-tabs--pills .su-tab[aria-disabled='true']:hover,
+.su-tabs--pills .su-tab-input:disabled + .su-tab:hover {
+  background: transparent;
 }
 
 .su-tabs--pills .su-tab[aria-current='page'],
@@ -764,9 +877,9 @@
 
 /*
  * The bar is a console's header: the name in the accent, spaced wide,
- * and the links in capitals. The page you are on is in the accent on a
- * raised ground, marked by a bar along its leading edge, as the current
- * item of a console's sidebar is.
+ * and the links in capitals. The page you are on is bold, in the accent
+ * on a raised ground, and marked by a bar along its leading edge, as the
+ * current item of a console's sidebar is.
  */
 .su-appbar-brand {
   color: var(--su-primary);
@@ -786,6 +899,7 @@
 .su-nav-link[aria-current='page'] {
   background: var(--su-surface-2);
   color: var(--su-c, var(--su-primary));
+  font-weight: var(--su-weight-bold);
   box-shadow: inset 2px 0 0 var(--su-c, var(--su-primary));
 }
 
@@ -802,7 +916,8 @@
 }
 
 /* The item under the pointer or the keys is in reverse: in the accent,
-   or in its own palette if it has one. */
+   or in a palette given to it as a class, `menuItem({ class:
+   'su-c-danger' })`. */
 .su-menu-item:hover,
 .su-menu-item:focus-visible {
   background: var(--su-primary);
@@ -931,6 +1046,49 @@
 
 .su-prose :where(blockquote):not([class*='su-']) {
   font-style: normal;
+}
+
+/* ------------------------------------------------------------------ *
+ * Forced colours
+ *
+ * A system palette takes away the fills and inset lines that reverse
+ * video and the switch are drawn with, which would leave a chosen
+ * segment, pill, page or bar link looking like the rest and a switch
+ * with no thumb. They are given back in the system's own highlight.
+ * ------------------------------------------------------------------ */
+
+@media (forced-colors: active) {
+  /* Every selector the reverse video is set with above, the neutral
+     toggle's and the held hovers included: a media query adds nothing to
+     a selector's weight, so a lighter one here would lose to them. */
+  .su-toggle-btn[aria-pressed='true'],
+  .su-toggle-btn[aria-current],
+  .su-toggle-btn[aria-pressed='true']:hover,
+  .su-toggle-btn[aria-current]:hover,
+  .su-toggle-btn.su-c-neutral[aria-pressed='true'],
+  .su-toggle-btn.su-c-neutral[aria-current],
+  .su-toggle-btn.su-c-neutral[aria-pressed='true']:hover,
+  .su-toggle-btn.su-c-neutral[aria-current]:hover,
+  .su-tabs--pills .su-tab[aria-current='page'],
+  .su-tabs--pills .su-tab-input:checked + .su-tab,
+  .su-tabs--pills.su-tabs--target > .su-tab:target,
+  .su-tabs--pills.su-tabs--target:not(:has(> .su-tab:target)) > .su-tab--default,
+  .su-page-link[aria-current='page'],
+  .su-nav-link[aria-current='page'] {
+    forced-color-adjust: none;
+    border-color: Highlight;
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .su-switch-thumb {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+
+  .su-switch input:checked + .su-switch-track .su-switch-thumb {
+    background: Highlight;
+  }
 }
 
 /* ------------------------------------------------------------------ *

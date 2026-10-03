@@ -670,12 +670,14 @@ the dark pills on a pale lavender page. Each palette gains `glow` and
 is the page's ground with a violet light falling on it.
 
 `terminal` is a system console — one monospace face on black, hairline
-panels with their header ruled off, and labels in bold, spaced-out
-capitals. Cyan is the accent, and anything selected is printed in
-reverse, dark on cyan; the other palettes are status colours, and an
-outline button or a tag is drawn in its own. Nothing is rounded or
-shadowed. Light mode prints it in black on near-white. `--su-tm-tracking`
-sets how far apart the capitals are, and
+panels with their header ruled off, and labels in capitals, most of them
+bold. Cyan is the accent, and a selection — a hovered row, a pressed
+segment, a chosen pill, the current page — is printed in reverse, dark on
+cyan; success, warning and danger are status colours, and an outline
+button or a tag is drawn in its own. Nothing but a radio is rounded, and
+nothing is shadowed. Light mode prints it in black on near-white.
+`--su-tm-tracking` sets how far apart a label's capitals are,
+`--su-tm-field` the line round a field, and
 `body { background: var(--su-bg); color: var(--su-text); font-family: var(--su-font-mono) }`
 sets the page in it too.
 
