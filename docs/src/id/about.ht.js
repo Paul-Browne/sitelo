@@ -85,6 +85,22 @@ export default () =>
       p(
         'Gagasan yang sama sampai ke bawah: halaman adalah modul yang mengembalikan HTML. sitelo adalah lapisan yang membuat gagasan itu terasa rampung.',
       ),
+      h2('Komponen dan island server'),
+      p(
+        'Fungsi yang mengembalikan HTML ternyata bisa disusun sampai ke atas. ',
+        a({ href: '/id/docs/ui' }, 'sitelo-ui'),
+        ' adalah pustaka komponen yang dibangun dengan cara yang sama — tombol, kartu, formulir, tabel, modal, dan bagian halaman, masing-masing sebuah fungsi yang mengembalikan string. Tanpa kompiler, tanpa runtime, tanpa hidrasi: apa yang Anda bangun itulah yang masuk ke ',
+        code('dist/'),
+        '.',
+      ),
+      p(
+        'Meski begitu, tidak setiap bagian halaman bisa statis. ',
+        a({ href: '/id/docs/islands' }, 'Island server'),
+        ' menjaga halaman tetap statis dan hanya merender bagian yang butuh data segar per permintaan — komentar di bawah artikel yang di-cache, stok di halaman produk — di server saat halaman dibuka. Sebuah island lagi-lagi hanyalah fungsi yang mengembalikan HTML: build mengirim fallback-nya, lalu loader mungil menukarnya dengan fragmen yang sudah dirender.',
+      ),
+      p(
+        'Keduanya tidak mengubah modelnya. Tetap tanpa framework di klien — hanya HTML dari fungsi, saat build atau saat permintaan.',
+      ),
       h2('Perbandingannya'),
       p(
         'Sudah banyak perkakas bagus yang menerbitkan situs statis. Ceruk sitelo sengaja sempit: fungsi JavaScript (atau TypeScript) yang mengembalikan HTML, dengan pengalaman pengembangan Vite, dan sesedikit mungkin framework.',
@@ -97,13 +113,13 @@ export default () =>
           tbody(
             comparisonRow(
               'sitelo',
-              'Fungsi JS/TS → HTML di atas Vite',
-              'Anda ingin HTML dari JavaScript dengan alur kerja Vite sungguhan — tanpa perlu framework komponen',
+              'Fungsi JS/TS → HTML di atas Vite, plus komponen dan island server',
+              'Anda ingin HTML dari JavaScript dengan alur kerja Vite sungguhan — komponen dan bagian per permintaan sudah termasuk, tanpa framework klien atau hidrasi',
             ),
             comparisonRow(
               'Astro',
-              'Komponen + island, kompiler sendiri',
-              'Situs konten yang menginginkan island komponen dan ekosistem lebih besar',
+              'Komponen framework + island klien dan server, kompiler sendiri',
+              'Anda ingin menghidrasi komponen React, Vue, atau Svelte di peramban, dengan ekosistem lebih besar',
             ),
             comparisonRow(
               'Next.js',
@@ -124,7 +140,7 @@ export default () =>
         ),
       ),
       p(
-        'Jika Anda ingin komponen, hidrasi, dan framework — pakailah framework. Jika Anda ingin berkas HTML dari fungsi JavaScript dengan pengalaman Vite, sitelo adalah perkakas terkecil yang menuntaskan seluruh pekerjaannya.',
+        'Jika Anda ingin komponen di sisi klien dan hidrasi — pakailah framework. Jika Anda ingin HTML dari fungsi JavaScript dengan pengalaman Vite — komponen dan bagian yang dirender di server sudah termasuk — sitelo adalah perkakas terkecil yang menuntaskan seluruh pekerjaannya.',
       ),
       p(
         a({ href: '/id/docs' }, 'Baca dokumentasi'),
