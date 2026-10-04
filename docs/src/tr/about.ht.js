@@ -85,6 +85,22 @@ export default () =>
       p(
         'Aşağıya kadar aynı fikir: sayfalar HTML döndüren modüllerdir. sitelo, bu fikri tamamlanmış hissettiren katmandır.',
       ),
+      h2('Bileşenler ve sunucu adaları'),
+      p(
+        'HTML döndüren fonksiyonların en üste kadar birleştirilebildiği ortaya çıktı. ',
+        a({ href: '/tr/docs/ui' }, 'sitelo-ui'),
+        ' aynı şekilde kurulmuş bir bileşen kütüphanesidir: düğmeler, kartlar, formlar, tablolar, modallar ve sayfa bölümleri — her biri string döndüren bir fonksiyon. Derleyici yok, çalışma zamanı yok, hidrasyon yok: ne kurarsanız ',
+        code('dist/'),
+        ' klasörüne o gider.',
+      ),
+      p(
+        'Yine de bir sayfanın her bölümü statik olamaz. ',
+        a({ href: '/tr/docs/islands' }, 'Sunucu adaları'),
+        ' sayfayı statik tutar ve yalnızca her istekte taze veri gereken kısımları — önbelleğe alınmış bir yazının altındaki yorumlar, bir ürün sayfasındaki stok durumu — sayfa görüntülendiğinde bir sunucuda render eder. Bir ada da yine HTML döndüren bir fonksiyondur: derleme onun yedek içeriğini yayımlar, küçücük bir yükleyici de render edilmiş parçayı yerine koyar.',
+      ),
+      p(
+        'İkisi de modeli değiştirmez. İstemci tarafında hâlâ framework yok — yalnızca fonksiyonlardan çıkan HTML, derleme anında ya da istek anında.',
+      ),
       h2('Nasıl karşılaştırılır'),
       p(
         'Statik site yayımlayan pek çok iyi araç zaten var. sitelo’nun alanı bilerek dar: HTML döndüren JavaScript (ya da TypeScript) fonksiyonları, Vite’ın geliştirme deneyimiyle ve olabildiğince az frameworkle.',
@@ -97,13 +113,13 @@ export default () =>
           tbody(
             comparisonRow(
               'sitelo',
-              'Vite üzerinde JS/TS fonksiyonları → HTML',
-              'Gerçek bir Vite iş akışıyla JavaScript’ten HTML istiyorsunuz — bileşen frameworkü gerekmez',
+              'Vite üzerinde JS/TS fonksiyonları → HTML, artı bileşenler ve sunucu adaları',
+              'Gerçek bir Vite iş akışıyla JavaScript’ten HTML istiyorsunuz — bileşenler ve istek başına render edilen bölümler dahil, istemci frameworkü ya da hidrasyon olmadan',
             ),
             comparisonRow(
               'Astro',
-              'Bileşenler + adalar, kendi derleyicisi',
-              'Bileşen adaları ve daha büyük bir ekosistem isteyen içerik siteleri',
+              'Framework bileşenleri + istemci ve sunucu adaları, kendi derleyicisi',
+              'React, Vue ya da Svelte bileşenlerini tarayıcıda hidrate etmek ve daha büyük bir ekosistem istiyorsunuz',
             ),
             comparisonRow(
               'Next.js',
@@ -124,7 +140,7 @@ export default () =>
         ),
       ),
       p(
-        'Bileşen, hidrasyon ve framework istiyorsanız — bir framework kullanın. JavaScript fonksiyonlarından Vite deneyimiyle HTML dosyaları istiyorsanız, işin tamamını yapan en küçük araç sitelo’dur.',
+        'İstemci tarafı bileşen ve hidrasyon istiyorsanız — bir framework kullanın. JavaScript fonksiyonlarından Vite deneyimiyle HTML istiyorsanız — bileşenler ve sunucuda render edilen bölümler dahil — işin tamamını yapan en küçük araç sitelo’dur.',
       ),
       p(
         a({ href: '/tr/docs' }, 'Belgeleri okuyun'),

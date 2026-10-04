@@ -85,6 +85,22 @@ export default () =>
       p(
         'La même idée de bout en bout : les pages sont des modules qui renvoient du HTML. sitelo est la couche qui rend cette idée aboutie.',
       ),
+      h2('Composants et îlots serveur'),
+      p(
+        'Les fonctions qui renvoient du HTML se composent finalement jusqu’en haut. ',
+        a({ href: '/fr/docs/ui' }, 'sitelo-ui'),
+        ' est une bibliothèque de composants construite de la même façon — boutons, cartes, formulaires, tableaux, modales et sections de page, chacun une fonction qui renvoie une chaîne. Ni compilateur, ni runtime, ni hydratation : ce que vous construisez est ce qui arrive dans ',
+        code('dist/'),
+        '.',
+      ),
+      p(
+        'Toutes les zones d’une page ne peuvent pas être statiques pour autant. ',
+        a({ href: '/fr/docs/islands' }, 'Les îlots serveur'),
+        ' gardent la page statique et ne rendent sur un serveur, au moment de la visite, que les parties qui ont besoin de données fraîches à chaque requête — les commentaires sous un article mis en cache, le stock sur une fiche produit. Un îlot est, là encore, une fonction qui renvoie du HTML : le build livre son contenu de repli, et un minuscule chargeur y substitue le fragment rendu.',
+      ),
+      p(
+        'Ni l’un ni l’autre ne change le modèle. Toujours pas de framework côté client — seulement du HTML issu de fonctions, au build ou à la requête.',
+      ),
       h2('Comment il se compare'),
       p(
         'Beaucoup de bons outils publient déjà des sites statiques. La niche de sitelo est étroite à dessein : des fonctions JavaScript (ou TypeScript) qui renvoient du HTML, avec l’expérience de développement de Vite, et le moins de framework possible.',
@@ -97,13 +113,13 @@ export default () =>
           tbody(
             comparisonRow(
               'sitelo',
-              'Fonctions JS/TS → HTML sur Vite',
-              'Vous voulez du HTML issu de JavaScript avec un vrai flux de travail Vite — sans framework à composants',
+              'Fonctions JS/TS → HTML sur Vite, plus composants et îlots serveur',
+              'Vous voulez du HTML issu de JavaScript avec un vrai flux de travail Vite — composants et zones rendues à la requête compris, sans framework client ni hydratation',
             ),
             comparisonRow(
               'Astro',
-              'Composants + îlots, compilateur maison',
-              'Sites de contenu qui veulent des îlots de composants et un écosystème plus vaste',
+              'Composants de framework + îlots client et serveur, compilateur maison',
+              'Vous voulez hydrater des composants React, Vue ou Svelte dans le navigateur, avec un écosystème plus vaste',
             ),
             comparisonRow(
               'Next.js',
@@ -124,7 +140,7 @@ export default () =>
         ),
       ),
       p(
-        'Si vous voulez des composants, de l’hydratation et un framework — prenez un framework. Si vous voulez des fichiers HTML issus de fonctions JavaScript avec l’expérience Vite, sitelo est le plus petit outil qui fait tout le travail.',
+        'Si vous voulez des composants côté client et de l’hydratation — prenez un framework. Si vous voulez du HTML issu de fonctions JavaScript avec l’expérience Vite — composants et zones rendues côté serveur compris —, sitelo est le plus petit outil qui fait tout le travail.',
       ),
       p(
         a({ href: '/fr/docs' }, 'Lire la documentation'),

@@ -86,6 +86,22 @@ export default () =>
       p(
         'Same idea all the way down: pages are modules that return HTML. sitelo is the layer that makes that idea feel finished.',
       ),
+      h2('Components and server islands'),
+      p(
+        'Functions that return HTML turned out to compose all the way up. ',
+        a({ href: '/docs/ui' }, 'sitelo-ui'),
+        ' is a component library built the same way — buttons, cards, forms, tables, modals and page sections, each one a function that returns a string. No compiler, no runtime, no hydration: what you build is what lands in ',
+        code('dist/'),
+        '.',
+      ),
+      p(
+        'Not every region of a page can be static, though. ',
+        a({ href: '/docs/islands' }, 'Server islands'),
+        ' keep the page static and render just the parts that need fresh, per-request data — comments under a cached post, a stock badge on a product page — on a server when the page is viewed. An island is, again, a function that returns HTML: the build ships its fallback, and a tiny loader swaps in the rendered fragment.',
+      ),
+      p(
+        'Neither changes the model. There is still no client framework — just HTML out of functions, at build time or at request time.',
+      ),
       h2('How it compares'),
       p(
         'Plenty of good tools already ship static sites. sitelo’s niche is narrow on purpose: JavaScript (or TypeScript) functions that return HTML, with Vite’s dev experience, and as little framework as possible.',
@@ -98,13 +114,13 @@ export default () =>
           tbody(
             comparisonRow(
               'sitelo',
-              'JS/TS functions → HTML on Vite',
-              'You want HTML out of JavaScript with a real Vite workflow — no component framework required',
+              'JS/TS functions → HTML on Vite, plus components and server islands',
+              'You want HTML out of JavaScript with a real Vite workflow — components and per-request regions included, no client framework or hydration',
             ),
             comparisonRow(
               'Astro',
-              'Components + islands, own compiler',
-              'Content sites that want component islands and a bigger ecosystem',
+              'Framework components + client and server islands, own compiler',
+              'You want to hydrate React, Vue or Svelte components in the browser, with a bigger ecosystem',
             ),
             comparisonRow(
               'Next.js',
@@ -125,7 +141,7 @@ export default () =>
         ),
       ),
       p(
-        'If you want components, hydration, and a framework — use a framework. If you want HTML files out of JavaScript functions with the Vite experience, sitelo is the smallest tool that does the whole job.',
+        'If you want client-side components and hydration — use a framework. If you want HTML out of JavaScript functions with the Vite experience — components and server-rendered regions included — sitelo is the smallest tool that does the whole job.',
       ),
       p(
         a({ href: '/docs' }, 'Read the docs'),

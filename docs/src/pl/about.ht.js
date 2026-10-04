@@ -85,6 +85,22 @@ export default () =>
       p(
         'Ta sama myśl aż do samego dołu: strony to moduły zwracające HTML. sitelo jest warstwą, która sprawia, że ta myśl wydaje się dokończona.',
       ),
+      h2('Komponenty i wyspy serwerowe'),
+      p(
+        'Funkcje zwracające HTML okazały się składać aż do samej góry. ',
+        a({ href: '/pl/docs/ui' }, 'sitelo-ui'),
+        ' to biblioteka komponentów zbudowana w ten sam sposób — przyciski, karty, formularze, tabele, okna modalne i sekcje stron, a każdy z nich to funkcja zwracająca string. Bez kompilatora, bez runtime’u, bez hydratacji: to, co zbudujesz, trafia prosto do ',
+        code('dist/'),
+        '.',
+      ),
+      p(
+        'Nie każdy fragment strony może jednak być statyczny. ',
+        a({ href: '/pl/docs/islands' }, 'Wyspy serwerowe'),
+        ' zostawiają stronę statyczną i renderują na serwerze, w chwili wyświetlenia, tylko te części, które potrzebują świeżych danych przy każdym żądaniu — komentarze pod zbuforowanym wpisem, stan magazynu na stronie produktu. Wyspa to znów funkcja zwracająca HTML: build wysyła jej treść zastępczą, a malutki loader podmienia ją na wyrenderowany fragment.',
+      ),
+      p(
+        'Żadne z nich nie zmienia modelu. Nadal nie ma frameworka po stronie klienta — tylko HTML z funkcji, w czasie builda albo w czasie żądania.',
+      ),
       h2('Jak wypada na tle innych'),
       p(
         'Dobrych narzędzi do publikowania stron statycznych jest już sporo. Nisza sitelo jest wąska z premedytacją: funkcje JavaScriptu (albo TypeScriptu) zwracające HTML, z doświadczeniem pracy Vite i z możliwie najmniejszą ilością frameworka.',
@@ -97,13 +113,13 @@ export default () =>
           tbody(
             comparisonRow(
               'sitelo',
-              'Funkcje JS/TS → HTML na Vite',
-              'Chcesz HTML-a z JavaScriptu przy prawdziwym przepływie pracy Vite — bez frameworka komponentowego',
+              'Funkcje JS/TS → HTML na Vite, plus komponenty i wyspy serwerowe',
+              'Chcesz HTML-a z JavaScriptu przy prawdziwym przepływie pracy Vite — razem z komponentami i fragmentami renderowanymi na żądanie, bez frameworka po stronie klienta i bez hydratacji',
             ),
             comparisonRow(
               'Astro',
-              'Komponenty + wyspy, własny kompilator',
-              'Strony treściowe, które chcą wysp komponentowych i większego ekosystemu',
+              'Komponenty frameworków + wyspy klienckie i serwerowe, własny kompilator',
+              'Chcesz hydratować w przeglądarce komponenty Reacta, Vue albo Svelte i mieć większy ekosystem',
             ),
             comparisonRow(
               'Next.js',
@@ -124,7 +140,7 @@ export default () =>
         ),
       ),
       p(
-        'Jeśli chcesz komponentów, hydratacji i frameworka — użyj frameworka. Jeśli chcesz plików HTML z funkcji JavaScriptu przy doświadczeniu Vite, sitelo jest najmniejszym narzędziem, które robi całą robotę.',
+        'Jeśli chcesz komponentów po stronie klienta i hydratacji — użyj frameworka. Jeśli chcesz HTML-a z funkcji JavaScriptu przy doświadczeniu Vite — razem z komponentami i fragmentami renderowanymi na serwerze — sitelo jest najmniejszym narzędziem, które robi całą robotę.',
       ),
       p(
         a({ href: '/pl/docs' }, 'Przeczytaj dokumentację'),

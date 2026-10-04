@@ -85,6 +85,22 @@ export default () =>
       p(
         'Dieselbe Idee von oben bis unten: Seiten sind Module, die HTML zurückgeben. sitelo ist die Schicht, die diese Idee fertig wirken lässt.',
       ),
+      h2('Komponenten und Server-Islands'),
+      p(
+        'Funktionen, die HTML zurückgeben, lassen sich bis ganz nach oben zusammensetzen. ',
+        a({ href: '/de/docs/ui' }, 'sitelo-ui'),
+        ' ist eine Komponentenbibliothek nach genau diesem Prinzip — Buttons, Karten, Formulare, Tabellen, Modals und Seitenabschnitte, jede eine Funktion, die einen String zurückgibt. Kein Compiler, keine Runtime, keine Hydration: Was du baust, landet genau so in ',
+        code('dist/'),
+        '.',
+      ),
+      p(
+        'Nicht jeder Bereich einer Seite kann aber statisch sein. ',
+        a({ href: '/de/docs/islands' }, 'Server-Islands'),
+        ' halten die Seite statisch und rendern nur die Teile, die frische Daten pro Anfrage brauchen — Kommentare unter einem gecachten Beitrag, eine Lagerbestandsanzeige auf einer Produktseite — beim Aufruf auf einem Server. Eine Island ist wieder eine Funktion, die HTML zurückgibt: Der Build liefert ihren Fallback aus, und ein winziger Loader tauscht das gerenderte Fragment ein.',
+      ),
+      p(
+        'Am Modell ändert keines von beiden etwas. Es gibt weiterhin kein Client-Framework — nur HTML aus Funktionen, zur Build-Zeit oder zur Anfragezeit.',
+      ),
       h2('Im Vergleich'),
       p(
         'Es gibt schon viele gute Werkzeuge, die statische Websites ausliefern. sitelos Nische ist bewusst eng: JavaScript- (oder TypeScript-)Funktionen, die HTML zurückgeben, mit Vites Entwicklererfahrung und so wenig Framework wie möglich.',
@@ -97,13 +113,13 @@ export default () =>
           tbody(
             comparisonRow(
               'sitelo',
-              'JS/TS-Funktionen → HTML auf Vite',
-              'du HTML aus JavaScript willst, mit einem echten Vite-Workflow — ohne Komponenten-Framework',
+              'JS/TS-Funktionen → HTML auf Vite, plus Komponenten und Server-Islands',
+              'du HTML aus JavaScript willst, mit einem echten Vite-Workflow — Komponenten und Bereiche pro Anfrage inklusive, ohne Client-Framework oder Hydration',
             ),
             comparisonRow(
               'Astro',
-              'Komponenten + Islands, eigener Compiler',
-              'Content-Websites, die Komponenten-Islands und ein größeres Ökosystem wollen',
+              'Framework-Komponenten + Client- und Server-Islands, eigener Compiler',
+              'du React-, Vue- oder Svelte-Komponenten im Browser hydrieren willst, mit einem größeren Ökosystem',
             ),
             comparisonRow(
               'Next.js',
@@ -124,7 +140,7 @@ export default () =>
         ),
       ),
       p(
-        'Wenn du Komponenten, Hydration und ein Framework willst — nimm ein Framework. Wenn du HTML-Dateien aus JavaScript-Funktionen mit der Vite-Erfahrung willst, ist sitelo das kleinste Werkzeug, das die ganze Aufgabe erledigt.',
+        'Wenn du clientseitige Komponenten und Hydration willst — nimm ein Framework. Wenn du HTML aus JavaScript-Funktionen mit der Vite-Erfahrung willst — Komponenten und serverseitig gerenderte Bereiche inklusive —, ist sitelo das kleinste Werkzeug, das die ganze Aufgabe erledigt.',
       ),
       p(
         a({ href: '/de/docs' }, 'Dokumentation lesen'),
