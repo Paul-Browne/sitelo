@@ -81,7 +81,9 @@ export default () =>
         ),
         li(
           code('lighthouse'),
-          ' — auditorias Lighthouse da compilação (ver ',
+          ' — auditorias Lighthouse da compilação (requer ',
+          code('npm install -D lighthouse'),
+          '; ver ',
           a({ href: '#auditorias-lighthouse' }, 'Auditorias Lighthouse'),
           ')',
         ),
