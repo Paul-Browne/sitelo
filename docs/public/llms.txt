@@ -20,6 +20,7 @@ Optional peers (install only when you enable the feature):
 ```bash
 npm install -D sharp      # images: true
 npm install -D pagefind   # pagefind: true
+npm install -D lighthouse # sitelo lighthouse
 ```
 
 ## Commands

@@ -73,7 +73,9 @@ export default () =>
         ),
         li(
           code('lighthouse'),
-          ' — audit Lighthouse atas build (lihat ',
+          ' — audit Lighthouse atas build (membutuhkan ',
+          code('npm install -D lighthouse'),
+          '; lihat ',
           a({ href: '#audit-lighthouse' }, 'Audit Lighthouse'),
           ')',
         ),

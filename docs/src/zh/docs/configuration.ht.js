@@ -80,9 +80,11 @@ export default () =>
         ),
         li(
           code('lighthouse'),
-          ' —— 对构建做 Lighthouse 审计（见 ',
+          ' —— 对构建做 Lighthouse 审计（需要 ',
+          code('npm install -D lighthouse'),
+          '；见 ',
           a({ href: '#lighthouse-审计' }, 'Lighthouse 审计'),
-          ')',
+          '）',
         ),
         li(code('generatedTypesDir'), ' —— 默认 ', code("'.sitelo/types'")),
         li(

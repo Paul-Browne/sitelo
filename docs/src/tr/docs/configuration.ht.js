@@ -73,7 +73,9 @@ export default () =>
         ),
         li(
           code('lighthouse'),
-          ' — derlemenin Lighthouse denetimleri (bkz. ',
+          ' — derlemenin Lighthouse denetimleri (',
+          code('npm install -D lighthouse'),
+          ' gerektirir; bkz. ',
           a({ href: '#lighthouse-denetimleri' }, 'Lighthouse denetimleri'),
           ')',
         ),

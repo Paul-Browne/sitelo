@@ -81,7 +81,9 @@ export default () =>
         ),
         li(
           code('lighthouse'),
-          ' — audyty Lighthouse buildu (zobacz ',
+          ' — audyty Lighthouse buildu (wymaga ',
+          code('npm install -D lighthouse'),
+          '; zobacz ',
           a({ href: '#audyty-lighthouse' }, 'Audyty Lighthouse'),
           ')',
         ),
