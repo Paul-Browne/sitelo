@@ -27,6 +27,7 @@ export const DEFAULT_UI_CLIENT_BASE = '/su/'
  */
 export const RUNTIME_MODULES = [
   'alert',
+  'appbar',
   'badge',
   'carousel',
   'dialog',

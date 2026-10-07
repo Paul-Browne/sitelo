@@ -819,7 +819,11 @@ export interface AppBarProps extends BaseProps {
   brand?: Child
   /** Where the brand links to. Default `'/'`. */
   href?: string
-  sticky?: boolean
+  /**
+   * Pin the bar to the top of its scroller. `'auto'` also slides it away
+   * while scrolling down, and back on the way up or at the top.
+   */
+  sticky?: boolean | 'auto'
   blur?: boolean
   as?: string
 }

@@ -90,6 +90,32 @@ export default () =>
   ),
 )`, { align: 'stretch' }),
 
+      h2('Qui s’efface au défilement'),
+      p(
+        code("sticky: 'auto'"),
+        ' garde la barre épinglée, mais la fait glisser hors de vue pendant que la page descend, et la ramène dès qu’elle remonte ou atteint le haut. Elle reste visible tant que le focus clavier est à l’intérieur ou qu’un de ses menus est ouvert.',
+      ),
+      p(
+        'Dans Chromium, c’est uniquement du CSS, ',
+        code('@container scroll-state(scrolled)'),
+        ', et rien n’est téléchargé. Les autres navigateurs chargent un petit module au chargement de la page, qui surveille le défilement à la place. La barre suit la page ; dans une boîte défilante à vous, comme celle-ci, donnez aussi à la boîte ',
+        code('container-type: scroll-state'),
+        '.',
+      ),
+      demo(`div({ style: 'height: 12rem; overflow: auto; container-type: scroll-state; border: 1px solid var(--su-border); border-radius: 0.6rem' },
+  appBar({ brand: 'sitelo', sticky: 'auto', blur: true },
+    appBarSpacer(),
+    appBarActions(chip({ size: 'sm', color: 'primary' }, 'auto')),
+  ),
+  container({ size: 'sm', style: 'padding-block: 1rem' },
+    stack({ gap: 'md' },
+      ...Array.from({ length: 12 }, (unused, index) =>
+        text({ variant: 'small', tone: 'muted' }, 'Descendez, puis remontez — paragraphe ' + (index + 1) + '.'),
+      ),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
       h2('Avec un tiroir sur petits écrans'),
       p(
         'Le schéma habituel : des liens dans la barre sur ordinateur, un bouton qui ouvre un ',
@@ -122,7 +148,7 @@ export default () =>
       propsTable([
         ['brand', 'Child', '', 'Contenu du lien de marque au début.'],
         ['href', 'string', "'/'", 'Vers où pointe la marque.'],
-        ['sticky', 'boolean', 'false', 'Épingle la barre en haut au défilement.'],
+        ['sticky', "boolean | 'auto'", 'false', "Épingle la barre en haut au défilement. 'auto' la masque aussi quand on descend."],
         ['blur', 'boolean', 'false', 'Fond translucide avec flou d’arrière-plan.'],
         ['as', 'string', "'header'", 'Élément à rendre.'],
       ]),

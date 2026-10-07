@@ -679,6 +679,90 @@ test('tabs() gives each set of panel tabs its own radio group', () => {
   assert.match(ui.tabs({ name: 'mine', items: [{ label: 'A', panel: 'x' }] }), /name="mine"/);
 });
 
+/** The body of the first at-rule in `css` whose prelude is `prelude`. */
+function blockOf(css, prelude) {
+  const start = css.indexOf(`${prelude} {`);
+
+  assert.ok(start > -1, `ui.css has ${prelude}`);
+
+  let depth = 0;
+  let end = start;
+
+  for (; end < css.length; end += 1) {
+    if (css[end] === '{') depth += 1;
+    else if (css[end] === '}' && (depth -= 1) === 0) break;
+  }
+
+  return css.slice(css.indexOf('{', start) + 1, end);
+}
+
+test("appBar({ sticky: 'auto' }) is sticky, and more", () => {
+  const html = ui.appBar({ brand: 'x', sticky: 'auto' });
+
+  assert.match(html, /class="su-appbar su-appbar--sticky su-appbar--auto"/);
+
+  // Plain sticky asks for nothing it would not use.
+  const plain = ui.appBar({ brand: 'x', sticky: true });
+
+  assert.match(plain, /class="su-appbar su-appbar--sticky"/);
+  assert.ok(!/ on[a-z]+=/.test(plain), 'no handler');
+});
+
+test("the app bar's module is fetched by the animation the stylesheet starts", () => {
+  // Scrolling the page sends the bar no event of its own, so the module
+  // cannot arrive from `onscroll` the way the carousel's does. What the
+  // bar does hear is `animationstart` — and only from the animation the
+  // stylesheet names, since a spinner inside the bar would bubble one too.
+  const html = ui.appBar({ sticky: 'auto' });
+  const [, body] = / onanimationstart="([^"]*)"/.exec(html);
+  const [, name] = /^event\.animationName=='([a-z-]+)'&&import\(/.exec(body) ?? [];
+
+  assert.ok(name, body);
+
+  const rules = uiCss.replace(/\/\*[\s\S]*?\*\//g, '');
+
+  assert.match(rules, new RegExp(`\\.su-appbar--auto \\{[^}]*animation: ${name} `), 'the bar runs it');
+  // An empty `@keyframes` need not run, and so need not fire anything.
+  assert.match(blockOf(rules, `@keyframes ${name}`), /\{[^}]*\S[^}]*\}/, 'with a keyframe in it');
+});
+
+test('where the browser knows which way the page scrolled, the module is never fetched', () => {
+  // The same query decides both: where `scrolled` is understood, the
+  // block below hides the bar and cancels the animation that would
+  // fetch the module. Anywhere it is not, neither happens.
+  const rules = uiCss.replace(/\/\*[\s\S]*?\*\//g, '');
+
+  assert.match(
+    blockOf(rules, '@container scroll-state(scrolled) or (not scroll-state(scrolled))'),
+    /\.su-appbar--auto \{\s*animation: none;\s*\}/,
+  );
+
+  // And the page is a container to ask, wherever there is a bar asking.
+  assert.match(rules, /:root:has\(\.su-appbar--auto\) \{\s*container-type: scroll-state;/);
+});
+
+test('the native query and the module hide the bar on the same terms', () => {
+  // Two rules, one per source of truth. If they ever let go of the bar
+  // for different reasons, it would stay put for focus in Chromium and
+  // slide away under the cursor in Safari.
+  const rules = uiCss.replace(/\/\*[\s\S]*?\*\//g, '');
+  const native = blockOf(rules, '@container scroll-state(scrolled: bottom) and scroll-state(scrollable: top)');
+  const [, nativeKeep, nativeHide] = /\.su-appbar--auto(:not\(.*\)) \{\s*translate: ([^;]+);/.exec(native) ?? [];
+  const [, scriptKeep, scriptHide] =
+    /\.su-appbar--auto\[data-su-scrolled='down'\](:not\(.*\)) \{\s*translate: ([^;]+);/.exec(rules) ?? [];
+
+  assert.ok(nativeKeep && scriptKeep, 'both rules are there');
+  assert.equal(scriptKeep, nativeKeep);
+  assert.equal(scriptHide, nativeHide);
+  // Focus from a keyboard keeps it, and so does a menu open from it.
+  assert.match(nativeKeep, /:focus-visible/);
+  assert.match(nativeKeep, /\[open\]/);
+});
+
+test('the module marks the bar with the attribute the stylesheet reads', () => {
+  assert.match(runtimeSource('appbar'), /setAttribute\('data-su-scrolled', 'down'\)/);
+});
+
 /* ------------------------------------------------------------------ *
  * Overlays
  * ------------------------------------------------------------------ */
@@ -1040,6 +1124,7 @@ function handlersIn(html) {
 /** One rendering of each component that wires itself to a module. */
 const WIRED = [
   ['alert', ui.alert({ dismissible: true }, 'x')],
+  ['appBar', ui.appBar({ sticky: 'auto' })],
   ['carousel', ui.carousel({ items: ['a', 'b'] })],
   ['themeToggle', ui.themeToggle()],
   ['menu', ui.menu({ trigger: 'x' }, ui.menuItem('y'))],

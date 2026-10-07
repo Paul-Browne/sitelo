@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import * as ui from '../src/ui/index.js';
+import * as appbar from '../src/ui/runtime/appbar.js';
 import * as badge from '../src/ui/runtime/badge.js';
 import * as dialogRuntime from '../src/ui/runtime/dialog.js';
 import * as menuRuntime from '../src/ui/runtime/menu.js';
@@ -741,4 +742,121 @@ test('dialog.js closes on a click outside only, as closedby="any" would', () => 
   kept.open = true;
   dialogRuntime.dismiss(kept, { target: kept, clientX: 10, clientY: 10 });
   assert.equal(kept.open, true, 'a page that asked for less is not overruled');
+});
+
+/* ------------------------------------------------------------------ *
+ * App bar
+ * ------------------------------------------------------------------ */
+
+/**
+ * A page holding one `sticky: 'auto'` bar, and a hand on its scrollbar.
+ *
+ * With `box` the bar sits in a scroller of its own, the way the docs
+ * demo has it, rather than straight in the body. Only what the module
+ * reads is modelled: the offsets of whatever scrolls, the overflow that
+ * says which thing that is, and the listeners it adds.
+ */
+function scrolledPage({ box = false, at = 0 } = {}) {
+  const markup = ui.appBar({ sticky: 'auto' });
+  const body = render(`<body>${box ? `<div class="box">${markup}</div>` : markup}</body>`);
+  const bar = body.querySelector('.su-appbar');
+  const heard = [];
+  const scrollable = (node) =>
+    Object.assign(node, {
+      scrollTop: at,
+      scrollHeight: 3000,
+      clientHeight: 800,
+      addEventListener: (type, listener) => heard.push({ node, type, listener }),
+    });
+
+  const page = scrollable({});
+  const scroller = box ? scrollable(body.querySelector('.box')) : page;
+
+  Object.assign(globalThis.document, {
+    body,
+    scrollingElement: page,
+    addEventListener: page.addEventListener,
+  });
+  globalThis.getComputedStyle = (node) => ({
+    overflowY: node.classList?.contains('box') ? 'auto' : 'visible',
+  });
+
+  return {
+    bar,
+    heard,
+    /** Move whatever the bar sticks to, and tell whoever is listening. */
+    scroll(to) {
+      scroller.scrollTop = to;
+      for (const { node, listener } of heard) if (node === (box ? scroller : page)) listener();
+    },
+    hidden: () => bar.getAttribute('data-su-scrolled') === 'down',
+  };
+}
+
+test('the bar goes on the way down and comes back on the way up', () => {
+  const page = scrolledPage();
+
+  appbar.watch(page.bar);
+
+  page.scroll(300);
+  assert.ok(page.hidden(), 'down');
+
+  page.scroll(280);
+  assert.ok(!page.hidden(), 'up, however little');
+
+  page.scroll(600);
+  assert.ok(page.hidden(), 'down again');
+
+  page.scroll(0);
+  assert.ok(!page.hidden(), 'at the top');
+});
+
+test('a page restored halfway down shows the bar until it moves', () => {
+  // No direction yet, which is what the native query sees too.
+  const page = scrolledPage({ at: 900 });
+
+  appbar.watch(page.bar);
+  assert.ok(!page.hidden());
+
+  page.scroll(950);
+  assert.ok(page.hidden());
+});
+
+test('the bounce past either end is not a change of direction', () => {
+  // Safari reports the overshoot and then springs back. Read raw, the
+  // spring back at the foot of the page is a scroll up, and the bar
+  // would come back every time anyone reached the end.
+  const page = scrolledPage();
+
+  appbar.watch(page.bar);
+  page.scroll(2200);
+  page.scroll(2260);
+  page.scroll(2200);
+  assert.ok(page.hidden(), 'still hidden at the bottom');
+
+  page.scroll(-40);
+  assert.ok(!page.hidden(), 'and above the top is the top');
+});
+
+test('a bar inside a scrolling box follows the box, not the page', () => {
+  const page = scrolledPage({ box: true });
+
+  appbar.watch(page.bar);
+
+  assert.equal(page.heard.length, 1);
+  assert.ok(page.heard[0].node.classList.contains('box'), 'it listens to the box');
+
+  page.scroll(300);
+  assert.ok(page.hidden());
+});
+
+test('watching a bar twice listens once', () => {
+  // The animation that fetches the module starts again whenever the bar
+  // is shown after `display: none`, and calls this again each time.
+  const page = scrolledPage();
+
+  appbar.watch(page.bar);
+  appbar.watch(page.bar);
+
+  assert.equal(page.heard.length, 1);
 });

@@ -2121,6 +2121,73 @@ a.su-list-item:hover,
 
 .su-appbar--sticky { --su-appbar-position: sticky; }
 
+/*
+ * `sticky: 'auto'`: pinned, but out of the way while the page scrolls
+ * down, and back the moment it scrolls up or reaches the top.
+ *
+ * Which way the page last moved is something only a scroll-state query
+ * can ask, and only of a scroll-state container — so the page is made
+ * one wherever a bar wants it. That establishes no containment, so it
+ * changes nothing else about the page. A bar inside a scrolling box of
+ * its own needs the box to say `container-type: scroll-state` too, or it
+ * goes on following the page.
+ */
+:root:has(.su-appbar--auto) {
+  container-type: scroll-state;
+}
+
+.su-appbar--auto {
+  transition: translate var(--su-transition);
+  /*
+   * Not motion: the one keyframe holds the bar where it already is, for
+   * a millisecond. It is here for its `animationstart`, which is what
+   * fetches `/su/appbar.js` — see the block below for where it is not.
+   * An empty `@keyframes` would be simpler and is not enough: an
+   * animation with no keyframes need not run, so need not fire events.
+   */
+  animation: su-appbar-watch 1ms;
+}
+
+@keyframes su-appbar-watch {
+  from { translate: none; }
+}
+
+/*
+ * True whatever the page has done, in any engine that knows what
+ * `scrolled` is — and in one that does not, never true at all. So this
+ * is the test of the browser: where it passes, the query below does the
+ * work, and the animation that would fetch the module is not started.
+ */
+@container scroll-state(scrolled) or (not scroll-state(scrolled)) {
+  .su-appbar--auto {
+    animation: none;
+  }
+}
+
+/*
+ * Hidden only while the last scroll was downward and there is page above
+ * it. `scrolled` alone is not enough for the second half: a page that
+ * is sent back to the top by a script or a link has not been scrolled
+ * up by anyone, and still says `bottom`.
+ *
+ * Kept on screen while someone is using it, whichever way the page
+ * moves: keyboard focus inside it, or a menu or dialog open from it —
+ * both `[open]`, since `menu()` is a `<details>` and `modal()` a
+ * `<dialog>`. `:focus-visible` rather than `:focus-within`, so a click
+ * on an in-page link does not pin the bar over the section it scrolled
+ * to.
+ */
+@container scroll-state(scrolled: bottom) and scroll-state(scrollable: top) {
+  .su-appbar--auto:not(:has(:focus-visible, [open])) {
+    translate: 0 -100%;
+  }
+}
+
+/* The same, where `/su/appbar.js` is keeping count instead. */
+.su-appbar--auto[data-su-scrolled='down']:not(:has(:focus-visible, [open])) {
+  translate: 0 -100%;
+}
+
 .su-appbar--blur {
   background: color-mix(in srgb, var(--su-surface) 82%, transparent);
   backdrop-filter: blur(10px);

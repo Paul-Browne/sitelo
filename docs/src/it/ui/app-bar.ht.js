@@ -90,6 +90,32 @@ export default () =>
   ),
 )`, { align: 'stretch' }),
 
+      h2('Che si toglie di mezzo allo scorrimento'),
+      p(
+        code("sticky: 'auto'"),
+        ' tiene la barra fissata, ma la fa scivolare via mentre la pagina scorre verso il basso e la riporta appena scorre verso l’alto o arriva in cima. Resta visibile finché il focus da tastiera è al suo interno o un suo menu è aperto.',
+      ),
+      p(
+        'In Chromium è tutto CSS, ',
+        code('@container scroll-state(scrolled)'),
+        ', e non si scarica nulla. Gli altri browser scaricano un piccolo modulo al caricamento della pagina, che osserva lo scorrimento al suo posto. La barra segue la pagina; dentro un riquadro scorrevole tuo, come questo, dai anche al riquadro ',
+        code('container-type: scroll-state'),
+        '.',
+      ),
+      demo(`div({ style: 'height: 12rem; overflow: auto; container-type: scroll-state; border: 1px solid var(--su-border); border-radius: 0.6rem' },
+  appBar({ brand: 'sitelo', sticky: 'auto', blur: true },
+    appBarSpacer(),
+    appBarActions(chip({ size: 'sm', color: 'primary' }, 'auto')),
+  ),
+  container({ size: 'sm', style: 'padding-block: 1rem' },
+    stack({ gap: 'md' },
+      ...Array.from({ length: 12 }, (unused, index) =>
+        text({ variant: 'small', tone: 'muted' }, 'Scorri giù, poi torna su — paragrafo ' + (index + 1) + '.'),
+      ),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
       h2('Con un pannello laterale sugli schermi piccoli'),
       p(
         'Lo schema consueto: i link nella barra su desktop, un pulsante che apre un ',
@@ -122,7 +148,7 @@ export default () =>
       propsTable([
         ['brand', 'Child', '', 'Contenuto del link della marca all’inizio.'],
         ['href', 'string', "'/'", 'Dove punta la marca.'],
-        ['sticky', 'boolean', 'false', 'Fissa la barra in cima durante lo scorrimento.'],
+        ['sticky', "boolean | 'auto'", 'false', "Fissa la barra in cima durante lo scorrimento. 'auto' la nasconde anche mentre scorri verso il basso."],
         ['blur', 'boolean', 'false', 'Sfondo traslucido con sfocatura dietro.'],
         ['as', 'string', "'header'", 'Elemento da renderizzare.'],
       ]),

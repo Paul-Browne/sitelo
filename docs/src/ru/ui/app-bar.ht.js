@@ -90,6 +90,32 @@ export default () =>
   ),
 )`, { align: 'stretch' }),
 
+      h2('Уходит с дороги при прокрутке'),
+      p(
+        code("sticky: 'auto'"),
+        ' держит панель прикреплённой, но убирает её, пока страница прокручивается вниз, и возвращает, как только она прокручивается вверх или доходит до начала. Панель остаётся на месте, пока в ней фокус клавиатуры или открыто её меню.',
+      ),
+      p(
+        'В Chromium это чистый CSS, ',
+        code('@container scroll-state(scrolled)'),
+        ', и ничего не загружается. Остальные браузеры при загрузке страницы получают небольшой модуль, который вместо этого следит за прокруткой. Панель следует за страницей; в собственном прокручиваемом блоке, как этот, задайте блоку ещё и ',
+        code('container-type: scroll-state'),
+        '.',
+      ),
+      demo(`div({ style: 'height: 12rem; overflow: auto; container-type: scroll-state; border: 1px solid var(--su-border); border-radius: 0.6rem' },
+  appBar({ brand: 'sitelo', sticky: 'auto', blur: true },
+    appBarSpacer(),
+    appBarActions(chip({ size: 'sm', color: 'primary' }, 'auto')),
+  ),
+  container({ size: 'sm', style: 'padding-block: 1rem' },
+    stack({ gap: 'md' },
+      ...Array.from({ length: 12 }, (unused, index) =>
+        text({ variant: 'small', tone: 'muted' }, 'Прокрутите вниз, потом обратно — абзац ' + (index + 1) + '.'),
+      ),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
       h2('С боковой панелью на узких экранах'),
       p(
         'Обычный приём: ссылки в панели на десктопе и кнопка, открывающая ',
@@ -122,7 +148,7 @@ export default () =>
       propsTable([
         ['brand', 'Child', '', 'Содержимое ссылки-марки в начале.'],
         ['href', 'string', "'/'", 'Куда ведёт марка.'],
-        ['sticky', 'boolean', 'false', 'Прикрепляет панель к верху при прокрутке.'],
+        ['sticky', "boolean | 'auto'", 'false', "Прикрепляет панель к верху при прокрутке. 'auto' ещё и прячет её при прокрутке вниз."],
         ['blur', 'boolean', 'false', 'Полупрозрачный фон с размытием под ним.'],
         ['as', 'string', "'header'", 'Какой элемент рендерить.'],
       ]),

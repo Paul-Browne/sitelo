@@ -90,6 +90,32 @@ export default () =>
   ),
 )`, { align: 'stretch' }),
 
+      h2('Menyingkir saat menggulir'),
+      p(
+        code("sticky: 'auto'"),
+        ' tetap menyematkan bilahnya, tetapi menggesernya keluar selama halaman digulir ke bawah dan memunculkannya kembali begitu digulir ke atas atau sampai di bagian paling atas. Bilah tetap terlihat selama fokus keyboard ada di dalamnya atau ada menu di dalamnya yang terbuka.',
+      ),
+      p(
+        'Di Chromium semuanya CSS, ',
+        code('@container scroll-state(scrolled)'),
+        ', dan tidak ada yang diunduh. Peramban lain mengunduh modul kecil saat halaman dimuat, yang mengamati guliran sebagai gantinya. Bilah mengikuti halaman; di dalam kotak bergulir milik Anda sendiri, seperti yang ini, beri kotaknya ',
+        code('container-type: scroll-state'),
+        ' juga.',
+      ),
+      demo(`div({ style: 'height: 12rem; overflow: auto; container-type: scroll-state; border: 1px solid var(--su-border); border-radius: 0.6rem' },
+  appBar({ brand: 'sitelo', sticky: 'auto', blur: true },
+    appBarSpacer(),
+    appBarActions(chip({ size: 'sm', color: 'primary' }, 'auto')),
+  ),
+  container({ size: 'sm', style: 'padding-block: 1rem' },
+    stack({ gap: 'md' },
+      ...Array.from({ length: 12 }, (unused, index) =>
+        text({ variant: 'small', tone: 'muted' }, 'Gulir ke bawah, lalu kembali ke atas — paragraf ' + (index + 1) + '.'),
+      ),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
       h2('Dengan laci di layar kecil'),
       p(
         'Pola yang lazim: tautan di bilah pada desktop, sebuah tombol yang membuka ',
@@ -122,7 +148,7 @@ export default () =>
       propsTable([
         ['brand', 'Child', '', 'Isi tautan merek di bagian awalnya.'],
         ['href', 'string', "'/'", 'Ke mana mereknya menaut.'],
-        ['sticky', 'boolean', 'false', 'Menyematkan bilahnya di atas saat menggulir.'],
+        ['sticky', "boolean | 'auto'", 'false', "Menyematkan bilahnya di atas saat menggulir. 'auto' juga menyembunyikannya saat menggulir ke bawah."],
         ['blur', 'boolean', 'false', 'Latar tembus cahaya dengan efek buram di belakangnya.'],
         ['as', 'string', "'header'", 'Elemen yang dirender.'],
       ]),
