@@ -27,6 +27,13 @@ export default () =>
           ' — компактное описание API и соглашений',
         ),
         li(
+          a({ href: '/llms-full.txt' }, 'https://sitelo.dev/llms-full.txt'),
+          ' — все руководства, страницы компонентов и примеры в одном Markdown-файле (на английском); каждая страница по отдельности — по её адресу с ',
+          code('.md'),
+          ' на конце, например ',
+          code('/docs/routing.md'),
+        ),
+        li(
           a({ href: '/ru/docs' }, 'https://sitelo.dev/ru/docs'),
           ' — полные руководства',
         ),

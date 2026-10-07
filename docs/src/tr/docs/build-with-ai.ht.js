@@ -23,6 +23,13 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li(a({ href: '/llms.txt' }, 'https://sitelo.dev/llms.txt'), ' — derli toplu API ve kurallar'),
+        li(
+          a({ href: '/llms-full.txt' }, 'https://sitelo.dev/llms-full.txt'),
+          ' — tüm kılavuzlar, bileşen sayfaları ve örnekler tek bir Markdown dosyasında (İngilizce); her sayfanın tek başına kopyası, adresinin sonuna ',
+          code('.md'),
+          ' eklenerek bulunur, örn. ',
+          code('/docs/routing.md'),
+        ),
         li(a({ href: '/tr/docs' }, 'https://sitelo.dev/docs'), ' — tüm rehberler'),
         li(
           a({ href: 'https://github.com/paul-browne/sitelo' }, 'GitHub README'),

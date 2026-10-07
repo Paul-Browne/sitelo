@@ -27,6 +27,13 @@ export default () =>
           ' — API y convenciones en formato compacto',
         ),
         li(
+          a({ href: '/llms-full.txt' }, 'https://sitelo.dev/llms-full.txt'),
+          ' — todas las guías, páginas de componentes y ejemplos en un solo archivo Markdown (en inglés); cada página por separado está en su dirección más ',
+          code('.md'),
+          ', p. ej. ',
+          code('/docs/routing.md'),
+        ),
+        li(
           a({ href: '/es/docs' }, 'https://sitelo.dev/es/docs'),
           ' — guías completas',
         ),

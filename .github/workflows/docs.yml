@@ -26,6 +26,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Full history: each page's sitemap <lastmod> and dateModified come
+          # from its last commit (docs/src/lib/last-modified.js). A shallow
+          # clone has one commit to go on, so the build leaves dates out.
+          fetch-depth: 0
       - uses: actions/setup-node@v7
         with:
           node-version: 22

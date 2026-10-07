@@ -1,4 +1,4 @@
-import { a, div, h2, li, p, span, ul } from 'javascript-to-html'
+import { a, div, h2, li, p, ul } from 'javascript-to-html'
 import { grainStyles } from 'sitelo/ui-extras'
 import { code, codeBlock } from '../lib/code.js'
 import { uiExtrasLayout } from '../lib/layout.js'
@@ -32,7 +32,7 @@ const galleryCard = ([href, name, summary, source]) =>
         preview(source),
       ),
       a({ class: 'ui-gallery-name', href }, name),
-      span({ class: 'ui-gallery-summary' }, summary),
+      p({ class: 'ui-gallery-summary' }, summary),
     ),
   )
 

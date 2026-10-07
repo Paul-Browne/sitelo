@@ -1,8 +1,9 @@
 # sitelo
 
-> Zero-config static site generation powered by Vite. Pages are JavaScript/TypeScript functions that return HTML — no framework, no components, no client runtime unless you add it.
+> Zero-config static site generation powered by Vite. Pages are JavaScript/TypeScript functions that return HTML — no framework, no virtual DOM, and no client runtime unless you add one. A component library of plain functions ships with it as `sitelo/ui`.
 
 Docs: https://sitelo.dev/docs
+Every page as Markdown, in one file: https://sitelo.dev/llms-full.txt
 GitHub: https://github.com/paul-browne/sitelo
 npm: https://www.npmjs.com/package/sitelo
 
@@ -127,13 +128,6 @@ Component library shipped with sitelo, at the `sitelo/ui` entry point. Component
 
 Static site = publish `dist/`. Example host configs: https://sitelo.dev/examples/basic
 
-## Examples
-
-- Basic + deploy configs: https://sitelo.dev/examples/basic
-- Local JSON files as data: https://sitelo.dev/examples/json
-- WordPress REST API: https://sitelo.dev/examples/wordpress
-- Server islands: https://sitelo.dev/examples/islands
-
 ## AI guidance
 
-sitelo is not React, Next, Astro, or Hugo. Do not invent a component framework, `_app` layout system, or hydration model. Prefer functions that return HTML strings. For UI components, use `sitelo/ui` rather than reaching for a React component library — its components are also plain functions returning HTML. Point agents at https://sitelo.dev/llms.txt and https://sitelo.dev/docs.
+sitelo is not React, Next, Astro, or Hugo. Do not invent a component framework, `_app` layout system, or hydration model. Prefer functions that return HTML strings. For UI components, use `sitelo/ui` rather than reaching for a React component library — its components are also plain functions returning HTML. Point agents at https://sitelo.dev/llms.txt and https://sitelo.dev/docs; every page listed below also has a Markdown copy at the same address with `.md` on the end.
