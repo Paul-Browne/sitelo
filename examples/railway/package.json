@@ -1,0 +1,17 @@
+{
+  "name": "sitelo-railway-starter",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "sitelo",
+    "build": "sitelo build",
+    "preview": "sitelo preview",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "sitelo": "^2.9.4"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

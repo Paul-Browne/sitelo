@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Dağıtım',
     description:
-      'Bir sitelo sitesini Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages ya da herhangi bir statik sunucuya dağıtın.',
+      'Bir sitelo sitesini Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway ya da herhangi bir statik sunucuya dağıtın.',
     activeHref: '/tr/docs/deployment',
     children: [
       p(
@@ -78,6 +78,38 @@ export default () =>
         ')? ',
         code('--base /repo/'),
         ' ile derleyin.',
+      ),
+      h2('Railway'),
+      p(
+        'Railway bir Node sunucusu çalıştırır; bu yüzden build’i sunmanın yanında ',
+        a({ href: '/tr/docs/islands' }, 'sunucu adalarını'),
+        ' her istekte işleyebilir. Dağıtıma hazır bir başlangıç projesi ',
+        a(
+          {
+            href: 'https://github.com/paul-browne/sitelo/tree/main/examples/railway',
+            rel: 'noopener',
+          },
+          'examples/railway',
+        ),
+        ' içinde: ',
+        code('railway.json'),
+        ', ',
+        code('npm run build'),
+        ' ile derler ve ',
+        code('server.js'),
+        ' dosyasını başlatır; bu dosya ',
+        code('dist/'),
+        ' klasörünü sunar ve ',
+        code('src/islands/'),
+        ' klasörünü işler.',
+      ),
+      codeBlock('railway.json', s.railway, 'json'),
+      p(
+        'Doğrudan sitelo deposundan mı dağıtıyorsunuz? Servisin kök dizinini ',
+        code('/examples/railway'),
+        ', yapılandırma dosyası yolunu ',
+        code('/examples/railway/railway.json'),
+        ' olarak ayarlayın — Railway yapılandırma dosyasını kök dizinin altında aramaz.',
       ),
       h2('Yayımlamadan önce'),
       ul(

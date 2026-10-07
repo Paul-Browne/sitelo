@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Penerapan',
     description:
-      'Terapkan situs sitelo ke Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, atau hosting statis mana pun.',
+      'Terapkan situs sitelo ke Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway, atau hosting statis mana pun.',
     activeHref: '/id/docs/deployment',
     children: [
       p(
@@ -78,6 +78,38 @@ export default () =>
         ')? Build dengan ',
         code('--base /repo/'),
         '.',
+      ),
+      h2('Railway'),
+      p(
+        'Railway menjalankan server Node, jadi selain menyajikan hasil build ia juga bisa merender ',
+        a({ href: '/id/docs/islands' }, 'island server'),
+        ' di setiap permintaan. Starter yang siap diterapkan ada di ',
+        a(
+          {
+            href: 'https://github.com/paul-browne/sitelo/tree/main/examples/railway',
+            rel: 'noopener',
+          },
+          'examples/railway',
+        ),
+        ': ',
+        code('railway.json'),
+        ' mem-build dengan ',
+        code('npm run build'),
+        ' lalu menjalankan ',
+        code('server.js'),
+        ', yang menyajikan ',
+        code('dist/'),
+        ' dan merender ',
+        code('src/islands/'),
+        '.',
+      ),
+      codeBlock('railway.json', s.railway, 'json'),
+      p(
+        'Menerapkannya langsung dari repositori sitelo? Atur root directory layanan ke ',
+        code('/examples/railway'),
+        ' dan path file konfigurasinya ke ',
+        code('/examples/railway/railway.json'),
+        ' — Railway tidak mencari file konfigurasi di bawah root directory.',
       ),
       h2('Sebelum menerbitkan'),
       ul(
