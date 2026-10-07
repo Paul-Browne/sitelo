@@ -5,6 +5,7 @@ export default () =>
   pageLayout({
     title: '404 — halaman tidak ditemukan',
     description: 'Halaman ini tidak ada.',
+    noindex: true,
     children: [
       p(
         'Tidak ada apa-apa di sini. Halamannya mungkin sudah pindah, atau tautannya usang. ',

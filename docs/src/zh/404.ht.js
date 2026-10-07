@@ -5,6 +5,7 @@ export default () =>
   pageLayout({
     title: '404 —— 页面未找到',
     description: '这个页面不存在。',
+    noindex: true,
     children: [
       p(
         '这里什么也没有。页面可能已经移走，或者链接已经失效。',

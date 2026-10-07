@@ -1,0 +1,7 @@
+# Every crawler is welcome, search engines and AI assistants alike: the docs
+# are written to be read, quoted and linked to. https://sitelo.dev/llms.txt
+# is the index meant for language models.
+User-agent: *
+Allow: /
+
+Sitemap: https://sitelo.dev/sitemap.xml

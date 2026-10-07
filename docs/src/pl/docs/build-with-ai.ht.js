@@ -26,6 +26,13 @@ export default () =>
           a({ href: '/llms.txt' }, 'https://sitelo.dev/llms.txt'),
           ' — zwięzłe API i konwencje',
         ),
+        li(
+          a({ href: '/llms-full.txt' }, 'https://sitelo.dev/llms-full.txt'),
+          ' — wszystkie przewodniki, strony komponentów i przykłady w jednym pliku Markdown (po angielsku); każda strona osobno jest pod swoim adresem z dopiskiem ',
+          code('.md'),
+          ', np. ',
+          code('/docs/routing.md'),
+        ),
         li(a({ href: '/pl/docs' }, 'https://sitelo.dev/docs'), ' — pełne przewodniki'),
         li(
           a({ href: 'https://github.com/paul-browne/sitelo' }, 'README na GitHubie'),

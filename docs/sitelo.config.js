@@ -1,3 +1,4 @@
+import { machineReadable } from './plugins/machine-readable.js'
 import { draftPageGlobs } from './src/lib/drafts.js'
 
 export default {
@@ -5,6 +6,13 @@ export default {
   pagefind: true,
   /* Written but unpublished pages; see `src/lib/drafts.js`. */
   exclude: draftPageGlobs(),
+  /*
+   * The sitemap (indexable pages only, with dates), a Markdown copy of each
+   * English page, llms.txt's page index and llms-full.txt.
+   */
+  vite: {
+    plugins: [machineReadable()],
+  },
   /*
    * Flat `docs.html` rather than `docs/index.html`. GitHub Pages serves
    * `/docs` from `docs.html` directly; with the directory form it 301s

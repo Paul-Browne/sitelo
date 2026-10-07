@@ -23,6 +23,13 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li(a({ href: '/llms.txt' }, 'https://sitelo.dev/llms.txt'), ' — API dan konvensi secara ringkas'),
+        li(
+          a({ href: '/llms-full.txt' }, 'https://sitelo.dev/llms-full.txt'),
+          ' — semua panduan, halaman komponen, dan contoh dalam satu berkas Markdown (berbahasa Inggris); tiap halaman tersedia sendiri di alamatnya ditambah ',
+          code('.md'),
+          ', mis. ',
+          code('/docs/routing.md'),
+        ),
         li(a({ href: '/id/docs' }, 'https://sitelo.dev/docs'), ' — panduan lengkap'),
         li(
           a({ href: 'https://github.com/paul-browne/sitelo' }, 'README GitHub'),

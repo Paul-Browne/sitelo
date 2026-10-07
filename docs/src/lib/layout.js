@@ -54,15 +54,15 @@ import {
   localePath,
   strings,
 } from './i18n.js'
+import { pageDates } from './last-modified.js'
 import { docNav, exampleNav, hasUiSection, uiExtrasNav, uiNav } from './nav.js'
+import { OG_IMAGE, SITE_NAME, SITE_URL, structuredData } from './seo.js'
 
 const require = createRequire(import.meta.url)
 const viteVersion = require('vite/package.json').version
 const siteloVersion = require('../../../package.json').version
 
 const viteBolt = `<svg class="badge-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 11-13h-8z"/></svg>`
-
-const SITE_URL = 'https://sitelo.dev'
 
 /** Background behind the browser chrome, mirroring `--paper` in each theme. */
 const THEME_COLORS = {
@@ -465,10 +465,74 @@ function alternateLinks(path) {
   ]
 }
 
+/**
+ * Sections whose index page is named for the section rather than its own
+ * heading in a breadcrumb trail — `/docs` is "Getting started" on the page
+ * but "Docs" as a step on the way to `/docs/routing`.
+ */
+function sectionNames(lang) {
+  const t = strings(lang)
+  return {
+    '/docs': t.navDocs,
+    '/ui': t.navUi,
+    '/examples': t.navExamples,
+    '/ui-extras': 'UI extras',
+  }
+}
+
+/**
+ * The trail from the home page to `path`, for the `BreadcrumbList` in the
+ * page's structured data.
+ *
+ * Each step is a page the visitor could reach: a section, then any parent
+ * the sidebar lists (`/ui/theming` above its presets), then the page itself.
+ * A prefix with no page behind it is skipped rather than linked.
+ */
+function breadcrumbs(path, heading, lang) {
+  const base = basePath(path)
+  const sections = sectionNames(lang)
+  const labels = new Map(
+    [...docNav(lang), ...uiNav(lang), ...exampleNav(lang), ...uiExtrasNav()]
+      .filter((item) => item.href)
+      .map((item) => [basePath(item.href), item.label]),
+  )
+  const crumb = (href, name) => ({ name, url: `${SITE_URL}${localePath(href, lang)}` })
+
+  const trail = [crumb('/', SITE_NAME)]
+  if (base === '/') return trail
+
+  const segments = base.split('/').filter(Boolean)
+  for (let depth = 1; depth < segments.length; depth++) {
+    const prefix = `/${segments.slice(0, depth).join('/')}`
+    const name = sections[prefix] ?? labels.get(prefix)
+    if (name) trail.push(crumb(prefix, name))
+  }
+
+  trail.push(crumb(base, sections[base] ?? heading))
+  return trail
+}
+
+/**
+ * Where the plain-Markdown copy of a page lives, for the pages that have one:
+ * the English guides and the about page. `/docs/routing` → `/docs/routing.md`,
+ * mirroring the flat `docs/routing.html` beside it.
+ *
+ * The build reads this `<link>` back to decide which pages to convert — see
+ * `docs/plugins/machine-readable.js` — so the head is the only list of them.
+ */
+function markdownHref(path, kind, lang) {
+  if (path == null || lang !== DEFAULT_LOCALE) return undefined
+  if (kind !== 'article' && kind !== 'about') return undefined
+  return `${path}.md`
+}
+
 function pageShell({
   pageTitle,
+  heading,
   description,
   bodyClass = '',
+  kind,
+  noindex = false,
   path,
   lang = DEFAULT_LOCALE,
   preload = [],
@@ -479,6 +543,11 @@ function pageShell({
   const content = Array.isArray(children) ? children : [children]
   const pageDescription = description ?? t.defaultDescription
   const canonical = path != null ? `${SITE_URL}${path}` : undefined
+  const isArticle = kind === 'article'
+  const dates = path != null ? pageDates(path) : undefined
+  const markdown = markdownHref(path, kind, lang)
+  const otherLocales =
+    path != null && isTranslated(path) ? LOCALES.filter((locale) => locale !== lang) : []
 
   return html(
     { lang: LOCALE_TAGS[lang] },
@@ -493,6 +562,14 @@ function pageShell({
         content: pageDescription,
       }),
       title(pageTitle),
+      /*
+       * The 404s, in every locale. The host serves the root one with a 404
+       * status, which says as much; the locale copies are ordinary pages at
+       * `/de/404` and friends, answered with a 200, and would otherwise be
+       * indexed as ten soft 404s. The build also leaves anything marked
+       * here out of the sitemap.
+       */
+      noindex ? meta({ name: 'robots', content: 'noindex' }) : '',
       link({ rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }),
       link({ rel: 'apple-touch-icon', href: '/icon-192.png' }),
       link({ rel: 'manifest', href: '/manifest.webmanifest' }),
@@ -500,16 +577,46 @@ function pageShell({
       script(themeBootScript),
       canonical ? link({ rel: 'canonical', href: canonical }) : '',
       ...alternateLinks(path),
+      markdown
+        ? link({ rel: 'alternate', type: 'text/markdown', href: markdown })
+        : '',
+      meta({ property: 'og:site_name', content: SITE_NAME }),
       meta({ property: 'og:title', content: pageTitle }),
       meta({ property: 'og:description', content: pageDescription }),
-      meta({ property: 'og:type', content: 'website' }),
+      meta({ property: 'og:type', content: isArticle ? 'article' : 'website' }),
       meta({ property: 'og:locale', content: OG_LOCALES[lang] }),
+      ...otherLocales.map((locale) =>
+        meta({ property: 'og:locale:alternate', content: OG_LOCALES[locale] }),
+      ),
       canonical ? meta({ property: 'og:url', content: canonical }) : '',
-      meta({
-        property: 'og:image',
-        content: `${SITE_URL}/logo.png`,
-      }),
-      meta({ name: 'twitter:card', content: 'summary' }),
+      meta({ property: 'og:image', content: OG_IMAGE.url }),
+      meta({ property: 'og:image:type', content: OG_IMAGE.type }),
+      meta({ property: 'og:image:width', content: String(OG_IMAGE.width) }),
+      meta({ property: 'og:image:height', content: String(OG_IMAGE.height) }),
+      meta({ property: 'og:image:alt', content: OG_IMAGE.alt }),
+      ...(isArticle && dates
+        ? [
+            meta({ property: 'article:published_time', content: dates.published }),
+            meta({ property: 'article:modified_time', content: dates.modified }),
+          ]
+        : []),
+      meta({ name: 'twitter:card', content: 'summary_large_image' }),
+      /*
+       * Structured data for everything with an address. The 404s have none —
+       * no canonical, nothing to describe — and are left without.
+       */
+      canonical && kind
+        ? structuredData({
+            kind,
+            url: canonical,
+            lang,
+            title: pageTitle,
+            heading,
+            description: pageDescription,
+            dates,
+            crumbs: breadcrumbs(path, heading ?? pageTitle, lang),
+          })
+        : '',
       /*
        * The wordmark is above the fold on every page — the topbar on all of
        * them, the hero as well on the landing pages. Both `img`s resolve to
@@ -729,8 +836,10 @@ function guideLayout({
 
   return pageShell({
     pageTitle: pageTitle ?? `${heading} · ${titleSuffix}`,
+    heading,
     description,
     bodyClass: 'page-docs',
+    kind: 'article',
     path: activeHref,
     lang,
     extraHead,
@@ -783,6 +892,7 @@ export function createLayouts(lang = DEFAULT_LOCALE) {
       pageTitle,
       description,
       bodyClass: 'page-landing',
+      kind: 'home',
       path: activeHref,
       lang,
       children: [
@@ -802,13 +912,21 @@ export function createLayouts(lang = DEFAULT_LOCALE) {
     })
   }
 
-  function pageLayout({ title: heading, description, activeHref, children }) {
+  /*
+   * The about page, and the 404s with `noindex`. The title carries the site's
+   * name because the heading alone does not: a result or a tab reading
+   * "About", with nothing to say about what, is no use to anyone.
+   */
+  function pageLayout({ title: heading, description, activeHref, noindex = false, children }) {
     const content = Array.isArray(children) ? children : [children]
 
     return pageShell({
-      pageTitle: heading,
+      pageTitle: `${heading} · ${SITE_NAME}`,
+      heading,
       description,
       bodyClass: 'page-content',
+      kind: noindex ? undefined : 'about',
+      noindex,
       path: activeHref,
       lang,
       children: [

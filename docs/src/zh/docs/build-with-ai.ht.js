@@ -27,6 +27,13 @@ export default () =>
           ' —— 精简的 API 与约定',
         ),
         li(
+          a({ href: '/llms-full.txt' }, 'https://sitelo.dev/llms-full.txt'),
+          ' —— 所有指南、组件页面和示例合为一个 Markdown 文件（英文）；单个页面在其地址后加上 ',
+          code('.md'),
+          ' 即可获取，例如 ',
+          code('/docs/routing.md'),
+        ),
+        li(
           a({ href: '/zh/docs' }, 'https://sitelo.dev/zh/docs'),
           ' —— 完整指南',
         ),

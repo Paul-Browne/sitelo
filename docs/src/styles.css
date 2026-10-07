@@ -2384,7 +2384,10 @@ a.feature-card:hover h3 {
   text-decoration: underline;
 }
 
+/* A <p>, so its text stays its own sentence apart from the name above it;
+   the card's gap does the spacing a paragraph margin otherwise would. */
 .ui-gallery-summary {
+  margin: 0;
   color: var(--ink-soft);
   font-size: 0.88rem;
   line-height: 1.45;

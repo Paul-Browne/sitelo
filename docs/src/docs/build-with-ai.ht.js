@@ -24,6 +24,13 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li(a({ href: '/llms.txt' }, 'https://sitelo.dev/llms.txt'), ' — compact API and conventions'),
+        li(
+          a({ href: '/llms-full.txt' }, 'https://sitelo.dev/llms-full.txt'),
+          ' — every guide, component page and example in one Markdown file; each page on its own is at its address plus ',
+          code('.md'),
+          ', e.g. ',
+          code('/docs/routing.md'),
+        ),
         li(a({ href: '/docs' }, 'https://sitelo.dev/docs'), ' — full guides'),
         li(
           a({ href: 'https://github.com/paul-browne/sitelo' }, 'GitHub README'),

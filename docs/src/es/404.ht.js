@@ -5,6 +5,7 @@ export default () =>
   pageLayout({
     title: '404 — página no encontrada',
     description: 'Esta página no existe.',
+    noindex: true,
     children: [
       p(
         'Aquí no hay nada. Puede que la página se haya movido, o que el enlace esté obsoleto. ',

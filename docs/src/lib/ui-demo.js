@@ -445,7 +445,9 @@ export function createUiDemo(lang = DEFAULT_LOCALE) {
       ui.grid(
         { min: '12rem', gap: 'xl', align: 'start' },
         ui.card(
-          ui.cardHeader(ui.cardTitle(t.cardTitle)),
+          // An h2: the preview sits straight under the page's h1, and the
+          // card's default h3 would skip a level in the page's outline.
+          ui.cardHeader(ui.cardTitle({ as: 'h2' }, t.cardTitle)),
           ui.cardBody(ui.text(t.cardBody)),
           // One above another: three side by side do not fit a column.
           ui.cardFooter(

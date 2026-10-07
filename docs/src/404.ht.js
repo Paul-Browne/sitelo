@@ -15,6 +15,7 @@ export default () =>
   pageLayout({
     title: '404 — page not found',
     description: 'This page does not exist.',
+    noindex: true,
     children: [
       script(trailingSlashRescue),
       p(
