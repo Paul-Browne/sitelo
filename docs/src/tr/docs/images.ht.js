@@ -123,7 +123,7 @@ export default () =>
         li(code('dev'), ' — varsayılan ', code('true'), '; geliştirmede dokunulmamış özgünleri sunmak için ', code('false'), ' yapın'),
         li(code('concurrency'), ' — paralel kodlamalar, varsayılan CPU − 1 (en çok 8); uzak açıkken 1'),
       ),
-      h3('İki biçim size <picture> verir'),
+      h3('İki biçim size ', code('<picture>'), ' verir'),
       p(
         'AVIF daha küçük ama WebP’den daha yeni, bu yüzden ikisini birden listelemek tarayıcının seçmesini sağlar ve eskiler için bir yedek bırakır:',
       ),

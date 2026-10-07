@@ -105,9 +105,9 @@ const GROUPS = [
       `themeToggle()`],
   ]],
   ['Sobreposições', [
-    ['/pt/ui/modal', 'Modal', 'Um <dialog> aberto em modo modal — sem script em lado nenhum.',
+    ['/pt/ui/modal', 'Modal', `Um ${code('<dialog>')} aberto em modo modal — sem script em lado nenhum.`,
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Abrir modal')`],
-    ['/pt/ui/drawer', 'Painel lateral', 'Um painel a partir da berma, o mesmo <dialog> de um modal.',
+    ['/pt/ui/drawer', 'Painel lateral', `Um painel a partir da berma, o mesmo ${code('<dialog>')} de um modal.`,
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Abrir painel')`],
     ['/pt/ui/menu', 'Menu', 'Um menu pendente sobre details: abrir e fechar vêm de borla.',
       `chip({ color: 'neutral' }, 'Ações ▾')`],

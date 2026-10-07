@@ -206,7 +206,11 @@ export default () =>
       h2('Beispiele'),
       p('Formulare verdrahten ihre Labels, IDs, Hilfetexte und Fehlermeldungen selbst:'),
       codeBlock('Ein Formular', s.form, 'javascript'),
-      p('Ein Modal ist ein <dialog>, und sein Auslöser ist jeder Button, dessen commandfor auf seine ID zeigt:'),
+      p(
+        'Ein Modal ist ein ',
+        code('<dialog>'),
+        ', und sein Auslöser ist jeder Button, dessen commandfor auf seine ID zeigt:',
+      ),
       codeBlock('Ein Modal', s.modal, 'javascript'),
       p('Tabs gibt es in zwei Formen — als Links oder mit Panels:'),
       codeBlock('Tabs', s.tabs, 'javascript'),

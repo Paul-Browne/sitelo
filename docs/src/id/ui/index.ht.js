@@ -105,9 +105,9 @@ const GROUPS = [
       `themeToggle()`],
   ]],
   ['Lapisan', [
-    ['/id/ui/modal', 'Modal', '<dialog> yang dibuka secara modal — tanpa skrip di mana pun.',
+    ['/id/ui/modal', 'Modal', `${code('<dialog>')} yang dibuka secara modal — tanpa skrip di mana pun.`,
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Buka modal')`],
-    ['/id/ui/drawer', 'Laci', 'Panel dari tepi, <dialog> yang sama dengan modal.',
+    ['/id/ui/drawer', 'Laci', `Panel dari tepi, ${code('<dialog>')} yang sama dengan modal.`,
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Buka laci')`],
     ['/id/ui/menu', 'Menu', 'Menu tarik-turun di atas details, buka dan tutup secara cuma-cuma.',
       `chip({ color: 'neutral' }, 'Tindakan ▾')`],

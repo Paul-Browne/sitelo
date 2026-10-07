@@ -105,9 +105,9 @@ const GROUPS = [
       `themeToggle()`],
   ]],
   ['浮层', [
-    ['/zh/ui/modal', '模态框', '以模态方式打开的 <dialog>——全程没有脚本。',
+    ['/zh/ui/modal', '模态框', `以模态方式打开的 ${code('<dialog>')}——全程没有脚本。`,
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, '打开模态框')`],
-    ['/zh/ui/drawer', '抽屉', '从边缘滑入的面板，和模态框是同一种 <dialog>。',
+    ['/zh/ui/drawer', '抽屉', `从边缘滑入的面板，和模态框是同一种 ${code('<dialog>')}。`,
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, '打开抽屉')`],
     ['/zh/ui/menu', '菜单', '基于 details 的下拉菜单，开合都是白送的。',
       `chip({ color: 'neutral' }, '操作 ▾')`],

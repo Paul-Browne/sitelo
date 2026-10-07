@@ -218,7 +218,9 @@ export default () =>
       ),
       codeBlock('Formularz', s.form, 'javascript'),
       p(
-        'Okno modalne to <dialog>, a jego wyzwalaczem jest dowolny przycisk, którego commandfor wskazuje na jego id:',
+        'Okno modalne to ',
+        code('<dialog>'),
+        ', a jego wyzwalaczem jest dowolny przycisk, którego commandfor wskazuje na jego id:',
       ),
       codeBlock('Okno modalne', s.modal, 'javascript'),
       p('Zakładki występują w dwóch postaciach — odnośniki albo panele:'),

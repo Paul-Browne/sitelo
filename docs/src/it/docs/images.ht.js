@@ -195,7 +195,7 @@ export default () =>
           ' — codifiche in parallelo, predefinito CPU − 1 (massimo 8); 1 quando remote è attivo',
         ),
       ),
-      h3('Due formati ti danno <picture>'),
+      h3('Due formati ti danno ', code('<picture>')),
       p(
         'AVIF è più piccolo ma più giovane di WebP, quindi elencarli entrambi lascia scegliere al browser e tiene un ripiego per quelli vecchi:',
       ),

@@ -205,7 +205,11 @@ export default () =>
       h2('Örnekler'),
       p('Formlar kendi etiketlerini, kimliklerini, yardım metinlerini ve hata iletilerini kendileri bağlar:'),
       codeBlock('Bir form', s.form, 'javascript'),
-      p('Bir kip bir <dialog>’dur ve tetikleyicisi, commandfor değeri kimliğini gösteren herhangi bir düğmedir:'),
+      p(
+        'Bir kip bir ',
+        code('<dialog>'),
+        '’dur ve tetikleyicisi, commandfor değeri kimliğini gösteren herhangi bir düğmedir:',
+      ),
       codeBlock('Bir kip', s.modal, 'javascript'),
       p('Sekmeler iki biçimde gelir — bağlantılar ya da paneller:'),
       codeBlock('Sekmeler', s.tabs, 'javascript'),

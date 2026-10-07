@@ -122,7 +122,9 @@ export default () =>
       p(
         'The usual pattern: links in the bar on desktop, a button that opens a ',
         code('drawer()'),
-        ' on a phone. The drawer is a <dialog> the button opens with a command, so it needs no script.',
+        ' on a phone. The drawer is a ',
+        code('<dialog>'),
+        ' the button opens with a command, so it needs no script.',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },

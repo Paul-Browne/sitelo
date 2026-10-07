@@ -207,7 +207,11 @@ export default () =>
       h2('Exemplos'),
       p('Os formulários ligam sozinhos as suas etiquetas, ids, textos de ajuda e mensagens de erro:'),
       codeBlock('Um formulário', s.form, 'javascript'),
-      p('Um modal é um <dialog> e o seu gatilho é qualquer botão cujo commandfor aponte para o seu id:'),
+      p(
+        'Um modal é um ',
+        code('<dialog>'),
+        ' e o seu gatilho é qualquer botão cujo commandfor aponte para o seu id:',
+      ),
       codeBlock('Um modal', s.modal, 'javascript'),
       p('Os separadores existem em duas formas — ligações ou painéis:'),
       codeBlock('Separadores', s.tabs, 'javascript'),

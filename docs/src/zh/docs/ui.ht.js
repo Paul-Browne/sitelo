@@ -207,7 +207,11 @@ export default () =>
       h2('示例'),
       p('表单会自己接好标签、id、帮助文本和错误信息：'),
       codeBlock('一个表单', s.form, 'javascript'),
-      p('模态框就是一个 <dialog>，任何 commandfor 指向它 id 的按钮都是它的触发器：'),
+      p(
+        '模态框就是一个 ',
+        code('<dialog>'),
+        '，任何 commandfor 指向它 id 的按钮都是它的触发器：',
+      ),
       codeBlock('一个模态框', s.modal, 'javascript'),
       p('标签页有两种形态——链接式，或者面板式：'),
       codeBlock('标签页', s.tabs, 'javascript'),

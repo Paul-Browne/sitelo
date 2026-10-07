@@ -206,7 +206,11 @@ export default () =>
       h2('Contoh'),
       p('Formulir menyambungkan sendiri label, id, teks bantuan, dan pesan galatnya:'),
       codeBlock('Sebuah formulir', s.form, 'javascript'),
-      p('Modal adalah <dialog> dan pemicunya adalah tombol mana pun yang commandfor-nya menunjuk id-nya:'),
+      p(
+        'Modal adalah ',
+        code('<dialog>'),
+        ' dan pemicunya adalah tombol mana pun yang commandfor-nya menunjuk id-nya:',
+      ),
       codeBlock('Sebuah modal', s.modal, 'javascript'),
       p('Tab hadir dalam dua bentuk — tautan, atau panel:'),
       codeBlock('Tab', s.tabs, 'javascript'),

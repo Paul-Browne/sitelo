@@ -199,7 +199,7 @@ export default () =>
           ' — parallele Kodierungen, Standard CPUs − 1 (max. 8); 1, wenn remote aktiv ist',
         ),
       ),
-      h3('Zwei Formate ergeben <picture>'),
+      h3('Zwei Formate ergeben ', code('<picture>')),
       p(
         'AVIF ist kleiner, aber jünger als WebP — beide anzugeben lässt den Browser wählen und behält einen Rückfall für ältere Browser.',
       ),

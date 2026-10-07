@@ -123,7 +123,7 @@ export default () =>
         li(code('dev'), ' — bawaan ', code('true'), '; setel ', code('false'), ' untuk menyajikan berkas asli tanpa sentuhan saat pengembangan'),
         li(code('concurrency'), ' — pengodean paralel, bawaan CPU − 1 (maksimal 8); 1 ketika remote menyala'),
       ),
-      h3('Dua format memberi Anda <picture>'),
+      h3('Dua format memberi Anda ', code('<picture>')),
       p(
         'AVIF lebih kecil tetapi lebih muda daripada WebP, jadi mendaftarkan keduanya membiarkan peramban memilih sekaligus menyimpan cadangan untuk yang lama:',
       ),
