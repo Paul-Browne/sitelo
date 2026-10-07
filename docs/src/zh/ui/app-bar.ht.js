@@ -89,6 +89,32 @@ export default () =>
   ),
 )`, { align: 'stretch' }),
 
+      h2('滚动时让开'),
+      p(
+        code("sticky: 'auto'"),
+        ' 同样把栏钉在顶部，但页面向下滚动时把它滑走，一旦向上滚动或回到顶部就立刻滑回来。键盘焦点在栏内、或栏里的菜单打开时，它会一直保持可见。',
+      ),
+      p(
+        '在 Chromium 中这完全由 CSS 实现（',
+        code('@container scroll-state(scrolled)'),
+        '），不加载任何东西。其他浏览器会在页面加载时获取一个小模块，改由它来监听滚动。栏跟随页面滚动；放在你自己的滚动容器里时（比如这里），还要给容器加上 ',
+        code('container-type: scroll-state'),
+        '。',
+      ),
+      demo(`div({ style: 'height: 12rem; overflow: auto; container-type: scroll-state; border: 1px solid var(--su-border); border-radius: 0.6rem' },
+  appBar({ brand: 'sitelo', sticky: 'auto', blur: true },
+    appBarSpacer(),
+    appBarActions(chip({ size: 'sm', color: 'primary' }, 'auto')),
+  ),
+  container({ size: 'sm', style: 'padding-block: 1rem' },
+    stack({ gap: 'md' },
+      ...Array.from({ length: 12 }, (unused, index) =>
+        text({ variant: 'small', tone: 'muted' }, '向下滚，再滚回来——第 ' + (index + 1) + ' 段。'),
+      ),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
       h2('小屏配抽屉'),
       p(
         '常见做法：桌面端把链接放在栏里，手机端用一个按钮打开 ',
@@ -121,7 +147,7 @@ export default () =>
       propsTable([
         ['brand', 'Child', '', '开头那个品牌链接的内容。'],
         ['href', 'string', "'/'", '品牌链接指向哪里。'],
-        ['sticky', 'boolean', 'false', '滚动时把栏钉在顶部。'],
+        ['sticky', "boolean | 'auto'", 'false', "滚动时把栏钉在顶部。'auto' 还会在向下滚动时把它藏起来。"],
         ['blur', 'boolean', 'false', '半透明背景，并对其后内容做模糊。'],
         ['as', 'string', "'header'", '渲染成哪个元素。'],
       ]),

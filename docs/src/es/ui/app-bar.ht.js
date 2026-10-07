@@ -90,6 +90,32 @@ export default () =>
   ),
 )`, { align: 'stretch' }),
 
+      h2('Fuera del camino al hacer scroll'),
+      p(
+        code("sticky: 'auto'"),
+        ' mantiene la barra fija, pero la desliza fuera mientras la página baja y la devuelve en cuanto sube o llega arriba del todo. Sigue a la vista mientras el foco del teclado está dentro de ella o tiene un menú abierto.',
+      ),
+      p(
+        'En Chromium es solo CSS, ',
+        code('@container scroll-state(scrolled)'),
+        ', y no se descarga nada. Los demás navegadores descargan un pequeño módulo al cargar la página, que vigila el scroll en su lugar. La barra sigue a la página; dentro de una caja con scroll propia, como esta, dale también a la caja ',
+        code('container-type: scroll-state'),
+        '.',
+      ),
+      demo(`div({ style: 'height: 12rem; overflow: auto; container-type: scroll-state; border: 1px solid var(--su-border); border-radius: 0.6rem' },
+  appBar({ brand: 'sitelo', sticky: 'auto', blur: true },
+    appBarSpacer(),
+    appBarActions(chip({ size: 'sm', color: 'primary' }, 'auto')),
+  ),
+  container({ size: 'sm', style: 'padding-block: 1rem' },
+    stack({ gap: 'md' },
+      ...Array.from({ length: 12 }, (unused, index) =>
+        text({ variant: 'small', tone: 'muted' }, 'Baja y vuelve a subir — párrafo ' + (index + 1) + '.'),
+      ),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
       h2('Con un panel lateral en pantallas pequeñas'),
       p(
         'El patrón habitual: enlaces en la barra en escritorio y un botón que abre un ',
@@ -122,7 +148,7 @@ export default () =>
       propsTable([
         ['brand', 'Child', '', 'Contenido del enlace de marca al principio.'],
         ['href', 'string', "'/'", 'Adónde enlaza la marca.'],
-        ['sticky', 'boolean', 'false', 'Fija la barra arriba al hacer scroll.'],
+        ['sticky', "boolean | 'auto'", 'false', "Fija la barra arriba al hacer scroll. 'auto' además la oculta al bajar."],
         ['blur', 'boolean', 'false', 'Fondo translúcido con desenfoque detrás.'],
         ['as', 'string', "'header'", 'Elemento que se renderiza.'],
       ]),

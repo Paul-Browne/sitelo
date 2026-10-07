@@ -92,6 +92,32 @@ export default () =>
   ),
 )`, { align: 'stretch' }),
 
+      h2('Out of the way while scrolling'),
+      p(
+        code("sticky: 'auto'"),
+        ' keeps the bar pinned, but slides it away while the page scrolls down and brings it back as soon as it scrolls up, or reaches the top. It stays in view while keyboard focus is inside it, or a menu in it is open.',
+      ),
+      p(
+        'In Chromium this is all CSS, ',
+        code('@container scroll-state(scrolled)'),
+        ', and nothing is fetched. Other browsers fetch a small module when the page loads, which watches the scroll instead. The bar follows the page; inside a scrolling box of your own, like the one here, give the box ',
+        code('container-type: scroll-state'),
+        ' as well.',
+      ),
+      demo(`div({ style: 'height: 12rem; overflow: auto; container-type: scroll-state; border: 1px solid var(--su-border); border-radius: 0.6rem' },
+  appBar({ brand: 'sitelo', sticky: 'auto', blur: true },
+    appBarSpacer(),
+    appBarActions(chip({ size: 'sm', color: 'primary' }, 'auto')),
+  ),
+  container({ size: 'sm', style: 'padding-block: 1rem' },
+    stack({ gap: 'md' },
+      ...Array.from({ length: 12 }, (unused, index) =>
+        text({ variant: 'small', tone: 'muted' }, 'Scroll down, then back up — paragraph ' + (index + 1) + '.'),
+      ),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
       h2('With a drawer on small screens'),
       p(
         'The usual pattern: links in the bar on desktop, a button that opens a ',
@@ -124,7 +150,7 @@ export default () =>
       propsTable([
         ['brand', 'Child', '', 'Content of the brand link at the start.'],
         ['href', 'string', "'/'", 'Where the brand links to.'],
-        ['sticky', 'boolean', 'false', 'Pins the bar to the top on scroll.'],
+        ['sticky', "boolean | 'auto'", 'false', "Pins the bar to the top on scroll. 'auto' also hides it while scrolling down."],
         ['blur', 'boolean', 'false', 'Translucent background with a backdrop blur.'],
         ['as', 'string', "'header'", 'Element to render.'],
       ]),

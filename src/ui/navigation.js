@@ -363,16 +363,38 @@ export function tabs(...args) {
 /**
  * Top bar: brand on one side, actions on the other.
  *
+ * `sticky: 'auto'` pins it as `true` does, and also slides it away while
+ * the page scrolls down, bringing it back the moment it scrolls up or
+ * reaches the top. Where the browser can tell which way the page last
+ * moved that is all the stylesheet's doing. Everywhere else the
+ * stylesheet starts a one-off animation on the bar instead, and its
+ * `animationstart` fetches the module that watches the scroll — so the
+ * same rule that turns the native path on is what keeps the module
+ * away, and there is no second test of the browser to disagree with it.
+ *
  * @param {...any} args - `appBar({ brand, sticky, blur }, ...children)`
  * @returns {string}
  */
 export function appBar(...args) {
   const { props, children } = parseArgs(args)
   const { brand, href = '/', sticky = false, blur = false, as, ...rest } = props
+  const auto = sticky === 'auto'
 
   return el(as, header)(
+    /*
+     * Named, because `animationstart` bubbles: a spinner in the bar would
+     * otherwise fetch the module in a browser that has no use for it.
+     */
+    auto
+      ? { onanimationstart: `event.animationName=='su-appbar-watch'&&${handler('appbar', 'watch(this)')}` }
+      : {},
     attrs(rest, {
-      class: cx('su-appbar', sticky && 'su-appbar--sticky', blur && 'su-appbar--blur'),
+      class: cx(
+        'su-appbar',
+        sticky && 'su-appbar--sticky',
+        auto && 'su-appbar--auto',
+        blur && 'su-appbar--blur',
+      ),
     }),
     brand == null ? '' : a({ class: 'su-appbar-brand', href }, brand),
     ...children,

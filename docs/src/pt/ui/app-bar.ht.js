@@ -90,6 +90,32 @@ export default () =>
   ),
 )`, { align: 'stretch' }),
 
+      h2('Fora do caminho ao deslocar'),
+      p(
+        code("sticky: 'auto'"),
+        ' mantém a barra fixa, mas fá-la deslizar para fora enquanto a página desce e trá-la de volta assim que sobe ou chega ao topo. Continua visível enquanto o foco do teclado está dentro dela ou um menu seu está aberto.',
+      ),
+      p(
+        'No Chromium é só CSS, ',
+        code('@container scroll-state(scrolled)'),
+        ', e nada é descarregado. Os outros navegadores descarregam um pequeno módulo ao carregar a página, que vigia o deslocamento em vez disso. A barra segue a página; dentro de uma caixa com deslocamento própria, como esta, dê também à caixa ',
+        code('container-type: scroll-state'),
+        '.',
+      ),
+      demo(`div({ style: 'height: 12rem; overflow: auto; container-type: scroll-state; border: 1px solid var(--su-border); border-radius: 0.6rem' },
+  appBar({ brand: 'sitelo', sticky: 'auto', blur: true },
+    appBarSpacer(),
+    appBarActions(chip({ size: 'sm', color: 'primary' }, 'auto')),
+  ),
+  container({ size: 'sm', style: 'padding-block: 1rem' },
+    stack({ gap: 'md' },
+      ...Array.from({ length: 12 }, (unused, index) =>
+        text({ variant: 'small', tone: 'muted' }, 'Desloca para baixo e depois volta — parágrafo ' + (index + 1) + '.'),
+      ),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
       h2('Com um painel lateral em ecrãs pequenos'),
       p(
         'O padrão do costume: ligações na barra no computador, um botão que abre um ',
@@ -122,7 +148,7 @@ export default () =>
       propsTable([
         ['brand', 'Child', '', 'Conteúdo da ligação de marca no início.'],
         ['href', 'string', "'/'", 'Para onde a marca liga.'],
-        ['sticky', 'boolean', 'false', 'Prende a barra ao topo ao deslocar.'],
+        ['sticky', "boolean | 'auto'", 'false', "Prende a barra ao topo ao deslocar. 'auto' também a esconde ao deslocar para baixo."],
         ['blur', 'boolean', 'false', 'Fundo translúcido com desfoque por trás.'],
         ['as', 'string', "'header'", 'Elemento a renderizar.'],
       ]),

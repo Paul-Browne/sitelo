@@ -90,6 +90,32 @@ export default () =>
   ),
 )`, { align: 'stretch' }),
 
+      h2('Kaydırırken yoldan çekilen'),
+      p(
+        code("sticky: 'auto'"),
+        ' çubuğu sabit tutar, ama sayfa aşağı kaydıkça kenara çeker ve yukarı kaydığı ya da en üste ulaştığı anda geri getirir. Klavye odağı içindeyken ya da içindeki bir menü açıkken görünür kalır.',
+      ),
+      p(
+        'Chromium’da bu tamamen CSS’tir, ',
+        code('@container scroll-state(scrolled)'),
+        ', ve hiçbir şey indirilmez. Diğer tarayıcılar sayfa yüklenirken bunun yerine kaydırmayı izleyen küçük bir modül indirir. Çubuk sayfayı izler; buradaki gibi kendi kaydırılan kutunuzun içindeyse kutuya ayrıca ',
+        code('container-type: scroll-state'),
+        ' verin.',
+      ),
+      demo(`div({ style: 'height: 12rem; overflow: auto; container-type: scroll-state; border: 1px solid var(--su-border); border-radius: 0.6rem' },
+  appBar({ brand: 'sitelo', sticky: 'auto', blur: true },
+    appBarSpacer(),
+    appBarActions(chip({ size: 'sm', color: 'primary' }, 'auto')),
+  ),
+  container({ size: 'sm', style: 'padding-block: 1rem' },
+    stack({ gap: 'md' },
+      ...Array.from({ length: 12 }, (unused, index) =>
+        text({ variant: 'small', tone: 'muted' }, 'Aşağı kaydırın, sonra geri çıkın — paragraf ' + (index + 1) + '.'),
+      ),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
       h2('Küçük ekranlarda çekmeceyle'),
       p(
         'Alışıldık kalıp: masaüstünde çubuktaki bağlantılar, telefonda bir ',
@@ -122,7 +148,7 @@ export default () =>
       propsTable([
         ['brand', 'Child', '', 'Baştaki marka bağlantısının içeriği.'],
         ['href', 'string', "'/'", 'Markanın bağlandığı yer.'],
-        ['sticky', 'boolean', 'false', 'Kaydırmada çubuğu üste sabitler.'],
+        ['sticky', "boolean | 'auto'", 'false', "Kaydırmada çubuğu üste sabitler. 'auto' ayrıca aşağı kaydırırken onu gizler."],
         ['blur', 'boolean', 'false', 'Arka plan bulanıklığıyla yarı saydam zemin.'],
         ['as', 'string', "'header'", 'İşlenecek öğe.'],
       ]),

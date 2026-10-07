@@ -90,6 +90,32 @@ export default () =>
   ),
 )`, { align: 'stretch' }),
 
+      h2('Znika przy przewijaniu w dół'),
+      p(
+        code("sticky: 'auto'"),
+        ' trzyma pasek przypięty, ale wysuwa go poza ekran, gdy strona przewija się w dół, i przywraca, gdy tylko przewinie się w górę albo dojdzie na samą górę. Zostaje na ekranie, dopóki jest w nim fokus klawiatury albo otwarte jest jego menu.',
+      ),
+      p(
+        'W Chromium to czysty CSS, ',
+        code('@container scroll-state(scrolled)'),
+        ', i nic nie jest pobierane. Pozostałe przeglądarki pobierają przy ładowaniu strony mały moduł, który zamiast tego śledzi przewijanie. Pasek podąża za stroną; we własnym przewijanym pudełku, takim jak to tutaj, nadaj pudełku także ',
+        code('container-type: scroll-state'),
+        '.',
+      ),
+      demo(`div({ style: 'height: 12rem; overflow: auto; container-type: scroll-state; border: 1px solid var(--su-border); border-radius: 0.6rem' },
+  appBar({ brand: 'sitelo', sticky: 'auto', blur: true },
+    appBarSpacer(),
+    appBarActions(chip({ size: 'sm', color: 'primary' }, 'auto')),
+  ),
+  container({ size: 'sm', style: 'padding-block: 1rem' },
+    stack({ gap: 'md' },
+      ...Array.from({ length: 12 }, (unused, index) =>
+        text({ variant: 'small', tone: 'muted' }, 'Przewiń w dół, potem z powrotem — akapit ' + (index + 1) + '.'),
+      ),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
       h2('Z szufladą na małych ekranach'),
       p(
         'Typowy wzorzec: odnośniki w pasku na desktopie, przycisk otwierający ',
@@ -122,7 +148,7 @@ export default () =>
       propsTable([
         ['brand', 'Child', '', 'Treść odnośnika marki na początku.'],
         ['href', 'string', "'/'", 'Dokąd prowadzi marka.'],
-        ['sticky', 'boolean', 'false', 'Przypina pasek do góry przy przewijaniu.'],
+        ['sticky', "boolean | 'auto'", 'false', "Przypina pasek do góry przy przewijaniu. 'auto' dodatkowo chowa go przy przewijaniu w dół."],
         ['blur', 'boolean', 'false', 'Półprzezroczyste tło z rozmyciem za nim.'],
         ['as', 'string', "'header'", 'Element do wyrenderowania.'],
       ]),

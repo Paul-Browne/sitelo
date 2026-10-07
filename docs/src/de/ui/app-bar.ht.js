@@ -90,6 +90,32 @@ export default () =>
   ),
 )`, { align: 'stretch' }),
 
+      h2('Beim Scrollen aus dem Weg'),
+      p(
+        code("sticky: 'auto'"),
+        ' hält die Leiste angeheftet, schiebt sie aber weg, solange die Seite nach unten scrollt, und holt sie zurück, sobald sie nach oben scrollt oder den Anfang erreicht. Sie bleibt sichtbar, solange der Tastaturfokus in ihr liegt oder ein Menü in ihr offen ist.',
+      ),
+      p(
+        'In Chromium ist das reines CSS, ',
+        code('@container scroll-state(scrolled)'),
+        ', und es wird nichts geladen. Andere Browser laden beim Seitenaufruf ein kleines Modul, das stattdessen das Scrollen beobachtet. Die Leiste folgt der Seite; in einer eigenen scrollenden Box wie dieser hier braucht die Box zusätzlich ',
+        code('container-type: scroll-state'),
+        '.',
+      ),
+      demo(`div({ style: 'height: 12rem; overflow: auto; container-type: scroll-state; border: 1px solid var(--su-border); border-radius: 0.6rem' },
+  appBar({ brand: 'sitelo', sticky: 'auto', blur: true },
+    appBarSpacer(),
+    appBarActions(chip({ size: 'sm', color: 'primary' }, 'auto')),
+  ),
+  container({ size: 'sm', style: 'padding-block: 1rem' },
+    stack({ gap: 'md' },
+      ...Array.from({ length: 12 }, (unused, index) =>
+        text({ variant: 'small', tone: 'muted' }, 'Nach unten scrollen, dann zurück — Absatz ' + (index + 1) + '.'),
+      ),
+    ),
+  ),
+)`, { align: 'stretch' }),
+
       h2('Mit einem Drawer auf kleinen Bildschirmen'),
       p(
         'Das übliche Muster: Links in der Leiste am Desktop, ein Button, der am Telefon einen ',
@@ -122,7 +148,7 @@ export default () =>
       propsTable([
         ['brand', 'Child', '', 'Inhalt des Marken-Links am Anfang.'],
         ['href', 'string', "'/'", 'Wohin die Marke verlinkt.'],
-        ['sticky', 'boolean', 'false', 'Heftet die Leiste beim Scrollen nach oben.'],
+        ['sticky', "boolean | 'auto'", 'false', "Heftet die Leiste beim Scrollen nach oben. 'auto' blendet sie zusätzlich beim Herunterscrollen aus."],
         ['blur', 'boolean', 'false', 'Durchscheinender Hintergrund mit Backdrop-Blur.'],
         ['as', 'string', "'header'", 'Element, das gerendert wird.'],
       ]),
