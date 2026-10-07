@@ -197,7 +197,7 @@ export default () =>
           ' — encodages en parallèle, par défaut CPU − 1 (max 8) ; 1 quand remote est actif',
         ),
       ),
-      h3('Deux formats vous donnent <picture>'),
+      h3('Deux formats vous donnent ', code('<picture>')),
       p(
         'AVIF est plus léger mais plus récent que WebP : lister les deux laisse le navigateur choisir tout en gardant un repli pour les anciens.',
       ),

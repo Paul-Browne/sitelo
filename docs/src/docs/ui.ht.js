@@ -207,7 +207,11 @@ export default () =>
       h2('Examples'),
       p('Forms wire their own labels, ids, help text and error messages:'),
       codeBlock('A form', s.form, 'javascript'),
-      p('A modal is a <dialog> and its trigger is any button whose commandfor points at its id:'),
+      p(
+        'A modal is a ',
+        code('<dialog>'),
+        ' and its trigger is any button whose commandfor points at its id:',
+      ),
       codeBlock('A modal', s.modal, 'javascript'),
       p('Tabs come in two shapes — links, or panels:'),
       codeBlock('Tabs', s.tabs, 'javascript'),

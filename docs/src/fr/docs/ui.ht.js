@@ -206,7 +206,11 @@ export default () =>
       h2('Exemples'),
       p('Les formulaires relient eux-mêmes leurs libellés, leurs ids, leurs textes d’aide et leurs messages d’erreur :'),
       codeBlock('Un formulaire', s.form, 'javascript'),
-      p('Une modale est un <dialog>, et son déclencheur est n’importe quel bouton dont le commandfor pointe vers son id :'),
+      p(
+        'Une modale est un ',
+        code('<dialog>'),
+        ', et son déclencheur est n’importe quel bouton dont le commandfor pointe vers son id :',
+      ),
       codeBlock('Une modale', s.modal, 'javascript'),
       p('Les onglets existent sous deux formes : des liens, ou des panneaux.'),
       codeBlock('Onglets', s.tabs, 'javascript'),

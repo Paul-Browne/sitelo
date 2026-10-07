@@ -206,7 +206,11 @@ export default () =>
       h2('Ejemplos'),
       p('Los formularios conectan solos sus etiquetas, ids, textos de ayuda y mensajes de error:'),
       codeBlock('Un formulario', s.form, 'javascript'),
-      p('Un modal es un <dialog> y su disparador es cualquier botón cuyo commandfor apunte a su id:'),
+      p(
+        'Un modal es un ',
+        code('<dialog>'),
+        ' y su disparador es cualquier botón cuyo commandfor apunte a su id:',
+      ),
       codeBlock('Un modal', s.modal, 'javascript'),
       p('Las pestañas vienen en dos formas: enlaces o paneles.'),
       codeBlock('Pestañas', s.tabs, 'javascript'),

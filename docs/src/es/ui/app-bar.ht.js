@@ -120,7 +120,9 @@ export default () =>
       p(
         'El patrón habitual: enlaces en la barra en escritorio y un botón que abre un ',
         code('drawer()'),
-        ' en el móvil. El panel es un <dialog> que el botón abre con un command, así que no necesita script.',
+        ' en el móvil. El panel es un ',
+        code('<dialog>'),
+        ' que el botón abre con un command, así que no necesita script.',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },

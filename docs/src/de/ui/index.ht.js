@@ -105,9 +105,9 @@ const GROUPS = [
       `themeToggle()`],
   ]],
   ['Overlays', [
-    ['/de/ui/modal', 'Modal', 'Ein <dialog>, modal geöffnet — nirgends ein Skript.',
+    ['/de/ui/modal', 'Modal', `Ein ${code('<dialog>')}, modal geöffnet — nirgends ein Skript.`,
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Modal öffnen')`],
-    ['/de/ui/drawer', 'Drawer', 'Ein Panel von der Kante, dasselbe <dialog> wie ein Modal.',
+    ['/de/ui/drawer', 'Drawer', `Ein Panel von der Kante, dasselbe ${code('<dialog>')} wie ein Modal.`,
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Drawer öffnen')`],
     ['/de/ui/menu', 'Menü', 'Ein Dropdown auf details, Öffnen und Schließen gratis.',
       `chip({ color: 'neutral' }, 'Aktionen ▾')`],

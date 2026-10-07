@@ -120,7 +120,9 @@ export default () =>
       p(
         'Typowy wzorzec: odnośniki w pasku na desktopie, przycisk otwierający ',
         code('drawer()'),
-        ' na telefonie. Szuflada to <dialog>, który przycisk otwiera przez command, więc nie potrzebuje skryptu.',
+        ' na telefonie. Szuflada to ',
+        code('<dialog>'),
+        ', który przycisk otwiera przez command, więc nie potrzebuje skryptu.',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },

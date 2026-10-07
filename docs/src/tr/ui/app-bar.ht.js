@@ -120,7 +120,9 @@ export default () =>
       p(
         'Alışıldık kalıp: masaüstünde çubuktaki bağlantılar, telefonda bir ',
         code('drawer()'),
-        ' açan bir düğme. Çekmece, düğmenin command ile açtığı bir <dialog>’dur, bu yüzden betiğe ihtiyaç yoktur.',
+        ' açan bir düğme. Çekmece, düğmenin command ile açtığı bir ',
+        code('<dialog>'),
+        '’dur, bu yüzden betiğe ihtiyaç yoktur.',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },

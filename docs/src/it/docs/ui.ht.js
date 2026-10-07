@@ -220,7 +220,9 @@ export default () =>
       ),
       codeBlock('Un form', s.form, 'javascript'),
       p(
-        'Un modale è un <dialog> e il suo innesco è un qualunque pulsante il cui commandfor punta al suo id:',
+        'Un modale è un ',
+        code('<dialog>'),
+        ' e il suo innesco è un qualunque pulsante il cui commandfor punta al suo id:',
       ),
       codeBlock('Un modale', s.modal, 'javascript'),
       p('Le schede arrivano in due forme — link, oppure pannelli:'),

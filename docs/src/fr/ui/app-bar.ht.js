@@ -120,7 +120,9 @@ export default () =>
       p(
         'Le schéma habituel : des liens dans la barre sur ordinateur, un bouton qui ouvre un ',
         code('drawer()'),
-        ' sur téléphone. Le tiroir est un <dialog> que le bouton ouvre avec un command, donc aucun script n’est nécessaire.',
+        ' sur téléphone. Le tiroir est un ',
+        code('<dialog>'),
+        ' que le bouton ouvre avec un command, donc aucun script n’est nécessaire.',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },

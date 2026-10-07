@@ -120,7 +120,9 @@ export default () =>
       p(
         'Das übliche Muster: Links in der Leiste am Desktop, ein Button, der am Telefon einen ',
         code('drawer()'),
-        ' öffnet. Der Drawer ist ein <dialog>, den der Button per command öffnet — kein Skript nötig.',
+        ' öffnet. Der Drawer ist ein ',
+        code('<dialog>'),
+        ', den der Button per command öffnet — kein Skript nötig.',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },

@@ -195,7 +195,7 @@ export default () =>
           ' — równoległe kodowania, domyślnie CPU − 1 (maks. 8); 1, gdy remote jest włączone',
         ),
       ),
-      h3('Dwa formaty dają <picture>'),
+      h3('Dwa formaty dają ', code('<picture>')),
       p(
         'AVIF jest mniejszy, ale młodszy od WebP, więc wypisanie obu pozwala przeglądarce wybrać i zostawia zapas dla starszych:',
       ),

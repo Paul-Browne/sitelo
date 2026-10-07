@@ -120,7 +120,9 @@ export default () =>
       p(
         'O padrão do costume: ligações na barra no computador, um botão que abre um ',
         code('drawer()'),
-        ' no telemóvel. O painel é um <dialog> que o botão abre com um command, por isso não precisa de script.',
+        ' no telemóvel. O painel é um ',
+        code('<dialog>'),
+        ' que o botão abre com um command, por isso não precisa de script.',
       ),
       demo(`fragment(
   appBar({ brand: 'sitelo' },

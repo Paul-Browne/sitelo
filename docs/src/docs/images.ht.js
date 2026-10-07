@@ -124,7 +124,7 @@ export default () =>
         li(code('dev'), ' — default ', code('true'), '; set ', code('false'), ' to serve untouched originals in dev'),
         li(code('concurrency'), ' — parallel encodes, default CPUs − 1 (max 8); 1 when remote is on'),
       ),
-      h3('Two formats give you <picture>'),
+      h3('Two formats give you ', code('<picture>')),
       p(
         'AVIF is smaller but younger than WebP, so listing both lets the browser pick and keeps a fallback for old ones:',
       ),

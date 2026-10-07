@@ -105,9 +105,9 @@ const GROUPS = [
       `themeToggle()`],
   ]],
   ['Superpositions', [
-    ['/fr/ui/modal', 'Modale', 'Un <dialog> ouvert en mode modal — aucun script nulle part.',
+    ['/fr/ui/modal', 'Modale', `Un ${code('<dialog>')} ouvert en mode modal — aucun script nulle part.`,
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Ouvrir la modale')`],
-    ['/fr/ui/drawer', 'Tiroir', 'Un panneau depuis le bord, le même <dialog> qu’une modale.',
+    ['/fr/ui/drawer', 'Tiroir', `Un panneau depuis le bord, le même ${code('<dialog>')} qu’une modale.`,
       `button({ size: 'sm', variant: 'outline', color: 'neutral' }, 'Ouvrir le tiroir')`],
     ['/fr/ui/menu', 'Menu', 'Un déroulant bâti sur details : ouverture et fermeture gratuites.',
       `chip({ color: 'neutral' }, 'Actions ▾')`],
