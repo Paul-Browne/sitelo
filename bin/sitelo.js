@@ -723,6 +723,7 @@ function buildInlineConfig(cli, command, viteFromSitelo = {}, viteLogging = {}) 
    * turns it back on with `vite.build.rollupOptions.checks.pluginTimings`.
    */
   const siteloDefaults = {
+    displayName: 'sitelo',
     build: { rollupOptions: { checks: { pluginTimings: false } } },
   };
 
