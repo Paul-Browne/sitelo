@@ -681,6 +681,20 @@ nothing is shadowed. Light mode prints it in black on near-white.
 `body { background: var(--su-bg); color: var(--su-text); font-family: var(--su-font-mono) }`
 sets the page in it too.
 
+`blueprint` is a technical drawing — hairlines on a near-black sheet,
+square corners, and a registration mark on each corner of a card, a
+dialog and a row of stats. Labels (buttons, field labels, tabs, tags,
+column heads, bar links) are set in monospace capitals, spaced apart;
+headings and running text stay in a grotesk, set tight. A solid line is
+an edge and a dashed one divides what is inside it. Few colours: the
+solid button and anything chosen are ink, printed in reverse, one
+blueprint blue marks focus, and success, warning and danger keep theirs.
+Nothing is shadowed. Light mode prints it in ink on white. `primary` is
+the ink; `--su-bp-accent` sets the blue, `--su-bp-mark` the marks
+(`transparent` removes them) and `--su-bp-field` the line round a field,
+and `body { background: var(--su-bp-backdrop) }` rules a faint grid
+across the page.
+
 ### Icons
 
 `icon()` returns an inline `<svg>` from a set of 99 glyphs, drawn on one

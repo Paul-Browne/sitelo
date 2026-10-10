@@ -82,6 +82,8 @@ head(
         a({ href: '/es/ui/theming/superneon' }, 'Superneon'),
         ', ',
         a({ href: '/es/ui/theming/terminal' }, 'Terminal'),
+        ', ',
+        a({ href: '/es/ui/theming/blueprint' }, 'Plano'),
         '.',
       ),
       p(
@@ -247,7 +249,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism' | 'neubrutalism' | 'superneon' | 'terminal'", '', 'Reestiliza todos los componentes con un preset, enlazado o incrustado después de la hoja principal.'],
+        ['preset', "'neumorphism' | 'neubrutalism' | 'superneon' | 'terminal' | 'blueprint'", '', 'Reestiliza todos los componentes con un preset, enlazado o incrustado después de la hoja principal.'],
         ['inline', 'boolean', 'false', 'Emite el CSS en sí en vez de un enlace a él.'],
         ['hash', 'boolean', 'true', 'Añade al nombre del archivo un hash del contenido. Solo enlazado.'],
         ['base', 'string', "'/su/'", 'Apunta la URL a otro sitio; esa copia la alojas tú. Solo enlazado.'],

@@ -250,6 +250,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neubrutalism', label: 'Neubrutalism' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
     { href: '/ui/theming/terminal', label: 'Terminal' },
+    { href: '/ui/theming/blueprint', label: 'Blueprint' },
   ],
   es: [
     { href: '/ui', label: 'Resumen' },
@@ -316,6 +317,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neubrutalism', label: 'Neobrutalismo' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
     { href: '/ui/theming/terminal', label: 'Terminal' },
+    { href: '/ui/theming/blueprint', label: 'Plano' },
   ],
   fr: [
     { href: '/ui', label: 'Vue d’ensemble' },
@@ -382,6 +384,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neubrutalism', label: 'Néo-brutalisme' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
     { href: '/ui/theming/terminal', label: 'Terminal' },
+    { href: '/ui/theming/blueprint', label: 'Plan' },
   ],
   de: [
     { href: '/ui', label: 'Überblick' },
@@ -448,6 +451,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neubrutalism', label: 'Neubrutalismus' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
     { href: '/ui/theming/terminal', label: 'Terminal' },
+    { href: '/ui/theming/blueprint', label: 'Blaupause' },
   ],
   ru: [
     { href: '/ui', label: 'Обзор' },
@@ -514,6 +518,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neubrutalism', label: 'Необрутализм' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
     { href: '/ui/theming/terminal', label: 'Терминал' },
+    { href: '/ui/theming/blueprint', label: 'Чертёж' },
   ],
   zh: [
     { href: '/ui', label: '概览' },
@@ -580,6 +585,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neubrutalism', label: '新粗野主义' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
     { href: '/ui/theming/terminal', label: '终端' },
+    { href: '/ui/theming/blueprint', label: '蓝图' },
   ],
   pt: [
     { href: '/ui', label: 'Visão geral' },
@@ -646,6 +652,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neubrutalism', label: 'Neobrutalismo' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
     { href: '/ui/theming/terminal', label: 'Terminal' },
+    { href: '/ui/theming/blueprint', label: 'Planta' },
   ],
   it: [
     { href: '/ui', label: 'Panoramica' },
@@ -712,6 +719,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neubrutalism', label: 'Neobrutalismo' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
     { href: '/ui/theming/terminal', label: 'Terminale' },
+    { href: '/ui/theming/blueprint', label: 'Cianografia' },
   ],
   pl: [
     { href: '/ui', label: 'Przegląd' },
@@ -778,6 +786,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neubrutalism', label: 'Neobrutalizm' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
     { href: '/ui/theming/terminal', label: 'Terminal' },
+    { href: '/ui/theming/blueprint', label: 'Rysunek techniczny' },
   ],
   tr: [
     { href: '/ui', label: 'Genel bakış' },
@@ -844,6 +853,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neubrutalism', label: 'Neobrütalizm' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
     { href: '/ui/theming/terminal', label: 'Terminal' },
+    { href: '/ui/theming/blueprint', label: 'Teknik çizim' },
   ],
   id: [
     { href: '/ui', label: 'Ringkasan' },
@@ -910,6 +920,7 @@ const UI_LABELS = {
     { href: '/ui/theming/neubrutalism', label: 'Neobrutalisme' },
     { href: '/ui/theming/superneon', label: 'Superneon' },
     { href: '/ui/theming/terminal', label: 'Terminal' },
+    { href: '/ui/theming/blueprint', label: 'Cetak biru' },
   ],
 
 }
