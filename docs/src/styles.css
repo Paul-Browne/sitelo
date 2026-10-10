@@ -2259,6 +2259,11 @@ a.feature-card:hover h3 {
   background: var(--su-sn-backdrop);
 }
 
+/* And the blueprint page's, the grid ruled across it. */
+.ui-preset-stage[data-preset-stage='blueprint'] {
+  background: var(--su-bp-backdrop);
+}
+
 .ui-preset-stage .preset-card-actions {
   flex-direction: column;
   align-items: stretch;

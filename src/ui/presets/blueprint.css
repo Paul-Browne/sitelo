@@ -1,0 +1,1227 @@
+/*!
+ * sitelo-ui preset — blueprint.
+ *
+ * A technical drawing: hairlines on a near-black sheet, square corners,
+ * and a registration mark — a small cross — on each corner of a card, a
+ * dialog and a row of stats, the way a drawing marks where it is to be
+ * cut. Everything that names or operates something — a button, a field's
+ * label, a tab, a tag, a column head, a link in the bar — is set in a
+ * monospace face, in widely spaced capitals; headings and running text
+ * stay in a grotesk, set tight. A solid line is an edge and a dashed one
+ * divides what is inside it, as a drawing marks a hidden line: table
+ * rows, list items, a divider, the run between steps still to come.
+ *
+ * Few colours. The solid button, a checked box, a filled bar and
+ * anything chosen are ink — near-white on black, near-black on paper —
+ * and one blueprint blue marks focus and the tag over a heading.
+ * Success, warning and danger keep their colours for what they say.
+ * Nothing casts a shadow: what floats is ruled in the strong line.
+ * Linked after `ui.css` by `styles({ preset: 'blueprint' })`.
+ *
+ * Dark is the look this comes from. Light keeps every line, mark and
+ * square corner and prints it in ink on white paper.
+ */
+
+:root {
+  /* Two faces. Nothing is downloaded: load Geist or Inter, and Geist
+     Mono, JetBrains Mono or IBM Plex Mono, on the page and the first of
+     each there is used, or the system's own. */
+  --su-font-sans: Geist, Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --su-font-mono: 'Geist Mono', 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular,
+    'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* How far apart a label's capitals are set. */
+  --su-bp-tracking: 0.06em;
+
+  /* The registration mark's arms, end to end. In pixels and odd, so the
+     cross centres on a 1px line without landing between two pixels. */
+  --su-bp-mark-size: 11px;
+
+  /* The blueprint grid `--su-bp-backdrop` draws: one cell's side. */
+  --su-bp-cell: 2rem;
+
+  /* No curves. In pixels, so the core's `calc(radius - border)` stays a
+     length. */
+  --su-radius-sm: 0px;
+  --su-radius-md: 0px;
+  --su-radius-lg: 0px;
+  --su-radius-full: 0px;
+
+  /* No shadows: an edge is a line. A shadow that draws nothing rather
+     than `none`, so one composed with another stays valid. */
+  --su-shadow-sm: 0 0 #0000;
+  --su-shadow-md: 0 0 #0000;
+  --su-shadow-lg: 0 0 #0000;
+
+  /* The blue; the registration marks; the line round a field, held to
+     3:1 against the page so a field reads as one; the slot a progress
+     bar or a slider runs in; and the lines of the grid. All literal
+     values, not other tokens, so a theme scoped to part of a page
+     resolves them for itself. */
+  --su-bp-accent: #0b5cd5;
+  --su-bp-mark: #8f8f8f;
+  --su-bp-field: #8f8f8f;
+  --su-bp-track: #e5e5e5;
+  --su-bp-grid: rgba(0, 0, 0, 0.05);
+
+  --su-bg: #ffffff;
+  --su-bg-subtle: #fafafa;
+  --su-surface: #ffffff;
+  --su-surface-2: #fafafa;
+  --su-surface-hover: #f2f2f2;
+  --su-border: #e5e5e5;
+  --su-border-strong: #c4c4c4;
+  --su-text: #171717;
+  --su-text-muted: #525252;
+  --su-text-subtle: #6b6b6b;
+  --su-overlay: rgba(10, 10, 10, 0.32);
+
+  --su-primary: #171717;
+  --su-primary-hover: #333333;
+  --su-primary-active: #000000;
+  --su-primary-fg: #ffffff;
+  --su-primary-soft: #f2f2f2;
+  --su-primary-soft-hover: #e8e8e8;
+  --su-primary-soft-fg: #171717;
+  --su-primary-border: #c4c4c4;
+  --su-primary-ring: rgba(23, 23, 23, 0.2);
+
+  --su-neutral: #666666;
+  --su-neutral-hover: #525252;
+  --su-neutral-active: #404040;
+  --su-neutral-fg: #ffffff;
+  --su-neutral-soft: #f2f2f2;
+  --su-neutral-soft-hover: #e8e8e8;
+  --su-neutral-soft-fg: #404040;
+  --su-neutral-border: #e0e0e0;
+  --su-neutral-ring: rgba(102, 102, 102, 0.24);
+
+  --su-success: #0a7a52;
+  --su-success-hover: #086444;
+  --su-success-active: #065036;
+  --su-success-fg: #ffffff;
+  --su-success-soft: #e1f6ec;
+  --su-success-soft-hover: #ccefdf;
+  --su-success-soft-fg: #065036;
+  --su-success-border: #8fd5b8;
+  --su-success-ring: rgba(10, 122, 82, 0.28);
+
+  --su-warning: #9a5800;
+  --su-warning-hover: #844b00;
+  --su-warning-active: #6d3e00;
+  --su-warning-fg: #ffffff;
+  --su-warning-soft: #fdf0d9;
+  --su-warning-soft-hover: #fae5c0;
+  --su-warning-soft-fg: #663a00;
+  --su-warning-border: #ebc27f;
+  --su-warning-ring: rgba(154, 88, 0, 0.28);
+
+  --su-danger: #d1242f;
+  --su-danger-hover: #b31f28;
+  --su-danger-active: #961a21;
+  --su-danger-fg: #ffffff;
+  --su-danger-soft: #ffe9e9;
+  --su-danger-soft-hover: #ffd7d7;
+  --su-danger-soft-fg: #8f161d;
+  --su-danger-border: #f3a5a9;
+  --su-danger-ring: rgba(209, 36, 47, 0.28);
+}
+
+/*
+ * The composites are declared wherever a theme can change, not only on
+ * `:root`: a custom property inherits with its `var()`s already worked
+ * out, so one made on `:root` would carry the light theme's colours
+ * into a `data-su-theme="dark"` subtree.
+ *
+ * Focus is drawn in the blue whatever a control's palette, so it is one
+ * thing to look for on the page: `--su-c-focus` is set here for what has
+ * no palette of its own, and on each palette below for what has.
+ *
+ * `--su-bp-backdrop` is the page's ground with the blueprint grid on it,
+ * for `body { background: var(--su-bp-backdrop) }`.
+ */
+:root,
+[data-theme],
+[data-su-theme] {
+  --su-c-focus: var(--su-bp-accent);
+  --su-bp-backdrop: linear-gradient(var(--su-bp-grid) 1px, transparent 1px) 0 0 / var(--su-bp-cell)
+      var(--su-bp-cell),
+    linear-gradient(90deg, var(--su-bp-grid) 1px, transparent 1px) 0 0 / var(--su-bp-cell) var(--su-bp-cell),
+    var(--su-bg);
+}
+
+/*
+ * The same two blocks as the core's dark tokens, with the same selectors:
+ * those outrank `:root`, so anything the core sets for dark — the
+ * shadows included — has to be set again here, where being later wins.
+ *
+ * Every solid is a light colour carrying a near-black label, so ink in
+ * reverse reads the same in every palette.
+ */
+[data-theme='dark']:not([data-su-theme='light']),
+[data-su-theme='dark'] {
+  --su-shadow-sm: 0 0 #0000;
+  --su-shadow-md: 0 0 #0000;
+  --su-shadow-lg: 0 0 #0000;
+
+  --su-bp-accent: #4c9aff;
+  --su-bp-mark: #6e6e6e;
+  --su-bp-field: #5e5e5e;
+  --su-bp-track: #262626;
+  --su-bp-grid: rgba(255, 255, 255, 0.045);
+
+  --su-bg: #0a0a0a;
+  --su-bg-subtle: #0f0f0f;
+  --su-surface: #0a0a0a;
+  --su-surface-2: #111111;
+  --su-surface-hover: #1a1a1a;
+  --su-border: #262626;
+  --su-border-strong: #3d3d3d;
+  --su-text: #ededed;
+  --su-text-muted: #a1a1a1;
+  --su-text-subtle: #8f8f8f;
+  --su-overlay: rgba(0, 0, 0, 0.72);
+
+  --su-primary: #ededed;
+  --su-primary-hover: #ffffff;
+  --su-primary-active: #d4d4d4;
+  --su-primary-fg: #0a0a0a;
+  --su-primary-soft: #1a1a1a;
+  --su-primary-soft-hover: #242424;
+  --su-primary-soft-fg: #ededed;
+  --su-primary-border: #454545;
+  --su-primary-ring: rgba(237, 237, 237, 0.28);
+
+  --su-neutral: #a1a1a1;
+  --su-neutral-hover: #b8b8b8;
+  --su-neutral-active: #8f8f8f;
+  --su-neutral-fg: #0a0a0a;
+  --su-neutral-soft: #1a1a1a;
+  --su-neutral-soft-hover: #242424;
+  --su-neutral-soft-fg: #d4d4d4;
+  --su-neutral-border: #333333;
+  --su-neutral-ring: rgba(161, 161, 161, 0.28);
+
+  --su-success: #00e599;
+  --su-success-hover: #5cf2bd;
+  --su-success-active: #00c785;
+  --su-success-fg: #0a0a0a;
+  --su-success-soft: #062619;
+  --su-success-soft-hover: #0a3325;
+  --su-success-soft-fg: #5cf2bd;
+  --su-success-border: #0b6b4a;
+  --su-success-ring: rgba(0, 229, 153, 0.3);
+
+  --su-warning: #ffb224;
+  --su-warning-hover: #ffc95c;
+  --su-warning-active: #e89c0c;
+  --su-warning-fg: #0a0a0a;
+  --su-warning-soft: #2b1f06;
+  --su-warning-soft-hover: #3a2a09;
+  --su-warning-soft-fg: #ffcb6b;
+  --su-warning-border: #7a5410;
+  --su-warning-ring: rgba(255, 178, 36, 0.3);
+
+  --su-danger: #ff6166;
+  --su-danger-hover: #ff8a8e;
+  --su-danger-active: #f2464c;
+  --su-danger-fg: #0a0a0a;
+  --su-danger-soft: #2d0f10;
+  --su-danger-soft-hover: #3d1517;
+  --su-danger-soft-fg: #ff9a9d;
+  --su-danger-border: #7c2a2d;
+  --su-danger-ring: rgba(255, 97, 102, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-su-theme='light']) {
+    --su-shadow-sm: 0 0 #0000;
+    --su-shadow-md: 0 0 #0000;
+    --su-shadow-lg: 0 0 #0000;
+
+    --su-bp-accent: #4c9aff;
+    --su-bp-mark: #6e6e6e;
+    --su-bp-field: #5e5e5e;
+    --su-bp-track: #262626;
+    --su-bp-grid: rgba(255, 255, 255, 0.045);
+
+    --su-bg: #0a0a0a;
+    --su-bg-subtle: #0f0f0f;
+    --su-surface: #0a0a0a;
+    --su-surface-2: #111111;
+    --su-surface-hover: #1a1a1a;
+    --su-border: #262626;
+    --su-border-strong: #3d3d3d;
+    --su-text: #ededed;
+    --su-text-muted: #a1a1a1;
+    --su-text-subtle: #8f8f8f;
+    --su-overlay: rgba(0, 0, 0, 0.72);
+
+    --su-primary: #ededed;
+    --su-primary-hover: #ffffff;
+    --su-primary-active: #d4d4d4;
+    --su-primary-fg: #0a0a0a;
+    --su-primary-soft: #1a1a1a;
+    --su-primary-soft-hover: #242424;
+    --su-primary-soft-fg: #ededed;
+    --su-primary-border: #454545;
+    --su-primary-ring: rgba(237, 237, 237, 0.28);
+
+    --su-neutral: #a1a1a1;
+    --su-neutral-hover: #b8b8b8;
+    --su-neutral-active: #8f8f8f;
+    --su-neutral-fg: #0a0a0a;
+    --su-neutral-soft: #1a1a1a;
+    --su-neutral-soft-hover: #242424;
+    --su-neutral-soft-fg: #d4d4d4;
+    --su-neutral-border: #333333;
+    --su-neutral-ring: rgba(161, 161, 161, 0.28);
+
+    --su-success: #00e599;
+    --su-success-hover: #5cf2bd;
+    --su-success-active: #00c785;
+    --su-success-fg: #0a0a0a;
+    --su-success-soft: #062619;
+    --su-success-soft-hover: #0a3325;
+    --su-success-soft-fg: #5cf2bd;
+    --su-success-border: #0b6b4a;
+    --su-success-ring: rgba(0, 229, 153, 0.3);
+
+    --su-warning: #ffb224;
+    --su-warning-hover: #ffc95c;
+    --su-warning-active: #e89c0c;
+    --su-warning-fg: #0a0a0a;
+    --su-warning-soft: #2b1f06;
+    --su-warning-soft-hover: #3a2a09;
+    --su-warning-soft-fg: #ffcb6b;
+    --su-warning-border: #7a5410;
+    --su-warning-ring: rgba(255, 178, 36, 0.3);
+
+    --su-danger: #ff6166;
+    --su-danger-hover: #ff8a8e;
+    --su-danger-active: #f2464c;
+    --su-danger-fg: #0a0a0a;
+    --su-danger-soft: #2d0f10;
+    --su-danger-soft-hover: #3d1517;
+    --su-danger-soft-fg: #ff9a9d;
+    --su-danger-border: #7c2a2d;
+    --su-danger-ring: rgba(255, 97, 102, 0.3);
+  }
+}
+
+/* Each palette's focus, in the blue: see the composites above. */
+.su-c-primary,
+.su-c-neutral,
+.su-c-success,
+.su-c-warning,
+.su-c-danger {
+  --su-c-focus: var(--su-bp-accent);
+}
+
+/* ------------------------------------------------------------------ *
+ * Labels
+ *
+ * Everything that names or operates something rather than being read —
+ * a button, a field's label, a tab, a tag, a column head, a link in the
+ * bar — is set in the monospace face, in capitals spaced a little apart.
+ * Running text, headings and what is typed into a checkbox's label stay
+ * in the grotesk and keep their case.
+ * ------------------------------------------------------------------ */
+
+.su-btn,
+.su-label,
+.su-chip,
+.su-tab,
+.su-nav-link,
+.su-page-link,
+.su-menu-item,
+.su-breadcrumbs,
+.su-divider,
+.su-progress-label,
+.su-alert-title,
+.su-timeline-time,
+.su-stat-label,
+.su-footer-column-title,
+.su-table thead th,
+.su-badge,
+.su-avatar,
+.su-tooltip::after,
+.su-appbar-brand,
+.su-card-title,
+.su-modal-title {
+  font-family: var(--su-font-mono);
+}
+
+.su-btn,
+.su-label,
+.su-chip,
+.su-tab,
+.su-nav-link,
+.su-breadcrumbs,
+.su-divider,
+.su-progress-label,
+.su-alert-title,
+.su-timeline-time,
+.su-stat-label,
+.su-footer-column-title,
+.su-table thead th,
+.su-card-title,
+.su-modal-title {
+  letter-spacing: var(--su-bp-tracking);
+  text-transform: uppercase;
+}
+
+/* Capitals in a monospace face are wide; a step down keeps a label the
+   width it would be in the grotesk. The button's own size token still
+   decides, so `size: 'sm'` and `'lg'` step with it. */
+.su-btn {
+  font-size: calc(var(--su-btn-font-size, var(--su-text-sm)) - 0.0625rem);
+}
+
+.su-label,
+.su-tab,
+.su-nav-link,
+.su-breadcrumbs,
+.su-divider,
+.su-alert-title,
+.su-card-title,
+.su-modal-title {
+  font-size: var(--su-text-xs);
+}
+
+.su-label,
+.su-alert-title,
+.su-card-title,
+.su-modal-title,
+.su-table thead th,
+.su-footer-column-title,
+.su-stat-label {
+  font-weight: var(--su-weight-medium);
+}
+
+/* ------------------------------------------------------------------ *
+ * Type
+ *
+ * Headings in the grotesk at a medium weight, drawn in tighter as they
+ * grow. A tag over a heading is a monospace caption led by a square of
+ * the blue, as a drawing keys its sections.
+ * ------------------------------------------------------------------ */
+
+.su-text--h1,
+.su-text--h2,
+.su-text--h3,
+.su-text--h4,
+.su-text--h5,
+.su-text--h6,
+.su-hero-title {
+  font-weight: var(--su-weight-medium);
+}
+
+.su-text--h1,
+.su-hero-title {
+  letter-spacing: -0.04em;
+}
+
+.su-text--h2 {
+  letter-spacing: -0.03em;
+}
+
+.su-text--h3 {
+  letter-spacing: -0.02em;
+}
+
+.su-text--h4,
+.su-text--h5,
+.su-text--h6 {
+  letter-spacing: -0.01em;
+}
+
+.su-text--overline,
+.su-hero-eyebrow {
+  color: var(--su-text-muted);
+  font-family: var(--su-font-mono);
+  font-weight: var(--su-weight-medium);
+  letter-spacing: 0.12em;
+}
+
+.su-text--overline::before,
+.su-hero-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-inline-end: 0.75em;
+  vertical-align: 0.05em;
+  background: var(--su-bp-accent);
+}
+
+/* A link is underlined in dashes, and the line is drawn in full when
+   pointed at — thin either way. */
+.su-link {
+  text-decoration-style: dashed;
+  text-underline-offset: 0.25em;
+}
+
+.su-link:hover {
+  text-decoration-style: solid;
+  text-decoration-thickness: var(--su-border-width);
+}
+
+.su-kbd {
+  border-bottom-width: var(--su-border-width);
+}
+
+/* ------------------------------------------------------------------ *
+ * Registration marks
+ *
+ * A cross on each corner of a card, a dialog and a row of stats, centred
+ * on the corner of its frame. The mark is drawn by a box laid exactly
+ * over the frame, so it takes up no room the frame does not: the half
+ * of each arm that lies along the frame's line is a gradient on that
+ * box, and the half that stands out past it is the box's own shadow,
+ * spread by the length of an arm and cut down to the arms by
+ * `clip-path`. A shadow is ink overflow, which never scrolls — so a card
+ * that runs to the edge of the window draws its marks past it without
+ * pushing the page sideways, as a box that stood out would.
+ *
+ * On `::before`, since `grain()` paints its texture on `::after`, and
+ * positioned only at `:where()` weight so a site that pins one of these
+ * keeps its own `position`. The frames stop clipping what is in them,
+ * or the shadow would be cut off at the frame's inner edge: the core
+ * clips a card to its rounded corners, and here there are none to clip
+ * to. A flat card is a tinted well, not a drawn frame, and is not
+ * marked.
+ * ------------------------------------------------------------------ */
+
+:where(.su-card, .su-stat-group) {
+  position: relative;
+}
+
+.su-card,
+.su-stat-group,
+.su-modal {
+  overflow: visible;
+}
+
+.su-card:not(.su-card--flat)::before,
+.su-stat-group::before,
+.su-modal::before {
+  /* How far an arm stands out past the frame, and how far it runs
+     along the frame's line, the line itself included. */
+  --su-bp-arm: calc((var(--su-bp-mark-size) - var(--su-border-width)) / 2);
+  --su-bp-reach: calc(var(--su-bp-arm) + var(--su-border-width));
+  content: '';
+  position: absolute;
+  inset: calc(var(--su-border-width) * -1);
+  pointer-events: none;
+  background-image: linear-gradient(var(--su-bp-mark) 0 0), linear-gradient(var(--su-bp-mark) 0 0),
+    linear-gradient(var(--su-bp-mark) 0 0), linear-gradient(var(--su-bp-mark) 0 0),
+    linear-gradient(var(--su-bp-mark) 0 0), linear-gradient(var(--su-bp-mark) 0 0),
+    linear-gradient(var(--su-bp-mark) 0 0), linear-gradient(var(--su-bp-mark) 0 0);
+  background-position: left top, left top, right top, right top, right bottom, right bottom, left bottom, left bottom;
+  background-size: var(--su-bp-reach) var(--su-border-width), var(--su-border-width) var(--su-bp-reach),
+    var(--su-bp-reach) var(--su-border-width), var(--su-border-width) var(--su-bp-reach),
+    var(--su-bp-reach) var(--su-border-width), var(--su-border-width) var(--su-bp-reach),
+    var(--su-bp-reach) var(--su-border-width), var(--su-border-width) var(--su-bp-reach);
+  background-repeat: no-repeat;
+  box-shadow: 0 0 0 var(--su-bp-arm) var(--su-bp-mark);
+  /* The frame's own box and the eight arms standing out of it, traced
+     clockwise from the top of the first. Nothing is painted inside the
+     box but the gradients above, so taking all of it in costs nothing
+     and keeps the outline one simple shape. */
+  clip-path: polygon(
+    0 calc(var(--su-bp-arm) * -1),
+    var(--su-border-width) calc(var(--su-bp-arm) * -1),
+    var(--su-border-width) 0,
+    calc(100% - var(--su-border-width)) 0,
+    calc(100% - var(--su-border-width)) calc(var(--su-bp-arm) * -1),
+    100% calc(var(--su-bp-arm) * -1),
+    100% 0,
+    calc(100% + var(--su-bp-arm)) 0,
+    calc(100% + var(--su-bp-arm)) var(--su-border-width),
+    100% var(--su-border-width),
+    100% calc(100% - var(--su-border-width)),
+    calc(100% + var(--su-bp-arm)) calc(100% - var(--su-border-width)),
+    calc(100% + var(--su-bp-arm)) 100%,
+    100% 100%,
+    100% calc(100% + var(--su-bp-arm)),
+    calc(100% - var(--su-border-width)) calc(100% + var(--su-bp-arm)),
+    calc(100% - var(--su-border-width)) 100%,
+    var(--su-border-width) 100%,
+    var(--su-border-width) calc(100% + var(--su-bp-arm)),
+    0 calc(100% + var(--su-bp-arm)),
+    0 100%,
+    calc(var(--su-bp-arm) * -1) 100%,
+    calc(var(--su-bp-arm) * -1) calc(100% - var(--su-border-width)),
+    0 calc(100% - var(--su-border-width)),
+    0 var(--su-border-width),
+    calc(var(--su-bp-arm) * -1) var(--su-border-width),
+    calc(var(--su-bp-arm) * -1) 0,
+    0 0
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * Card
+ *
+ * A frame: a hairline round it and its header ruled off from its body,
+ * with the title set as a drawing's title block is, in small capitals.
+ * The elevated one is ruled in the strong line, since there is no
+ * shadow to lift it; one that can be clicked does not move when pointed
+ * at — its frame darkens and its marks turn blue.
+ * ------------------------------------------------------------------ */
+
+.su-card-header {
+  padding-block: var(--su-space-md);
+  border-bottom: var(--su-border-width) solid var(--su-border);
+}
+
+.su-card-header + .su-card-body {
+  padding-top: var(--su-card-padding, var(--su-space-lg));
+}
+
+.su-card-subtitle {
+  font-size: var(--su-text-sm);
+}
+
+.su-card--elevated {
+  border-color: var(--su-border-strong);
+}
+
+.su-card--flat {
+  border-color: var(--su-border);
+}
+
+.su-card--interactive:hover {
+  border-color: var(--su-text-subtle);
+  box-shadow: none;
+  transform: none;
+}
+
+.su-card--interactive:hover::before {
+  --su-bp-mark: var(--su-bp-accent);
+}
+
+/* ------------------------------------------------------------------ *
+ * Button
+ *
+ * The solid button is ink with the page's colour for its label, as the
+ * sites this follows set their one call to action. Outline and soft
+ * buttons are ruled in their palette's line; a link-styled button keeps
+ * the face, case and dashed underline of the text it sits in.
+ * ------------------------------------------------------------------ */
+
+.su-btn--soft {
+  border-color: var(--su-c-border);
+}
+
+.su-btn--link {
+  font-family: inherit;
+  font-size: var(--su-btn-font-size, var(--su-text-sm));
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration-style: dashed;
+  text-underline-offset: 0.25em;
+}
+
+.su-btn--link:hover {
+  text-decoration-style: solid;
+}
+
+/*
+ * A toggle that is on is printed in reverse: its palette's colour, with
+ * the label in the page's — ink, for a neutral toggle, which is what a
+ * segmented control is by default. Held through hover, which the core
+ * gives a soft fill the reversed label could not be read on.
+ */
+.su-toggle-btn[aria-pressed='true'],
+.su-toggle-btn[aria-current],
+.su-toggle-btn[aria-pressed='true']:hover,
+.su-toggle-btn[aria-current]:hover {
+  border-color: var(--su-c);
+  background: var(--su-c);
+  color: var(--su-c-fg);
+}
+
+.su-toggle-btn.su-c-neutral[aria-pressed='true'],
+.su-toggle-btn.su-c-neutral[aria-current],
+.su-toggle-btn.su-c-neutral[aria-pressed='true']:hover,
+.su-toggle-btn.su-c-neutral[aria-current]:hover {
+  border-color: var(--su-primary);
+  background: var(--su-primary);
+  color: var(--su-primary-fg);
+}
+
+/* The chosen segment's line is in front of its neighbours', which the
+   core overlaps it with — a hovered one included, which the core lifts
+   to 1. */
+.su-btn-group > .su-toggle-btn[aria-pressed='true'],
+.su-btn-group > .su-toggle-btn[aria-current] {
+  z-index: 2;
+}
+
+/* ------------------------------------------------------------------ *
+ * Form controls
+ *
+ * A field is a hairline box ruled in `--su-bp-field`, and what is typed
+ * in it is set in the monospace face, as a dimension is written on a
+ * drawing. Focus is the blue, doubled: the line turns and a second runs
+ * round it. Its label is a small caption above it.
+ * ------------------------------------------------------------------ */
+
+.su-label {
+  color: var(--su-text-muted);
+}
+
+.su-input,
+.su-textarea,
+.su-select {
+  border-color: var(--su-bp-field);
+  font-family: var(--su-font-mono);
+}
+
+.su-input:focus,
+.su-textarea:focus,
+.su-select:focus {
+  border-color: var(--su-bp-accent);
+  box-shadow: 0 0 0 var(--su-border-width) var(--su-bp-accent);
+}
+
+/* An invalid field keeps its red line through focus, doubled the same
+   way, rather than taking the blue. */
+.su-field--invalid .su-input:focus,
+.su-field--invalid .su-textarea:focus,
+.su-field--invalid .su-select:focus,
+.su-input[aria-invalid='true']:focus,
+.su-textarea[aria-invalid='true']:focus,
+.su-select[aria-invalid='true']:focus {
+  border-color: var(--su-danger);
+  box-shadow: 0 0 0 var(--su-border-width) var(--su-danger);
+}
+
+/* The arrow is an open chevron, two strokes, rather than the core's
+   filled triangle. */
+.su-select {
+  background-image: linear-gradient(45deg, transparent 42%, currentColor 42% 58%, transparent 58%),
+    linear-gradient(135deg, transparent 42%, currentColor 42% 58%, transparent 58%);
+  background-position: right 1.1rem top 55%, right 0.75rem top 55%;
+  background-size: 0.4rem 0.4rem;
+}
+
+/*
+ * A select's list, where the engine lets the stylesheet draw it, is a
+ * menu like the ones below: ruled in the strong line. Behind the same
+ * test as the core's.
+ */
+@supports (appearance: base-select) {
+  .su-select:not([multiple])::picker(select) {
+    border-color: var(--su-border-strong);
+  }
+}
+
+/*
+ * With an adornment, the group is the field: one box with the icon or
+ * the unit inside it, rather than a well beside an input. The line is an
+ * inset shadow on the group, so it takes no room and the group is the
+ * height of a plain field; the parts inside give up their own lines and
+ * ground, and a hover, focus or error colours the whole box.
+ */
+.su-input-group:has(.su-adornment) {
+  background: var(--su-surface);
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-bp-field);
+  transition: box-shadow var(--su-transition);
+}
+
+.su-input-group:has(.su-adornment) > .su-adornment,
+.su-input-group:has(.su-adornment) .su-input {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.su-input-group:has(.su-adornment) > .su-adornment {
+  color: var(--su-text-subtle);
+  font-family: var(--su-font-mono);
+}
+
+.su-input-group:has(.su-adornment--start) .su-input {
+  padding-inline-start: 0;
+}
+
+.su-input-group:has(.su-adornment--end) .su-input {
+  padding-inline-end: 0;
+}
+
+.su-input-group:has(.su-adornment):not(:has(.su-input[disabled])):hover {
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-text-subtle);
+}
+
+.su-input-group:has(.su-adornment):focus-within {
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-bp-accent), 0 0 0 var(--su-border-width) var(--su-bp-accent);
+}
+
+.su-field--invalid .su-input-group:has(.su-adornment),
+.su-input-group:has(.su-adornment):has(.su-input[aria-invalid='true']) {
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-danger);
+}
+
+.su-field--invalid .su-input-group:has(.su-adornment):focus-within,
+.su-input-group:has(.su-adornment):has(.su-input[aria-invalid='true']):focus-within {
+  box-shadow: inset 0 0 0 var(--su-border-width) var(--su-danger), 0 0 0 var(--su-border-width) var(--su-danger);
+}
+
+.su-input-group:has(.su-adornment):has(.su-input[disabled]) {
+  background: var(--su-surface-2);
+}
+
+/* A checkbox is a ruled square, ticked in the reversed colour once it
+   is filled with ink. A radio stays round: it is the one shape that
+   tells it from a checkbox before it is chosen. */
+.su-check-box {
+  border-color: var(--su-bp-field);
+}
+
+.su-check--radio .su-check-box,
+.su-check--radio .su-check-box::after {
+  border-radius: 50%;
+}
+
+/*
+ * A switch is a ruled slot with a block in it: grey and at the start
+ * while off; once on, the slot fills with its palette's colour and the
+ * block takes the reversed colour. The track gives up as much padding
+ * as its line takes, so the thumb's travel is the core's.
+ */
+.su-switch-track {
+  padding: calc(0.15rem - var(--su-border-width));
+  border: var(--su-border-width) solid var(--su-bp-field);
+  background: var(--su-surface);
+  transition: background-color var(--su-transition), border-color var(--su-transition);
+}
+
+.su-switch-thumb {
+  background: var(--su-text-subtle);
+  box-shadow: none;
+}
+
+.su-switch input:checked + .su-switch-track {
+  border-color: var(--su-c, var(--su-primary));
+  background: var(--su-c, var(--su-primary));
+}
+
+.su-switch input:checked + .su-switch-track .su-switch-thumb {
+  background: var(--su-c-fg, var(--su-primary-fg));
+}
+
+/*
+ * A slider is a rule: a hairline with a tick every tenth of the way and
+ * one at its far end, and the knob a narrow block of ink stood across
+ * it, as a cursor stands on a scale.
+ */
+.su-slider::-webkit-slider-runnable-track {
+  height: 0.5rem;
+  background: linear-gradient(var(--su-bp-mark) 0 0) right / var(--su-border-width) 100% no-repeat,
+    linear-gradient(90deg, var(--su-bp-mark) var(--su-border-width), transparent 0) 0 0 / 10% 100% repeat-x,
+    linear-gradient(var(--su-bp-field) 0 0) center / 100% var(--su-border-width) no-repeat;
+}
+
+.su-slider::-moz-range-track {
+  height: 0.5rem;
+  background: linear-gradient(var(--su-bp-mark) 0 0) right / var(--su-border-width) 100% no-repeat,
+    linear-gradient(90deg, var(--su-bp-mark) var(--su-border-width), transparent 0) 0 0 / 10% 100% repeat-x,
+    linear-gradient(var(--su-bp-field) 0 0) center / 100% var(--su-border-width) no-repeat;
+}
+
+.su-slider::-webkit-slider-thumb {
+  width: 0.625rem;
+  height: 1.25rem;
+  /* Centre the knob on the 0.5rem track. */
+  margin-top: -0.375rem;
+  border-width: var(--su-border-width);
+  box-shadow: none;
+}
+
+.su-slider::-moz-range-thumb {
+  width: 0.625rem;
+  height: 1.25rem;
+  border-width: var(--su-border-width);
+  box-shadow: none;
+}
+
+/* ------------------------------------------------------------------ *
+ * Data display and feedback
+ * ------------------------------------------------------------------ */
+
+/* A tag is ruled in its palette's line round its tint; the outline one
+   is the line and the label on the page. */
+.su-chip {
+  border-color: var(--su-c-border, var(--su-border-strong));
+}
+
+.su-avatar {
+  border: var(--su-border-width) solid var(--su-border-strong);
+}
+
+/*
+ * A table is a schedule: column heads in small grey capitals over a
+ * solid rule, and its rows divided by dashed ones.
+ */
+.su-table thead th {
+  background: transparent;
+  letter-spacing: var(--su-bp-tracking);
+}
+
+.su-table td {
+  border-bottom-style: dashed;
+}
+
+/* Set straight into a card, a table runs to its edges, under the
+   header's rule, rather than drawing a second frame inside the first. */
+.su-card > .su-table-wrap {
+  border: 0;
+}
+
+.su-list-item {
+  border-bottom-style: dashed;
+}
+
+.su-alert--soft {
+  border-color: var(--su-c-border, var(--su-border));
+}
+
+/* A bar is a thin slot with the ink run along it, and its label a
+   caption with the value in the monospace face: `PROGRESS 50%`. */
+.su-progress-bar {
+  height: var(--su-progress-height, 0.25rem);
+  background: var(--su-bp-track);
+}
+
+.su-progress-label {
+  color: var(--su-text-muted);
+}
+
+.su-progress-label [data-su-progress-value] {
+  color: var(--su-text);
+}
+
+.su-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--su-bp-track) 25%,
+    color-mix(in srgb, var(--su-bp-track), var(--su-text) 12%) 37%,
+    var(--su-bp-track) 63%
+  );
+  background-size: 400% 100%;
+}
+
+/* What is not there yet is drawn as a placeholder is on a drawing: a
+   dashed box. */
+.su-empty-icon {
+  border: var(--su-border-width) dashed var(--su-border-strong);
+  background: transparent;
+}
+
+.su-empty-title {
+  font-weight: var(--su-weight-medium);
+}
+
+.su-stat-value {
+  font-family: var(--su-font-mono);
+  font-weight: var(--su-weight-normal);
+  letter-spacing: -0.03em;
+}
+
+/*
+ * A divider is a dashed line, in the strong colour so a broken line
+ * reads as clearly as a whole one does in the faint.
+ */
+.su-divider::before,
+.su-divider::after {
+  background: repeating-linear-gradient(90deg, var(--su-border-strong) 0 3px, transparent 3px 6px);
+}
+
+.su-divider--vertical::before,
+.su-divider--vertical::after {
+  background: repeating-linear-gradient(180deg, var(--su-border-strong) 0 3px, transparent 3px 6px);
+}
+
+/* ------------------------------------------------------------------ *
+ * Navigation
+ *
+ * The bar's links are captions; the one you are on is printed in
+ * reverse, ink with the page's colour for its label, and so are the
+ * current page number and a chosen pill.
+ * ------------------------------------------------------------------ */
+
+.su-appbar-brand {
+  font-weight: var(--su-weight-medium);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.su-nav-link:hover {
+  background: transparent;
+}
+
+.su-nav-link[aria-current='page'] {
+  background: var(--su-c, var(--su-primary));
+  color: var(--su-c-fg, var(--su-primary-fg));
+}
+
+.su-breadcrumb-item[aria-current='page'] {
+  font-weight: var(--su-weight-normal);
+}
+
+/* Page numbers are boxes drawn when pointed at. */
+.su-page-link:not([aria-current='page']):hover {
+  border-color: var(--su-border-strong);
+  background: transparent;
+}
+
+.su-page-link[aria-current='page'] {
+  font-weight: var(--su-weight-normal);
+}
+
+/* The line under the tab you are on is as thin as the rest. */
+.su-tab {
+  border-bottom-width: var(--su-border-width);
+}
+
+.su-tabs--pills .su-tab:hover {
+  background: var(--su-surface-hover);
+}
+
+.su-tabs--pills .su-tab[aria-disabled='true']:hover,
+.su-tabs--pills .su-tab-input:disabled + .su-tab:hover {
+  background: transparent;
+}
+
+.su-tabs--pills .su-tab[aria-current='page'],
+.su-tabs--pills .su-tab-input:checked + .su-tab,
+.su-tabs--pills.su-tabs--target > .su-tab:target,
+.su-tabs--pills.su-tabs--target:not(:has(> .su-tab:target)) > .su-tab--default {
+  background: var(--su-c, var(--su-primary));
+  color: var(--su-c-fg, var(--su-primary-fg));
+}
+
+/* Anything floating over the page is ruled in the strong line, since
+   it has no shadow to lift it. */
+.su-menu-list,
+.su-modal,
+.su-drawer {
+  border-color: var(--su-border-strong);
+}
+
+.su-menu-separator {
+  height: 0;
+  border-top: var(--su-border-width) dashed var(--su-border-strong);
+  background: none;
+}
+
+/* A dialog is a frame like a card: its header ruled off, its title in
+   small capitals. */
+.su-modal-header {
+  align-items: center;
+  padding-block: var(--su-space-md);
+  border-bottom: var(--su-border-width) solid var(--su-border);
+}
+
+.su-modal-body {
+  padding-top: var(--su-space-lg);
+}
+
+/* ------------------------------------------------------------------ *
+ * Accordion and collapsible
+ *
+ * The turning chevron becomes a plus, and a minus once open — the mark
+ * the corners are drawn with. Text rather than a drawn shape, so a
+ * forced palette keeps it. The rule between items is dashed: they are
+ * parts of one frame.
+ * ------------------------------------------------------------------ */
+
+.su-accordion-item + .su-accordion-item {
+  border-top-style: dashed;
+}
+
+.su-accordion-item > summary::after,
+.su-collapsible-trigger::after {
+  content: '+';
+  content: '+' / '';
+  flex: none;
+  width: auto;
+  height: auto;
+  border: 0;
+  font-family: var(--su-font-mono);
+  font-weight: var(--su-weight-normal);
+  line-height: 1;
+  transform: none;
+}
+
+.su-accordion-item > summary::after {
+  opacity: 1;
+  color: var(--su-text-subtle);
+}
+
+.su-accordion-item[open] > summary::after,
+.su-collapsible[open] > .su-collapsible-trigger::after {
+  content: '\2212';
+  content: '\2212' / '';
+  transform: none;
+}
+
+/* ------------------------------------------------------------------ *
+ * Steps and timeline
+ *
+ * The run between steps is a hairline: drawn in full behind a step that
+ * is done, dashed ahead of one that is not. A marker is a square, and
+ * its number is in the monospace face.
+ * ------------------------------------------------------------------ */
+
+.su-steps {
+  --su-step-marker: 1.75rem;
+}
+
+.su-step-marker {
+  border-width: var(--su-border-width);
+  font-family: var(--su-font-mono);
+  font-weight: var(--su-weight-normal);
+}
+
+.su-step:not(:last-child)::after {
+  inset-inline-start: calc(var(--su-step-marker) / 2 - var(--su-border-width));
+  width: var(--su-border-width);
+  background: repeating-linear-gradient(180deg, var(--su-border-strong) 0 3px, transparent 3px 6px);
+}
+
+.su-step--complete:not(:last-child)::after {
+  background: var(--su-primary);
+}
+
+@media (width > 40rem) {
+  .su-steps:not(.su-steps--vertical) .su-step:not(:last-child)::after {
+    top: calc(var(--su-step-marker) / 2 - var(--su-border-width));
+    width: auto;
+    height: var(--su-border-width);
+    background: repeating-linear-gradient(90deg, var(--su-border-strong) 0 3px, transparent 3px 6px);
+  }
+
+  .su-steps:not(.su-steps--vertical) .su-step--complete:not(:last-child)::after {
+    background: var(--su-primary);
+  }
+}
+
+.su-timeline-item:not(:last-child)::after {
+  inset-inline-start: calc(0.525rem - var(--su-border-width) / 2);
+  width: var(--su-border-width);
+  background: repeating-linear-gradient(180deg, var(--su-border-strong) 0 3px, transparent 3px 6px);
+}
+
+/* ------------------------------------------------------------------ *
+ * Prose
+ *
+ * Markdown set like the rest: headings tight and medium, links dashed,
+ * a quotation ruled with a hairline and not slanted, a rule and the
+ * lines between table rows dashed. The core's selectors, so these win by
+ * coming later.
+ * ------------------------------------------------------------------ */
+
+.su-prose :where(h1, h2, h3, h4, h5, h6):not([class*='su-']) {
+  font-weight: var(--su-weight-medium);
+  letter-spacing: -0.02em;
+}
+
+.su-prose :where(h1):not([class*='su-']) {
+  letter-spacing: -0.035em;
+}
+
+.su-prose :where(a):not([class*='su-']) {
+  text-decoration-style: dashed;
+  text-underline-offset: 0.25em;
+}
+
+.su-prose :where(a):not([class*='su-']):hover {
+  text-decoration-style: solid;
+}
+
+.su-prose :where(blockquote):not([class*='su-']) {
+  border-inline-start: var(--su-border-width) solid var(--su-text-subtle);
+  font-style: normal;
+}
+
+.su-prose :where(hr):not([class*='su-']) {
+  border-top-style: dashed;
+  border-top-color: var(--su-border-strong);
+}
+
+.su-prose :where(td):not([class*='su-']) {
+  border-bottom-style: dashed;
+}
+
+.su-prose :where(th):not([class*='su-']) {
+  font-family: var(--su-font-mono);
+  font-size: 0.8em;
+  font-weight: var(--su-weight-medium);
+  letter-spacing: var(--su-bp-tracking);
+  text-transform: uppercase;
+}
+
+.su-prose :where(kbd):not([class*='su-']) {
+  border-bottom-width: var(--su-border-width);
+}
+
+/* ------------------------------------------------------------------ *
+ * Forced colours
+ *
+ * A system palette takes away the fills that reverse video and the
+ * switch are drawn with, which would leave a chosen segment, pill, page
+ * or bar link looking like the rest and a switch with no thumb. They
+ * are given back in the system's own highlight.
+ * ------------------------------------------------------------------ */
+
+@media (forced-colors: active) {
+  /* Every selector the reverse video is set with above, the neutral
+     toggle's and the held hovers included: a media query adds nothing to
+     a selector's weight, so a lighter one here would lose to them. */
+  .su-toggle-btn[aria-pressed='true'],
+  .su-toggle-btn[aria-current],
+  .su-toggle-btn[aria-pressed='true']:hover,
+  .su-toggle-btn[aria-current]:hover,
+  .su-toggle-btn.su-c-neutral[aria-pressed='true'],
+  .su-toggle-btn.su-c-neutral[aria-current],
+  .su-toggle-btn.su-c-neutral[aria-pressed='true']:hover,
+  .su-toggle-btn.su-c-neutral[aria-current]:hover,
+  .su-tabs--pills .su-tab[aria-current='page'],
+  .su-tabs--pills .su-tab-input:checked + .su-tab,
+  .su-tabs--pills.su-tabs--target > .su-tab:target,
+  .su-tabs--pills.su-tabs--target:not(:has(> .su-tab:target)) > .su-tab--default,
+  .su-page-link[aria-current='page'],
+  .su-nav-link[aria-current='page'] {
+    forced-color-adjust: none;
+    border-color: Highlight;
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .su-switch-thumb {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+
+  .su-switch input:checked + .su-switch-track .su-switch-thumb {
+    background: Highlight;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Mockup
+ *
+ * The phone's island and the macOS lights are quotations of someone
+ * else's hardware, and stay round when nothing else here is.
+ * ------------------------------------------------------------------ */
+
+.su-mockup-notch,
+.su-mockup-notch::after,
+.su-mockup-dots--mac .su-mockup-dot {
+  border-radius: 999px;
+}

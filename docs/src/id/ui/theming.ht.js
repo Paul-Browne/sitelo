@@ -82,6 +82,8 @@ head(
         a({ href: '/id/ui/theming/superneon' }, 'Superneon'),
         ', ',
         a({ href: '/id/ui/theming/terminal' }, 'Terminal'),
+        ', ',
+        a({ href: '/id/ui/theming/blueprint' }, 'Cetak biru'),
         '.',
       ),
       p(
@@ -247,7 +249,7 @@ head(
       h2('Props'),
       p(code('styles()'), ':'),
       propsTable([
-        ['preset', "'neumorphism' | 'neubrutalism' | 'superneon' | 'terminal'", '', 'Menata ulang setiap komponen dengan sebuah preset, ditautkan atau disisipkan setelah lembar inti.'],
+        ['preset', "'neumorphism' | 'neubrutalism' | 'superneon' | 'terminal' | 'blueprint'", '', 'Menata ulang setiap komponen dengan sebuah preset, ditautkan atau disisipkan setelah lembar inti.'],
         ['inline', 'boolean', 'false', 'Menghasilkan CSS-nya sendiri alih-alih tautan kepadanya.'],
         ['hash', 'boolean', 'true', 'Memberi hash konten pada nama berkasnya. Hanya untuk yang bertautan.'],
         ['base', 'string', "'/su/'", 'Mengarahkan URL-nya ke tempat lain; salinan itu Anda yang menghosting. Hanya untuk yang bertautan.'],
