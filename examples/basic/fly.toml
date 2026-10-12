@@ -1,0 +1,10 @@
+# Fly.io — `fly launch` picks a region and lets you rename the app; after
+# that, `fly deploy` builds the Dockerfile and ships it.
+app = "sitelo-basic"
+
+[http_service]
+  internal_port = 80
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0

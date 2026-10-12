@@ -1,0 +1,4 @@
+# The Dockerfile installs and builds inside the image; keep local copies out.
+node_modules
+dist
+.git

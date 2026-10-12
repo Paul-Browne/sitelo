@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Wdrożenie',
     description:
-      'Wdróż witrynę sitelo na Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway albo dowolny hosting statyczny.',
+      'Wdróż witrynę sitelo na Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Render, Railway, Fly.io albo dowolny hosting statyczny.',
     activeHref: '/pl/docs/deployment',
     children: [
       p(
@@ -79,6 +79,13 @@ export default () =>
         code('--base /repo/'),
         '.',
       ),
+      h2('Render'),
+      p(
+        'Dodaj poniższy Blueprint do repozytorium albo utwórz w panelu stronę statyczną z tym samym poleceniem budowania i katalogiem publikacji. Czyste adresy URL i ',
+        code('404.html'),
+        ' działają bez reguł przekierowań.',
+      ),
+      codeBlock('render.yaml', s.render, 'bash'),
       h2('Railway'),
       p(
         'Railway buduje przez Railpack, który serwuje strony statyczne za pomocą Caddy. sitelo nie należy do frameworków wykrywanych przez Railpack, więc dodaj zmienną usługi ',
@@ -96,6 +103,26 @@ export default () =>
         ' w katalogu głównym projektu. Bez niego domyślna konfiguracja SPA w Railpack odpowiada na każdy nieznany URL stroną główną; ten plik zwraca ',
         code('404.html'),
         ' ze statusem 404.',
+      ),
+      h2('Fly.io'),
+      p(
+        'Fly.io uruchamia kontenery, więc strona trafia tam jako obraz: Node ją buduje, a Caddy serwuje ',
+        code('dist/'),
+        ' z użyciem pliku ',
+        code('Caddyfile'),
+        ' z sekcji o Railway. Utwórz aplikację przez ',
+        code('fly launch'),
+        ', a potem uruchom ',
+        code('fly deploy'),
+        '.',
+      ),
+      codeBlock('Dockerfile', s.dockerfile, 'bash'),
+      codeBlock('.dockerignore', s.dockerignore, 'bash'),
+      codeBlock('fly.toml', s.fly, 'bash'),
+      p(
+        'Railway buduje ',
+        code('Dockerfile'),
+        ', gdy tylko go znajdzie, więc z tym plikiem w projekcie Railway nie potrzebuje zmiennej usługi.',
       ),
       h2('Zanim opublikujesz'),
       ul(

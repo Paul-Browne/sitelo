@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Dağıtım',
     description:
-      'Bir sitelo sitesini Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway ya da herhangi bir statik sunucuya dağıtın.',
+      'Bir sitelo sitesini Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Render, Railway, Fly.io ya da herhangi bir statik sunucuya dağıtın.',
     activeHref: '/tr/docs/deployment',
     children: [
       p(
@@ -79,6 +79,13 @@ export default () =>
         code('--base /repo/'),
         ' ile derleyin.',
       ),
+      h2('Render'),
+      p(
+        'Aşağıdaki Blueprint’i depoya ekleyin ya da panelden aynı derleme komutu ve yayın diziniyle bir statik site oluşturun. Temiz URL’ler ve ',
+        code('404.html'),
+        ' yönlendirme kuralı olmadan çalışır.',
+      ),
+      codeBlock('render.yaml', s.render, 'bash'),
       h2('Railway'),
       p(
         'Railway, statik siteleri Caddy ile sunan Railpack ile derleme yapar. sitelo, Railpack’in tanıdığı framework’ler arasında değil; bu yüzden ',
@@ -95,6 +102,26 @@ export default () =>
         ' dosyasını proje köküne ekleyin. Bu dosya olmadan Railpack’in tek sayfalı uygulama varsayılanı bilinmeyen her URL’ye ana sayfayla yanıt verir; bu dosya ise ',
         code('404.html'),
         ' sayfasını 404 durum koduyla sunar.',
+      ),
+      h2('Fly.io'),
+      p(
+        'Fly.io konteyner çalıştırır, bu yüzden site bir imaj olarak gider: Node siteyi derler, ardından Caddy Railway bölümündeki ',
+        code('Caddyfile'),
+        ' ile ',
+        code('dist/'),
+        ' dizinini sunar. Uygulamayı ',
+        code('fly launch'),
+        ' ile oluşturun, sonra ',
+        code('fly deploy'),
+        ' çalıştırın.',
+      ),
+      codeBlock('Dockerfile', s.dockerfile, 'bash'),
+      codeBlock('.dockerignore', s.dockerignore, 'bash'),
+      codeBlock('fly.toml', s.fly, 'bash'),
+      p(
+        'Railway bir ',
+        code('Dockerfile'),
+        ' bulduğunda onu derler; bu dosya projede olduğunda Railway’in servis değişkenine ihtiyacı kalmaz.',
       ),
       h2('Yayımlamadan önce'),
       ul(

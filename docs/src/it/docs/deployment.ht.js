@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Deploy',
     description:
-      'Pubblica un sito sitelo su Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway o qualunque host statico.',
+      'Pubblica un sito sitelo su Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Render, Railway, Fly.io o qualunque host statico.',
     activeHref: '/it/docs/deployment',
     children: [
       p(
@@ -79,6 +79,13 @@ export default () =>
         code('--base /repo/'),
         '.',
       ),
+      h2('Render'),
+      p(
+        'Aggiungi il Blueprint qui sotto al repository, oppure crea un sito statico dalla dashboard con lo stesso comando di build e la stessa cartella di pubblicazione. Gli URL puliti e ',
+        code('404.html'),
+        ' funzionano senza regole di redirect.',
+      ),
+      codeBlock('render.yaml', s.render, 'bash'),
       h2('Railway'),
       p(
         'Railway compila con Railpack, che serve i siti statici con Caddy. sitelo non è tra i framework che Railpack rileva, quindi aggiungi la variabile di servizio ',
@@ -96,6 +103,26 @@ export default () =>
         ' nella radice del progetto. Senza, la configurazione predefinita di Railpack per le SPA risponde a ogni URL sconosciuto con la home page; questo serve ',
         code('404.html'),
         ' con stato 404.',
+      ),
+      h2('Fly.io'),
+      p(
+        'Fly.io esegue container, quindi il sito viaggia come immagine: Node lo compila, poi Caddy serve ',
+        code('dist/'),
+        ' con il ',
+        code('Caddyfile'),
+        ' della sezione Railway. Esegui ',
+        code('fly launch'),
+        ' per creare l’app, poi ',
+        code('fly deploy'),
+        '.',
+      ),
+      codeBlock('Dockerfile', s.dockerfile, 'bash'),
+      codeBlock('.dockerignore', s.dockerignore, 'bash'),
+      codeBlock('fly.toml', s.fly, 'bash'),
+      p(
+        'Railway compila un ',
+        code('Dockerfile'),
+        ' ogni volta che ne trova uno, quindi con questo nel progetto non serve la variabile di servizio.',
       ),
       h2('Prima di pubblicare'),
       ul(

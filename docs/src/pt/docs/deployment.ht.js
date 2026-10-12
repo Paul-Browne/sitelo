@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Implementação',
     description:
-      'Implementa um site sitelo no Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway ou em qualquer alojamento estático.',
+      'Implementa um site sitelo no Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Render, Railway, Fly.io ou em qualquer alojamento estático.',
     activeHref: '/pt/docs/deployment',
     children: [
       p(
@@ -79,6 +79,13 @@ export default () =>
         code('--base /repo/'),
         '.',
       ),
+      h2('Render'),
+      p(
+        'Adiciona o Blueprint abaixo ao repositório ou cria um site estático no painel com o mesmo comando de compilação e diretório de publicação. Os URL limpos e o ',
+        code('404.html'),
+        ' funcionam sem regras de redirecionamento.',
+      ),
+      codeBlock('render.yaml', s.render, 'bash'),
       h2('Railway'),
       p(
         'O Railway compila com o Railpack, que serve sites estáticos com o Caddy. O sitelo não está entre os frameworks que o Railpack deteta, por isso adiciona a variável de serviço ',
@@ -96,6 +103,26 @@ export default () =>
         ' na raiz do projeto. Sem ele, a predefinição de SPA do Railpack responde a qualquer URL desconhecido com a página inicial; este serve ',
         code('404.html'),
         ' com o estado 404.',
+      ),
+      h2('Fly.io'),
+      p(
+        'O Fly.io corre contentores, por isso o site segue numa imagem: o Node compila-o e depois o Caddy serve ',
+        code('dist/'),
+        ' com o ',
+        code('Caddyfile'),
+        ' da secção do Railway. Corre ',
+        code('fly launch'),
+        ' para criar a app e depois ',
+        code('fly deploy'),
+        '.',
+      ),
+      codeBlock('Dockerfile', s.dockerfile, 'bash'),
+      codeBlock('.dockerignore', s.dockerignore, 'bash'),
+      codeBlock('fly.toml', s.fly, 'bash'),
+      p(
+        'O Railway compila um ',
+        code('Dockerfile'),
+        ' sempre que o encontra, por isso, com este no projeto, o Railway dispensa a variável de serviço.',
       ),
       h2('Antes de publicar'),
       ul(

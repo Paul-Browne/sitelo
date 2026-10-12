@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Deployment',
     description:
-      'Eine sitelo-Website auf Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway oder jedem statischen Hoster ausliefern.',
+      'Eine sitelo-Website auf Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Render, Railway, Fly.io oder jedem statischen Hoster ausliefern.',
     activeHref: '/de/docs/deployment',
     children: [
       p(
@@ -79,6 +79,13 @@ export default () =>
         code('--base /repo/'),
         '.',
       ),
+      h2('Render'),
+      p(
+        'Füge den Blueprint unten zum Repository hinzu oder lege im Dashboard eine Static Site mit demselben Build-Befehl und Publish-Verzeichnis an. Saubere URLs und ',
+        code('404.html'),
+        ' funktionieren ohne Weiterleitungsregeln.',
+      ),
+      codeBlock('render.yaml', s.render, 'bash'),
       h2('Railway'),
       p(
         'Railway baut mit Railpack, das statische Websites mit Caddy ausliefert. sitelo gehört nicht zu den Frameworks, die Railpack erkennt — setze daher die Service-Variable ',
@@ -96,6 +103,26 @@ export default () =>
         ' im Projektstamm ab. Ohne es beantwortet Railpacks SPA-Standard jede unbekannte URL mit der Startseite; dieses liefert stattdessen ',
         code('404.html'),
         ' mit Status 404 aus.',
+      ),
+      h2('Fly.io'),
+      p(
+        'Fly.io führt Container aus, also geht die Website als Image raus: Node baut sie, dann liefert Caddy ',
+        code('dist/'),
+        ' mit dem ',
+        code('Caddyfile'),
+        ' aus dem Railway-Abschnitt aus. Lege die App mit ',
+        code('fly launch'),
+        ' an und liefere danach mit ',
+        code('fly deploy'),
+        ' aus.',
+      ),
+      codeBlock('Dockerfile', s.dockerfile, 'bash'),
+      codeBlock('.dockerignore', s.dockerignore, 'bash'),
+      codeBlock('fly.toml', s.fly, 'bash'),
+      p(
+        'Railway baut ein ',
+        code('Dockerfile'),
+        ', sobald es eines findet — mit diesem im Projekt braucht Railway keine Service-Variable.',
       ),
       h2('Vor dem Ausliefern'),
       ul(

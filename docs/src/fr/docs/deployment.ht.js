@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Déploiement',
     description:
-      'Déployez un site sitelo sur Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway ou tout hébergeur statique.',
+      'Déployez un site sitelo sur Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Render, Railway, Fly.io ou tout hébergeur statique.',
     activeHref: '/fr/docs/deployment',
     children: [
       p(
@@ -79,6 +79,13 @@ export default () =>
         code('--base /repo/'),
         '.',
       ),
+      h2('Render'),
+      p(
+        'Ajoutez le Blueprint ci-dessous au dépôt, ou créez un site statique depuis le tableau de bord avec la même commande de build et le même répertoire de publication. Les URL propres et ',
+        code('404.html'),
+        ' fonctionnent sans règle de redirection.',
+      ),
+      codeBlock('render.yaml', s.render, 'bash'),
       h2('Railway'),
       p(
         'Railway compile avec Railpack, qui sert les sites statiques avec Caddy. sitelo ne fait pas partie des frameworks que Railpack détecte : ajoutez donc la variable de service ',
@@ -96,6 +103,26 @@ export default () =>
         ' à la racine du projet. Sans lui, le réglage par défaut de Railpack pour les SPA répond à toute URL inconnue avec la page d’accueil ; celui-ci sert ',
         code('404.html'),
         ' avec un statut 404.',
+      ),
+      h2('Fly.io'),
+      p(
+        'Fly.io exécute des conteneurs : le site part donc dans une image où Node le compile, puis Caddy sert ',
+        code('dist/'),
+        ' avec le ',
+        code('Caddyfile'),
+        ' de la section Railway. Lancez ',
+        code('fly launch'),
+        ' pour créer l’app, puis ',
+        code('fly deploy'),
+        '.',
+      ),
+      codeBlock('Dockerfile', s.dockerfile, 'bash'),
+      codeBlock('.dockerignore', s.dockerignore, 'bash'),
+      codeBlock('fly.toml', s.fly, 'bash'),
+      p(
+        'Railway compile un ',
+        code('Dockerfile'),
+        ' dès qu’il en trouve un : avec celui-ci dans le projet, Railway n’a plus besoin de la variable de service.',
       ),
       h2('Avant de publier'),
       ul(

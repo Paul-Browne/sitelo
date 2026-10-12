@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: '部署',
     description:
-      '把 sitelo 站点部署到 Netlify、Vercel、Cloudflare Pages、AWS Amplify、GitHub Pages、Railway 或任意静态托管。',
+      '把 sitelo 站点部署到 Netlify、Vercel、Cloudflare Pages、AWS Amplify、GitHub Pages、Render、Railway、Fly.io 或任意静态托管。',
     activeHref: '/zh/docs/deployment',
     children: [
       p(
@@ -79,6 +79,13 @@ export default () =>
         code('--base /repo/'),
         '。',
       ),
+      h2('Render'),
+      p(
+        '把下面的 Blueprint 加入仓库，或在控制台新建一个静态站点，填入相同的构建命令和发布目录。简洁 URL 和 ',
+        code('404.html'),
+        ' 无需任何重定向规则即可生效。',
+      ),
+      codeBlock('render.yaml', s.render, 'bash'),
       h2('Railway'),
       p(
         'Railway 使用 Railpack 构建，Railpack 用 Caddy 托管静态站点。sitelo 不在 Railpack 能自动识别的框架之列，所以要添加服务变量 ',
@@ -96,6 +103,26 @@ export default () =>
         ' 放在项目根目录。没有它时，Railpack 的单页应用默认配置会用首页响应所有未知 URL；这个文件则以 404 状态码返回 ',
         code('404.html'),
         '。',
+      ),
+      h2('Fly.io'),
+      p(
+        'Fly.io 运行的是容器，所以站点以镜像形式发布：先由 Node 构建，再由 Caddy 用 Railway 一节中的 ',
+        code('Caddyfile'),
+        ' 托管 ',
+        code('dist/'),
+        '。先运行 ',
+        code('fly launch'),
+        ' 创建应用，之后运行 ',
+        code('fly deploy'),
+        '。',
+      ),
+      codeBlock('Dockerfile', s.dockerfile, 'bash'),
+      codeBlock('.dockerignore', s.dockerignore, 'bash'),
+      codeBlock('fly.toml', s.fly, 'bash'),
+      p(
+        'Railway 只要发现 ',
+        code('Dockerfile'),
+        ' 就会用它构建，所以项目里有了这个文件，Railway 就不需要服务变量了。',
       ),
       h2('发布之前'),
       ul(

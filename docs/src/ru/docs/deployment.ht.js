@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Развёртывание',
     description:
-      'Разверните сайт на sitelo в Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway или на любом статическом хостинге.',
+      'Разверните сайт на sitelo в Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Render, Railway, Fly.io или на любом статическом хостинге.',
     activeHref: '/ru/docs/deployment',
     children: [
       p(
@@ -79,6 +79,13 @@ export default () =>
         code('--base /repo/'),
         '.',
       ),
+      h2('Render'),
+      p(
+        'Добавьте Blueprint ниже в репозиторий или создайте статический сайт в панели с той же командой сборки и каталогом публикации. Чистые URL и ',
+        code('404.html'),
+        ' работают без правил перенаправления.',
+      ),
+      codeBlock('render.yaml', s.render, 'bash'),
       h2('Railway'),
       p(
         'Railway собирает проект через Railpack, который раздаёт статические сайты с помощью Caddy. sitelo нет среди фреймворков, которые Railpack распознаёт, поэтому добавьте переменную сервиса ',
@@ -96,6 +103,26 @@ export default () =>
         ' в корень проекта. Без него стандартная SPA-настройка Railpack отвечает на любой неизвестный URL главной страницей; этот файл отдаёт ',
         code('404.html'),
         ' со статусом 404.',
+      ),
+      h2('Fly.io'),
+      p(
+        'Fly.io запускает контейнеры, поэтому сайт поставляется образом: Node собирает его, затем Caddy раздаёт ',
+        code('dist/'),
+        ' с файлом ',
+        code('Caddyfile'),
+        ' из раздела о Railway. Создайте приложение командой ',
+        code('fly launch'),
+        ', затем выполните ',
+        code('fly deploy'),
+        '.',
+      ),
+      codeBlock('Dockerfile', s.dockerfile, 'bash'),
+      codeBlock('.dockerignore', s.dockerignore, 'bash'),
+      codeBlock('fly.toml', s.fly, 'bash'),
+      p(
+        'Railway собирает ',
+        code('Dockerfile'),
+        ', как только находит его, так что с этим файлом в проекте переменная сервиса для Railway не нужна.',
       ),
       h2('Перед публикацией'),
       ul(

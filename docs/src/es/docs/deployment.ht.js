@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Despliegue',
     description:
-      'Despliega un sitio sitelo en Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway o cualquier hosting estático.',
+      'Despliega un sitio sitelo en Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Render, Railway, Fly.io o cualquier hosting estático.',
     activeHref: '/es/docs/deployment',
     children: [
       p(
@@ -79,6 +79,13 @@ export default () =>
         code('--base /repo/'),
         '.',
       ),
+      h2('Render'),
+      p(
+        'Añade el Blueprint de abajo al repositorio, o crea un sitio estático desde el panel con el mismo comando de compilación y directorio de publicación. Las URL limpias y ',
+        code('404.html'),
+        ' funcionan sin reglas de redirección.',
+      ),
+      codeBlock('render.yaml', s.render, 'bash'),
       h2('Railway'),
       p(
         'Railway compila con Railpack, que sirve los sitios estáticos con Caddy. sitelo no está entre los frameworks que Railpack detecta, así que añade la variable de servicio ',
@@ -96,6 +103,26 @@ export default () =>
         ' a la raíz del proyecto. Sin él, la configuración por defecto de Railpack para SPA responde a cualquier URL desconocida con la página de inicio; este sirve ',
         code('404.html'),
         ' con estado 404.',
+      ),
+      h2('Fly.io'),
+      p(
+        'Fly.io ejecuta contenedores, así que el sitio se despliega como imagen: Node lo compila y Caddy sirve ',
+        code('dist/'),
+        ' con el ',
+        code('Caddyfile'),
+        ' de la sección de Railway. Ejecuta ',
+        code('fly launch'),
+        ' para crear la app y luego ',
+        code('fly deploy'),
+        '.',
+      ),
+      codeBlock('Dockerfile', s.dockerfile, 'bash'),
+      codeBlock('.dockerignore', s.dockerignore, 'bash'),
+      codeBlock('fly.toml', s.fly, 'bash'),
+      p(
+        'Railway compila un ',
+        code('Dockerfile'),
+        ' siempre que lo encuentra, así que con este en el proyecto Railway no necesita la variable de servicio.',
       ),
       h2('Antes de publicar'),
       ul(

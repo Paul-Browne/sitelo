@@ -1,9 +1,12 @@
-# Railway — Railpack serves the build with Caddy and uses this file in place
-# of its single-page-app default, so unknown URLs get dist/404.html with a 404
-# status instead of the home page.
-# Set the service variable RAILPACK_SPA_OUTPUT_DIR=dist: sitelo isn't one of
-# the frameworks Railpack detects, and the variable turns on static serving.
-# Railpack builds in /app, so the output lands in /app/dist.
+# Serves dist/ with clean URLs and answers unknown URLs with dist/404.html
+# (status 404). The Dockerfile copies the build to /app/dist and runs Caddy
+# with this file: that is how Fly.io deploys, and Railway too, since it
+# builds a Dockerfile whenever it finds one.
+# Without the Dockerfile, Railway's Railpack uses this file in place of its
+# single-page-app default (which answers unknown URLs with the home page)
+# once the service variable RAILPACK_SPA_OUTPUT_DIR=dist is set: sitelo isn't
+# a framework Railpack detects. Railpack builds in /app, so the output lands
+# in /app/dist there too.
 
 :{$PORT:80} {
 	root * /app/dist

@@ -9,7 +9,7 @@ export default () =>
   docsLayout({
     title: 'Deployment',
     description:
-      'Deploy a sitelo site to Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway, or any static host.',
+      'Deploy a sitelo site to Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Render, Railway, Fly.io, or any static host.',
     activeHref: '/docs/deployment',
     children: [
       p(
@@ -80,6 +80,13 @@ export default () =>
         code('--base /repo/'),
         '.',
       ),
+      h2('Render'),
+      p(
+        'Add the Blueprint below to the repo, or create a static site in the dashboard with the same build command and publish directory. Clean URLs and ',
+        code('404.html'),
+        ' work with no redirect rules.',
+      ),
+      codeBlock('render.yaml', s.render, 'bash'),
       h2('Railway'),
       p(
         'Railway builds with Railpack, which serves static sites with Caddy. sitelo isn’t one of the frameworks Railpack detects, so add the service variable ',
@@ -97,6 +104,26 @@ export default () =>
         ' to the project root. Without it, Railpack’s single-page-app default answers every unknown URL with the home page; this one serves ',
         code('404.html'),
         ' with a 404 status instead.',
+      ),
+      h2('Fly.io'),
+      p(
+        'Fly.io runs containers, so the site ships as an image: Node builds it, then Caddy serves ',
+        code('dist/'),
+        ' with the ',
+        code('Caddyfile'),
+        ' from the Railway section. Run ',
+        code('fly launch'),
+        ' to create the app, then ',
+        code('fly deploy'),
+        '.',
+      ),
+      codeBlock('Dockerfile', s.dockerfile, 'bash'),
+      codeBlock('.dockerignore', s.dockerignore, 'bash'),
+      codeBlock('fly.toml', s.fly, 'bash'),
+      p(
+        'Railway builds a ',
+        code('Dockerfile'),
+        ' whenever it finds one, so with this one in the project Railway needs no service variable.',
       ),
       h2('Before you ship'),
       ul(

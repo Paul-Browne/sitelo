@@ -45,7 +45,11 @@ export function basicSnippets(lang = 'en') {
   vercel.json            # Vercel
   wrangler.toml          # Cloudflare Pages
   amplify.yml            # AWS Amplify
-  Caddyfile              # Railway
+  render.yaml            # Render
+  Caddyfile              # Railway, Fly.io
+  Dockerfile             # Fly.io, Railway
+  .dockerignore          # Fly.io, Railway
+  fly.toml               # Fly.io
   package.json
   src/
     index.ht.js
@@ -85,6 +89,13 @@ frontend:
     paths:
       - node_modules/**/*`,
 
+    renderYaml: `services:
+  - type: web
+    name: sitelo-basic
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist`,
+
     caddyfile: `:{$PORT:80} {
   root * /app/dist
   encode zstd gzip
@@ -95,6 +106,30 @@ frontend:
     file_server
   }
 }`,
+
+    dockerfile: `FROM node:24-slim AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM caddy:2-alpine
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY --from=build /app/dist /app/dist`,
+
+    dockerignore: `node_modules
+dist
+.git`,
+
+    flyToml: `app = "sitelo-basic"
+
+[http_service]
+  internal_port = 80
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0`,
 
     pageTemplate: `export default () => \`
   <html lang="${htmlLang}">

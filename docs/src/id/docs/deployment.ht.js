@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Penerapan',
     description:
-      'Terapkan situs sitelo ke Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway, atau hosting statis mana pun.',
+      'Terapkan situs sitelo ke Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Render, Railway, Fly.io, atau hosting statis mana pun.',
     activeHref: '/id/docs/deployment',
     children: [
       p(
@@ -79,6 +79,13 @@ export default () =>
         code('--base /repo/'),
         '.',
       ),
+      h2('Render'),
+      p(
+        'Tambahkan Blueprint di bawah ini ke repositori, atau buat situs statis di dasbor dengan perintah build dan direktori publikasi yang sama. URL bersih dan ',
+        code('404.html'),
+        ' berfungsi tanpa aturan pengalihan.',
+      ),
+      codeBlock('render.yaml', s.render, 'bash'),
       h2('Railway'),
       p(
         'Railway membangun dengan Railpack, yang menyajikan situs statis lewat Caddy. sitelo tidak termasuk framework yang dideteksi Railpack, jadi tambahkan variabel layanan ',
@@ -96,6 +103,26 @@ export default () =>
         ' di root proyek. Tanpa file ini, bawaan SPA Railpack menjawab setiap URL yang tidak dikenal dengan halaman beranda; file ini menyajikan ',
         code('404.html'),
         ' dengan status 404.',
+      ),
+      h2('Fly.io'),
+      p(
+        'Fly.io menjalankan kontainer, jadi situs dikirim sebagai image: Node membangunnya, lalu Caddy menyajikan ',
+        code('dist/'),
+        ' dengan ',
+        code('Caddyfile'),
+        ' dari bagian Railway. Jalankan ',
+        code('fly launch'),
+        ' untuk membuat aplikasinya, lalu ',
+        code('fly deploy'),
+        '.',
+      ),
+      codeBlock('Dockerfile', s.dockerfile, 'bash'),
+      codeBlock('.dockerignore', s.dockerignore, 'bash'),
+      codeBlock('fly.toml', s.fly, 'bash'),
+      p(
+        'Railway membangun ',
+        code('Dockerfile'),
+        ' setiap kali menemukannya, jadi dengan file ini di proyek, Railway tidak perlu variabel layanan.',
       ),
       h2('Sebelum menerbitkan'),
       ul(

@@ -7,67 +7,89 @@ const T = {
     cloudflare: 'Cloudflare Pages',
     amplify: 'AWS Amplify Hosting',
     ghPages: 'GitHub Pages',
+    render: 'Render',
     railway: 'Railway',
+    fly: 'Fly.io',
   },
   es: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'Alojamiento en AWS Amplify',
     ghPages: 'GitHub Pages',
+    render: 'Render',
     railway: 'Railway',
+    fly: 'Fly.io',
   },
   fr: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'Hébergement AWS Amplify',
     ghPages: 'GitHub Pages',
+    render: 'Render',
     railway: 'Railway',
+    fly: 'Fly.io',
   },
   de: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'AWS Amplify Hosting',
     ghPages: 'GitHub Pages',
+    render: 'Render',
     railway: 'Railway',
+    fly: 'Fly.io',
   },
   ru: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'Хостинг AWS Amplify',
     ghPages: 'GitHub Pages',
+    render: 'Render',
     railway: 'Railway',
+    fly: 'Fly.io',
   },
   zh: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'AWS Amplify 托管',
     ghPages: 'GitHub Pages',
+    render: 'Render',
     railway: 'Railway',
+    fly: 'Fly.io',
   },
   pt: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'Alojamento AWS Amplify',
     ghPages: 'GitHub Pages',
+    render: 'Render',
     railway: 'Railway',
+    fly: 'Fly.io',
   },
   it: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'Hosting AWS Amplify',
     ghPages: 'GitHub Pages',
+    render: 'Render',
     railway: 'Railway',
+    fly: 'Fly.io',
   },
   pl: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'Hosting AWS Amplify',
     ghPages: 'GitHub Pages',
+    render: 'Render',
     railway: 'Railway',
+    fly: 'Fly.io',
   },
   tr: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'AWS Amplify Hosting',
     ghPages: 'GitHub Pages',
+    render: 'Render',
     railway: 'Railway',
+    fly: 'Fly.io',
   },
   id: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'Hosting AWS Amplify',
     ghPages: 'GitHub Pages',
+    render: 'Render',
     railway: 'Railway',
+    fly: 'Fly.io',
   },
 
 }
@@ -136,6 +158,14 @@ jobs:
           path: dist
       - uses: actions/deploy-pages@v4`,
 
+    render: `# ${t.render}
+services:
+  - type: web
+    name: my-site
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist`,
+
     railway: `# ${t.railway}
 :{$PORT:80} {
   root * /app/dist
@@ -147,5 +177,31 @@ jobs:
     file_server
   }
 }`,
+
+    dockerfile: `# ${t.fly}
+FROM node:24-slim AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM caddy:2-alpine
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY --from=build /app/dist /app/dist`,
+
+    dockerignore: `node_modules
+dist
+.git`,
+
+    fly: `# ${t.fly}
+app = "my-site"
+
+[http_service]
+  internal_port = 80
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0`,
   }
 }
