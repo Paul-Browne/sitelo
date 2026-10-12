@@ -1325,12 +1325,17 @@ a.feature-card:hover .feature-chip {
   text-transform: uppercase;
 }
 
-/* The phone's label — the summary of the disclosure the nav sits in. */
+/*
+ * The phone's label — the summary of the disclosure the nav sits in.
+ * Never underlined: the core underlines a trigger on hover, which a tap
+ * leaves stuck on, and the ruled box already says this row is a control.
+ */
 .docs-sidebar-disclosure > .su-collapsible-trigger {
   display: none;
   align-items: center;
   gap: 0.75rem;
   list-style: none;
+  text-decoration: none;
 }
 
 .docs-sidebar-disclosure > .su-collapsible-trigger::-webkit-details-marker {
