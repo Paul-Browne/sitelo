@@ -35,7 +35,7 @@ export default () =>
       h2('Estrutura do projeto'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Aponta para o teu site WordPress'),
+      h2('Aponta para o teu site WordPress'),
       p(
         'A API REST vem ligada por omissão no WordPress moderno. Confirma em ',
         code('https://o-teu-site.com/wp-json/wp/v2/posts'),
@@ -47,7 +47,7 @@ export default () =>
         ' no ambiente (ou escreve-o diretamente enquanto experimentas):',
       ),
       codeBlock('.env', s.env, 'bash'),
-      h2('2. Auxiliares partilhados do WordPress'),
+      h2('Auxiliares partilhados do WordPress'),
       p(
         code('getAllPosts()'),
         ' lê ',
@@ -59,14 +59,14 @@ export default () =>
         ' enquanto recolhes slugs — só vais buscar os embeds para cada artigo.',
       ),
       codeBlock('src/lib/wordpress.js', s.wpLib, 'javascript'),
-      h2('3. Página inicial'),
+      h2('Página inicial'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.homeTemplate,
         ht: s.homeHt,
         jsx: s.homeJsx,
       }),
-      h2('4. Índice do blogue'),
+      h2('Índice do blogue'),
       p(
         'Usa ',
         code('getAllPosts()'),
@@ -78,7 +78,7 @@ export default () =>
         ht: s.blogIndexHt,
         jsx: s.blogIndexJsx,
       }),
-      h2('5. Transforma todos os artigos em páginas estáticas'),
+      h2('Transforma todos os artigos em páginas estáticas'),
       p(
         code('generateStaticParams'),
         ' tem de devolver ',
@@ -95,7 +95,7 @@ export default () =>
         ht: s.blogPostHt,
         jsx: s.blogPostJsx,
       }),
-      h2('6. Compilar'),
+      h2('Compilar'),
       codeBlock('shell', s.build, 'bash'),
       p(
         'A primeira compilação passa uma vez pelo WordPress e enche a cache de fetch. As seguintes reutilizam as respostas de lista e de detalhe em cache (',

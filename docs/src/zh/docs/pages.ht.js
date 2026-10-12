@@ -32,7 +32,7 @@ export default () =>
         code('javascript-to-html'),
         '）：返回字符串的标签函数，不需要模板引擎，也不需要 React 运行时。',
       ),
-      h2('1. 一个返回 HTML 的函数'),
+      h2('一个返回 HTML 的函数'),
       pageCodeTabs({
         file: 'page.ht.js',
         template: s.fnTemplate,
@@ -52,9 +52,9 @@ export default () =>
         a({ href: '#jsx-的限制' }, 'JSX 的限制'),
         ' —— sitelo 在构建时把 JSX 变成静态 HTML；它不是浏览器里的 React 应用。',
       ),
-      h2('2. 一个普通字符串'),
+      h2('一个普通字符串'),
       codeBlock('page.ht.js', s.string, 'javascript'),
-      h2('3. 一个结构化模块'),
+      h2('一个结构化模块'),
       p(
         '把 ',
         code('render'),

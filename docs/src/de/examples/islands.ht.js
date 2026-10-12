@@ -47,7 +47,7 @@ export default () =>
       h2('Projektstruktur'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Island-Modul'),
+      h2('Island-Modul'),
       p(
         'Eine schlichte ',
         code('.js'),
@@ -58,7 +58,7 @@ export default () =>
         ' und gibt einen HTML-String zurück. Diese hier nutzt Anfragezeit und User-Agent, damit du siehst, dass sie pro Anfrage gerendert wird.',
       ),
       codeBlock('src/islands/time.js', s.island, 'javascript'),
-      h2('2. Die Island auf einer Seite platzieren'),
+      h2('Die Island auf einer Seite platzieren'),
       p(
         code('island()'),
         ' bettet die Props in den Platzhalter ein. Der Build liefert das Fallback aus; der Loader ersetzt es, sobald der Endpunkt antwortet.',
@@ -69,10 +69,10 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. Client-Loader'),
+      h2('Client-Loader'),
       codeBlock('src/js/islands.js', s.loader, 'javascript'),
       codeBlock('src/css/styles.css', s.styles, 'css'),
-      h2('4. Node-Host'),
+      h2('Node-Host'),
       p(
         'Nach ',
         code('sitelo build'),
@@ -89,7 +89,7 @@ export default () =>
         '.',
       ),
       codeBlock('server.js', s.server, 'javascript'),
-      h2('5. Bauen und starten'),
+      h2('Bauen und starten'),
       codeBlock('shell', s.buildRun, 'bash'),
       p(
         'Öffne ',

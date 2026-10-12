@@ -44,7 +44,7 @@ export default () =>
       h2('Struttura del progetto'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Scrivi gli articoli in markdown'),
+      h2('Scrivi gli articoli in markdown'),
       p(
         'Gli articoli vivono in ',
         code('content/'),
@@ -55,21 +55,21 @@ export default () =>
         ':',
       ),
       codeBlock('content/hello-world.md', s.post, 'markdown'),
-      h2('2. Leggili e renderizzali in Node'),
+      h2('Leggili e renderizzali in Node'),
       p(
         'Un piccolo modulo destinato solo al server legge la cartella, analizza il frontmatter e renderizza il markdown con ',
         a({ href: 'https://marked.js.org', rel: 'noopener' }, 'marked'),
         '. Poiché nulla nell’HTML referenzia questo modulo, non arriva mai al browser.',
       ),
       codeBlock('src/lib/posts.js', s.lib, 'javascript'),
-      h2('3. Elenca gli articoli in home page'),
+      h2('Elenca gli articoli in home page'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.indexTemplate,
         ht: s.indexHt,
         jsx: s.indexJsx,
       }),
-      h2('4. Una pagina statica per articolo'),
+      h2('Una pagina statica per articolo'),
       p(
         code('generateStaticParams'),
         ' restituisce ogni slug in fase di build; ',
@@ -82,7 +82,7 @@ export default () =>
         ht: s.slugHt,
         jsx: s.slugJsx,
       }),
-      h2('5. RSS in regalo'),
+      h2('RSS in regalo'),
       p(
         'Con la configurazione ',
         code('rss'),

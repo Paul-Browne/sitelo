@@ -46,7 +46,7 @@ export default () =>
       h2('Układ projektu'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Moduł wyspy'),
+      h2('Moduł wyspy'),
       p(
         'Zwykły ',
         code('.js'),
@@ -57,7 +57,7 @@ export default () =>
         ' i zwraca ciąg HTML. Ten używa czasu żądania i user-agenta, żebyś widział, że renderuje się przy każdym żądaniu.',
       ),
       codeBlock('src/islands/time.js', s.island, 'javascript'),
-      h2('2. Umieść wyspę na stronie'),
+      h2('Umieść wyspę na stronie'),
       p(
         code('island()'),
         ' osadza propsy w miejscu na wyspę. Build publikuje treść zastępczą; loader podmienia ją, gdy punkt końcowy odpowie.',
@@ -68,10 +68,10 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. Loader kliencki'),
+      h2('Loader kliencki'),
       codeBlock('src/js/islands.js', s.loader, 'javascript'),
       codeBlock('src/css/styles.css', s.styles, 'css'),
-      h2('4. Host Node'),
+      h2('Host Node'),
       p(
         'Po ',
         code('sitelo build'),
@@ -88,7 +88,7 @@ export default () =>
         '.',
       ),
       codeBlock('server.js', s.server, 'javascript'),
-      h2('5. Build i uruchomienie'),
+      h2('Build i uruchomienie'),
       codeBlock('shell', s.buildRun, 'bash'),
       p(
         'Otwórz ',

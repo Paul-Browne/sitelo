@@ -15,7 +15,7 @@ export default () =>
       p(
         'Sometimes one region of an otherwise-static page needs fresh, per-request data — comments under a cached blog post, a stock badge on a product page. Server islands keep the page static and render just that region on a server when the page is viewed.',
       ),
-      h2('1. Write the island'),
+      h2('Write the island'),
       p(
         'An island is a fragment module under ',
         code('src/islands/'),
@@ -35,7 +35,7 @@ export default () =>
         code('src/'),
         ' never ships to the browser.',
       ),
-      h2('2. Place it in a page'),
+      h2('Place it in a page'),
       p(
         'Import ',
         code('island()'),
@@ -49,7 +49,7 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. Add the client loader'),
+      h2('Add the client loader'),
       p(
         'A tiny script fetches each rendered fragment and swaps it in. It goes through the normal asset pipeline, so a plain ',
         code('src/islands.js'),

@@ -390,7 +390,7 @@ export default () =>
         ' aus.',
       ),
       codeBlock('shell', s.installPagefind, 'bash'),
-      h3('1. Indexierung aktivieren'),
+      h3('Indexierung aktivieren'),
       p(
         'Setze ',
         code('pagefind: true'),
@@ -409,7 +409,7 @@ export default () =>
         ' ohne erneuten Build ausliefern kann.',
       ),
       codeBlock('sitelo.config.js', s.pagefind, 'javascript'),
-      h3('2. Inhalt markieren und einen Einhängepunkt ergänzen'),
+      h3('Inhalt markieren und einen Einhängepunkt ergänzen'),
       p(
         'Setze ',
         code('data-pagefind-body'),
@@ -421,7 +421,7 @@ export default () =>
         ht: s.pagefindPageHt,
         jsx: s.pagefindPageJsx,
       }),
-      h3('3. Die Pagefind-Oberfläche einhängen'),
+      h3('Die Pagefind-Oberfläche einhängen'),
       p(
         'Lade ',
         code('/pagefind/pagefind-ui.js'),
@@ -430,7 +430,7 @@ export default () =>
         ' aus deinem Client-Skript (erst nachdem ein Build den Index erzeugt hat):',
       ),
       codeBlock('src/main.js', s.pagefindMain, 'javascript'),
-      h3('4. Bauen und das synchronisierte Bundle ignorieren'),
+      h3('Bauen und das synchronisierte Bundle ignorieren'),
       codeBlock('shell', s.pagefindBuild, 'bash'),
       codeBlock('.gitignore', s.pagefindGitignore, 'bash'),
       p(

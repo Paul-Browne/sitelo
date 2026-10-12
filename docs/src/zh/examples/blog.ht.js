@@ -39,7 +39,7 @@ export default () =>
       h2('项目结构'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. 用 markdown 写文章'),
+      h2('用 markdown 写文章'),
       p(
         '文章放在 ',
         code('content/'),
@@ -50,21 +50,21 @@ export default () =>
         ' 行：',
       ),
       codeBlock('content/hello-world.md', s.post, 'markdown'),
-      h2('2. 在 Node 中读取并渲染'),
+      h2('在 Node 中读取并渲染'),
       p(
         '一个仅在服务端运行的小模块读取该文件夹、解析 frontmatter，并用 ',
         a({ href: 'https://marked.js.org', rel: 'noopener' }, 'marked'),
         ' 渲染 markdown。由于 HTML 中没有任何东西引用这个模块，它永远不会进入浏览器。',
       ),
       codeBlock('src/lib/posts.js', s.lib, 'javascript'),
-      h2('3. 在首页列出文章'),
+      h2('在首页列出文章'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.indexTemplate,
         ht: s.indexHt,
         jsx: s.indexJsx,
       }),
-      h2('4. 每篇文章一个静态页面'),
+      h2('每篇文章一个静态页面'),
       p(
         code('generateStaticParams'),
         ' 在构建时返回全部 slug；',
@@ -77,7 +77,7 @@ export default () =>
         ht: s.slugHt,
         jsx: s.slugJsx,
       }),
-      h2('5. RSS 白送'),
+      h2('RSS 白送'),
       p(
         '配上上面的 ',
         code('rss'),

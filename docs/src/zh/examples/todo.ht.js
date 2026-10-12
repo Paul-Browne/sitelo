@@ -57,7 +57,7 @@ export default () =>
       ),
       h2('项目结构'),
       codeBlock('project', s.structure, 'bash'),
-      h2('1. 页面中的内联导入'),
+      h2('页面中的内联导入'),
       p(
         '没有 ',
         code('<script type="module" src>'),
@@ -73,7 +73,7 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('2. 导出的处理函数'),
+      h2('导出的处理函数'),
       p(
         '这个模块就是 ',
         code('src/js/'),
@@ -86,7 +86,7 @@ export default () =>
         ' 写法。',
       ),
       codeBlock('src/js/todo.js', s.todoJs, 'javascript'),
-      h2('3. 运行'),
+      h2('运行'),
       codeBlock('shell', s.run, 'bash'),
       p(
         '或者执行 ',

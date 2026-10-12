@@ -43,7 +43,7 @@ export default () =>
       h2('Projektstruktur'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Beiträge als Markdown schreiben'),
+      h2('Beiträge als Markdown schreiben'),
       p(
         'Die Beiträge liegen in ',
         code('content/'),
@@ -54,21 +54,21 @@ export default () =>
         '-Zeilen:',
       ),
       codeBlock('content/hello-world.md', s.post, 'markdown'),
-      h2('2. Sie in Node lesen und rendern'),
+      h2('Sie in Node lesen und rendern'),
       p(
         'Ein kleines, rein serverseitiges Modul liest den Ordner, parst das Frontmatter und rendert das Markdown mit ',
         a({ href: 'https://marked.js.org', rel: 'noopener' }, 'marked'),
         '. Da nichts im HTML dieses Modul referenziert, gelangt es nie in den Browser.',
       ),
       codeBlock('src/lib/posts.js', s.lib, 'javascript'),
-      h2('3. Beiträge auf der Startseite auflisten'),
+      h2('Beiträge auf der Startseite auflisten'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.indexTemplate,
         ht: s.indexHt,
         jsx: s.indexJsx,
       }),
-      h2('4. Eine statische Seite pro Beitrag'),
+      h2('Eine statische Seite pro Beitrag'),
       p(
         code('generateStaticParams'),
         ' liefert zur Build-Zeit jeden Slug; ',
@@ -81,7 +81,7 @@ export default () =>
         ht: s.slugHt,
         jsx: s.slugJsx,
       }),
-      h2('5. RSS gratis dazu'),
+      h2('RSS gratis dazu'),
       p(
         'Mit der ',
         code('rss'),

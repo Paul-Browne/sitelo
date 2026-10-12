@@ -57,7 +57,7 @@ export default () =>
       ),
       h2('Projektstruktur'),
       codeBlock('project', s.structure, 'bash'),
-      h2('1. Inline-Importe in der Seite'),
+      h2('Inline-Importe in der Seite'),
       p(
         'Kein ',
         code('<script type="module" src>'),
@@ -73,7 +73,7 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('2. Exportierte Handler'),
+      h2('Exportierte Handler'),
       p(
         'Das Modul ist eine ganz normale ES-Datei unter ',
         code('src/js/'),
@@ -86,7 +86,7 @@ export default () =>
         '.',
       ),
       codeBlock('src/js/todo.js', s.todoJs, 'javascript'),
-      h2('3. Ausführen'),
+      h2('Ausführen'),
       codeBlock('shell', s.run, 'bash'),
       p(
         'Oder ',

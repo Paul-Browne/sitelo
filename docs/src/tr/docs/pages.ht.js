@@ -33,7 +33,7 @@ export default () =>
         code('javascript-to-html'),
         ') tercih edin — şablon motoru ya da React çalışma zamanı olmadan, dize döndüren etiket fonksiyonları.',
       ),
-      h2('1. HTML döndüren bir fonksiyon'),
+      h2('HTML döndüren bir fonksiyon'),
       pageCodeTabs({
         file: 'page.ht.js',
         template: s.fnTemplate,
@@ -53,9 +53,9 @@ export default () =>
         a({ href: '#jsx-kisitlamalari' }, 'JSX kısıtlamaları'),
         ' bölümüne bakın — sitelo, JSX’i derleme sırasında statik HTML’e çevirir; tarayıcıda bir React uygulaması değildir.',
       ),
-      h2('2. Düz bir dize'),
+      h2('Düz bir dize'),
       codeBlock('page.ht.js', s.string, 'javascript'),
-      h2('3. Yapılandırılmış bir modül'),
+      h2('Yapılandırılmış bir modül'),
       p(code('render'), ', ', code('data'), ' ve ', code('generateStaticParams'), ' işlevlerini bir arada tutun:'),
       pageCodeTabs({
         file: 'page.ht.js',

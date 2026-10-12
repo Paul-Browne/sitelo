@@ -35,7 +35,7 @@ export default () =>
       h2('Tata letak proyek'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Arahkan ke situs WordPress Anda'),
+      h2('Arahkan ke situs WordPress Anda'),
       p(
         'REST API menyala secara bawaan di WordPress modern. Pastikan di ',
         code('https://your-site.com/wp-json/wp/v2/posts'),
@@ -47,7 +47,7 @@ export default () =>
         ' di lingkungan (atau tulis langsung selagi bereksperimen):',
       ),
       codeBlock('.env', s.env, 'bash'),
-      h2('2. Pembantu WordPress bersama'),
+      h2('Pembantu WordPress bersama'),
       p(
         code('getAllPosts()'),
         ' membaca ',
@@ -59,14 +59,14 @@ export default () =>
         ' selagi mengumpulkan slug — ambil sematan hanya untuk pos satuan.',
       ),
       codeBlock('src/lib/wordpress.js', s.wpLib, 'javascript'),
-      h2('3. Halaman beranda'),
+      h2('Halaman beranda'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.homeTemplate,
         ht: s.homeHt,
         jsx: s.homeJsx,
       }),
-      h2('4. Indeks blog'),
+      h2('Indeks blog'),
       p('Gunakan ', code('getAllPosts()'), ' agar arsipnya tidak terbatas pada 50–100 item.'),
       pageCodeTabs({
         file: 'src/blog/index.ht.js',
@@ -74,7 +74,7 @@ export default () =>
         ht: s.blogIndexHt,
         jsx: s.blogIndexJsx,
       }),
-      h2('5. Tarik setiap pos menjadi halaman statis'),
+      h2('Tarik setiap pos menjadi halaman statis'),
       p(
         code('generateStaticParams'),
         ' harus mengembalikan ',
@@ -91,7 +91,7 @@ export default () =>
         ht: s.blogPostHt,
         jsx: s.blogPostJsx,
       }),
-      h2('6. Build'),
+      h2('Build'),
       codeBlock('shell', s.build, 'bash'),
       p(
         'Build pertama menelusuri WordPress sekali dan mengisi singgahan pengambilan. Build berikutnya memakai kembali respons daftar/detail yang disinggahkan (',

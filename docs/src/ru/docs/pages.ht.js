@@ -33,7 +33,7 @@ export default () =>
         code('javascript-to-html'),
         '): функции-теги, возвращающие строки, без шаблонизатора и без рантайма React.',
       ),
-      h2('1. Функция, возвращающая HTML'),
+      h2('Функция, возвращающая HTML'),
       pageCodeTabs({
         file: 'page.ht.js',
         template: s.fnTemplate,
@@ -53,9 +53,9 @@ export default () =>
         a({ href: '#ограничения-jsx' }, 'ограничения JSX'),
         ' ниже — sitelo превращает JSX в статический HTML во время сборки; это не React-приложение в браузере.',
       ),
-      h2('2. Обычная строка'),
+      h2('Обычная строка'),
       codeBlock('page.ht.js', s.string, 'javascript'),
-      h2('3. Структурированный модуль'),
+      h2('Структурированный модуль'),
       p(
         'Держите ',
         code('render'),

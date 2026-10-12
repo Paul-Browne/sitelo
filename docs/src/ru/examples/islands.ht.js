@@ -46,7 +46,7 @@ export default () =>
       h2('Структура проекта'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Модуль острова'),
+      h2('Модуль острова'),
       p(
         'Обычный файл ',
         code('.js'),
@@ -57,7 +57,7 @@ export default () =>
         ' и возвращает строку HTML. Этот использует время запроса и user-agent, чтобы было видно: он рендерится на каждый запрос.',
       ),
       codeBlock('src/islands/time.js', s.island, 'javascript'),
-      h2('2. Разместите остров на странице'),
+      h2('Разместите остров на странице'),
       p(
         code('island()'),
         ' встраивает props в плейсхолдер. Сборка публикует запасной вариант; загрузчик заменяет его, когда эндпоинт ответит.',
@@ -68,10 +68,10 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. Клиентский загрузчик'),
+      h2('Клиентский загрузчик'),
       codeBlock('src/js/islands.js', s.loader, 'javascript'),
       codeBlock('src/css/styles.css', s.styles, 'css'),
-      h2('4. Хост на Node'),
+      h2('Хост на Node'),
       p(
         'После ',
         code('sitelo build'),
@@ -88,7 +88,7 @@ export default () =>
         '.',
       ),
       codeBlock('server.js', s.server, 'javascript'),
-      h2('5. Сборка и запуск'),
+      h2('Сборка и запуск'),
       codeBlock('shell', s.buildRun, 'bash'),
       p(
         'Откройте ',

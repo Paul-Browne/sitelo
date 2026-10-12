@@ -14,7 +14,7 @@ export default () =>
       p(
         'Manchmal braucht ein Bereich einer ansonsten statischen Seite frische Daten pro Anfrage — Kommentare unter einem gecachten Blogbeitrag, ein Lagerbestand auf einer Produktseite. Server-Islands halten die Seite statisch und rendern genau diesen Bereich auf einem Server, wenn die Seite aufgerufen wird.',
       ),
-      h2('1. Die Island schreiben'),
+      h2('Die Island schreiben'),
       p(
         'Eine Island ist ein Fragment-Modul unter ',
         code('src/islands/'),
@@ -34,7 +34,7 @@ export default () =>
         code('src/'),
         ' gelangt nie in den Browser.',
       ),
-      h2('2. In einer Seite platzieren'),
+      h2('In einer Seite platzieren'),
       p(
         'Importiere ',
         code('island()'),
@@ -48,7 +48,7 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. Den Client-Loader ergänzen'),
+      h2('Den Client-Loader ergänzen'),
       p(
         'Ein winziges Skript holt jedes gerenderte Fragment und tauscht es ein. Es läuft durch die normale Asset-Pipeline, ein schlichter ',
         code('src/islands.js'),

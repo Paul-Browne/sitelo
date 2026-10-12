@@ -42,7 +42,7 @@ export default () =>
       h2('Układ projektu'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Pisz wpisy w markdownie'),
+      h2('Pisz wpisy w markdownie'),
       p(
         'Wpisy żyją w ',
         code('content/'),
@@ -53,21 +53,21 @@ export default () =>
         ':',
       ),
       codeBlock('content/hello-world.md', s.post, 'markdown'),
-      h2('2. Przeczytaj je i wyrenderuj w Node'),
+      h2('Przeczytaj je i wyrenderuj w Node'),
       p(
         'Mały moduł wyłącznie serwerowy czyta katalog, parsuje frontmatter i renderuje markdown przez ',
         a({ href: 'https://marked.js.org', rel: 'noopener' }, 'marked'),
         '. Ponieważ nic w HTML-u nie odwołuje się do tego modułu, nigdy nie trafia on do przeglądarki.',
       ),
       codeBlock('src/lib/posts.js', s.lib, 'javascript'),
-      h2('3. Wypisz wpisy na stronie głównej'),
+      h2('Wypisz wpisy na stronie głównej'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.indexTemplate,
         ht: s.indexHt,
         jsx: s.indexJsx,
       }),
-      h2('4. Jedna statyczna strona na wpis'),
+      h2('Jedna statyczna strona na wpis'),
       p(
         code('generateStaticParams'),
         ' zwraca podczas buildu każdy slug; ',
@@ -80,7 +80,7 @@ export default () =>
         ht: s.slugHt,
         jsx: s.slugJsx,
       }),
-      h2('5. RSS w gratisie'),
+      h2('RSS w gratisie'),
       p(
         'Z powyższą konfiguracją ',
         code('rss'),

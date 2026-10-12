@@ -39,7 +39,7 @@ export default () =>
       h2('Proje düzeni'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Yazıları markdown olarak yazın'),
+      h2('Yazıları markdown olarak yazın'),
       p(
         'Yazılar ',
         code('content/'),
@@ -50,21 +50,21 @@ export default () =>
         ' satırlarıdır:',
       ),
       codeBlock('content/hello-world.md', s.post, 'markdown'),
-      h2('2. Onları Node’da okuyun ve işleyin'),
+      h2('Onları Node’da okuyun ve işleyin'),
       p(
         'Yalnızca sunucuya ait küçük bir modül klasörü okur, frontmatter’ı ayrıştırır ve markdown’ı ',
         a({ href: 'https://marked.js.org', rel: 'noopener' }, 'marked'),
         ' ile işler. HTML içinde hiçbir şey bu modüle başvurmadığından tarayıcıya hiç gönderilmez.',
       ),
       codeBlock('src/lib/posts.js', s.lib, 'javascript'),
-      h2('3. Yazıları ana sayfada listeleyin'),
+      h2('Yazıları ana sayfada listeleyin'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.indexTemplate,
         ht: s.indexHt,
         jsx: s.indexJsx,
       }),
-      h2('4. Yazı başına bir statik sayfa'),
+      h2('Yazı başına bir statik sayfa'),
       p(
         code('generateStaticParams'),
         ' derleme sırasında her slug’ı döndürür; ',
@@ -77,7 +77,7 @@ export default () =>
         ht: s.slugHt,
         jsx: s.slugJsx,
       }),
-      h2('5. Bedavaya RSS'),
+      h2('Bedavaya RSS'),
       p(
         'Yukarıdaki ',
         code('rss'),

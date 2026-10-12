@@ -14,7 +14,7 @@ export default () =>
       p(
         'Bazen başka türlü statik olan bir sayfanın tek bir bölgesi taze, isteğe özgü veri ister — önbelleğe alınmış bir blog yazısının altındaki yorumlar, bir ürün sayfasındaki stok rozeti. Sunucu adaları sayfayı statik tutar ve sayfa görüntülendiğinde yalnızca o bölgeyi bir sunucuda işler.',
       ),
-      h2('1. Adayı yazın'),
+      h2('Adayı yazın'),
       p(
         'Bir ada, ',
         code('src/islands/'),
@@ -33,7 +33,7 @@ export default () =>
         code('src/'),
         ' altındaki başvurulmayan kod tarayıcıya hiç gönderilmez.',
       ),
-      h2('2. Sayfaya yerleştirin'),
+      h2('Sayfaya yerleştirin'),
       p(
         code('sitelo/islands'),
         ' içinden ',
@@ -46,7 +46,7 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. İstemci yükleyicisini ekleyin'),
+      h2('İstemci yükleyicisini ekleyin'),
       p(
         'Küçük bir betik, işlenen her parçayı getirir ve yerine koyar. Normal varlık hattından geçer, bu yüzden düz bir ',
         code('src/islands.js'),

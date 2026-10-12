@@ -351,7 +351,7 @@ export default () =>
         ' çalıştırın.',
       ),
       codeBlock('shell', s.installPagefind, 'bash'),
-      h3('1. Dizinlemeyi açın'),
+      h3('Dizinlemeyi açın'),
       p(
         code('pagefind: true'),
         ' ayarlayın. ',
@@ -369,7 +369,7 @@ export default () =>
         ' adresini sunabilir.',
       ),
       codeBlock('sitelo.config.js', s.pagefind, 'javascript'),
-      h3('2. İçeriği işaretleyin ve bir bağlama noktası ekleyin'),
+      h3('İçeriği işaretleyin ve bir bağlama noktası ekleyin'),
       p(
         'Gezinme ve alt bilgi dizinlenmesin diye ana içeriğe ',
         code('data-pagefind-body'),
@@ -381,7 +381,7 @@ export default () =>
         ht: s.pagefindPageHt,
         jsx: s.pagefindPageJsx,
       }),
-      h3('3. Pagefind arayüzünü bağlayın'),
+      h3('Pagefind arayüzünü bağlayın'),
       p(
         'İstemci betiğinizden ',
         code('/pagefind/pagefind-ui.js'),
@@ -390,7 +390,7 @@ export default () =>
         ' dosyalarını yükleyin (yalnızca bir derleme dizini ürettikten sonra):',
       ),
       codeBlock('src/main.js', s.pagefindMain, 'javascript'),
-      h3('4. Derleyin ve eşitlenen paketi yok sayın'),
+      h3('Derleyin ve eşitlenen paketi yok sayın'),
       codeBlock('shell', s.pagefindBuild, 'bash'),
       codeBlock('.gitignore', s.pagefindGitignore, 'bash'),
       p(

@@ -33,7 +33,7 @@ export default () =>
         code('javascript-to-html'),
         ') — fungsi tag yang mengembalikan string, tanpa mesin templat atau runtime React.',
       ),
-      h2('1. Fungsi yang mengembalikan HTML'),
+      h2('Fungsi yang mengembalikan HTML'),
       pageCodeTabs({
         file: 'page.ht.js',
         template: s.fnTemplate,
@@ -53,9 +53,9 @@ export default () =>
         a({ href: '#batasan-jsx' }, 'Batasan JSX'),
         ' di bawah — sitelo mengubah JSX menjadi HTML statis saat build; ini bukan aplikasi React di peramban.',
       ),
-      h2('2. String biasa'),
+      h2('String biasa'),
       codeBlock('page.ht.js', s.string, 'javascript'),
-      h2('3. Modul terstruktur'),
+      h2('Modul terstruktur'),
       p('Simpan ', code('render'), ', ', code('data'), ', dan ', code('generateStaticParams'), ' bersama-sama:'),
       pageCodeTabs({
         file: 'page.ht.js',

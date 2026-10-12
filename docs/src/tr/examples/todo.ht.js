@@ -51,7 +51,7 @@ export default () =>
       ),
       h2('Proje düzeni'),
       codeBlock('project', s.structure, 'bash'),
-      h2('1. Sayfadaki satır içi içe aktarmalar'),
+      h2('Sayfadaki satır içi içe aktarmalar'),
       p(
         code('<script type="module" src>'),
         ' yok. İşleyiciler, modülü dinamik olarak içe aktaran ve ',
@@ -66,7 +66,7 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('2. Dışa aktarılmış işleyiciler'),
+      h2('Dışa aktarılmış işleyiciler'),
       p(
         'Modül, ',
         code('src/js/'),
@@ -79,7 +79,7 @@ export default () =>
         ' kalıbını kullanır.',
       ),
       codeBlock('src/js/todo.js', s.todoJs, 'javascript'),
-      h2('3. Çalıştırma'),
+      h2('Çalıştırma'),
       codeBlock('shell', s.run, 'bash'),
       p(
         'Ya da ',

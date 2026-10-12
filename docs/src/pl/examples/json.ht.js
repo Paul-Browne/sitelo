@@ -48,7 +48,7 @@ export default () =>
         code('src/'),
         ', więc sitelo nigdy nie traktuje ich jak stron ani zasobów.',
       ),
-      h2('1. Umieść treść w data/'),
+      h2('Umieść treść w data/'),
       p(
         'Jeden plik na produkt. Nazwa pliku jest slugiem, więc ',
         code('aeron-chair.json'),
@@ -63,21 +63,21 @@ export default () =>
         ' czyta tak samo jak kolekcję.',
       ),
       codeBlock('data/categories.json', s.categories, 'json'),
-      h2('2. Czytaj je w jednym miejscu'),
+      h2('Czytaj je w jednym miejscu'),
       p(
         'Mały moduł wyłącznie serwerowy opakowuje odczyty. Nic w HTML-u się do niego nie odwołuje, więc nigdy nie trafia do przeglądarki — a ponieważ ',
         code('sitelo/data'),
         ' memoizuje per plik, każda strona wołająca te pomocniki i tak parsuje każdy plik JSON raz na cały build.',
       ),
       codeBlock('src/lib/catalogue.js', s.lib, 'javascript'),
-      h2('3. Wypisz wszystko na stronie głównej'),
+      h2('Wypisz wszystko na stronie głównej'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.indexTemplate,
         ht: s.indexHt,
         jsx: s.indexJsx,
       }),
-      h2('4. Jedna strona na plik JSON'),
+      h2('Jedna strona na plik JSON'),
       p(
         code('generateStaticParams'),
         ' zwraca podczas buildu slug na plik; ',
@@ -90,7 +90,7 @@ export default () =>
         ht: s.slugHt,
         jsx: s.slugJsx,
       }),
-      h2('5. Edytuj i obserwuj'),
+      h2('Edytuj i obserwuj'),
       codeBlock('terminal', s.build, 'bash'),
       p(
         'Pod ',

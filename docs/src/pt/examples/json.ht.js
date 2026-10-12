@@ -50,7 +50,7 @@ export default () =>
         code('src/'),
         ', por isso o sitelo nunca os trata como páginas ou recursos.',
       ),
-      h2('1. Põe o conteúdo em data/'),
+      h2('Põe o conteúdo em data/'),
       p(
         'Um ficheiro por produto. O nome do ficheiro é o slug, por isso ',
         code('aeron-chair.json'),
@@ -65,21 +65,21 @@ export default () =>
         ' lê da mesma maneira, como coleção.',
       ),
       codeBlock('data/categories.json', s.categories, 'json'),
-      h2('2. Lê tudo num só sítio'),
+      h2('Lê tudo num só sítio'),
       p(
         'Um pequeno módulo só de servidor envolve as leituras. Nada no HTML lhe faz referência, por isso nunca chega ao browser — e como o ',
         code('sitelo/data'),
         ' memoriza por ficheiro, todas as páginas que chamam estes helpers continuam a analisar cada ficheiro JSON uma só vez em todo o build.',
       ),
       codeBlock('src/lib/catalogue.js', s.lib, 'javascript'),
-      h2('3. Lista tudo na página inicial'),
+      h2('Lista tudo na página inicial'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.indexTemplate,
         ht: s.indexHt,
         jsx: s.indexJsx,
       }),
-      h2('4. Uma página por ficheiro JSON'),
+      h2('Uma página por ficheiro JSON'),
       p(
         code('generateStaticParams'),
         ' devolve um slug por ficheiro durante o build; ',
@@ -92,7 +92,7 @@ export default () =>
         ht: s.slugHt,
         jsx: s.slugJsx,
       }),
-      h2('5. Edita e vê'),
+      h2('Edita e vê'),
       codeBlock('terminal', s.build, 'bash'),
       p(
         'Com o ',

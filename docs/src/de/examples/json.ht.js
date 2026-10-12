@@ -50,7 +50,7 @@ export default () =>
         code('src/'),
         ', sitelo behandelt sie also nie als Seiten oder Assets.',
       ),
-      h2('1. Inhalte nach data/ legen'),
+      h2('Inhalte nach data/ legen'),
       p(
         'Eine Datei pro Produkt. Der Dateiname ist der Slug, aus ',
         code('aeron-chair.json'),
@@ -65,21 +65,21 @@ export default () =>
         ' genauso als Sammlung liest.',
       ),
       codeBlock('data/categories.json', s.categories, 'json'),
-      h2('2. An einer Stelle lesen'),
+      h2('An einer Stelle lesen'),
       p(
         'Ein kleines, reines Servermodul kapselt die Lesevorgänge. Nichts im HTML verweist darauf, es landet also nie im Browser — und weil ',
         code('sitelo/data'),
         ' pro Datei merkt, parst der ganze Build jede JSON-Datei nur einmal, egal wie viele Seiten diese Helfer aufrufen.',
       ),
       codeBlock('src/lib/catalogue.js', s.lib, 'javascript'),
-      h2('3. Alles auf der Startseite auflisten'),
+      h2('Alles auf der Startseite auflisten'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.indexTemplate,
         ht: s.indexHt,
         jsx: s.indexJsx,
       }),
-      h2('4. Eine Seite pro JSON-Datei'),
+      h2('Eine Seite pro JSON-Datei'),
       p(
         code('generateStaticParams'),
         ' liefert beim Build einen Slug pro Datei; ',
@@ -92,7 +92,7 @@ export default () =>
         ht: s.slugHt,
         jsx: s.slugJsx,
       }),
-      h2('5. Bearbeiten und zusehen'),
+      h2('Bearbeiten und zusehen'),
       codeBlock('terminal', s.build, 'bash'),
       p(
         'Unter ',

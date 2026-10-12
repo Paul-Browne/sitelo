@@ -35,7 +35,7 @@ export default () =>
       h2('Proje düzeni'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. WordPress sitenizi gösterin'),
+      h2('WordPress sitenizi gösterin'),
       p(
         'REST API modern WordPress’te varsayılan olarak açıktır. ',
         code('https://your-site.com/wp-json/wp/v2/posts'),
@@ -47,7 +47,7 @@ export default () =>
         ' değerini ayarlayın (ya da denerken doğrudan koda yazın):',
       ),
       codeBlock('.env', s.env, 'bash'),
-      h2('2. Paylaşılan WordPress yardımcıları'),
+      h2('Paylaşılan WordPress yardımcıları'),
       p(
         code('getAllPosts()'),
         ', ',
@@ -59,14 +59,14 @@ export default () =>
         ' kullanmayın — gömülüleri yalnızca tek tek yazılar için getirin.',
       ),
       codeBlock('src/lib/wordpress.js', s.wpLib, 'javascript'),
-      h2('3. Ana sayfa'),
+      h2('Ana sayfa'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.homeTemplate,
         ht: s.homeHt,
         jsx: s.homeJsx,
       }),
-      h2('4. Blog dizini'),
+      h2('Blog dizini'),
       p('Arşiv 50–100 öğeyle sınırlanmasın diye ', code('getAllPosts()'), ' kullanın.'),
       pageCodeTabs({
         file: 'src/blog/index.ht.js',
@@ -74,7 +74,7 @@ export default () =>
         ht: s.blogIndexHt,
         jsx: s.blogIndexJsx,
       }),
-      h2('5. Her yazıyı statik sayfalara çekin'),
+      h2('Her yazıyı statik sayfalara çekin'),
       p(
         code('generateStaticParams'),
         ', ',
@@ -91,7 +91,7 @@ export default () =>
         ht: s.blogPostHt,
         jsx: s.blogPostJsx,
       }),
-      h2('6. Derleme'),
+      h2('Derleme'),
       codeBlock('shell', s.build, 'bash'),
       p(
         'İlk derleme WordPress üzerinden bir kez sayfalar ve getirme önbelleğini doldurur. Sonraki derlemeler ',

@@ -14,7 +14,7 @@ export default () =>
       p(
         'Parfois, une zone d’une page par ailleurs statique a besoin de données fraîches à chaque requête — les commentaires sous un article de blog mis en cache, un badge de stock sur une fiche produit. Les îlots serveur gardent la page statique et ne font rendre que cette zone sur un serveur, au moment de la consultation.',
       ),
-      h2('1. Écrivez l’îlot'),
+      h2('Écrivez l’îlot'),
       p(
         'Un îlot est un module de fragment placé dans ',
         code('src/islands/'),
@@ -34,7 +34,7 @@ export default () =>
         code('src/'),
         ' n’atteint jamais le navigateur.',
       ),
-      h2('2. Placez-le dans une page'),
+      h2('Placez-le dans une page'),
       p(
         'Importez ',
         code('island()'),
@@ -48,7 +48,7 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. Ajoutez le chargeur client'),
+      h2('Ajoutez le chargeur client'),
       p(
         'Un petit script récupère chaque fragment rendu et l’insère. Il passe par le pipeline de ressources habituel : une simple entrée ',
         code('src/islands.js'),

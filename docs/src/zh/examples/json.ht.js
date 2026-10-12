@@ -50,7 +50,7 @@ export default () =>
         code('src/'),
         ' 之外，因此 sitelo 不会把它们当成页面或资源。',
       ),
-      h2('1. 把内容放进 data/'),
+      h2('把内容放进 data/'),
       p(
         '每个产品一个文件。文件名就是 slug，因此 ',
         code('aeron-chair.json'),
@@ -65,21 +65,21 @@ export default () =>
         ' 同样会把它当作集合来读。',
       ),
       codeBlock('data/categories.json', s.categories, 'json'),
-      h2('2. 在一处读取'),
+      h2('在一处读取'),
       p(
         '一个仅在服务端运行的小模块封装了这些读取。HTML 中没有任何地方引用它，所以它永远不会进入浏览器 —— 而且因为 ',
         code('sitelo/data'),
         ' 按文件记忆结果，无论多少页面调用这些辅助函数，整个构建过程中每个 JSON 文件都只解析一次。',
       ),
       codeBlock('src/lib/catalogue.js', s.lib, 'javascript'),
-      h2('3. 在首页列出全部内容'),
+      h2('在首页列出全部内容'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.indexTemplate,
         ht: s.indexHt,
         jsx: s.indexJsx,
       }),
-      h2('4. 每个 JSON 文件一个页面'),
+      h2('每个 JSON 文件一个页面'),
       p(
         code('generateStaticParams'),
         ' 在构建时为每个文件返回一个 slug；',
@@ -92,7 +92,7 @@ export default () =>
         ht: s.slugHt,
         jsx: s.slugJsx,
       }),
-      h2('5. 边改边看'),
+      h2('边改边看'),
       codeBlock('terminal', s.build, 'bash'),
       p(
         '在 ',

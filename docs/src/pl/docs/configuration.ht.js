@@ -443,7 +443,7 @@ export default () =>
         '.',
       ),
       codeBlock('shell', s.installPagefind, 'bash'),
-      h3('1. Włącz indeksowanie'),
+      h3('Włącz indeksowanie'),
       p(
         'Ustaw ',
         code('pagefind: true'),
@@ -462,7 +462,7 @@ export default () =>
         ' bez przebudowywania.',
       ),
       codeBlock('sitelo.config.js', s.pagefind, 'javascript'),
-      h3('2. Oznacz treść i dodaj miejsce montowania'),
+      h3('Oznacz treść i dodaj miejsce montowania'),
       p(
         'Umieść ',
         code('data-pagefind-body'),
@@ -474,7 +474,7 @@ export default () =>
         ht: s.pagefindPageHt,
         jsx: s.pagefindPageJsx,
       }),
-      h3('3. Zamontuj interfejs Pagefind'),
+      h3('Zamontuj interfejs Pagefind'),
       p(
         'Załaduj ',
         code('/pagefind/pagefind-ui.js'),
@@ -483,7 +483,7 @@ export default () =>
         ' ze swojego skryptu klienckiego (dopiero po tym, jak build wytworzy indeks):',
       ),
       codeBlock('src/main.js', s.pagefindMain, 'javascript'),
-      h3('4. Zbuduj i zignoruj zsynchronizowaną paczkę'),
+      h3('Zbuduj i zignoruj zsynchronizowaną paczkę'),
       codeBlock('shell', s.pagefindBuild, 'bash'),
       codeBlock('.gitignore', s.pagefindGitignore, 'bash'),
       p(

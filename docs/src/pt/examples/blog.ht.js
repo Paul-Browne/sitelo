@@ -42,7 +42,7 @@ export default () =>
       h2('Estrutura do projeto'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Escreve os artigos em markdown'),
+      h2('Escreve os artigos em markdown'),
       p(
         'Os artigos vivem em ',
         code('content/'),
@@ -53,21 +53,21 @@ export default () =>
         ':',
       ),
       codeBlock('content/hello-world.md', s.post, 'markdown'),
-      h2('2. Lê-os e renderiza-os no Node'),
+      h2('Lê-os e renderiza-os no Node'),
       p(
         'Um pequeno módulo exclusivo do servidor lê a pasta, analisa o frontmatter e renderiza o markdown com o ',
         a({ href: 'https://marked.js.org', rel: 'noopener' }, 'marked'),
         '. Como nada no HTML referencia este módulo, ele nunca chega ao navegador.',
       ),
       codeBlock('src/lib/posts.js', s.lib, 'javascript'),
-      h2('3. Lista os artigos na página inicial'),
+      h2('Lista os artigos na página inicial'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.indexTemplate,
         ht: s.indexHt,
         jsx: s.indexJsx,
       }),
-      h2('4. Uma página estática por artigo'),
+      h2('Uma página estática por artigo'),
       p(
         code('generateStaticParams'),
         ' devolve todos os slugs na compilação; ',
@@ -80,7 +80,7 @@ export default () =>
         ht: s.slugHt,
         jsx: s.slugJsx,
       }),
-      h2('5. RSS de borla'),
+      h2('RSS de borla'),
       p(
         'Com a configuração ',
         code('rss'),

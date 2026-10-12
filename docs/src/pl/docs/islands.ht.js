@@ -14,7 +14,7 @@ export default () =>
       p(
         'Czasem jeden obszar skądinąd statycznej strony potrzebuje świeżych danych przy każdym żądaniu — komentarze pod zbuforowanym wpisem, informacja o dostępności na stronie produktu. Wyspy serwerowe utrzymują stronę statyczną i renderują na serwerze tylko ten obszar, w chwili gdy ktoś stronę ogląda.',
       ),
-      h2('1. Napisz wyspę'),
+      h2('Napisz wyspę'),
       p(
         'Wyspa to moduł-fragment pod ',
         code('src/islands/'),
@@ -34,7 +34,7 @@ export default () =>
         code('src/'),
         ' nigdy nie trafia do przeglądarki.',
       ),
-      h2('2. Umieść ją na stronie'),
+      h2('Umieść ją na stronie'),
       p(
         'Zaimportuj ',
         code('island()'),
@@ -48,7 +48,7 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. Dodaj loader kliencki'),
+      h2('Dodaj loader kliencki'),
       p(
         'Maleńki skrypt pobiera każdy wyrenderowany fragment i podmienia go na miejscu. Przechodzi zwykłym potokiem zasobów, więc wystarczy prosty punkt wejścia ',
         code('src/islands.js'),

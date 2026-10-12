@@ -34,7 +34,7 @@ export default () =>
         code('javascript-to-html'),
         ') for markup — tag functions that return strings, with no templating engine or React runtime.',
       ),
-      h2('1. A function returning HTML'),
+      h2('A function returning HTML'),
       pageCodeTabs({
         file: 'page.ht.js',
         template: s.fnTemplate,
@@ -54,9 +54,9 @@ export default () =>
         a({ href: '#jsx-limitations' }, 'JSX limitations'),
         ' below — sitelo turns JSX into static HTML at build time; it is not a React app in the browser.',
       ),
-      h2('2. A plain string'),
+      h2('A plain string'),
       codeBlock('page.ht.js', s.string, 'javascript'),
-      h2('3. A structured module'),
+      h2('A structured module'),
       p('Keep ', code('render'), ', ', code('data'), ', and ', code('generateStaticParams'), ' together:'),
       pageCodeTabs({
         file: 'page.ht.js',

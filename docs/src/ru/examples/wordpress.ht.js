@@ -35,7 +35,7 @@ export default () =>
       h2('Структура проекта'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Укажите свой сайт WordPress'),
+      h2('Укажите свой сайт WordPress'),
       p(
         'В современном WordPress REST API включён по умолчанию. Проверьте это по адресу ',
         code('https://ваш-сайт.com/wp-json/wp/v2/posts'),
@@ -47,7 +47,7 @@ export default () =>
         ' в окружении (или впишите его прямо в код, пока экспериментируете):',
       ),
       codeBlock('.env', s.env, 'bash'),
-      h2('2. Общие помощники WordPress'),
+      h2('Общие помощники WordPress'),
       p(
         code('getAllPosts()'),
         ' читает ',
@@ -59,14 +59,14 @@ export default () =>
         ' при сборе slug — запрашивайте вложения только для отдельных записей.',
       ),
       codeBlock('src/lib/wordpress.js', s.wpLib, 'javascript'),
-      h2('3. Главная страница'),
+      h2('Главная страница'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.homeTemplate,
         ht: s.homeHt,
         jsx: s.homeJsx,
       }),
-      h2('4. Индекс блога'),
+      h2('Индекс блога'),
       p(
         'Используйте ',
         code('getAllPosts()'),
@@ -78,7 +78,7 @@ export default () =>
         ht: s.blogIndexHt,
         jsx: s.blogIndexJsx,
       }),
-      h2('5. Превратите все записи в статические страницы'),
+      h2('Превратите все записи в статические страницы'),
       p(
         code('generateStaticParams'),
         ' должен вернуть ',
@@ -95,7 +95,7 @@ export default () =>
         ht: s.blogPostHt,
         jsx: s.blogPostJsx,
       }),
-      h2('6. Сборка'),
+      h2('Сборка'),
       codeBlock('shell', s.build, 'bash'),
       p(
         'Первая сборка один раз проходит через WordPress и наполняет кэш fetch. Последующие переиспользуют закэшированные ответы списков и деталей (',

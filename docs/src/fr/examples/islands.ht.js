@@ -46,7 +46,7 @@ export default () =>
       h2('Structure du projet'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Module d’îlot'),
+      h2('Module d’îlot'),
       p(
         'Un simple fichier ',
         code('.js'),
@@ -57,7 +57,7 @@ export default () =>
         ' et renvoie une chaîne HTML. Celui-ci utilise l’heure de la requête et le user-agent pour que vous voyiez qu’il est rendu à chaque requête.',
       ),
       codeBlock('src/islands/time.js', s.island, 'javascript'),
-      h2('2. Placer l’îlot dans une page'),
+      h2('Placer l’îlot dans une page'),
       p(
         code('island()'),
         ' intègre les props dans l’emplacement réservé. Le build livre le repli ; le chargeur le remplace quand le point de terminaison répond.',
@@ -68,10 +68,10 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. Chargeur client'),
+      h2('Chargeur client'),
       codeBlock('src/js/islands.js', s.loader, 'javascript'),
       codeBlock('src/css/styles.css', s.styles, 'css'),
-      h2('4. Hôte Node'),
+      h2('Hôte Node'),
       p(
         'Après ',
         code('sitelo build'),
@@ -88,7 +88,7 @@ export default () =>
         '.',
       ),
       codeBlock('server.js', s.server, 'javascript'),
-      h2('5. Construire et lancer'),
+      h2('Construire et lancer'),
       codeBlock('shell', s.buildRun, 'bash'),
       p(
         'Ouvrez ',

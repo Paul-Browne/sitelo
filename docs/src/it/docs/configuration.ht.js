@@ -443,7 +443,7 @@ export default () =>
         '.',
       ),
       codeBlock('shell', s.installPagefind, 'bash'),
-      h3('1. Abilita l’indicizzazione'),
+      h3('Abilita l’indicizzazione'),
       p(
         'Imposta ',
         code('pagefind: true'),
@@ -462,7 +462,7 @@ export default () =>
         ' senza ricostruire.',
       ),
       codeBlock('sitelo.config.js', s.pagefind, 'javascript'),
-      h3('2. Marca i contenuti e aggiungi un punto d’innesto'),
+      h3('Marca i contenuti e aggiungi un punto d’innesto'),
       p(
         'Metti ',
         code('data-pagefind-body'),
@@ -474,7 +474,7 @@ export default () =>
         ht: s.pagefindPageHt,
         jsx: s.pagefindPageJsx,
       }),
-      h3('3. Monta l’interfaccia di Pagefind'),
+      h3('Monta l’interfaccia di Pagefind'),
       p(
         'Carica ',
         code('/pagefind/pagefind-ui.js'),
@@ -483,7 +483,7 @@ export default () =>
         ' dal tuo script client (solo dopo che una build ha prodotto l’indice):',
       ),
       codeBlock('src/main.js', s.pagefindMain, 'javascript'),
-      h3('4. Fai la build e ignora il bundle sincronizzato'),
+      h3('Fai la build e ignora il bundle sincronizzato'),
       codeBlock('shell', s.pagefindBuild, 'bash'),
       codeBlock('.gitignore', s.pagefindGitignore, 'bash'),
       p(

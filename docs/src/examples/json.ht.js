@@ -49,7 +49,7 @@ export default () =>
         code('src/'),
         ', so sitelo never treats it as pages or assets.',
       ),
-      h2('1. Put the content in data/'),
+      h2('Put the content in data/'),
       p(
         'One file per product. The filename is the slug, so ',
         code('aeron-chair.json'),
@@ -64,21 +64,21 @@ export default () =>
         ' reads as a collection just the same.',
       ),
       codeBlock('data/categories.json', s.categories, 'json'),
-      h2('2. Read it in one place'),
+      h2('Read it in one place'),
       p(
         'A small server-only module wraps the reads. Nothing in the HTML references it, so it never ships to the browser — and because ',
         code('sitelo/data'),
         ' memoizes per file, every page calling these helpers still parses each JSON file once for the whole build.',
       ),
       codeBlock('src/lib/catalogue.js', s.lib, 'javascript'),
-      h2('3. List everything on the home page'),
+      h2('List everything on the home page'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.indexTemplate,
         ht: s.indexHt,
         jsx: s.indexJsx,
       }),
-      h2('4. One page per JSON file'),
+      h2('One page per JSON file'),
       p(
         code('generateStaticParams'),
         ' returns a slug per file at build time; ',
@@ -91,7 +91,7 @@ export default () =>
         ht: s.slugHt,
         jsx: s.slugJsx,
       }),
-      h2('5. Edit and watch'),
+      h2('Edit and watch'),
       codeBlock('terminal', s.build, 'bash'),
       p(
         'Under ',

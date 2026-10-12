@@ -38,7 +38,7 @@ export default () =>
       h2('Tata letak proyek'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Tulis pos sebagai markdown'),
+      h2('Tulis pos sebagai markdown'),
       p(
         'Pos tinggal di ',
         code('content/'),
@@ -49,21 +49,21 @@ export default () =>
         ' biasa:',
       ),
       codeBlock('content/hello-world.md', s.post, 'markdown'),
-      h2('2. Baca dan render di Node'),
+      h2('Baca dan render di Node'),
       p(
         'Modul kecil khusus server membaca foldernya, mengurai frontmatter, dan merender markdown dengan ',
         a({ href: 'https://marked.js.org', rel: 'noopener' }, 'marked'),
         '. Karena tidak ada di HTML yang merujuk modul ini, ia tidak pernah sampai ke peramban.',
       ),
       codeBlock('src/lib/posts.js', s.lib, 'javascript'),
-      h2('3. Daftarkan pos di beranda'),
+      h2('Daftarkan pos di beranda'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.indexTemplate,
         ht: s.indexHt,
         jsx: s.indexJsx,
       }),
-      h2('4. Satu halaman statis per pos'),
+      h2('Satu halaman statis per pos'),
       p(
         code('generateStaticParams'),
         ' mengembalikan setiap slug saat build; ',
@@ -76,7 +76,7 @@ export default () =>
         ht: s.slugHt,
         jsx: s.slugJsx,
       }),
-      h2('5. RSS secara cuma-cuma'),
+      h2('RSS secara cuma-cuma'),
       p(
         'Dengan konfigurasi ',
         code('rss'),

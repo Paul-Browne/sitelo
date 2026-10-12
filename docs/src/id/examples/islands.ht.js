@@ -46,7 +46,7 @@ export default () =>
       h2('Tata letak proyek'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Modul island'),
+      h2('Modul island'),
       p(
         code('.js'),
         ' biasa (bukan ',
@@ -56,7 +56,7 @@ export default () =>
         ' dan mengembalikan string HTML. Yang ini memakai waktu permintaan dan user-agent agar Anda bisa melihat ia dirender per permintaan.',
       ),
       codeBlock('src/islands/time.js', s.island, 'javascript'),
-      h2('2. Tempatkan island di sebuah halaman'),
+      h2('Tempatkan island di sebuah halaman'),
       p(
         code('island()'),
         ' menyematkan props ke penampungnya. Build mengirim cadangannya; pemuat menggantinya ketika endpoint menjawab.',
@@ -67,10 +67,10 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. Pemuat klien'),
+      h2('Pemuat klien'),
       codeBlock('src/js/islands.js', s.loader, 'javascript'),
       codeBlock('src/css/styles.css', s.styles, 'css'),
-      h2('4. Host Node'),
+      h2('Host Node'),
       p(
         'Setelah ',
         code('sitelo build'),
@@ -87,7 +87,7 @@ export default () =>
         '.',
       ),
       codeBlock('server.js', s.server, 'javascript'),
-      h2('5. Build dan jalankan'),
+      h2('Build dan jalankan'),
       codeBlock('shell', s.buildRun, 'bash'),
       p(
         'Buka ',

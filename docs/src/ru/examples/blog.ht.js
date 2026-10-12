@@ -42,7 +42,7 @@ export default () =>
       h2('Структура проекта'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Пишите записи в markdown'),
+      h2('Пишите записи в markdown'),
       p(
         'Записи лежат в ',
         code('content/'),
@@ -53,21 +53,21 @@ export default () =>
         ':',
       ),
       codeBlock('content/hello-world.md', s.post, 'markdown'),
-      h2('2. Читайте и рендерите их в Node'),
+      h2('Читайте и рендерите их в Node'),
       p(
         'Небольшой серверный модуль читает папку, разбирает frontmatter и рендерит markdown через ',
         a({ href: 'https://marked.js.org', rel: 'noopener' }, 'marked'),
         '. Поскольку ничто в HTML не ссылается на этот модуль, он никогда не попадает в браузер.',
       ),
       codeBlock('src/lib/posts.js', s.lib, 'javascript'),
-      h2('3. Выведите записи на главной'),
+      h2('Выведите записи на главной'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.indexTemplate,
         ht: s.indexHt,
         jsx: s.indexJsx,
       }),
-      h2('4. По статической странице на запись'),
+      h2('По статической странице на запись'),
       p(
         code('generateStaticParams'),
         ' возвращает все slug во время сборки; ',
@@ -80,7 +80,7 @@ export default () =>
         ht: s.slugHt,
         jsx: s.slugJsx,
       }),
-      h2('5. RSS бесплатно'),
+      h2('RSS бесплатно'),
       p(
         'С конфигурацией ',
         code('rss'),

@@ -33,7 +33,7 @@ export default () =>
         code('javascript-to-html'),
         ') : des fonctions de balise qui renvoient des chaînes, sans moteur de gabarit ni runtime React.',
       ),
-      h2('1. Une fonction qui renvoie du HTML'),
+      h2('Une fonction qui renvoie du HTML'),
       pageCodeTabs({
         file: 'page.ht.js',
         template: s.fnTemplate,
@@ -53,9 +53,9 @@ export default () =>
         a({ href: '#limites-de-jsx' }, 'limites de JSX'),
         ' plus bas — sitelo transforme le JSX en HTML statique au build ; ce n’est pas une application React dans le navigateur.',
       ),
-      h2('2. Une simple chaîne'),
+      h2('Une simple chaîne'),
       codeBlock('page.ht.js', s.string, 'javascript'),
-      h2('3. Un module structuré'),
+      h2('Un module structuré'),
       p(
         'Gardez ',
         code('render'),

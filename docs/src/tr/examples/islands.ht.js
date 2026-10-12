@@ -46,7 +46,7 @@ export default () =>
       h2('Proje düzeni'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Ada modülü'),
+      h2('Ada modülü'),
       p(
         'Düz ',
         code('.js'),
@@ -57,7 +57,7 @@ export default () =>
         ' alır ve bir HTML dizesi döndürür. Bu ada, her istekte işlendiğini görebilmeniz için istek zamanını ve tarayıcı kimliğini kullanır.',
       ),
       codeBlock('src/islands/time.js', s.island, 'javascript'),
-      h2('2. Adayı bir sayfaya yerleştirin'),
+      h2('Adayı bir sayfaya yerleştirin'),
       p(
         code('island()'),
         ' propları yer tutucuya gömer. Derleme yedeği yayımlar; uç nokta yanıt verdiğinde yükleyici onu değiştirir.',
@@ -68,10 +68,10 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. İstemci yükleyicisi'),
+      h2('İstemci yükleyicisi'),
       codeBlock('src/js/islands.js', s.loader, 'javascript'),
       codeBlock('src/css/styles.css', s.styles, 'css'),
-      h2('4. Node sunucusu'),
+      h2('Node sunucusu'),
       p(
         code('sitelo build'),
         ' sonrasında bu süreç ',
@@ -87,7 +87,7 @@ export default () =>
         ' içinden içe aktarır.',
       ),
       codeBlock('server.js', s.server, 'javascript'),
-      h2('5. Derleyin ve çalıştırın'),
+      h2('Derleyin ve çalıştırın'),
       codeBlock('shell', s.buildRun, 'bash'),
       p(
         code('http://localhost:3000'),
