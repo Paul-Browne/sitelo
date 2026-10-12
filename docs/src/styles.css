@@ -2404,8 +2404,13 @@ a.feature-card:hover .feature-chip {
     padding-bottom: 3rem;
   }
 
+  /*
+   * No longer centred in the window, the logo sits just under the sticky
+   * bar, and on a phone the bar can end up laid over the top of it. So
+   * the gap above it is the bar's own height and then some.
+   */
   .hero-center {
-    padding-top: 2.5rem;
+    padding-top: 6rem;
   }
 
   .hero-actions {
