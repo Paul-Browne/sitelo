@@ -1,6 +1,6 @@
 # Basic sitelo site
 
-Minimal static project — useful as a deploy template for Netlify, Vercel, Cloudflare Pages, AWS Amplify, Azure Static Web Apps, Google Cloud (Firebase Hosting or Cloud Run), GitLab Pages, Render, DigitalOcean App Platform, Railway, Fly.io, and Heroku.
+Minimal static project — useful as a deploy template for Netlify, Vercel, Cloudflare Workers (or Pages), AWS Amplify, AWS S3 + CloudFront, Azure Static Web Apps, Google Cloud (Firebase Hosting or Cloud Run), GitLab Pages, Render, DigitalOcean App Platform, Railway, Fly.io, Heroku, and your own server (nginx or Caddy).
 
 ## Run
 
@@ -18,8 +18,9 @@ From the sitelo monorepo, set the platform root/base to `examples/basic`.
 |------|--------|--------|
 | [Vercel](https://vercel.com/new/clone?repository-url=https://github.com/paul-browne/sitelo&root-directory=examples/basic&project-name=sitelo-basic) | `vercel.json` | Deploy button sets root directory |
 | [Netlify](https://app.netlify.com/start/deploy?repository=https://github.com/paul-browne/sitelo) | `netlify.toml` | Set base directory to `examples/basic` when prompted |
-| Cloudflare Pages | `wrangler.toml` | Build `npm run build`, output `dist` — or `npx wrangler pages deploy dist` |
+| Cloudflare Workers | `wrangler.jsonc` | `npx wrangler deploy` builds and uploads, or connect the repo in the dashboard. On Pages instead: build `npm run build`, output `dist` |
 | AWS Amplify | `amplify.yml` | Connect repo; set app root to `examples/basic` |
+| AWS S3 + CloudFront | `cloudfront-function.js` | Private bucket with origin access control; attach the function to viewer requests and return `/404.html` (status 404) for 403 and 404 errors, then `aws s3 sync dist/ s3://my-bucket --delete` |
 | Azure Static Web Apps | `public/staticwebapp.config.json` | App location `examples/basic` (`/` in your own project), output location `dist`; the build copies the config into `dist/` so unknown URLs get `404.html` |
 | Firebase Hosting | `firebase.json` | `firebase use --add`, then `firebase deploy` (the predeploy hook builds) |
 | Google Cloud Run | `Dockerfile` + `Caddyfile` | `gcloud run deploy --source .` |
@@ -29,7 +30,7 @@ From the sitelo monorepo, set the platform root/base to `examples/basic`.
 | Railway | `Dockerfile` + `Caddyfile` | Builds the `Dockerfile` with nothing to set. Without one, add the service variable `RAILPACK_SPA_OUTPUT_DIR=dist` and Railpack serves through the `Caddyfile` |
 | Fly.io | `fly.toml` + `Dockerfile` + `Caddyfile` | `fly launch`, then `fly deploy` |
 | Heroku | `heroku.yml` + `Dockerfile` + `Caddyfile` | `heroku stack:set container` once, then `git push heroku main` |
-| S3 + CloudFront | — | `npm run build` then sync `dist/` to the bucket |
+| Your own server | `nginx.conf` (or the `Caddyfile`) | `rsync -a --delete dist/ you@server:/var/www/my-site/`; for Caddy, swap `:{$PORT:80}` for your domain and `/app/dist` for the directory |
 
 Copy these config files into any sitelo project — they only assume `npm run build` → `dist/`.
 

@@ -43,8 +43,9 @@ export function basicSnippets(lang = 'en') {
   sitelo.config.js
   netlify.toml           # Netlify
   vercel.json            # Vercel
-  wrangler.toml          # Cloudflare Pages
+  wrangler.jsonc         # Cloudflare Workers
   amplify.yml            # AWS Amplify
+  cloudfront-function.js # AWS S3 + CloudFront
   firebase.json          # Firebase Hosting
   .gitlab-ci.yml         # GitLab Pages
   render.yaml            # Render
@@ -54,6 +55,7 @@ export function basicSnippets(lang = 'en') {
   .dockerignore          # Railway, Fly.io, Heroku, Cloud Run
   fly.toml               # Fly.io
   heroku.yml             # Heroku
+  nginx.conf             # Your own server
   package.json
   public/
     staticwebapp.config.json  # Azure Static Web Apps
@@ -74,9 +76,18 @@ export function basicSnippets(lang = 'en') {
   "installCommand": "npm install"
 }`,
 
-    wranglerToml: `name = "sitelo-basic"
-compatibility_date = "2025-01-01"
-pages_build_output_dir = "dist"`,
+    wranglerJsonc: `{
+  "name": "sitelo-basic",
+  "compatibility_date": "2026-10-01",
+  "build": {
+    "command": "npm run build"
+  },
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    "html_handling": "drop-trailing-slash"
+  }
+}`,
 
     amplifyYml: `version: 1
 frontend:
@@ -94,6 +105,23 @@ frontend:
   cache:
     paths:
       - node_modules/**/*`,
+
+    cloudfrontFunction: `function handler(event) {
+  var request = event.request
+  var uri = request.uri
+
+  if (uri.endsWith('/')) {
+    request.uri += 'index.html'
+  } else if (uri.slice(uri.lastIndexOf('/') + 1).indexOf('.') === -1) {
+    request.uri += '/index.html'
+  }
+
+  return request
+}`,
+
+    s3Deploy: `npm run build
+aws s3 sync dist/ s3://my-bucket --delete
+aws cloudfront create-invalidation --distribution-id MY_DISTRIBUTION_ID --paths "/*"`,
 
     azureConfig: `{
   "responseOverrides": {
@@ -176,6 +204,18 @@ dist
     herokuYml: `build:
   docker:
     web: Dockerfile`,
+
+    nginxConf: `server {
+  listen 80;
+  server_name example.com;
+  root /var/www/my-site;
+
+  location / {
+    try_files $uri $uri/index.html =404;
+  }
+
+  error_page 404 /404.html;
+}`,
 
     pageTemplate: `export default () => \`
   <html lang="${htmlLang}">

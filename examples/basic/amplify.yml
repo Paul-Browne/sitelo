@@ -17,4 +17,4 @@ frontend:
     paths:
       - node_modules/**/*
 
-# For plain S3 + CloudFront: `npm run build` then sync `dist/` to the bucket.
+# For S3 + CloudFront instead, see cloudfront-function.js.

@@ -4,121 +4,110 @@
  */
 const T = {
   en: {
-    cloudflare: 'Cloudflare Pages',
+    cloudflare: 'Cloudflare Workers',
     amplify: 'AWS Amplify Hosting',
     ghPages: 'GitHub Pages',
     render: 'Render',
-    railway: 'Railway',
     fly: 'Fly.io',
     gitlab: 'GitLab Pages',
     digitalocean: 'DigitalOcean App Platform',
     heroku: 'Heroku',
   },
   es: {
-    cloudflare: 'Cloudflare Pages',
+    cloudflare: 'Cloudflare Workers',
     amplify: 'Alojamiento en AWS Amplify',
     ghPages: 'GitHub Pages',
     render: 'Render',
-    railway: 'Railway',
     fly: 'Fly.io',
     gitlab: 'GitLab Pages',
     digitalocean: 'DigitalOcean App Platform',
     heroku: 'Heroku',
   },
   fr: {
-    cloudflare: 'Cloudflare Pages',
+    cloudflare: 'Cloudflare Workers',
     amplify: 'Hébergement AWS Amplify',
     ghPages: 'GitHub Pages',
     render: 'Render',
-    railway: 'Railway',
     fly: 'Fly.io',
     gitlab: 'GitLab Pages',
     digitalocean: 'DigitalOcean App Platform',
     heroku: 'Heroku',
   },
   de: {
-    cloudflare: 'Cloudflare Pages',
+    cloudflare: 'Cloudflare Workers',
     amplify: 'AWS Amplify Hosting',
     ghPages: 'GitHub Pages',
     render: 'Render',
-    railway: 'Railway',
     fly: 'Fly.io',
     gitlab: 'GitLab Pages',
     digitalocean: 'DigitalOcean App Platform',
     heroku: 'Heroku',
   },
   ru: {
-    cloudflare: 'Cloudflare Pages',
+    cloudflare: 'Cloudflare Workers',
     amplify: 'Хостинг AWS Amplify',
     ghPages: 'GitHub Pages',
     render: 'Render',
-    railway: 'Railway',
     fly: 'Fly.io',
     gitlab: 'GitLab Pages',
     digitalocean: 'DigitalOcean App Platform',
     heroku: 'Heroku',
   },
   zh: {
-    cloudflare: 'Cloudflare Pages',
+    cloudflare: 'Cloudflare Workers',
     amplify: 'AWS Amplify 托管',
     ghPages: 'GitHub Pages',
     render: 'Render',
-    railway: 'Railway',
     fly: 'Fly.io',
     gitlab: 'GitLab Pages',
     digitalocean: 'DigitalOcean App Platform',
     heroku: 'Heroku',
   },
   pt: {
-    cloudflare: 'Cloudflare Pages',
+    cloudflare: 'Cloudflare Workers',
     amplify: 'Alojamento AWS Amplify',
     ghPages: 'GitHub Pages',
     render: 'Render',
-    railway: 'Railway',
     fly: 'Fly.io',
     gitlab: 'GitLab Pages',
     digitalocean: 'DigitalOcean App Platform',
     heroku: 'Heroku',
   },
   it: {
-    cloudflare: 'Cloudflare Pages',
+    cloudflare: 'Cloudflare Workers',
     amplify: 'Hosting AWS Amplify',
     ghPages: 'GitHub Pages',
     render: 'Render',
-    railway: 'Railway',
     fly: 'Fly.io',
     gitlab: 'GitLab Pages',
     digitalocean: 'DigitalOcean App Platform',
     heroku: 'Heroku',
   },
   pl: {
-    cloudflare: 'Cloudflare Pages',
+    cloudflare: 'Cloudflare Workers',
     amplify: 'Hosting AWS Amplify',
     ghPages: 'GitHub Pages',
     render: 'Render',
-    railway: 'Railway',
     fly: 'Fly.io',
     gitlab: 'GitLab Pages',
     digitalocean: 'DigitalOcean App Platform',
     heroku: 'Heroku',
   },
   tr: {
-    cloudflare: 'Cloudflare Pages',
+    cloudflare: 'Cloudflare Workers',
     amplify: 'AWS Amplify Hosting',
     ghPages: 'GitHub Pages',
     render: 'Render',
-    railway: 'Railway',
     fly: 'Fly.io',
     gitlab: 'GitLab Pages',
     digitalocean: 'DigitalOcean App Platform',
     heroku: 'Heroku',
   },
   id: {
-    cloudflare: 'Cloudflare Pages',
+    cloudflare: 'Cloudflare Workers',
     amplify: 'Hosting AWS Amplify',
     ghPages: 'GitHub Pages',
     render: 'Render',
-    railway: 'Railway',
     fly: 'Fly.io',
     gitlab: 'GitLab Pages',
     digitalocean: 'DigitalOcean App Platform',
@@ -143,10 +132,19 @@ export function deploymentSnippets(lang = 'en') {
   "installCommand": "npm install"
 }`,
 
-    wrangler: `# ${t.cloudflare}
-name = "my-site"
-compatibility_date = "2025-01-01"
-pages_build_output_dir = "dist"`,
+    wrangler: `// ${t.cloudflare}
+{
+  "name": "my-site",
+  "compatibility_date": "2026-10-01",
+  "build": {
+    "command": "npm run build"
+  },
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    "html_handling": "drop-trailing-slash"
+  }
+}`,
 
     amplify: `# ${t.amplify}
 version: 1
@@ -165,6 +163,23 @@ frontend:
   cache:
     paths:
       - node_modules/**/*`,
+
+    cloudfront: `function handler(event) {
+  var request = event.request
+  var uri = request.uri
+
+  if (uri.endsWith('/')) {
+    request.uri += 'index.html'
+  } else if (uri.slice(uri.lastIndexOf('/') + 1).indexOf('.') === -1) {
+    request.uri += '/index.html'
+  }
+
+  return request
+}`,
+
+    s3Deploy: `npm run build
+aws s3 sync dist/ s3://my-bucket --delete
+aws cloudfront create-invalidation --distribution-id MY_DISTRIBUTION_ID --paths "/*"`,
 
     azure: `{
   "responseOverrides": {
@@ -237,8 +252,7 @@ static_sites:
     build_command: npm run build
     output_dir: dist`,
 
-    railway: `# ${t.railway}
-:{$PORT:80} {
+    caddyfile: `:{$PORT:80} {
   root * /app/dist
   encode zstd gzip
   try_files {path} {path}/index.html
@@ -249,8 +263,7 @@ static_sites:
   }
 }`,
 
-    dockerfile: `# ${t.fly}
-FROM node:24-slim AS build
+    dockerfile: `FROM node:24-slim AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -274,6 +287,29 @@ app = "my-site"
   auto_stop_machines = "stop"
   auto_start_machines = true
   min_machines_running = 0`,
+
+    caddyServer: `example.com {
+  root * /var/www/my-site
+  encode zstd gzip
+  try_files {path} {path}/index.html
+  file_server
+  handle_errors {
+    rewrite * /{err.status_code}.html
+    file_server
+  }
+}`,
+
+    nginx: `server {
+  listen 80;
+  server_name example.com;
+  root /var/www/my-site;
+
+  location / {
+    try_files $uri $uri/index.html =404;
+  }
+
+  error_page 404 /404.html;
+}`,
 
     heroku: `# ${t.heroku}
 build:

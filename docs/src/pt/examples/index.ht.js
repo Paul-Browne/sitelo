@@ -15,7 +15,7 @@ export default () =>
         { class: 'docs-list' },
         li(
           a({ href: '/pt/examples/basic' }, 'Site básico'),
-          ' — projeto mínimo mais configurações de implementação estática para Netlify, Vercel, Cloudflare Pages, AWS Amplify, Azure, Firebase, GitLab Pages, Render, DigitalOcean, Railway, Fly.io e Heroku.',
+          ' — projeto mínimo mais configurações de implementação estática para Netlify, Vercel, Cloudflare, AWS, Azure, Firebase, GitLab Pages, Render, DigitalOcean, Railway, Fly.io e Heroku.',
         ),
         li(
           a({ href: '/pt/examples/todo' }, 'App de tarefas'),

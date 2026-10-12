@@ -1,0 +1,16 @@
+// Cloudflare Workers (static assets) — `npx wrangler deploy` builds the site
+// and uploads dist/, and connecting the repo in the Cloudflare dashboard runs
+// the same command on every push. Clean URLs are served without a trailing
+// slash, and unknown URLs get 404.html (status 404).
+{
+  "name": "sitelo-basic",
+  "compatibility_date": "2026-10-01",
+  "build": {
+    "command": "npm run build"
+  },
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    "html_handling": "drop-trailing-slash"
+  }
+}

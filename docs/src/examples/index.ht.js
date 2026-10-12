@@ -16,7 +16,7 @@ export default () =>
         { class: 'docs-list' },
         li(
           a({ href: '/examples/basic' }, 'Basic site'),
-          ' — minimal project plus static deploy configs for Netlify, Vercel, Cloudflare Pages, AWS Amplify, Azure, Firebase, GitLab Pages, Render, DigitalOcean, Railway, Fly.io, and Heroku.',
+          ' — minimal project plus static deploy configs for Netlify, Vercel, Cloudflare, AWS, Azure, Firebase, GitLab Pages, Render, DigitalOcean, Railway, Fly.io, and Heroku.',
         ),
         li(
           a({ href: '/examples/todo' }, 'Todo app'),
