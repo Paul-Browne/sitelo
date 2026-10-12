@@ -79,7 +79,7 @@ export const SQUARE = {
   trash: '<path d="M3 6h18"/><path d="M9 6V3h6v3"/><path d="M5 6v15h14V6"/><path d="M10 10v7"/><path d="M14 10v7"/>',
   edit: '<path d="M4 20v-4L16 4l4 4L8 20z"/><path d="M13 7 17 11"/>',
   filter: '<path d="M3 4h18l-7 7v9h-4v-9z"/>',
-  refresh: '<path d="M4 11V6h14"/><path d="M15 3 18 6 15 9"/><path d="M20 13v5H6"/><path d="M9 15 6 18 9 21"/>',
+  refresh: '<path d="M5 10V5h14v5"/><path d="M16.5 7.5 19 10 21.5 7.5"/><path d="M19 14v5H5v-5"/><path d="M2.5 16.5 5 14 7.5 16.5"/>',
   'more-horizontal': `${dot(5, 12, 2.6)}${dot(12, 12, 2.6)}${dot(19, 12, 2.6)}`,
   share: '<path d="M3.5 9.5h5v5h-5z"/><path d="M15.5 3.5h5v5h-5z"/><path d="M15.5 15.5h5v5h-5z"/><path d="M8.5 12H12"/><path d="M15.5 6H12v12h3.5"/>',
   'log-in': '<path d="M14 4h6v16h-6"/><path d="M3 12h11"/><path d="M10 8 14 12 10 16"/>',
@@ -174,7 +174,7 @@ export const SQUARE = {
 
   /* Theme --------------------------------------------------------- */
   sun: `${octagon(12, 12, 4.2)}<path d="${[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => spoke(12, 12, angle, 7.5, 10)).join('')}"/>`,
-  moon: '<path d="M12 3H8L3 8v8l5 5h8l5-5v-4l-3 3h-4l-5-5V6z"/>',
+  moon: '<path d="M10 3H8L3 8v8l5 5h8l5-5v-2l-2 2h-8l-3-3V5z"/>',
 }
 
 /**
