@@ -154,8 +154,8 @@ code {
  * A small cross where two lines of the page meet, as the preset marks
  * the corners of a card: on the rails where the bar's rule and the
  * footer's cross them, at the ends of every line drawn between them,
- * and on the corners of a frame — a table of contents, a demo, the
- * install command.
+ * and on the corners of a frame — a table of contents, a code block, a
+ * demo, the install command.
  *
  * Each is a box laid over the frame and standing out from it by an arm,
  * with eight one-pixel gradients for the four crosses. The frame's lines
@@ -175,6 +175,7 @@ code {
 .feature-list::before,
 .feature-card::before,
 .install-frame::before,
+.code-frame::before,
 .docs-toc::before,
 .docs-pagenav-link::before,
 .ui-demo::before,
@@ -611,7 +612,7 @@ code {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: radial-gradient(42rem 22rem at 50% 46%, var(--paper) 30%, transparent 100%);
+  /* background: radial-gradient(42rem 22rem at 50% 46%, var(--paper) 30%, transparent 100%); */
 }
 
 .hero-center {
@@ -1766,12 +1767,10 @@ a.feature-card:hover .feature-chip {
   color: var(--su-primary-fg);
 }
 
-/* Markup style tabs (template / ht.js / JSX) — one box, a strip of tabs on top. */
-.code-tabs.code-frame {
-  overflow: hidden;
-}
-
 /*
+ * Markup style tabs (template / ht.js / JSX): one box, a strip of tabs on
+ * top.
+ *
  * One row, always. Wrapping left a ragged half-empty second row wherever the
  * labels outgrew the strip — a phone in Russian puts "Шаблонная строка" and
  * "ht.js рекомендуется" side by side and pushes "JSX" onto its own line. The
