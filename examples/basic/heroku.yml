@@ -1,0 +1,5 @@
+# Heroku — builds the Dockerfile; Caddy listens on the PORT Heroku sets.
+# Run `heroku stack:set container` once, then `git push heroku main`.
+build:
+  docker:
+    web: Dockerfile

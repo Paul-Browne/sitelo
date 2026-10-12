@@ -1,0 +1,11 @@
+# GitLab Pages — builds on the default branch and publishes dist/.
+# GitLab serves 404.html and directory URLs on its own.
+deploy-pages:
+  image: node:24
+  script:
+    - npm ci
+    - npm run build
+  pages:
+    publish: dist
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

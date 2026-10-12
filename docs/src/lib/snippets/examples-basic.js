@@ -45,12 +45,18 @@ export function basicSnippets(lang = 'en') {
   vercel.json            # Vercel
   wrangler.toml          # Cloudflare Pages
   amplify.yml            # AWS Amplify
+  firebase.json          # Firebase Hosting
+  .gitlab-ci.yml         # GitLab Pages
   render.yaml            # Render
-  Caddyfile              # Railway, Fly.io
-  Dockerfile             # Fly.io, Railway
-  .dockerignore          # Fly.io, Railway
+  .do/app.yaml           # DigitalOcean App Platform
+  Caddyfile              # Railway, Fly.io, Heroku, Cloud Run
+  Dockerfile             # Railway, Fly.io, Heroku, Cloud Run
+  .dockerignore          # Railway, Fly.io, Heroku, Cloud Run
   fly.toml               # Fly.io
+  heroku.yml             # Heroku
   package.json
+  public/
+    staticwebapp.config.json  # Azure Static Web Apps
   src/
     index.ht.js
     css/
@@ -89,12 +95,48 @@ frontend:
     paths:
       - node_modules/**/*`,
 
+    azureConfig: `{
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/404.html"
+    }
+  }
+}`,
+
+    firebaseJson: `{
+  "hosting": {
+    "public": "dist",
+    "predeploy": "npm run build",
+    "trailingSlash": false
+  }
+}`,
+
+    gitlabCi: `deploy-pages:
+  image: node:24
+  script:
+    - npm ci
+    - npm run build
+  pages:
+    publish: dist
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH`,
+
     renderYaml: `services:
   - type: web
     name: sitelo-basic
     runtime: static
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist`,
+
+    doAppYaml: `name: sitelo-basic
+static_sites:
+  - name: site
+    github:
+      repo: your-name/your-site
+      branch: main
+      deploy_on_push: true
+    build_command: npm run build
+    output_dir: dist`,
 
     caddyfile: `:{$PORT:80} {
   root * /app/dist
@@ -130,6 +172,10 @@ dist
   auto_stop_machines = "stop"
   auto_start_machines = true
   min_machines_running = 0`,
+
+    herokuYml: `build:
+  docker:
+    web: Dockerfile`,
 
     pageTemplate: `export default () => \`
   <html lang="${htmlLang}">

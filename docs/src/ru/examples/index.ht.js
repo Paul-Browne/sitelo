@@ -15,7 +15,7 @@ export default () =>
         { class: 'docs-list' },
         li(
           a({ href: '/ru/examples/basic' }, 'Базовый сайт'),
-          ' — минимальный проект плюс конфигурации статического развёртывания для Netlify, Vercel, Cloudflare Pages, AWS Amplify, Render, Railway и Fly.io.',
+          ' — минимальный проект плюс конфигурации статического развёртывания для Netlify, Vercel, Cloudflare Pages, AWS Amplify, Azure, Firebase, GitLab Pages, Render, DigitalOcean, Railway, Fly.io и Heroku.',
         ),
         li(
           a({ href: '/ru/examples/todo' }, 'Список задач'),

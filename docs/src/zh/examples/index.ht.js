@@ -15,7 +15,7 @@ export default () =>
         { class: 'docs-list' },
         li(
           a({ href: '/zh/examples/basic' }, '基础站点'),
-          ' —— 最小项目，外加 Netlify、Vercel、Cloudflare Pages、AWS Amplify、Render、Railway 与 Fly.io 的静态部署配置。',
+          ' —— 最小项目，外加 Netlify、Vercel、Cloudflare Pages、AWS Amplify、Azure、Firebase、GitLab Pages、Render、DigitalOcean、Railway、Fly.io 与 Heroku 的静态部署配置。',
         ),
         li(
           a({ href: '/zh/examples/todo' }, '待办应用'),

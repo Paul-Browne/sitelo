@@ -15,7 +15,7 @@ export default () =>
         { class: 'docs-list' },
         li(
           a({ href: '/tr/examples/basic' }, 'Temel site'),
-          ' — en küçük proje, artı Netlify, Vercel, Cloudflare Pages, AWS Amplify, Render, Railway ve Fly.io için statik dağıtım yapılandırmaları.',
+          ' — en küçük proje, artı Netlify, Vercel, Cloudflare Pages, AWS Amplify, Azure, Firebase, GitLab Pages, Render, DigitalOcean, Railway, Fly.io ve Heroku için statik dağıtım yapılandırmaları.',
         ),
         li(
           a({ href: '/tr/examples/todo' }, 'Yapılacaklar uygulaması'),

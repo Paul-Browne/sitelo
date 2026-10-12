@@ -1,0 +1,12 @@
+# DigitalOcean App Platform — set github.repo, then
+# `doctl apps create --spec .do/app.yaml` (or paste this into the app spec
+# editor). Directory URLs and 404.html work by default.
+name: sitelo-basic
+static_sites:
+  - name: site
+    github:
+      repo: your-name/your-site
+      branch: main
+      deploy_on_push: true
+    build_command: npm run build
+    output_dir: dist

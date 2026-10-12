@@ -10,6 +10,9 @@ const T = {
     render: 'Render',
     railway: 'Railway',
     fly: 'Fly.io',
+    gitlab: 'GitLab Pages',
+    digitalocean: 'DigitalOcean App Platform',
+    heroku: 'Heroku',
   },
   es: {
     cloudflare: 'Cloudflare Pages',
@@ -18,6 +21,9 @@ const T = {
     render: 'Render',
     railway: 'Railway',
     fly: 'Fly.io',
+    gitlab: 'GitLab Pages',
+    digitalocean: 'DigitalOcean App Platform',
+    heroku: 'Heroku',
   },
   fr: {
     cloudflare: 'Cloudflare Pages',
@@ -26,6 +32,9 @@ const T = {
     render: 'Render',
     railway: 'Railway',
     fly: 'Fly.io',
+    gitlab: 'GitLab Pages',
+    digitalocean: 'DigitalOcean App Platform',
+    heroku: 'Heroku',
   },
   de: {
     cloudflare: 'Cloudflare Pages',
@@ -34,6 +43,9 @@ const T = {
     render: 'Render',
     railway: 'Railway',
     fly: 'Fly.io',
+    gitlab: 'GitLab Pages',
+    digitalocean: 'DigitalOcean App Platform',
+    heroku: 'Heroku',
   },
   ru: {
     cloudflare: 'Cloudflare Pages',
@@ -42,6 +54,9 @@ const T = {
     render: 'Render',
     railway: 'Railway',
     fly: 'Fly.io',
+    gitlab: 'GitLab Pages',
+    digitalocean: 'DigitalOcean App Platform',
+    heroku: 'Heroku',
   },
   zh: {
     cloudflare: 'Cloudflare Pages',
@@ -50,6 +65,9 @@ const T = {
     render: 'Render',
     railway: 'Railway',
     fly: 'Fly.io',
+    gitlab: 'GitLab Pages',
+    digitalocean: 'DigitalOcean App Platform',
+    heroku: 'Heroku',
   },
   pt: {
     cloudflare: 'Cloudflare Pages',
@@ -58,6 +76,9 @@ const T = {
     render: 'Render',
     railway: 'Railway',
     fly: 'Fly.io',
+    gitlab: 'GitLab Pages',
+    digitalocean: 'DigitalOcean App Platform',
+    heroku: 'Heroku',
   },
   it: {
     cloudflare: 'Cloudflare Pages',
@@ -66,6 +87,9 @@ const T = {
     render: 'Render',
     railway: 'Railway',
     fly: 'Fly.io',
+    gitlab: 'GitLab Pages',
+    digitalocean: 'DigitalOcean App Platform',
+    heroku: 'Heroku',
   },
   pl: {
     cloudflare: 'Cloudflare Pages',
@@ -74,6 +98,9 @@ const T = {
     render: 'Render',
     railway: 'Railway',
     fly: 'Fly.io',
+    gitlab: 'GitLab Pages',
+    digitalocean: 'DigitalOcean App Platform',
+    heroku: 'Heroku',
   },
   tr: {
     cloudflare: 'Cloudflare Pages',
@@ -82,6 +109,9 @@ const T = {
     render: 'Render',
     railway: 'Railway',
     fly: 'Fly.io',
+    gitlab: 'GitLab Pages',
+    digitalocean: 'DigitalOcean App Platform',
+    heroku: 'Heroku',
   },
   id: {
     cloudflare: 'Cloudflare Pages',
@@ -90,6 +120,9 @@ const T = {
     render: 'Render',
     railway: 'Railway',
     fly: 'Fly.io',
+    gitlab: 'GitLab Pages',
+    digitalocean: 'DigitalOcean App Platform',
+    heroku: 'Heroku',
   },
 
 }
@@ -133,6 +166,22 @@ frontend:
     paths:
       - node_modules/**/*`,
 
+    azure: `{
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/404.html"
+    }
+  }
+}`,
+
+    firebase: `{
+  "hosting": {
+    "public": "dist",
+    "predeploy": "npm run build",
+    "trailingSlash": false
+  }
+}`,
+
     ghPages: `# ${t.ghPages}
 name: Deploy
 on:
@@ -158,6 +207,17 @@ jobs:
           path: dist
       - uses: actions/deploy-pages@v4`,
 
+    gitlab: `# ${t.gitlab}
+deploy-pages:
+  image: node:24
+  script:
+    - npm ci
+    - npm run build
+  pages:
+    publish: dist
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH`,
+
     render: `# ${t.render}
 services:
   - type: web
@@ -165,6 +225,17 @@ services:
     runtime: static
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist`,
+
+    digitalocean: `# ${t.digitalocean}
+name: my-site
+static_sites:
+  - name: site
+    github:
+      repo: your-name/your-site
+      branch: main
+      deploy_on_push: true
+    build_command: npm run build
+    output_dir: dist`,
 
     railway: `# ${t.railway}
 :{$PORT:80} {
@@ -203,5 +274,10 @@ app = "my-site"
   auto_stop_machines = "stop"
   auto_start_machines = true
   min_machines_running = 0`,
+
+    heroku: `# ${t.heroku}
+build:
+  docker:
+    web: Dockerfile`,
   }
 }
