@@ -8,7 +8,7 @@ export default () =>
   examplesLayout({
     title: 'Базовый сайт',
     description:
-      'Минимальный проект sitelo и конфигурации статического развёртывания для Netlify, Vercel, Cloudflare Pages и AWS Amplify.',
+      'Минимальный проект sitelo и конфигурации статического развёртывания для Netlify, Vercel, Cloudflare Pages, AWS Amplify и Railway.',
     activeHref: '/ru/examples/basic',
     children: [
       p(
@@ -35,8 +35,10 @@ export default () =>
           code('vercel.json'),
           ', ',
           code('wrangler.toml'),
-          ' и ',
+          ', ',
           code('amplify.yml'),
+          ' и ',
+          code('Caddyfile'),
         ),
         li('Развёртывание в один клик или подключением репозитория из папки примера'),
       ),
@@ -98,6 +100,21 @@ export default () =>
         ' с бакетом.',
       ),
       codeBlock('amplify.yml', s.amplifyYml, 'yaml'),
+      h3('Railway'),
+      p(
+        'Добавьте переменную сервиса ',
+        code('RAILPACK_SPA_OUTPUT_DIR=dist'),
+        ', чтобы Railpack раздавал сборку как статический сайт, и оставьте ',
+        code('Caddyfile'),
+        ', чтобы на неизвестные URL отдавался ',
+        code('404.html'),
+        '. Railway забирает только корневой каталог сервиса, поэтому ссылка ',
+        code('file:../..'),
+        ' из примера на sitelo там не разрешится — разверните копию, которая ставит ',
+        code('sitelo'),
+        ' из npm.',
+      ),
+      codeBlock('Caddyfile', s.caddyfile, 'caddyfile'),
       p(
         'Работаете с Cursor, Copilot или другим агентом? Скопируйте ',
         code('AGENTS.md'),

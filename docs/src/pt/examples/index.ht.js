@@ -15,7 +15,7 @@ export default () =>
         { class: 'docs-list' },
         li(
           a({ href: '/pt/examples/basic' }, 'Site básico'),
-          ' — projeto mínimo mais configurações de implementação estática para Netlify, Vercel, Cloudflare Pages e AWS Amplify.',
+          ' — projeto mínimo mais configurações de implementação estática para Netlify, Vercel, Cloudflare Pages, AWS Amplify e Railway.',
         ),
         li(
           a({ href: '/pt/examples/todo' }, 'App de tarefas'),

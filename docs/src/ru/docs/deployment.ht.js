@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Развёртывание',
     description:
-      'Разверните сайт на sitelo в Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages или на любом статическом хостинге.',
+      'Разверните сайт на sitelo в Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway или на любом статическом хостинге.',
     activeHref: '/ru/docs/deployment',
     children: [
       p(
@@ -78,6 +78,24 @@ export default () =>
         ')? Собирайте с ',
         code('--base /repo/'),
         '.',
+      ),
+      h2('Railway'),
+      p(
+        'Railway собирает проект через Railpack, который раздаёт статические сайты с помощью Caddy. sitelo нет среди фреймворков, которые Railpack распознаёт, поэтому добавьте переменную сервиса ',
+        code('RAILPACK_SPA_OUTPUT_DIR=dist'),
+        ' — тогда Railpack выполнит ',
+        code('npm run build'),
+        ' и будет раздавать ',
+        code('dist/'),
+        '.',
+      ),
+      codeBlock('Caddyfile', s.railway, 'bash'),
+      p(
+        'Положите ',
+        code('Caddyfile'),
+        ' в корень проекта. Без него стандартная SPA-настройка Railpack отвечает на любой неизвестный URL главной страницей; этот файл отдаёт ',
+        code('404.html'),
+        ' со статусом 404.',
       ),
       h2('Перед публикацией'),
       ul(

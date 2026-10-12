@@ -8,7 +8,7 @@ export default () =>
   examplesLayout({
     title: 'Basis-Website',
     description:
-      'Ein minimales sitelo-Projekt und statische Deploy-Konfigurationen für Netlify, Vercel, Cloudflare Pages und AWS Amplify.',
+      'Ein minimales sitelo-Projekt und statische Deploy-Konfigurationen für Netlify, Vercel, Cloudflare Pages, AWS Amplify und Railway.',
     activeHref: '/de/examples/basic',
     children: [
       p(
@@ -35,8 +35,10 @@ export default () =>
           code('vercel.json'),
           ', ',
           code('wrangler.toml'),
-          ' und ',
+          ', ',
           code('amplify.yml'),
+          ' und ',
+          code('Caddyfile'),
         ),
         li('Deploy per Klick oder durch Verbinden des Repos aus dem Beispielordner'),
       ),
@@ -98,6 +100,21 @@ export default () =>
         ' mit dem Bucket.',
       ),
       codeBlock('amplify.yml', s.amplifyYml, 'yaml'),
+      h3('Railway'),
+      p(
+        'Setze die Service-Variable ',
+        code('RAILPACK_SPA_OUTPUT_DIR=dist'),
+        ', damit Railpack den Build als statische Website ausliefert, und behalte das ',
+        code('Caddyfile'),
+        ', damit unbekannte URLs ',
+        code('404.html'),
+        ' bekommen. Railway holt nur das Root-Verzeichnis des Service, deshalb lässt sich der Verweis ',
+        code('file:../..'),
+        ' des Beispiels auf sitelo dort nicht auflösen — liefere eine Kopie aus, die ',
+        code('sitelo'),
+        ' von npm installiert.',
+      ),
+      codeBlock('Caddyfile', s.caddyfile, 'caddyfile'),
       p(
         'Du arbeitest mit Cursor, Copilot oder einem anderen Agenten? Kopiere die ',
         code('AGENTS.md'),

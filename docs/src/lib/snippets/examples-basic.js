@@ -45,6 +45,7 @@ export function basicSnippets(lang = 'en') {
   vercel.json            # Vercel
   wrangler.toml          # Cloudflare Pages
   amplify.yml            # AWS Amplify
+  Caddyfile              # Railway
   package.json
   src/
     index.ht.js
@@ -83,6 +84,17 @@ frontend:
   cache:
     paths:
       - node_modules/**/*`,
+
+    caddyfile: `:{$PORT:80} {
+  root * /app/dist
+  encode zstd gzip
+  try_files {path} {path}/index.html
+  file_server
+  handle_errors {
+    rewrite * /{err.status_code}.html
+    file_server
+  }
+}`,
 
     pageTemplate: `export default () => \`
   <html lang="${htmlLang}">

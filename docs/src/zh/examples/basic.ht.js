@@ -8,7 +8,7 @@ export default () =>
   examplesLayout({
     title: '基础站点',
     description:
-      '一个最小的 sitelo 项目，以及 Netlify、Vercel、Cloudflare Pages 与 AWS Amplify 的静态部署配置。',
+      '一个最小的 sitelo 项目，以及 Netlify、Vercel、Cloudflare Pages、AWS Amplify 与 Railway 的静态部署配置。',
     activeHref: '/zh/examples/basic',
     children: [
       p(
@@ -35,8 +35,10 @@ export default () =>
           code('vercel.json'),
           '、',
           code('wrangler.toml'),
-          ' 和 ',
+          '、',
           code('amplify.yml'),
+          ' 和 ',
+          code('Caddyfile'),
         ),
         li('从示例目录一键部署，或连接仓库部署'),
       ),
@@ -98,6 +100,21 @@ export default () =>
         ' 同步到存储桶。',
       ),
       codeBlock('amplify.yml', s.amplifyYml, 'yaml'),
+      h3('Railway'),
+      p(
+        '添加服务变量 ',
+        code('RAILPACK_SPA_OUTPUT_DIR=dist'),
+        '，让 Railpack 把构建产物当作静态站点托管；保留 ',
+        code('Caddyfile'),
+        '，让未知 URL 返回 ',
+        code('404.html'),
+        '。Railway 只拉取服务的根目录，所以示例中指向 sitelo 的 ',
+        code('file:../..'),
+        ' 链接在那里无法解析——请部署一份从 npm 安装 ',
+        code('sitelo'),
+        ' 的副本。',
+      ),
+      codeBlock('Caddyfile', s.caddyfile, 'caddyfile'),
       p(
         '在用 Cursor、Copilot 或其他智能体？把本示例里的 ',
         code('AGENTS.md'),

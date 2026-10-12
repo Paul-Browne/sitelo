@@ -8,7 +8,7 @@ export default () =>
   examplesLayout({
     title: 'Podstawowa strona',
     description:
-      'Minimalny projekt sitelo i konfiguracje statycznego wdrożenia dla Netlify, Vercela, Cloudflare Pages i AWS Amplify.',
+      'Minimalny projekt sitelo i konfiguracje statycznego wdrożenia dla Netlify, Vercela, Cloudflare Pages, AWS Amplify i Railwaya.',
     activeHref: '/pl/examples/basic',
     children: [
       p(
@@ -35,8 +35,10 @@ export default () =>
           code('vercel.json'),
           ', ',
           code('wrangler.toml'),
-          ' i ',
+          ', ',
           code('amplify.yml'),
+          ' i ',
+          code('Caddyfile'),
         ),
         li('Wdrożenie jednym kliknięciem / przez podpięcie repozytorium z katalogu przykładu'),
       ),
@@ -98,6 +100,21 @@ export default () =>
         ' z bucketem.',
       ),
       codeBlock('amplify.yml', s.amplifyYml, 'yaml'),
+      h3('Railway'),
+      p(
+        'Dodaj zmienną usługi ',
+        code('RAILPACK_SPA_OUTPUT_DIR=dist'),
+        ', aby Railpack serwował build jako stronę statyczną, i zostaw ',
+        code('Caddyfile'),
+        ', aby nieznane adresy URL dostawały ',
+        code('404.html'),
+        '. Railway pobiera tylko katalog główny usługi, więc odwołanie ',
+        code('file:../..'),
+        ' z przykładu do sitelo nie zostanie tam rozwiązane — wdróż kopię, która instaluje ',
+        code('sitelo'),
+        ' z npm.',
+      ),
+      codeBlock('Caddyfile', s.caddyfile, 'caddyfile'),
       p(
         'Pracujesz z Cursorem, Copilotem albo innym agentem? Skopiuj ',
         code('AGENTS.md'),

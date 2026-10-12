@@ -9,7 +9,7 @@ export default () =>
   examplesLayout({
     title: 'Basic site',
     description:
-      'A minimal sitelo project and static deploy configs for Netlify, Vercel, Cloudflare Pages, and AWS Amplify.',
+      'A minimal sitelo project and static deploy configs for Netlify, Vercel, Cloudflare Pages, AWS Amplify, and Railway.',
     activeHref: '/examples/basic',
     children: [
       p(
@@ -36,8 +36,10 @@ export default () =>
           code('vercel.json'),
           ', ',
           code('wrangler.toml'),
-          ', and ',
+          ', ',
           code('amplify.yml'),
+          ', and ',
+          code('Caddyfile'),
         ),
         li('One-click / connect-repo deploy from the example folder'),
       ),
@@ -99,6 +101,21 @@ export default () =>
         ' to the bucket.',
       ),
       codeBlock('amplify.yml', s.amplifyYml, 'yaml'),
+      h3('Railway'),
+      p(
+        'Add the service variable ',
+        code('RAILPACK_SPA_OUTPUT_DIR=dist'),
+        ' so Railpack serves the build as a static site, and keep the ',
+        code('Caddyfile'),
+        ' so unknown URLs get ',
+        code('404.html'),
+        '. Railway pulls only the service’s root directory, so the example’s ',
+        code('file:../..'),
+        ' link to sitelo won’t resolve there — deploy a copy that installs ',
+        code('sitelo'),
+        ' from npm.',
+      ),
+      codeBlock('Caddyfile', s.caddyfile, 'caddyfile'),
       p(
         'Working with Cursor, Copilot, or another agent? Copy ',
         code('AGENTS.md'),

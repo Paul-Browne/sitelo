@@ -8,7 +8,7 @@ export default () =>
   examplesLayout({
     title: 'Site básico',
     description:
-      'Um projeto sitelo mínimo e configurações de implementação estática para Netlify, Vercel, Cloudflare Pages e AWS Amplify.',
+      'Um projeto sitelo mínimo e configurações de implementação estática para Netlify, Vercel, Cloudflare Pages, AWS Amplify e Railway.',
     activeHref: '/pt/examples/basic',
     children: [
       p(
@@ -35,8 +35,10 @@ export default () =>
           code('vercel.json'),
           ', ',
           code('wrangler.toml'),
-          ' e ',
+          ', ',
           code('amplify.yml'),
+          ' e ',
+          code('Caddyfile'),
         ),
         li('Implementação num clique ou ligando o repositório a partir da pasta do exemplo'),
       ),
@@ -98,6 +100,21 @@ export default () =>
         ' com o bucket.',
       ),
       codeBlock('amplify.yml', s.amplifyYml, 'yaml'),
+      h3('Railway'),
+      p(
+        'Adiciona a variável de serviço ',
+        code('RAILPACK_SPA_OUTPUT_DIR=dist'),
+        ' para que o Railpack sirva a compilação como site estático, e mantém o ',
+        code('Caddyfile'),
+        ' para que os URL desconhecidos recebam ',
+        code('404.html'),
+        '. O Railway só obtém o diretório raiz do serviço, por isso a ligação ',
+        code('file:../..'),
+        ' do exemplo ao sitelo não se resolve lá — implementa uma cópia que instale o ',
+        code('sitelo'),
+        ' a partir do npm.',
+      ),
+      codeBlock('Caddyfile', s.caddyfile, 'caddyfile'),
       p(
         'Trabalhas com o Cursor, o Copilot ou outro agente? Copia o ',
         code('AGENTS.md'),

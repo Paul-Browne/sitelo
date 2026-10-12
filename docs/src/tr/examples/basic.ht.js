@@ -8,7 +8,7 @@ export default () =>
   examplesLayout({
     title: 'Temel site',
     description:
-      'En küçük sitelo projesi ve Netlify, Vercel, Cloudflare Pages ile AWS Amplify için statik dağıtım yapılandırmaları.',
+      'En küçük sitelo projesi ve Netlify, Vercel, Cloudflare Pages, AWS Amplify ile Railway için statik dağıtım yapılandırmaları.',
     activeHref: '/tr/examples/basic',
     children: [
       p(
@@ -35,8 +35,10 @@ export default () =>
           code('vercel.json'),
           ', ',
           code('wrangler.toml'),
-          ' ve ',
+          ', ',
           code('amplify.yml'),
+          ' ve ',
+          code('Caddyfile'),
         ),
         li('Örnek klasöründen tek tıkla / depo bağlayarak dağıtım'),
       ),
@@ -98,6 +100,21 @@ export default () =>
         ' dizinini kovaya eşitleyin.',
       ),
       codeBlock('amplify.yml', s.amplifyYml, 'yaml'),
+      h3('Railway'),
+      p(
+        'Railpack’in derlemeyi statik site olarak sunması için ',
+        code('RAILPACK_SPA_OUTPUT_DIR=dist'),
+        ' servis değişkenini ekleyin; bilinmeyen URL’lerin ',
+        code('404.html'),
+        ' alması için de ',
+        code('Caddyfile'),
+        ' dosyasını koruyun. Railway yalnızca servisin kök dizinini çeker, bu yüzden örnekteki sitelo’ya giden ',
+        code('file:../..'),
+        ' bağlantısı orada çözülmez — ',
+        code('sitelo'),
+        ' paketini npm’den kuran bir kopya dağıtın.',
+      ),
+      codeBlock('Caddyfile', s.caddyfile, 'caddyfile'),
       p(
         'Cursor, Copilot ya da başka bir ajanla mı çalışıyorsunuz? Araçlar React/Next kalıpları uydurmasın diye bu örnekten ',
         code('AGENTS.md'),

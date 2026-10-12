@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Deployment',
     description:
-      'Eine sitelo-Website auf Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages oder jedem statischen Hoster ausliefern.',
+      'Eine sitelo-Website auf Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway oder jedem statischen Hoster ausliefern.',
     activeHref: '/de/docs/deployment',
     children: [
       p(
@@ -78,6 +78,24 @@ export default () =>
         ')? Dann baue mit ',
         code('--base /repo/'),
         '.',
+      ),
+      h2('Railway'),
+      p(
+        'Railway baut mit Railpack, das statische Websites mit Caddy ausliefert. sitelo gehört nicht zu den Frameworks, die Railpack erkennt — setze daher die Service-Variable ',
+        code('RAILPACK_SPA_OUTPUT_DIR=dist'),
+        '; Railpack führt dann ',
+        code('npm run build'),
+        ' aus und liefert ',
+        code('dist/'),
+        ' aus.',
+      ),
+      codeBlock('Caddyfile', s.railway, 'bash'),
+      p(
+        'Lege das ',
+        code('Caddyfile'),
+        ' im Projektstamm ab. Ohne es beantwortet Railpacks SPA-Standard jede unbekannte URL mit der Startseite; dieses liefert stattdessen ',
+        code('404.html'),
+        ' mit Status 404 aus.',
       ),
       h2('Vor dem Ausliefern'),
       ul(

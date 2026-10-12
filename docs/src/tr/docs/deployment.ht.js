@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Dağıtım',
     description:
-      'Bir sitelo sitesini Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages ya da herhangi bir statik sunucuya dağıtın.',
+      'Bir sitelo sitesini Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway ya da herhangi bir statik sunucuya dağıtın.',
     activeHref: '/tr/docs/deployment',
     children: [
       p(
@@ -78,6 +78,23 @@ export default () =>
         ')? ',
         code('--base /repo/'),
         ' ile derleyin.',
+      ),
+      h2('Railway'),
+      p(
+        'Railway, statik siteleri Caddy ile sunan Railpack ile derleme yapar. sitelo, Railpack’in tanıdığı framework’ler arasında değil; bu yüzden ',
+        code('RAILPACK_SPA_OUTPUT_DIR=dist'),
+        ' servis değişkenini ekleyin — Railpack ardından ',
+        code('npm run build'),
+        ' komutunu çalıştırır ve ',
+        code('dist/'),
+        ' dizinini sunar.',
+      ),
+      codeBlock('Caddyfile', s.railway, 'bash'),
+      p(
+        code('Caddyfile'),
+        ' dosyasını proje köküne ekleyin. Bu dosya olmadan Railpack’in tek sayfalı uygulama varsayılanı bilinmeyen her URL’ye ana sayfayla yanıt verir; bu dosya ise ',
+        code('404.html'),
+        ' sayfasını 404 durum koduyla sunar.',
       ),
       h2('Yayımlamadan önce'),
       ul(

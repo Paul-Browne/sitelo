@@ -3,52 +3,71 @@
  * leading identifying comment is translated — keys and values never are.
  */
 const T = {
-  en: { cloudflare: 'Cloudflare Pages', amplify: 'AWS Amplify Hosting', ghPages: 'GitHub Pages' },
-  es: { cloudflare: 'Cloudflare Pages', amplify: 'Alojamiento en AWS Amplify', ghPages: 'GitHub Pages' },
+  en: {
+    cloudflare: 'Cloudflare Pages',
+    amplify: 'AWS Amplify Hosting',
+    ghPages: 'GitHub Pages',
+    railway: 'Railway',
+  },
+  es: {
+    cloudflare: 'Cloudflare Pages',
+    amplify: 'Alojamiento en AWS Amplify',
+    ghPages: 'GitHub Pages',
+    railway: 'Railway',
+  },
   fr: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'Hébergement AWS Amplify',
     ghPages: 'GitHub Pages',
+    railway: 'Railway',
   },
   de: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'AWS Amplify Hosting',
     ghPages: 'GitHub Pages',
+    railway: 'Railway',
   },
   ru: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'Хостинг AWS Amplify',
     ghPages: 'GitHub Pages',
+    railway: 'Railway',
   },
   zh: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'AWS Amplify 托管',
     ghPages: 'GitHub Pages',
+    railway: 'Railway',
   },
   pt: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'Alojamento AWS Amplify',
     ghPages: 'GitHub Pages',
+    railway: 'Railway',
   },
   it: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'Hosting AWS Amplify',
     ghPages: 'GitHub Pages',
+    railway: 'Railway',
   },
   pl: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'Hosting AWS Amplify',
     ghPages: 'GitHub Pages',
+    railway: 'Railway',
   },
   tr: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'AWS Amplify Hosting',
     ghPages: 'GitHub Pages',
+    railway: 'Railway',
   },
   id: {
     cloudflare: 'Cloudflare Pages',
     amplify: 'Hosting AWS Amplify',
     ghPages: 'GitHub Pages',
+    railway: 'Railway',
   },
 
 }
@@ -116,5 +135,17 @@ jobs:
         with:
           path: dist
       - uses: actions/deploy-pages@v4`,
+
+    railway: `# ${t.railway}
+:{$PORT:80} {
+  root * /app/dist
+  encode zstd gzip
+  try_files {path} {path}/index.html
+  file_server
+  handle_errors {
+    rewrite * /{err.status_code}.html
+    file_server
+  }
+}`,
   }
 }

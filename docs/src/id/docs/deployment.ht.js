@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Penerapan',
     description:
-      'Terapkan situs sitelo ke Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, atau hosting statis mana pun.',
+      'Terapkan situs sitelo ke Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway, atau hosting statis mana pun.',
     activeHref: '/id/docs/deployment',
     children: [
       p(
@@ -78,6 +78,24 @@ export default () =>
         ')? Build dengan ',
         code('--base /repo/'),
         '.',
+      ),
+      h2('Railway'),
+      p(
+        'Railway membangun dengan Railpack, yang menyajikan situs statis lewat Caddy. sitelo tidak termasuk framework yang dideteksi Railpack, jadi tambahkan variabel layanan ',
+        code('RAILPACK_SPA_OUTPUT_DIR=dist'),
+        ' — Railpack lalu menjalankan ',
+        code('npm run build'),
+        ' dan menyajikan ',
+        code('dist/'),
+        '.',
+      ),
+      codeBlock('Caddyfile', s.railway, 'bash'),
+      p(
+        'Tambahkan ',
+        code('Caddyfile'),
+        ' di root proyek. Tanpa file ini, bawaan SPA Railpack menjawab setiap URL yang tidak dikenal dengan halaman beranda; file ini menyajikan ',
+        code('404.html'),
+        ' dengan status 404.',
       ),
       h2('Sebelum menerbitkan'),
       ul(

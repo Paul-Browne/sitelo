@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: '部署',
     description:
-      '把 sitelo 站点部署到 Netlify、Vercel、Cloudflare Pages、AWS Amplify、GitHub Pages 或任意静态托管。',
+      '把 sitelo 站点部署到 Netlify、Vercel、Cloudflare Pages、AWS Amplify、GitHub Pages、Railway 或任意静态托管。',
     activeHref: '/zh/docs/deployment',
     children: [
       p(
@@ -77,6 +77,24 @@ export default () =>
         code('user.github.io/repo'),
         '）？构建时加上 ',
         code('--base /repo/'),
+        '。',
+      ),
+      h2('Railway'),
+      p(
+        'Railway 使用 Railpack 构建，Railpack 用 Caddy 托管静态站点。sitelo 不在 Railpack 能自动识别的框架之列，所以要添加服务变量 ',
+        code('RAILPACK_SPA_OUTPUT_DIR=dist'),
+        '——随后 Railpack 会运行 ',
+        code('npm run build'),
+        ' 并托管 ',
+        code('dist/'),
+        '。',
+      ),
+      codeBlock('Caddyfile', s.railway, 'bash'),
+      p(
+        '把 ',
+        code('Caddyfile'),
+        ' 放在项目根目录。没有它时，Railpack 的单页应用默认配置会用首页响应所有未知 URL；这个文件则以 404 状态码返回 ',
+        code('404.html'),
         '。',
       ),
       h2('发布之前'),

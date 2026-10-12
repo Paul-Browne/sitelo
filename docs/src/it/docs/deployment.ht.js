@@ -8,7 +8,7 @@ export default () =>
   docsLayout({
     title: 'Deploy',
     description:
-      'Pubblica un sito sitelo su Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages o qualunque host statico.',
+      'Pubblica un sito sitelo su Netlify, Vercel, Cloudflare Pages, AWS Amplify, GitHub Pages, Railway o qualunque host statico.',
     activeHref: '/it/docs/deployment',
     children: [
       p(
@@ -78,6 +78,24 @@ export default () =>
         ')? Fai la build con ',
         code('--base /repo/'),
         '.',
+      ),
+      h2('Railway'),
+      p(
+        'Railway compila con Railpack, che serve i siti statici con Caddy. sitelo non è tra i framework che Railpack rileva, quindi aggiungi la variabile di servizio ',
+        code('RAILPACK_SPA_OUTPUT_DIR=dist'),
+        ' — Railpack esegue poi ',
+        code('npm run build'),
+        ' e serve ',
+        code('dist/'),
+        '.',
+      ),
+      codeBlock('Caddyfile', s.railway, 'bash'),
+      p(
+        'Aggiungi il ',
+        code('Caddyfile'),
+        ' nella radice del progetto. Senza, la configurazione predefinita di Railpack per le SPA risponde a ogni URL sconosciuto con la home page; questo serve ',
+        code('404.html'),
+        ' con stato 404.',
       ),
       h2('Prima di pubblicare'),
       ul(

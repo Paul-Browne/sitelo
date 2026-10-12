@@ -8,7 +8,7 @@ export default () =>
   examplesLayout({
     title: 'Situs dasar',
     description:
-      'Proyek sitelo minimal dan konfigurasi penerapan statis untuk Netlify, Vercel, Cloudflare Pages, dan AWS Amplify.',
+      'Proyek sitelo minimal dan konfigurasi penerapan statis untuk Netlify, Vercel, Cloudflare Pages, AWS Amplify, dan Railway.',
     activeHref: '/id/examples/basic',
     children: [
       p(
@@ -35,8 +35,10 @@ export default () =>
           code('vercel.json'),
           ', ',
           code('wrangler.toml'),
-          ', dan ',
+          ', ',
           code('amplify.yml'),
+          ', dan ',
+          code('Caddyfile'),
         ),
         li('Penerapan sekali klik / sambung-repo dari folder contohnya'),
       ),
@@ -98,6 +100,21 @@ export default () =>
         ' ke bucket.',
       ),
       codeBlock('amplify.yml', s.amplifyYml, 'yaml'),
+      h3('Railway'),
+      p(
+        'Tambahkan variabel layanan ',
+        code('RAILPACK_SPA_OUTPUT_DIR=dist'),
+        ' agar Railpack menyajikan hasil build sebagai situs statis, dan pertahankan ',
+        code('Caddyfile'),
+        ' agar URL yang tidak dikenal mendapat ',
+        code('404.html'),
+        '. Railway hanya menarik direktori root layanan, jadi tautan ',
+        code('file:../..'),
+        ' contoh ini ke sitelo tidak akan terselesaikan di sana — terapkan salinan yang memasang ',
+        code('sitelo'),
+        ' dari npm.',
+      ),
+      codeBlock('Caddyfile', s.caddyfile, 'caddyfile'),
       p(
         'Bekerja dengan Cursor, Copilot, atau agen lain? Salin ',
         code('AGENTS.md'),
