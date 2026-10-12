@@ -40,7 +40,7 @@ import {
   visuallyHidden,
 } from 'sitelo/ui'
 
-import { uiDemoDefaults, uiTheme } from './ui-theme.js'
+import { siteIcon, uiDemoDefaults } from './ui-theme.js'
 
 import {
   DEFAULT_LOCALE,
@@ -64,10 +64,13 @@ const siteloVersion = require('../../../package.json').version
 
 const viteBolt = `<svg class="badge-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 11-13h-8z"/></svg>`
 
-/** Background behind the browser chrome, mirroring `--paper` in each theme. */
+/**
+ * Background behind the browser chrome, mirroring `--paper` — the blueprint
+ * preset's `--su-bg` — in each theme.
+ */
 const THEME_COLORS = {
-  dark: '#071410',
-  light: '#eef3f0',
+  dark: '#0a0a0a',
+  light: '#ffffff',
 }
 
 /**
@@ -75,9 +78,9 @@ const THEME_COLORS = {
  * never sees a dark flash on the way in.
  *
  * Inline and blocking on purpose — anything deferred paints first. It always
- * resolves to a concrete `light` or `dark`, which is why the stylesheet needs
- * only one `[data-theme]` block rather than a matching media query. With
- * JavaScript off nothing runs, no attribute is set, and the site stays dark.
+ * resolves to a concrete `light` or `dark`. With JavaScript off nothing runs,
+ * no attribute is set, and the preset's own `prefers-color-scheme` blocks
+ * pick the theme instead.
  */
 const themeBootScript = `(function(){var s;try{s=localStorage.getItem('sitelo-theme')}catch(e){}var t=s==='light'||s==='dark'?s:window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.dataset.theme=t;var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='light'?'${THEME_COLORS.light}':'${THEME_COLORS.dark}')})()`
 
@@ -99,9 +102,9 @@ const CONSENT_KEY = 'sitelo-analytics-consent'
  */
 const analyticsBootScript = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}window.siteloLoadAnalytics=function(){if(window.siteloAnalyticsLoaded)return;window.siteloAnalyticsLoaded=true;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}';document.head.appendChild(s);gtag('js',new Date());gtag('config','${GA_MEASUREMENT_ID}')};try{if(localStorage.getItem('${CONSENT_KEY}')==='granted')window.siteloLoadAnalytics()}catch(e){}`
 
-const sunIcon = `<svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.2v2.2M12 19.6v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.2 12h2.2M19.6 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg>`
+const sunIcon = siteIcon('sun', { class: 'theme-icon theme-icon-sun' })
 
-const moonIcon = `<svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 13.1A8.6 8.6 0 1 1 10.9 3.2a6.9 6.9 0 0 0 9.9 9.9z"/></svg>`
+const moonIcon = siteIcon('moon', { class: 'theme-icon theme-icon-moon' })
 
 /**
  * Theme toggle: an icon-only button in the desktop bar, an icon and a label
@@ -632,15 +635,16 @@ function pageShell({
         fetchpriority: 'high',
       }),
       /*
-       * Body and heading type, which every page sets before anything else is
-       * painted. Without these the browser cannot ask for a font until
-       * styles.css has parsed; naming them here runs both alongside it. One
-       * file per family covers every weight the site uses, so there is no
-       * chance of pulling a face the page never sets — and `crossorigin` is
-       * required even same-origin, since fonts are fetched in CORS mode and
-       * a hint without it is simply fetched twice.
+       * The grotesk and the mono, which every page sets before anything else
+       * is painted — the mono for every label in the bar. Without these the
+       * browser cannot ask for a font until styles.css has parsed; naming
+       * them here runs both alongside it. One file per family covers every
+       * weight the site uses, so there is no chance of pulling a face the
+       * page never sets — and `crossorigin` is required even same-origin,
+       * since fonts are fetched in CORS mode and a hint without it is simply
+       * fetched twice.
        */
-      ...['source-sans-3-400-600-latin', 'sora-500-700-latin', 'ibm-plex-mono-400-latin'].map((f) =>
+      ...['geist-400-600-latin', 'geist-mono-400-500-latin'].map((f) =>
         link({
           rel: 'preload',
           as: 'font',
@@ -654,30 +658,22 @@ function pageShell({
        * sitelo-ui, on every page rather than only the ones documenting it.
        * The chrome around the article — the bar, the footer, the sidebar
        * disclosure, the tables, the cookie notice — is built from the
-       * library now, so the sheet is no longer optional here.
+       * library, so the sheet is not optional here.
        *
-       * The order of these three is load-bearing. `ui.css` first, because
-       * everything after it is an override of something it declares.
-       * `uiTheme()` next, restating sitelo-ui's tokens in terms of this
-       * site's palette. The docs sheet last: it declares `color-scheme` on
-       * `:root` and its dark default is the one that has to survive.
-       * `text-size-adjust` is declared on `:root` by both sheets at the
-       * same `100%`, so their order does not matter.
+       * The order is load-bearing. `ui.css` first, because everything after
+       * it is an override of something it declares. The docs sheet last: it
+       * carries the blueprint preset — see `plugins/site-preset.js` — which
+       * has to come after the core to win, and the docs' own rules after
+       * that. A page's extras go between; the demo defaults among them only
+       * apply inside the demos, where the preset's rules do not reach.
        */
       uiStyles(),
-      uiTheme(),
       ...extraHead,
       link({ rel: 'stylesheet', href: '/styles.css' }),
       script(analyticsBootScript),
     ),
     body(
       { class: bodyClass },
-      div(
-        { id: 'atmosphere', class: 'atmosphere', 'aria-hidden': 'true' },
-        // Six drifting washes, coloured and animated entirely from the
-        // stylesheet — see `.atmosphere` in styles.css.
-        ...Array.from({ length: 6 }, () => span({ class: 'atmosphere-blob' })),
-      ),
       ...content,
       cookieBanner(lang),
       script({ type: 'module', src: '/main.js' }),

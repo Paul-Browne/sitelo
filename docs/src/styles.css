@@ -1,25 +1,30 @@
 @import './fonts.css';
+@import './site-preset.css';
 
 /*
- * Two palettes, one set of tokens.
+ * The docs, drawn in sitelo-ui's blueprint preset.
  *
- * Dark is the site's own look and the fallback when JavaScript never runs, so
- * it lives on bare `:root`. An inline script in <head> resolves the active
- * theme before first paint — a stored choice if there is one, otherwise the
- * OS preference — and stamps `data-theme` on <html>. Because the script always
- * resolves to a concrete value, light needs only the one attribute block; no
- * rule is duplicated across a `prefers-color-scheme` media query.
+ * `site-preset.css` is the preset as `plugins/site-preset.js` writes it:
+ * its tokens on `:root`, and its component rules inside an `@scope` that
+ * stops at the component demos. So the bar, the sidebar's disclosure, the
+ * tables, the footer and the cookie notice — all of them the library's own
+ * components — arrive drawn already, and this sheet draws the rest in the
+ * same hand: the page frame, the hero, the code blocks.
+ *
+ * It keeps a short vocabulary of its own, every word of it a preset token
+ * by another name. They resolve on `:root`, where the boot script stamps
+ * `data-theme`, so one block covers both themes; with JavaScript off the
+ * preset's `prefers-color-scheme` blocks decide instead.
  */
 :root {
-  color-scheme: dark;
   /*
    * iOS Safari runs its own text autosizing even on a page that declares
    * `width=device-width`, inflating any block it judges too wide for the
    * screen. It decides block by block, so the props tables came out mixed on
-   * a phone: the narrow `Prop` cells stayed at 0.92rem while a wide `nowrap`
+   * a phone: the narrow `Prop` cells stayed small while a wide `nowrap`
    * cell — Typography's `'h1'…'h6' | 'lead' | …` — was boosted past the
-   * heading beside it, while the shorter tables on Card were left alone. No
-   * desktop engine does this, so it only ever showed up on a real handset.
+   * heading beside it. No desktop engine does this, so it only ever showed
+   * up on a real handset.
    *
    * `100%` stops the automatic inflation and still lets the reader
    * pinch-zoom; `none` would take that away. sitelo-ui declares the same
@@ -28,90 +33,64 @@
    */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  --ink: #e8f2ee;
-  --ink-soft: #9bb5aa;
-  --ink-faint: #6d857c;
-  --paper: #071410;
-  --paper-elevated: #0c1f19;
-  --accent: #3dff9a;
-  --accent-deep: #1a9a5c;
-  --accent-ink: #04150e;
-  --code-bg: #050d0a;
-  --code-fg: #c5ddd2;
-  /* Lifts the install pill off the flat code background. */
-  --install-tint: #123;
-  /* logo.svg is drawn in dark ink; flip it to sit on a dark page. */
-  --logo-invert: 1;
-  --line: color-mix(in srgb, var(--ink) 12%, transparent);
-  --shadow-panel: 0 12px 32px rgba(0, 0, 0, 0.35);
-  /* Hot core and cool sweep of the spinning conic glow on cards and code. */
-  --glow-tint: white;
-  --glow-cool: #8fd4ff;
-  /* Prism tokens */
-  --tok-comment: #6d857c;
-  --tok-punctuation: #9bb5aa;
-  --tok-property: #7ee0b0;
-  --tok-string: #b8f5d4;
-  --tok-operator: #9ed4ff;
-  --tok-keyword: #3dff9a;
-  --tok-function: #8fd4ff;
-  --tok-regex: #f0c674;
-  --font-display: 'Sora', system-ui, sans-serif;
-  --font-body: 'Source Sans 3', 'Segoe UI', sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --ink: var(--su-text);
+  --ink-soft: var(--su-text-muted);
+  --ink-faint: var(--su-text-subtle);
+  --paper: var(--su-bg);
+  --line: var(--su-border);
+  --line-strong: var(--su-border-strong);
+  /* The blueprint blue: focus, and the square that keys a heading. */
+  --accent: var(--su-bp-accent);
+  --mark: var(--su-bp-mark);
+  --code-bg: var(--su-surface-2);
+  --code-fg: var(--su-text);
+  --font-body: var(--su-font-sans);
+  --font-mono: var(--su-font-mono);
+  --tracking: var(--su-bp-tracking);
+  /* logo.svg is drawn in dark ink; flipped below to sit on a dark sheet. */
+  --logo-invert: 0;
+
+  /*
+   * The page is one column, ruled down both sides from the top of the bar
+   * to the footer — the rails — and every horizontal line inside it runs
+   * from rail to rail. The docs want a wider column for their sidebar.
+   */
+  --column: min(72rem, 100% - 2.5rem);
+  --gutter: clamp(1.25rem, 4vw, 2.5rem);
   --measure: 40rem;
-  --page: min(68rem, calc(100% - 2.5rem));
-  /* Drifting background washes; see `.atmosphere`. */
-  --blob-1: #1a9a5c;
-  --blob-2: #0a1c16;
-  --blob-3: #04100c;
-  --blob-4: #0a3d55;
-  --blob-5: #145c45;
-  --blob-6: #020805;
-  --atmosphere-opacity: 0.9;
-  /* Grain reads far stronger over paper than over near-black. */
-  --grain-opacity: 0.28;
+
+  /* How far a registration mark's arm stands out from the line it is on. */
+  --arm: calc((var(--su-bp-mark-size) - var(--su-border-width)) / 2);
+
+  /*
+   * Syntax colours from the preset's own few: the blue for keywords, the
+   * success green for strings, the warning amber for patterns, and greys.
+   * `light-dark()` follows `color-scheme`, which the core flips in the same
+   * blocks as the tokens. Every pair clears 4.5:1 on `--code-bg`.
+   */
+  --tok-comment: light-dark(#6b6b6b, #8f8f8f);
+  --tok-punctuation: light-dark(#525252, #a1a1a1);
+  --tok-property: light-dark(#171717, #ededed);
+  --tok-string: light-dark(#0a7a52, #7ee2b8);
+  --tok-operator: light-dark(#525252, #a1a1a1);
+  --tok-keyword: light-dark(#0b5cd5, #4c9aff);
+  --tok-function: light-dark(#1d3f8f, #a5c8ff);
+  --tok-regex: light-dark(#9a5800, #ffcb6b);
 }
 
-:root[data-theme='light'] {
-  color-scheme: light;
-  --ink: #0c1f18;
-  --ink-soft: #3f5f53;
-  /* Deep enough for the small uppercase labels to clear 4.5:1 on paper. */
-  --ink-faint: #566e63;
-  /* Tinted, so the white raised surfaces above actually read as raised. */
-  --paper: #eef3f0;
-  --paper-elevated: #ffffff;
-  /* Neon green is unreadable on paper; the light accent is the same hue, deepened. */
-  --accent: #0a7a45;
-  --accent-deep: #04562f;
-  --accent-ink: #ffffff;
-  --code-bg: #eaf2ed;
-  --code-fg: #14261e;
-  /* On paper the navy tint reads as flat grey; tint with the accent instead. */
-  --install-tint: #0a7a45;
-  --logo-invert: 0;
-  --line: color-mix(in srgb, var(--ink) 14%, transparent);
-  --shadow-panel: 0 12px 32px rgba(7, 30, 22, 0.14);
-  /* Mixing towards white washes the glow out on paper — deepen it instead. */
-  --glow-tint: #063a22;
-  --glow-cool: #2f7fc7;
-  --tok-comment: #56705f;
-  --tok-punctuation: #47605a;
-  --tok-property: #0f6b45;
-  --tok-string: #0b5f6b;
-  --tok-operator: #1f5fa8;
-  --tok-keyword: #056f3c;
-  --tok-function: #1a5fb4;
-  --tok-regex: #8a5a06;
-  --blob-1: #b6e6cd;
-  --blob-2: #e4f2eb;
-  --blob-3: #eef3f0;
-  --blob-4: #cde3f1;
-  --blob-5: #d6efe1;
-  --blob-6: #ffffff;
-  --atmosphere-opacity: 0.85;
-  --grain-opacity: 0.14;
+.page-docs {
+  --column: min(80rem, 100% - 2.5rem);
+}
+
+:root[data-theme='dark'] {
+  --logo-invert: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --logo-invert: 1;
+  }
 }
 
 *,
@@ -120,195 +99,225 @@
   box-sizing: border-box;
 }
 
+/*
+ * The ground is the preset's: its page colour with a faint grid ruled
+ * across it, on the canvas. The column is a sheet of plain paper laid on
+ * top, so the grid shows in the margins either side of it and behind the
+ * hero, and never under a line of text.
+ */
 html {
   color: var(--ink);
-  background: var(--paper);
+  background: var(--su-bp-backdrop);
   font-family: var(--font-body);
-  font-size: 1.0625rem;
-  line-height: 1.55;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  position: relative;
 }
 
-/*
- * The page backdrop: six soft washes drifting behind everything, plus a
- * grain tile over the top.
- *
- * Each wash is a static radial gradient that only ever moves, so the
- * compositor can paint it once and slide the layer around. The softness is
- * the gradient's own falloff rather than a `filter: blur()`, which is the
- * whole point: a blur has to be re-rasterised whenever what is under it
- * changes, and the previous version rewrote a blurred rule from
- * `requestAnimationFrame` sixty times a second. That cost ~600ms of main
- * thread on a two-core machine and meant the page never went idle.
- */
-.atmosphere {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  overflow: hidden;
-  background: var(--paper);
-}
-
-.atmosphere-blob {
-  position: absolute;
-  width: 78vmax;
-  height: 78vmax;
-  /* Half the size, so `top`/`left` place the middle of the wash and the
-   * animation keeps `transform` to itself. */
-  margin: -39vmax 0 0 -39vmax;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle closest-side,
-    var(--blob) 0%,
-    transparent 100%
-  );
-  opacity: var(--atmosphere-opacity);
-  animation: var(--blob-drift) var(--blob-duration) ease-in-out infinite
-    alternate;
-}
-
-/* Primes, so the six never settle into a visible common rhythm. */
-.atmosphere-blob:nth-child(1) {
-  --blob: var(--blob-1);
-  --blob-drift: atmosphere-drift-a;
-  --blob-duration: 41s;
-  top: 78%;
-  left: 76%;
-}
-
-.atmosphere-blob:nth-child(2) {
-  --blob: var(--blob-2);
-  --blob-drift: atmosphere-drift-b;
-  --blob-duration: 53s;
-  top: 12%;
-  left: 44%;
-}
-
-.atmosphere-blob:nth-child(3) {
-  --blob: var(--blob-3);
-  --blob-drift: atmosphere-drift-c;
-  --blob-duration: 61s;
-  top: 22%;
-  left: 88%;
-}
-
-.atmosphere-blob:nth-child(4) {
-  --blob: var(--blob-4);
-  --blob-drift: atmosphere-drift-b;
-  --blob-duration: 67s;
-  top: 8%;
-  left: 6%;
-}
-
-.atmosphere-blob:nth-child(5) {
-  --blob: var(--blob-5);
-  --blob-drift: atmosphere-drift-a;
-  --blob-duration: 73s;
-  top: 84%;
-  left: 14%;
-}
-
-.atmosphere-blob:nth-child(6) {
-  --blob: var(--blob-6);
-  --blob-drift: atmosphere-drift-c;
-  --blob-duration: 83s;
-  top: 52%;
-  left: 50%;
-}
-
-/* Translation only: a scale would ask the compositor to re-raster. */
-@keyframes atmosphere-drift-a {
-  from {
-    transform: translate3d(-9%, -7%, 0);
-  }
-  to {
-    transform: translate3d(10%, 8%, 0);
-  }
-}
-
-@keyframes atmosphere-drift-b {
-  from {
-    transform: translate3d(8%, -10%, 0);
-  }
-  to {
-    transform: translate3d(-7%, 9%, 0);
-  }
-}
-
-@keyframes atmosphere-drift-c {
-  from {
-    transform: translate3d(-6%, 9%, 0);
-  }
-  to {
-    transform: translate3d(9%, -8%, 0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .atmosphere-blob {
-    animation: none;
-  }
-}
-
-/* Static tile, painted once. */
-.atmosphere::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: var(--grain-opacity);
-  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.6666666666666667' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 1 0' /%3E%3C/filter%3E%3Crect opacity='1' width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E") repeat;
+::selection {
+  background: color-mix(in srgb, var(--accent) 32%, transparent);
 }
 
 a {
-  color: var(--accent);
-  text-underline-offset: 0.15em;
+  color: var(--ink);
+  text-decoration-color: var(--ink-faint);
+  text-underline-offset: 0.25em;
 }
 
 a:hover {
   color: var(--ink);
+  text-decoration-color: currentColor;
 }
 
 code {
   font-family: var(--font-mono);
-  font-size: 0.9em;
+  font-size: 0.875em;
 }
 
 /*
- * The bar is `appBar()` from sitelo-ui, which supplies the flex row, the
- * brand slot and the wrap behaviour. It also paints a surface and draws
- * a rule under itself, because the component is built to *be* the bar —
- * and here it sits inside `.topbar`, which already carries the blur, the
- * translucent ground and the border. So the component keeps the layout
- * and hands the background back.
- *
- * That it cannot be the outer bar is the one thing `appBar()` is missing
- * for a site like this: its children are its flex items, so there is
- * nowhere to put the `max-width` wrapper that centres this bar's contents
- * on a wide screen.
+ * Focus is the blue everywhere, as the preset draws it on its own
+ * controls. `:where()` keeps this at no weight at all, so a component's
+ * own ring — the library's buttons, the search field — is the one drawn.
  */
+:where(a, button, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ *
+ * Registration marks
+ *
+ * A small cross where two lines of the page meet, as the preset marks
+ * the corners of a card: on the rails where the bar's rule and the
+ * footer's cross them, at the ends of every line drawn between them,
+ * and on the corners of a frame — a table of contents, a demo, the
+ * install command.
+ *
+ * Each is a box laid over the frame and standing out from it by an arm,
+ * with eight one-pixel gradients for the four crosses. The frame's lines
+ * are taken to lie just outside its padding box — its own border, or a
+ * neighbour's — which is where a cross has to centre; `--mark-inset`
+ * says otherwise for a frame whose lines are inside it. A corner with
+ * nothing to mark is switched off by making its colour transparent:
+ * `--mark-tl`, `--mark-tr`, `--mark-br`, `--mark-bl`, set on the
+ * pseudo-element itself so a frame inside another never inherits them.
+ * ------------------------------------------------------------------ */
+
+.topbar-inner::before,
+.page-landing main::before,
+.docs-shell::before,
+.content-main::before,
+.section::before,
+.feature-list::before,
+.feature-card::before,
+.install-frame::before,
+.docs-toc::before,
+.docs-pagenav-link::before,
+.ui-demo::before,
+.ui-sandbox::before,
+.ui-preset-stage::before,
+.ui-gallery::before,
+.ui-gallery-card::before,
+.cookie-banner::before {
+  content: '';
+  position: absolute;
+  inset: var(--mark-inset, calc(-1 * (var(--su-border-width) + var(--arm))));
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--mark-tl, var(--mark)) 0 0) left var(--arm) top 0 / var(--su-border-width)
+      var(--su-bp-mark-size),
+    linear-gradient(var(--mark-tl, var(--mark)) 0 0) left 0 top var(--arm) / var(--su-bp-mark-size)
+      var(--su-border-width),
+    linear-gradient(var(--mark-tr, var(--mark)) 0 0) right var(--arm) top 0 / var(--su-border-width)
+      var(--su-bp-mark-size),
+    linear-gradient(var(--mark-tr, var(--mark)) 0 0) right 0 top var(--arm) / var(--su-bp-mark-size)
+      var(--su-border-width),
+    linear-gradient(var(--mark-br, var(--mark)) 0 0) right var(--arm) bottom 0 / var(--su-border-width)
+      var(--su-bp-mark-size),
+    linear-gradient(var(--mark-br, var(--mark)) 0 0) right 0 bottom var(--arm) / var(--su-bp-mark-size)
+      var(--su-border-width),
+    linear-gradient(var(--mark-bl, var(--mark)) 0 0) left var(--arm) bottom 0 / var(--su-border-width)
+      var(--su-bp-mark-size),
+    linear-gradient(var(--mark-bl, var(--mark)) 0 0) left 0 bottom var(--arm) / var(--su-bp-mark-size)
+      var(--su-border-width);
+  background-repeat: no-repeat;
+}
+
+/* A frame that can be followed shows its marks, in the blue, when it is
+   pointed at — as the preset marks a card that can be clicked. */
+.feature-card::before,
+.ui-gallery-card::before,
+.docs-pagenav-link::before {
+  --mark: var(--accent);
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+
+.feature-card:hover::before,
+.feature-card:focus-visible::before,
+.ui-gallery-card:hover::before,
+.ui-gallery-card:focus-within::before,
+.docs-pagenav-link:hover::before,
+.docs-pagenav-link:focus-visible::before {
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------------ *
+ * Page frame
+ * ------------------------------------------------------------------ */
+
+.topbar-inner,
+.page-landing main,
+.docs-shell,
+.content-main {
+  position: relative;
+  width: var(--column);
+  margin-inline: auto;
+  border-inline: var(--su-border-width) solid var(--line);
+}
+
+/*
+ * The bar's rule runs the width of the window and crosses the rails at
+ * the foot of the bar, which is where those two marks are — on the bar,
+ * so they stay where the lines meet while the page scrolls under it.
+ */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: var(--su-border-width) solid var(--line);
+  background: color-mix(in srgb, var(--paper) 84%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.topbar-inner {
+  padding: 0.7rem var(--gutter);
+}
+
+.topbar-inner::before {
+  --mark-tl: transparent;
+  --mark-tr: transparent;
+}
+
+/* And the column's own two, where the footer's rule ends the rails. */
+.page-landing main::before,
+.docs-shell::before,
+.content-main::before {
+  --mark-tl: transparent;
+  --mark-tr: transparent;
+}
+
+.docs-shell,
+.content-main {
+  background: var(--paper);
+}
+
+/* ------------------------------------------------------------------ *
+ * Bar
+ *
+ * `appBar()` from sitelo-ui supplies the flex row, the brand slot and
+ * the wrap behaviour, and the preset sets its links as captions with the
+ * page you are on printed in reverse. The component paints a surface and
+ * draws a rule under itself, because it is built to *be* the bar — and
+ * here it sits inside `.topbar`, which already carries both. So it keeps
+ * the layout and hands the background back.
+ * ------------------------------------------------------------------ */
+
 .nav {
-  gap: 1.35rem;
+  gap: 1rem;
   width: 100%;
-  padding: 0;
   min-height: 0;
-  background: transparent;
+  padding: 0;
   border-bottom: 0;
-  font-size: 0.95rem;
+  background: transparent;
   position: relative;
 }
 
 /*
- * Tighter than the 1.35rem this used to be, because `navLink()` brings
- * its own 0.7rem of side padding — the gap between two labels is the sum
- * of the two, and at the old value the bar ran off a laptop screen.
+ * The brand is `appBar()`'s own slot, which already centres its contents
+ * and strips the underline. All it is missing is a zeroed line-height —
+ * without it the anchor reserves descender space around a logo that has
+ * none, and the bar sits a couple of pixels taller than the wordmark.
+ */
+.nav .su-appbar-brand {
+  line-height: 0;
+}
+
+.nav-logo {
+  display: block;
+  height: 1.25rem;
+  width: auto;
+  filter: invert(var(--logo-invert));
+}
+
+/*
+ * `navLink()` brings its own side padding, so the gap between two labels
+ * is the sum of the two; this is what keeps the bar on a laptop screen.
  */
 .nav-links {
   display: flex;
@@ -316,220 +325,138 @@ code {
   gap: 0.25rem;
 }
 
-.nav-menu {
-  display: none;
-  margin-left: auto;
-  position: relative;
-}
-
-.nav-menu-toggle {
-  list-style: none;
-  cursor: pointer;
-  color: var(--ink-soft);
-  font: inherit;
-  padding: 0.25rem 0;
-}
-
-.nav-menu-toggle::-webkit-details-marker {
-  display: none;
-}
-
-.nav-menu-toggle::after {
-  content: '';
-  display: inline-block;
-  width: 1.1rem;
-  height: 0.7rem;
-  margin-left: 0.35rem;
-  vertical-align: -0.05rem;
-  background: linear-gradient(
-    currentColor 0 2px,
-    transparent 2px 5px,
-    currentColor 5px 7px,
-    transparent 7px 10px,
-    currentColor 10px 12px
-  );
-  background-size: 100% 12px;
-}
-
-.nav-menu[open] .nav-menu-toggle {
-  color: var(--ink);
-}
-
-.nav-menu-panel {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 0.65rem);
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 10.5rem;
-  /*
-   * Five links plus seven languages outgrow a short phone screen, so cap the
-   * panel to the space below the topbar and let it scroll. `svh` rather than
-   * `dvh`: the smallest viewport height never overflows when mobile browser
-   * chrome is showing, and the panel cannot resize under a scrolling thumb.
-   */
-  max-height: calc(100svh - 4.5rem);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 0.45rem;
-  border: 1px solid var(--line);
-  border-radius: 0.75rem;
-  background: color-mix(in srgb, var(--paper-elevated) 94%, transparent);
-  box-shadow: var(--shadow-panel);
-  backdrop-filter: blur(12px);
-  z-index: 20;
-}
-
-.nav-menu-panel a {
-  padding: 0.55rem 0.7rem;
-  border-radius: 0.5rem;
-}
-
-/*
- * Thirteen rows — five links, the theme switch and seven languages — have to
- * fit a phone screen, so the mobile menu runs tighter than the desktop
- * dropdowns it shares its row styles with. Rows still land near 34px, well
- * clear of the 24px minimum touch target.
- */
-.nav-menu-panel {
-  line-height: 1.35;
-}
-
-.nav-menu-panel a,
-.nav-menu-panel .lang-option {
-  padding-top: 0.4rem;
-  padding-bottom: 0.4rem;
-}
-
-.nav-menu-panel a:hover,
-.nav-menu-panel a.is-active {
-  background: color-mix(in srgb, var(--ink) 8%, transparent);
-}
-
-.nav a {
-  color: var(--ink-soft);
-  text-decoration: none;
-}
-
-.nav a:hover,
-.nav a.is-active {
-  color: var(--ink);
-}
-
+/* Square controls at the end of the bar, the height of a caption. */
 .lang-switch {
   position: relative;
+  margin-left: 0.5rem;
 }
 
 .lang-switch-toggle,
-.lang-option {
+.theme-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  white-space: nowrap;
+  gap: 0.5rem;
+  height: 2rem;
+  border: var(--su-border-width) solid var(--line);
+  color: var(--ink-soft);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    color 140ms ease,
+    border-color 140ms ease;
+}
+
+.lang-switch-toggle:hover,
+.lang-switch[open] .lang-switch-toggle,
+.theme-toggle:hover {
+  border-color: var(--line-strong);
+  color: var(--ink);
 }
 
 .lang-switch-toggle {
   list-style: none;
-  cursor: pointer;
-  padding: 0.2rem 0.55rem;
-  border: 1px solid var(--line);
-  border-radius: 0.5rem;
-  color: var(--ink-soft);
-  font: inherit;
-  font-size: 0.85rem;
+  padding: 0 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .lang-switch-toggle::-webkit-details-marker {
   display: none;
 }
 
+/* The preset's open-and-shut mark: a plus, a minus once open. */
 .lang-switch-toggle::after {
-  content: '';
-  width: 0.4rem;
-  height: 0.4rem;
-  margin-left: 0.1rem;
-  border-right: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  transform: translateY(-2px) rotate(45deg);
-}
-
-.lang-switch[open] .lang-switch-toggle {
-  color: var(--ink);
+  content: '+';
+  content: '+' / '';
+  color: var(--ink-faint);
 }
 
 .lang-switch[open] .lang-switch-toggle::after {
-  transform: translateY(1px) rotate(-135deg);
+  content: '\2212';
+  content: '\2212' / '';
 }
 
-.lang-switch-panel {
+/* In the bar the toggle names the language alone, without its flag. */
+.lang-switch-toggle .lang-flag {
+  display: none;
+}
+
+/*
+ * The dropdowns float, and in this preset what floats is ruled in the
+ * strong line rather than shadowed.
+ */
+.lang-switch-panel,
+.nav-menu-panel {
   position: absolute;
   right: 0;
-  top: calc(100% + 0.5rem);
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
+  padding: 0.35rem;
+  border: var(--su-border-width) solid var(--line-strong);
+  background: var(--paper);
+}
+
+.lang-switch-panel {
+  top: calc(100% + 0.5rem);
   min-width: 11rem;
-  padding: 0.4rem;
-  border: 1px solid var(--line);
-  border-radius: 0.75rem;
-  background: color-mix(in srgb, var(--paper-elevated) 96%, transparent);
-  box-shadow: var(--shadow-panel);
-  backdrop-filter: blur(12px);
   z-index: 30;
 }
 
+.lang-switch-toggle,
 .lang-option {
+  white-space: nowrap;
+}
+
+.lang-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   padding: 0.45rem 0.6rem;
-  border-radius: 0.5rem;
-  font-size: 0.9rem;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  text-decoration: none;
 }
 
 .lang-switch-panel .lang-option:hover,
 .lang-list .lang-option:hover {
-  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+  color: var(--ink);
 }
 
-.lang-option.is-active {
-  color: var(--ink);
-  background: color-mix(in srgb, var(--ink) 10%, transparent);
+/* What is chosen is ink, printed in reverse. */
+.lang-option.is-active,
+.lang-option.is-active:hover {
+  background: var(--su-primary);
+  color: var(--su-primary-fg);
 }
 
 /* Emoji flags: keep them off the text font so they render as flags, not codes. */
 .lang-flag {
-  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji',
-    sans-serif;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
   font-size: 1em;
   line-height: 1;
 }
 
 /*
- * Theme toggle — icon-only in the desktop bar, icon + label in the mobile menu.
+ * Theme toggle — icon-only in the desktop bar, icon + label in the mobile
+ * menu.
  *
- * Which icon shows is driven purely by `data-theme` on <html>, so the button
- * is correct on first paint and never has to be corrected by script. The icon
- * shown is the theme you get by clicking, not the one you are in.
+ * Which icon shows is driven purely by `data-theme` on <html>, so the
+ * button is correct on first paint and never has to be corrected by
+ * script. The icon shown is the theme you get by clicking, not the one
+ * you are in.
  */
 .theme-toggle {
   appearance: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  cursor: pointer;
-  padding: 0.3rem 0.55rem;
-  border: 1px solid var(--line);
-  border-radius: 0.5rem;
+  justify-content: center;
+  width: 2rem;
+  padding: 0;
   background: none;
-  color: var(--ink-soft);
-  font: inherit;
-  font-size: 0.85rem;
-  white-space: nowrap;
-  transition: color 140ms ease, border-color 140ms ease;
-}
-
-.theme-toggle:hover {
-  color: var(--ink);
-  border-color: color-mix(in srgb, var(--ink) 28%, transparent);
 }
 
 .theme-icon {
@@ -556,28 +483,103 @@ code {
   display: block;
 }
 
-/* Inside the mobile menu the button is a row, matching the links above it. */
+/* The phone's menu: a caption and three rules. */
+.nav-menu {
+  display: none;
+  margin-left: auto;
+  position: relative;
+}
+
+.nav-menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  height: 2rem;
+  padding: 0 0.65rem;
+  border: var(--su-border-width) solid var(--line);
+  list-style: none;
+  cursor: pointer;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
+}
+
+.nav-menu-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.nav-menu-toggle::after {
+  content: '';
+  width: 0.875rem;
+  height: 9px;
+  background: linear-gradient(currentColor 0 0) 0 0 / 100% 1px no-repeat,
+    linear-gradient(currentColor 0 0) 0 4px / 100% 1px no-repeat,
+    linear-gradient(currentColor 0 0) 0 8px / 100% 1px no-repeat;
+}
+
+.nav-menu[open] .nav-menu-toggle {
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+.nav-menu-panel {
+  top: calc(100% + 0.6rem);
+  min-width: 14rem;
+  /*
+   * Six links, the theme switch and eleven languages outgrow a short phone
+   * screen, so cap the panel to the space below the topbar and let it
+   * scroll. `svh` rather than `dvh`: the smallest viewport height never
+   * overflows when mobile browser chrome is showing, and the panel cannot
+   * resize under a scrolling thumb.
+   */
+  max-height: calc(100svh - 4.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  line-height: 1.35;
+  z-index: 20;
+}
+
+/*
+ * The rows have to fit a phone screen, so the mobile menu runs tighter
+ * than the desktop dropdowns it shares its row styles with. Rows still
+ * land near 32px, well clear of the 24px minimum touch target.
+ */
+.nav-menu-panel .su-nav-link,
+.nav-menu-panel .lang-option {
+  padding-top: 0.45rem;
+  padding-bottom: 0.45rem;
+}
+
+.nav-menu-panel .su-nav-link:not([aria-current='page']):hover {
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+
+/* Inside the mobile menu the theme button is a row, between two rules. */
 .theme-toggle-row {
-  width: 100%;
   justify-content: flex-start;
+  width: 100%;
+  height: auto;
   /*
    * A band between two rules. Both dividers sit on this element, so the
    * label's distance from each is just this padding — symmetric by
-   * construction. Spacing them apart with margins on the neighbouring
-   * elements is what made them unequal, since the panel's flex gap and the
-   * language list's own margin only ever stacked below.
+   * construction.
    */
   margin: 0.35rem 0;
-  padding: 0.4rem 0.7rem;
-  border: none;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  border-radius: 0;
-  font-size: 0.9rem;
+  padding: 0.55rem 0.7rem;
+  border: 0;
+  border-block: var(--su-border-width) dashed var(--line-strong);
+  text-align: start;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
 }
 
 .theme-toggle-row:hover {
-  border-color: var(--line);
+  border-color: var(--line-strong);
 }
 
 /* Flat list inside the mobile menu — that panel is already a dropdown. */
@@ -587,58 +589,29 @@ code {
   gap: 0.1rem;
 }
 
-/*
- * The brand is `appBar()`'s own slot, which already centres its contents
- * and strips the underline. All it is missing is a zeroed line-height —
- * without it the anchor reserves descender space around a logo that has
- * none, and the bar sits a couple of pixels taller than the wordmark.
- */
-.nav .su-appbar-brand {
-  line-height: 0;
-}
-
-.nav-logo {
-  display: block;
-  height: 1.35rem;
-  width: auto;
-  filter: invert(var(--logo-invert));
-}
-
-.hero-logo {
-  display: block;
-  width: min(14rem, 72vw);
-  height: auto;
-  margin: 0 auto 1.5rem;
-  filter: invert(var(--logo-invert));
-  animation: rise 700ms ease both;
-}
-
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  backdrop-filter: blur(12px);
-  background: color-mix(in srgb, var(--paper) 72%, transparent);
-  border-bottom: 1px solid transparent;
-}
-
-.page-docs .topbar {
-  border-bottom-color: var(--line);
-}
-
-.topbar-inner {
-  width: var(--page);
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 0.85rem clamp(1.25rem, 4vw, 2.5rem);
-}
+/* ------------------------------------------------------------------ *
+ * Landing: hero
+ *
+ * Transparent, so the grid on the canvas shows through it between the
+ * rails, with paper breathed onto the middle where the words are.
+ * ------------------------------------------------------------------ */
 
 .hero {
-  min-height: calc(100vh - 4rem);
-  padding: 0 clamp(1.25rem, 4vw, 2.5rem) 5rem;
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-height: calc(100svh - 3.5rem);
+  padding: 0 var(--gutter) 4rem;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(42rem 22rem at 50% 46%, var(--paper) 30%, transparent 100%);
 }
 
 .hero-center {
@@ -647,27 +620,35 @@ code {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: 3rem 0 4rem;
-  max-width: 48rem;
+  max-width: 52rem;
   margin: 0 auto;
+  padding: 3rem 0 2rem;
+  text-align: center;
+}
+
+.hero-logo {
+  display: block;
+  width: min(10.5rem, 56vw);
+  height: auto;
+  margin: 0 auto 2.25rem;
+  filter: invert(var(--logo-invert));
+  animation: rise 700ms ease both;
 }
 
 .hero h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1rem;
-  max-width: 18em;
-  min-height: calc(1.18em * 2);
-  font-family: var(--font-display);
-  font-size: clamp(1.55rem, 3.6vw, 2.45rem);
-  font-weight: 600;
-  line-height: 1.18;
-  letter-spacing: -0.035em;
-  animation: rise 700ms 60ms ease both;
+  margin: 0 auto 1.25rem;
+  max-width: 15em;
+  min-height: calc(1.06em * 2);
+  font-size: clamp(2.1rem, 5.4vw, 3.9rem);
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.045em;
   text-align: center;
   text-wrap: balance;
+  animation: rise 700ms 60ms ease both;
 }
 
 .hero-headline-text {
@@ -683,10 +664,10 @@ code {
 .hero-typed.is-typing::after {
   content: '';
   display: inline-block;
-  width: 0.08em;
-  height: 0.95em;
-  margin-left: 0.08em;
-  vertical-align: -0.08em;
+  width: 0.06em;
+  height: 0.9em;
+  margin-left: 0.06em;
+  vertical-align: -0.06em;
   background: currentColor;
   animation: caret-blink 1s steps(1) infinite;
 }
@@ -704,26 +685,25 @@ code {
 
 .hero-lede {
   max-width: 34rem;
-  margin: 0 0 2rem;
+  margin: 0 0 2.5rem;
   color: var(--ink-soft);
-  font-size: 1.12rem;
+  font-size: 1.125rem;
   animation: rise 700ms 120ms ease both;
 }
 
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
-  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 0.85rem;
+  gap: 1rem;
   animation: rise 700ms 180ms ease both;
 }
 
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(0.7rem);
+    transform: translateY(0.6rem);
   }
   to {
     opacity: 1;
@@ -731,115 +711,182 @@ code {
   }
 }
 
+/*
+ * The button is the preset's solid one: ink, with the page's colour for
+ * its caption. Square, and the same height as the install command
+ * beside it.
+ */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 10rem;
-  padding: 0.85rem 1.4rem;
-  border: none;
-  border-radius: 999px;
-  background: var(--ink);
-  color: var(--accent-ink);
-  font: inherit;
-  font-weight: 700;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  padding: 0 1.35rem;
+  border: var(--su-border-width) solid var(--su-primary);
+  background: var(--su-primary);
+  color: var(--su-primary-fg);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
   text-decoration: none;
-  transition: transform 160ms ease, background 160ms ease, color 160ms ease;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
 }
 
 .btn:hover {
-  background: var(--accent);
-  color: var(--accent-ink);
-  transform: translateY(-2px);
+  border-color: var(--su-primary-hover);
+  background: var(--su-primary-hover);
+  color: var(--su-primary-fg);
 }
 
 .btn-arrow {
-  width: 1em;
-  height: 1em;
-  margin-left: 0.45em;
+  width: 1rem;
+  height: 1rem;
   flex-shrink: 0;
+  transition: transform 140ms ease;
 }
 
-/* glow shell around the install pill — shares the .code-glow hover gradients */
-.install-glow {
-  --glow-angle: 0deg;
-  display: inline-flex;
-  width: fit-content;
-  max-width: 100%;
+.btn:hover .btn-arrow {
+  transform: translateX(2px);
+}
+
+/* The section buttons are ruled rather than filled, and reverse when
+   pointed at. */
+.btn-inline {
+  margin-top: 0.5rem;
+  border-color: var(--line-strong);
+  background: transparent;
+  color: var(--ink);
+}
+
+.btn-inline:hover {
+  border-color: var(--su-primary);
+  background: var(--su-primary);
+  color: var(--su-primary-fg);
+}
+
+/* The install command: a ruled box with its copy button in a cell of its own. */
+.install-frame {
   position: relative;
-  padding: 1px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--ink) 14%, transparent);
-  transition: background 200ms ease;
+  display: inline-flex;
+  max-width: 100%;
+  border: var(--su-border-width) solid var(--line-strong);
+  background: var(--code-bg);
 }
 
 .install {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.65rem;
-  width: max-content;
+  display: flex;
+  align-items: stretch;
+  min-height: calc(2.75rem - 2 * var(--su-border-width));
   max-width: 100%;
-  padding: 0.55rem 0.55rem 0.55rem 1rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--code-bg) 88%, var(--install-tint));
   color: var(--code-fg);
   font-family: var(--font-mono);
-  font-size: 0.88rem;
+  font-size: 0.875rem;
 }
 
 .install-cmd {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding: 0 1rem;
+  overflow-x: auto;
   font: inherit;
+  white-space: nowrap;
 }
 
 .install-cmd::before {
-  content: '> ';
-  /*
-   * The keyword token, not the raw accent: both are neon on the dark pill,
-   * but on paper the accent only reaches 4.05:1 against the tinted pill,
-   * where the deepened keyword green clears 4.5:1.
-   */
-  color: var(--tok-keyword);
+  content: '$\00a0';
+  color: var(--ink-faint);
 }
 
 .install-copy {
   appearance: none;
-  border: none;
-  border-radius: 999px;
-  padding: 0.4rem 0.75rem;
-  background: color-mix(in srgb, var(--ink) 10%, transparent);
-  /*
-   * Full ink, not --ink-soft: the chip sits on the already-tinted pill, and
-   * soft ink over those two stacked tints came to 4.36:1 on paper.
-   */
-  color: var(--ink);
-  font: inherit;
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  font-weight: 600;
+  flex: none;
+  padding: 0 1rem;
+  border: 0;
+  border-left: var(--su-border-width) solid var(--line-strong);
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
   cursor: pointer;
-  transition: background 140ms ease, color 140ms ease;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
 }
 
 .install-copy:hover,
 .install-copy.is-copied {
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--su-primary);
+  color: var(--su-primary-fg);
+}
+
+/* ------------------------------------------------------------------ *
+ * Landing: sections
+ *
+ * Paper from here down. Each section opens with a rule from rail to
+ * rail, its heading keyed with a number and a square of the blue, and
+ * the last two stand side by side with a rule between them.
+ * ------------------------------------------------------------------ */
+
+.landing-sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  background: var(--paper);
+  counter-reset: section;
 }
 
 .section {
-  width: var(--page);
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 4.5rem 0 1rem;
-  border-top: 1px solid var(--line);
+  --section-pad: 4rem;
+  position: relative;
+  padding: var(--section-pad) var(--gutter);
+  border-top: var(--su-border-width) solid var(--line);
+  counter-increment: section;
+}
+
+.section::before {
+  --mark-bl: transparent;
+  --mark-br: transparent;
+}
+
+.section:has(.feature-list) {
+  grid-column: 1 / -1;
+}
+
+.section:not(:has(.feature-list)) + .section {
+  border-left: var(--su-border-width) solid var(--line);
 }
 
 .section h2 {
-  margin: 0 0 0.75rem;
-  font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3vw, 2.25rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  margin: 0 0 0.85rem;
+  font-size: clamp(1.75rem, 3vw, 2.4rem);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+
+/* The preset's overline, with the section's number for its words. */
+.section h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  width: fit-content;
+  margin-bottom: 1.25rem;
+  padding-left: calc(0.5rem + 0.75em);
+  background: linear-gradient(var(--accent) 0 0) 0 50% / 0.5rem 0.5rem no-repeat;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.12em;
 }
 
 .section > p {
@@ -848,141 +895,808 @@ code {
   color: var(--ink-soft);
 }
 
+.section > p:last-child {
+  margin-bottom: 0;
+}
+
+/*
+ * What you get: a schedule of cells sharing their lines, out to the
+ * rails and down to the next section's rule.
+ *
+ * Every cell is ruled all round and laps over its neighbours by a line,
+ * so two cells side by side share one hairline and a short last row is
+ * still a row of closed boxes. The list is pulled out past the gutter by
+ * that line on the left, so the first column's edge lands on the rail;
+ * the last column overhangs the list's right edge by it, onto the other
+ * rail; and the last row overhangs the bottom onto the next section's
+ * rule.
+ */
+.feature-list {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  margin: 2.75rem calc(-1 * var(--gutter)) calc(-1 * var(--section-pad))
+    calc(-1 * (var(--gutter) + var(--su-border-width)));
+  padding: 0;
+  list-style: none;
+}
+
+/* Where the first row's rule meets the rails. Its lines are the cells'
+   own, so they are inside the list on the top and the left. */
+.feature-list::before {
+  --mark-inset: calc(-1 * var(--arm)) calc(-1 * (var(--su-border-width) + var(--arm)))
+    calc(-1 * (var(--su-border-width) + var(--arm))) calc(-1 * var(--arm));
+  --mark-bl: transparent;
+  --mark-br: transparent;
+}
+
+.feature-list > li {
+  display: flex;
+  margin: 0 calc(-1 * var(--su-border-width)) calc(-1 * var(--su-border-width)) 0;
+  border: var(--su-border-width) solid var(--line);
+}
+
+.feature-card {
+  position: relative;
+  display: block;
+  flex: 1;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 140ms ease;
+}
+
+a.feature-card:hover {
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
+  color: var(--ink);
+}
+
+a.feature-card:focus-visible {
+  outline-offset: -2px;
+}
+
+/* An arrow in the corner of a cell that leads somewhere, once pointed at. */
+a.feature-card::after {
+  content: '\2192';
+  content: '\2192' / '';
+  position: absolute;
+  top: 1.35rem;
+  right: 1.35rem;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1;
+  opacity: 0;
+  transform: translateX(-3px);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+}
+
+a.feature-card:hover::after,
+a.feature-card:focus-visible::after {
+  opacity: 1;
+  transform: none;
+}
+
+.feature-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  height: 100%;
+  padding: 1.75rem 1.5rem 1.85rem;
+}
+
+.feature-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-bottom: 1rem;
+  border: var(--su-border-width) solid var(--line-strong);
+  color: var(--ink);
+  transition:
+    border-color 140ms ease,
+    color 140ms ease;
+}
+
+a.feature-card:hover .feature-chip {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.feature-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.feature-list h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.feature-list p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.section-note {
+  margin-bottom: 2rem;
+}
+
+/* ------------------------------------------------------------------ *
+ * Footer
+ *
+ * `footer()` from sitelo-ui: the rule above it, the muted colour and the
+ * smaller type. Its rule ends the rails, so it is exactly as wide as the
+ * column.
+ * ------------------------------------------------------------------ */
+
+.footer {
+  width: var(--column);
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 2rem var(--gutter) 3rem;
+  font-size: 0.875rem;
+}
+
+.footer p {
+  margin: 0;
+}
+
+.footer > p:first-child {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
+}
+
+.footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/*
+ * Version tags, two cells to a box: the name in grey, the value in ink,
+ * a hairline between. Monochrome, as the preset keeps colour for what it
+ * has to say.
+ */
+.badge {
+  display: inline-flex;
+  align-items: stretch;
+  border: var(--su-border-width) solid var(--line-strong);
+  color: inherit;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: var(--tracking);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: border-color 140ms ease;
+}
+
+.badge:hover {
+  border-color: var(--ink-faint);
+}
+
+.badge-name,
+.badge-value {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45em 0.6em;
+}
+
+.badge-name {
+  gap: 0.35em;
+  color: var(--ink-soft);
+}
+
+.badge-value {
+  border-left: var(--su-border-width) solid var(--line-strong);
+  color: var(--ink);
+}
+
+.badge:hover .badge-value {
+  background: var(--su-primary);
+  color: var(--su-primary-fg);
+}
+
+.badge-icon {
+  width: 1em;
+  height: 1em;
+}
+
+/* ------------------------------------------------------------------ *
+ * Standalone content pages (e.g. /about)
+ *
+ * The same column as the landing page, with the text set to a reading
+ * width down the middle of it.
+ * ------------------------------------------------------------------ */
+
+.content-main {
+  padding: 3.5rem max(var(--gutter), (var(--column) - 42rem) / 2) 4.5rem;
+}
+
+.content-main h1 {
+  margin: 0 0 1.5rem;
+  font-size: clamp(2rem, 3.4vw, 2.75rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.content-main h2 {
+  margin: 2.5rem 0 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+.content-main p {
+  max-width: 40rem;
+  margin: 0 0 1rem;
+  color: var(--ink-soft);
+}
+
+.content-main .docs-table-scroll {
+  max-width: 100%;
+  margin: 0 0 1.25rem;
+}
+
+/* ------------------------------------------------------------------ *
+ * Docs layout
+ *
+ * A sidebar and an article in the column, with a rule between them
+ * drawn down the whole sheet rather than on the sidebar, which is
+ * sticky and only as tall as its links.
+ * ------------------------------------------------------------------ */
+
+.docs-shell {
+  --sidebar: 16rem;
+  display: grid;
+  grid-template-columns: var(--sidebar) minmax(0, 1fr);
+  background:
+    linear-gradient(var(--line) 0 0) var(--sidebar) 0 / var(--su-border-width) 100% no-repeat,
+    var(--paper);
+}
+
+.docs-sidebar {
+  position: sticky;
+  top: 3.5rem;
+  align-self: start;
+  max-height: calc(100vh - 3.5rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 2rem 1.25rem 2rem 1.5rem;
+}
+
+/*
+ * Pagefind search (production builds only).
+ *
+ * The UI is mounted from JS once /pagefind/ answers, so the mount is empty in
+ * the served HTML. Reserving the input's height up front stops the sidebar
+ * label and nav — and, on a narrow screen, the whole article below them —
+ * being pushed down when it lands. 64px is the height pagefind gives
+ * .pagefind-ui__search-input, so scaling it here keeps the two in step.
+ *
+ * Drawn as the preset draws a field: a hairline box, square, in the field's
+ * line, with what is typed in the monospace face.
+ */
+#docs-search {
+  --pagefind-ui-scale: 0.75;
+  --pagefind-ui-primary: var(--accent);
+  --pagefind-ui-text: var(--ink);
+  --pagefind-ui-background: var(--paper);
+  --pagefind-ui-border: var(--su-bp-field);
+  --pagefind-ui-tag: var(--code-bg);
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: 0;
+  --pagefind-ui-font: var(--font-body);
+  min-height: calc(64px * var(--pagefind-ui-scale));
+  margin-bottom: 1.5rem;
+}
+
+/* No index to answer the probe — dev, usually — so hand the space back. */
+#docs-search.is-unavailable {
+  min-height: 0;
+  margin-bottom: 0;
+}
+
+#docs-search .pagefind-ui__search-input {
+  font-family: var(--font-mono);
+  font-weight: 400;
+}
+
+#docs-search .pagefind-ui__search-input:focus,
+#docs-search .pagefind-ui__search-input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+/*
+ * The results, set like the rest of the sidebar: captions in the mono,
+ * titles at the grotesk's medium weight rather than bold, and a match
+ * marked in the blue rather than a highlighter's yellow.
+ */
+#docs-search .pagefind-ui__message,
+#docs-search .pagefind-ui__search-clear,
+#docs-search .pagefind-ui__button {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
+}
+
+#docs-search .pagefind-ui__message,
+#docs-search .pagefind-ui__search-clear {
+  color: var(--ink-soft);
+}
+
+#docs-search .pagefind-ui__button {
+  color: var(--ink);
+}
+
+#docs-search .pagefind-ui__button:hover {
+  border-color: var(--su-primary);
+  background: var(--su-primary);
+  color: var(--su-primary-fg);
+}
+
+#docs-search :is(.pagefind-ui__result-title, .pagefind-ui__result-link) {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+#docs-search .pagefind-ui__result-excerpt {
+  color: var(--ink-soft);
+}
+
+#docs-search mark {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  color: var(--ink);
+}
+
+/*
+ * The sidebar's disclosure, open here and closed on a phone — see the
+ * 860px block. `content-visibility` is how a browser hides a closed
+ * <details>, so overriding it on the content is what holds this one open
+ * whatever the `open` attribute says.
+ */
+.docs-sidebar-disclosure::details-content {
+  content-visibility: visible;
+  block-size: auto;
+}
+
+/* The preset's overline: a square of the blue, then the caption. */
+.docs-sidebar-label,
+.docs-toc-label {
+  margin: 0 0 0.85rem;
+  padding-left: calc(0.5rem + 0.75em);
+  background: linear-gradient(var(--accent) 0 0) 0 50% / 0.5rem 0.5rem no-repeat;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* The phone's label — the summary of the disclosure the nav sits in. */
+.docs-sidebar-disclosure > .su-collapsible-trigger {
+  display: none;
+  align-items: center;
+  gap: 0.75rem;
+  list-style: none;
+}
+
+.docs-sidebar-disclosure > .su-collapsible-trigger::-webkit-details-marker {
+  display: none;
+}
+
+.docs-side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.docs-side-nav a {
+  display: block;
+  padding: 0.3rem 0.6rem;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.docs-side-nav a:hover {
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  color: var(--ink);
+}
+
+/* The page you are on, printed in reverse. */
+.docs-side-nav a.is-active {
+  background: var(--su-primary);
+  color: var(--su-primary-fg);
+}
+
+/* A group heading in the sidebar, with a dashed line run out after it. */
+.docs-side-nav-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1.1rem 0 0.3rem;
+  padding: 0 0.6rem;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.docs-side-nav-heading::after {
+  content: '';
+  flex: 1;
+  border-top: var(--su-border-width) dashed var(--line-strong);
+}
+
+.docs-side-nav-heading:first-child {
+  margin-top: 0;
+}
+
+/*
+ * The "js" against a component's name in the UI sidebar: it fetches a
+ * runtime module of its own on the first interaction. Deliberately quiet —
+ * every one of them still renders before that, so this is a note, not a
+ * warning.
+ *
+ * `top: 0` cancels the superscript lift the browser applies by default,
+ * which on a mark this small inside a sidebar link was enough to push the
+ * row taller than its neighbours.
+ */
+.docs-side-nav-js {
+  top: 0;
+  margin-left: 0.4em;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
+  vertical-align: super;
+}
+
+.docs-side-nav a:hover .docs-side-nav-js,
+.docs-side-nav a.is-active .docs-side-nav-js {
+  color: inherit;
+}
+
+.docs-main {
+  min-width: 0;
+  max-width: calc(46rem + 5.5rem);
+  padding: 2.5rem 2.5rem 3rem 3rem;
+}
+
+.docs-main > h1 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(2rem, 3.4vw, 2.75rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.docs-main > h2 {
+  margin: 3rem 0 0.85rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+  scroll-margin-top: 5rem;
+}
+
+.docs-main > h3 {
+  margin: 1.75rem 0 0.5rem;
+  font-size: 1.0625rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.docs-main > p {
+  margin: 0 0 1rem;
+  color: var(--ink-soft);
+}
+
+/*
+ * Prose links are underlined in dashes, drawn in full when pointed at.
+ * Only a link without a class of its own: a list straight inside the
+ * article can be a gallery of cards, whose links are their names.
+ */
+:is(.docs-main > :is(p, ul, ol), .content-main) a:not([class]) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: var(--su-border-width);
+}
+
+:is(.docs-main > :is(p, ul, ol), .content-main) a:not([class]):hover {
+  text-decoration-style: solid;
+}
+
+/* Code in a line of text: a small ruled box. */
+.docs-main > p code,
+.docs-list code,
+.content-main code {
+  padding: 0.05em 0.35em;
+  border: var(--su-border-width) solid var(--line);
+  background: var(--code-bg);
+  color: var(--ink);
+  font-size: 0.85em;
+}
+
+.docs-list {
+  margin: 0 0 1.25rem;
+  padding-left: 1.2rem;
+  color: var(--ink-soft);
+}
+
+.docs-list li {
+  margin: 0.35rem 0;
+}
+
+.docs-list li::marker {
+  color: var(--ink-faint);
+}
+
+/* On this page — a ruled frame, its entries numbered. */
+.docs-toc {
+  position: relative;
+  margin: 0 0 2.25rem;
+  padding: 1rem 1.25rem 1.1rem;
+  border: var(--su-border-width) solid var(--line);
+  counter-reset: toc;
+}
+
+.docs-toc ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+  gap: 0.3rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.docs-toc li {
+  display: flex;
+  gap: 0.6rem;
+  counter-increment: toc;
+  font-size: 0.875rem;
+}
+
+.docs-toc li::before {
+  content: counter(toc, decimal-leading-zero);
+  flex: none;
+  padding-top: 0.2em;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+}
+
+.docs-toc a {
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.docs-toc a:hover {
+  color: var(--ink);
+}
+
+/* Previous / next: two frames side by side. */
+.docs-pagenav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 3.5rem;
+}
+
+.docs-pagenav-link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem 1.25rem 1.1rem;
+  border: var(--su-border-width) solid var(--line);
+  text-decoration: none;
+  transition: border-color 140ms ease;
+}
+
+.docs-pagenav-link:hover {
+  border-color: var(--line-strong);
+}
+
+.docs-pagenav-next {
+  grid-column: 2;
+  text-align: right;
+}
+
+.docs-pagenav-direction {
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
+}
+
+.docs-pagenav-link:hover .docs-pagenav-direction {
+  color: var(--accent);
+}
+
+.docs-pagenav-label {
+  color: var(--ink);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/*
+ * The props tables are `table()` from sitelo-ui, which brings its own
+ * scroll container — `.su-table-wrap` — and, in this preset, its column
+ * heads in small capitals over dashed rows.
+ */
+.docs-main .su-table-wrap {
+  margin: 0 0 1.5rem;
+}
+
+/* The tables written by hand in a page still use this one, drawn to match. */
+.docs-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 1.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  border: var(--su-border-width) solid var(--line);
+}
+
+.docs-table {
+  width: 100%;
+  min-width: 32rem;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.docs-table th,
+.docs-table td {
+  padding: 0.65rem 0.85rem;
+  border-bottom: var(--su-border-width) dashed var(--line);
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.docs-table tr:last-child td {
+  border-bottom: 0;
+}
+
+/*
+ * `thead th` rather than `th`, to match the specificity of the rule
+ * `.su-table` sets for the same cell, so this sheet decides the head of a
+ * hand-written table rather than winning or losing on link order.
+ */
+.docs-table thead th {
+  border-bottom-style: solid;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
+}
+
+.docs-table td {
+  color: var(--ink-soft);
+}
+
+.docs-table--wrap-last th:last-child,
+.docs-table--wrap-last td:last-child {
+  white-space: normal;
+  min-width: 14rem;
+  max-width: 22rem;
+  line-height: 1.45;
+}
+
+/* ------------------------------------------------------------------ *
+ * Code
+ *
+ * A ruled box on the sheet's second surface, its file name in a caption
+ * at the top right, and a copy button that takes the caption's place
+ * when the block is pointed at.
+ * ------------------------------------------------------------------ */
+
+.code-frame {
+  position: relative;
+  margin: 0 0 1.5rem;
+  border: var(--su-border-width) solid var(--line);
+  background: var(--code-bg);
+}
+
 .code {
   position: relative;
   margin: 0;
-  padding: 1.35rem 1.15rem 1.15rem;
+  padding: 1.35rem 1.25rem 1.2rem;
   overflow-x: auto;
-  border: none;
-  border-radius: calc(0.85rem - 1px);
-  background: var(--code-bg);
+  border: 0;
+  background: transparent;
   color: var(--code-fg);
   font-family: var(--font-mono);
-  font-size: 0.86rem;
-  line-height: 1.55;
-}
-
-@property --glow-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes glow-spin {
-  to {
-    --glow-angle: 360deg;
-  }
-}
-
-.code-glow {
-  --glow-angle: 0deg;
-  position: relative;
-  margin: 0 0 1.25rem;
-  padding: 1px;
-  border-radius: 0.85rem;
-  background: color-mix(in srgb, var(--ink) 10%, transparent);
-  transition: background 200ms ease;
-}
-
-.code-glow::before,
-.install-glow::before {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  z-index: -1;
-  border-radius: inherit;
-  background: transparent;
-  filter: blur(12px);
-  opacity: 0;
-  transition: opacity 200ms ease;
-  pointer-events: none;
-}
-
-.code-glow:hover,
-.install-glow:hover {
-  background: conic-gradient(
-    from var(--glow-angle),
-    transparent 0%,
-    color-mix(in srgb, var(--accent) 70%, var(--glow-tint)) 8%,
-    transparent 22%,
-    color-mix(in srgb, var(--glow-cool) 65%, transparent) 38%,
-    transparent 52%,
-    color-mix(in srgb, var(--accent-deep) 90%, var(--accent)) 68%,
-    transparent 82%,
-    color-mix(in srgb, var(--accent) 45%, transparent) 92%,
-    transparent 100%
-  );
-  animation: glow-spin 5s linear infinite;
-}
-
-.code-glow:hover::before,
-.install-glow:hover::before {
-  opacity: 0.65;
-  background: conic-gradient(
-    from var(--glow-angle),
-    transparent 0%,
-    color-mix(in srgb, var(--accent) 55%, transparent) 10%,
-    transparent 28%,
-    color-mix(in srgb, var(--glow-cool) 40%, transparent) 42%,
-    transparent 58%,
-    color-mix(in srgb, var(--accent-deep) 55%, transparent) 72%,
-    transparent 88%
-  );
-  animation: glow-spin 5s linear infinite;
+  font-size: 0.8125rem;
+  line-height: 1.65;
 }
 
 .code::before {
   content: attr(data-label);
   position: absolute;
-  top: 0.45rem;
-  right: 0.7rem;
+  top: 0.55rem;
+  right: 0.75rem;
   color: var(--ink-faint);
-  font-size: 0.7rem;
-  letter-spacing: 0.04em;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking);
   text-transform: uppercase;
   transition: opacity 140ms ease;
 }
 
-/* copy button swaps in for the label on hover/focus */
 .code-copy {
   appearance: none;
   position: absolute;
-  top: 0.35rem;
-  right: 0.55rem;
-  border: none;
-  border-radius: 0.35rem;
-  padding: 0.25rem 0.55rem;
-  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  top: 0.4rem;
+  right: 0.45rem;
+  padding: 0.3rem 0.55rem;
+  border: var(--su-border-width) solid var(--line-strong);
+  background: var(--paper);
   color: var(--ink-soft);
-  font-family: var(--font-body);
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
   cursor: pointer;
   opacity: 0;
-  transition: opacity 140ms ease, background 140ms ease, color 140ms ease;
+  transition:
+    opacity 140ms ease,
+    background-color 140ms ease,
+    color 140ms ease;
 }
 
-.code-glow:hover .code-copy,
+.code-frame:hover .code-copy,
 .code-copy:focus-visible,
 .code-copy.is-copied {
   opacity: 1;
 }
 
-.code-glow:hover .code::before,
-.code-glow:has(.code-copy:focus-visible) .code::before,
-.code-glow:has(.code-copy.is-copied) .code::before {
+.code-frame:hover .code::before,
+.code-frame:has(.code-copy:focus-visible) .code::before,
+.code-frame:has(.code-copy.is-copied) .code::before {
   opacity: 0;
 }
 
 .code-copy:hover,
 .code-copy.is-copied {
-  background: var(--accent);
-  color: var(--accent-ink);
+  border-color: var(--su-primary);
+  background: var(--su-primary);
+  color: var(--su-primary-fg);
 }
 
-/* Markup style tabs (template / ht.js / JSX) — one card, flush tab strip */
-.code-tabs.code-glow {
-  margin: 0 0 1.25rem;
+/* Markup style tabs (template / ht.js / JSX) — one box, a strip of tabs on top. */
+.code-tabs.code-frame {
   overflow: hidden;
 }
 
@@ -997,13 +1711,10 @@ code {
   flex-wrap: nowrap;
   overflow-x: auto;
   /* The strip is three tabs the visitor can see; a scrollbar under them reads
-     as a stray rule across the card. */
+     as a stray rule across the box. */
   scrollbar-width: none;
-  gap: 0;
-  margin: 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  background: color-mix(in srgb, var(--paper-elevated) 92%, #000);
-  border-radius: calc(0.85rem - 1px) calc(0.85rem - 1px) 0 0;
+  border-bottom: var(--su-border-width) solid var(--line);
+  background: var(--paper);
 }
 
 .code-tabs-nav::-webkit-scrollbar {
@@ -1014,48 +1725,43 @@ code {
   appearance: none;
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  margin: 0;
-  border: none;
-  border-right: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  border-radius: 0;
+  gap: 0.5rem;
   /* Never squeezed into two lines, and never shrunk below its own text. */
   flex: 0 0 auto;
-  white-space: nowrap;
-  padding: 0.6rem clamp(0.6rem, 3vw, 1rem);
+  margin: 0;
+  padding: 0.7rem clamp(0.6rem, 3vw, 1rem);
+  border: 0;
+  border-right: var(--su-border-width) solid var(--line);
   background: transparent;
   color: var(--ink-soft);
-  font: inherit;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
+  white-space: nowrap;
   cursor: pointer;
-  transition: background 140ms ease, color 140ms ease;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
 }
 
 .code-tabs-tab:hover {
   color: var(--ink);
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
 }
 
+/* The open tab is part of the box below it, with a line of ink on top. */
 .code-tabs-tab.is-active {
+  margin-bottom: calc(-1 * var(--su-border-width));
+  padding-bottom: calc(0.7rem + var(--su-border-width));
   background: var(--code-bg);
+  box-shadow: inset 0 var(--su-border-width) 0 var(--ink);
   color: var(--ink);
-  box-shadow: inset 0 -1px 0 var(--code-bg);
-  margin-bottom: -1px;
-  padding-bottom: calc(0.6rem + 1px);
 }
 
 .code-tabs-badge {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
   color: var(--accent);
-  opacity: 0.9;
-}
-
-.code-tabs-tab.is-active .code-tabs-badge {
-  opacity: 1;
+  font-size: 0.5625rem;
 }
 
 @media (max-width: 399px) {
@@ -1076,10 +1782,6 @@ code {
   position: relative;
 }
 
-.code-tabs-body .code {
-  border-radius: 0 0 calc(0.85rem - 1px) calc(0.85rem - 1px);
-}
-
 .code code {
   font: inherit;
   white-space: pre;
@@ -1088,13 +1790,11 @@ code {
   text-shadow: none;
 }
 
-/* Prism tokens — tuned to the sitelo teal palette */
 .token.comment,
 .token.prolog,
 .token.doctype,
 .token.cdata {
   color: var(--tok-comment);
-  font-style: italic;
 }
 
 .token.punctuation {
@@ -1147,929 +1847,24 @@ code {
 
 .token.important,
 .token.bold {
-  font-weight: 700;
+  font-weight: 500;
 }
 
-.token.italic {
-  font-style: italic;
-}
-
-.feature-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: 1rem;
-  margin: 1.5rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* glow shell — same spinning conic-gradient border as .code-glow */
-.feature-card {
-  --glow-angle: 0deg;
-  display: block;
-  position: relative;
-  height: 100%;
-  padding: 1px;
-  border-radius: 1rem;
-  background: var(--line);
-  color: var(--ink);
-  text-decoration: none;
-  transition: transform 180ms ease, background 200ms ease;
-}
-
-a.feature-card,
-a.feature-card:visited,
-a.feature-card:hover,
-a.feature-card:active,
-a.feature-card:focus {
-  color: var(--ink);
-  text-decoration: none;
-}
-
-/* blurred halo behind the card on hover */
-.feature-card::before {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  z-index: -1;
-  border-radius: inherit;
-  background: transparent;
-  filter: blur(12px);
-  opacity: 0;
-  transition: opacity 200ms ease;
-  pointer-events: none;
-}
-
-.feature-card:hover {
-  transform: translateY(-3px);
-  background: conic-gradient(
-    from var(--glow-angle),
-    transparent 0%,
-    color-mix(in srgb, var(--accent) 70%, var(--glow-tint)) 8%,
-    transparent 22%,
-    color-mix(in srgb, var(--glow-cool) 65%, transparent) 38%,
-    transparent 52%,
-    color-mix(in srgb, var(--accent-deep) 90%, var(--accent)) 68%,
-    transparent 82%,
-    color-mix(in srgb, var(--accent) 45%, transparent) 92%,
-    transparent 100%
-  );
-  animation: glow-spin 5s linear infinite;
-}
-
-.feature-card:hover::before {
-  opacity: 0.65;
-  background: conic-gradient(
-    from var(--glow-angle),
-    transparent 0%,
-    color-mix(in srgb, var(--accent) 55%, transparent) 10%,
-    transparent 28%,
-    color-mix(in srgb, var(--glow-cool) 40%, transparent) 42%,
-    transparent 58%,
-    color-mix(in srgb, var(--accent-deep) 55%, transparent) 72%,
-    transparent 88%
-  );
-  animation: glow-spin 5s linear infinite;
-}
-
-.feature-card-body {
-  position: relative;
-  overflow: hidden;
-  height: 100%;
-  padding: 1.35rem 1.35rem 1.45rem;
-  border-radius: calc(1rem - 1px);
-  /* opaque, so the conic ring behind only shows as a 1px border */
-  background: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--paper-elevated) 85%, var(--paper)),
-    var(--paper)
-  );
-}
-
-/* dot-grid texture, fading out towards the bottom-left */
-.feature-card-body::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: radial-gradient(
-    color-mix(in srgb, var(--ink) 14%, transparent) 1px,
-    transparent 1px
-  );
-  background-size: 14px 14px;
-  mask-image: radial-gradient(
-    22rem 14rem at 100% 0%,
-    black,
-    transparent 70%
-  );
-  opacity: 0.5;
-  transition: opacity 180ms ease;
-}
-
-/* accent glow in the top-right corner on hover */
-.feature-card-body::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    18rem 12rem at 100% 0%,
-    color-mix(in srgb, var(--accent) 12%, transparent),
-    transparent 70%
-  );
-  opacity: 0;
-  transition: opacity 180ms ease;
-}
-
-.feature-card:hover .feature-card-body::before,
-.feature-card:hover .feature-card-body::after {
-  opacity: 1;
-}
-
-.feature-chip {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  margin-bottom: 0.85rem;
-  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
-  border-radius: 0.7rem;
-  background: color-mix(in srgb, var(--accent) 9%, transparent);
-  color: var(--accent);
-}
-
-.feature-icon {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.feature-list h3 {
-  position: relative;
-  z-index: 1;
-  margin: 0 0 0.35rem;
-  color: var(--ink);
-  font-family: var(--font-display);
-  font-size: 1.1rem;
-  font-weight: 700;
-  text-decoration: none;
-  transition: color 160ms ease;
-}
-
-.feature-list p {
-  position: relative;
-  z-index: 1;
-  margin: 0;
-  color: var(--ink-soft);
-  font-size: 0.98rem;
-  text-decoration: none;
-}
-
-a.feature-card:hover h3 {
-  color: var(--accent);
-}
-
-.section-note {
-  margin-bottom: 2rem;
-}
-
-.footer {
-  width: var(--page);
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 2.5rem 0 3rem;
-  border-top: 1px solid var(--line);
-  color: var(--ink-soft);
-  font-size: 0.95rem;
-}
-
-.footer p {
-  margin: 0 0 0.35rem;
-}
-
-.footer-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-}
-
-.footer-meta a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.footer-meta a:hover {
-  color: var(--ink);
-}
-
-/* shields.io-style badges, e.g. "vite | vX.Y.Z" */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  vertical-align: middle;
-  overflow: hidden;
-  border-radius: 0.35rem;
-  font-family: var(--font-body);
-  font-size: 0.78rem;
-  font-weight: 600;
-  line-height: 1;
-  transition: filter 140ms ease;
-}
-
-.badge:hover {
-  filter: brightness(1.15);
-}
-
-.badge-name,
-.badge-value {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.4em 0.55em;
-}
-
-.badge-name {
-  gap: 0.3em;
-  background: #3f3f46;
-  color: #fff;
-}
-
-/*
- * Dark ink, not white: every brand colour below is too light to carry white
- * at 13px — the lime was 1.95:1 — and darkening them far enough to fix that
- * would leave none of them recognisable. On this ink all four clear 4.5:1,
- * and the value stays literal rather than themed, since a light-theme flip
- * back to white would fail the same audit.
- */
-.badge-value {
-  color: #071410;
-}
-
-.badge-icon {
-  width: 1em;
-  height: 1em;
-}
-
-.badge-sitelo .badge-value {
-  background: #1a9a5c;
-}
-
-.badge-license .badge-value {
-  background: #97ca00;
-}
-
-.badge-node .badge-value {
-  background: #339933;
-}
-
-/* Vite's indigo, lifted a shade: #646cff left the ink at 4.60:1, too close to call. */
-.badge-vite .badge-value {
-  background: #747bff;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .btn,
-  .install-copy,
-  .feature-card,
-  .feature-card-body::before,
-  .feature-card-body::after {
-    transition: none;
-  }
-
-  .feature-card,
-  .feature-card::before {
-    animation: none !important;
-  }
-
-  .feature-card:hover {
-    background: color-mix(in srgb, var(--accent) 28%, transparent);
-  }
-
-  .feature-card:hover::before {
-    opacity: 0.35;
-    filter: blur(8px);
-    background: color-mix(in srgb, var(--accent) 28%, transparent);
-  }
-
-  .hero h1,
-  .hero-lede,
-  .hero-actions {
-    animation: none;
-  }
-
-  .hero-typed.is-typing::after {
-    animation: none;
-    opacity: 0;
-  }
-
-  .code-glow,
-  .code-glow::before,
-  .install-glow,
-  .install-glow::before {
-    animation: none !important;
-  }
-
-  .code-glow:hover,
-  .install-glow:hover {
-    background: color-mix(in srgb, var(--accent) 28%, transparent);
-  }
-
-  .code-glow:hover::before,
-  .install-glow:hover::before {
-    opacity: 0.35;
-    filter: blur(8px);
-    background: color-mix(in srgb, var(--accent) 28%, transparent);
-  }
-}
-
-@media (max-width: 640px) {
-  /* 16px side padding — use px, not rem (html font-size is 1.0625rem) */
-  .hero {
-    min-height: auto;
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-bottom: 3rem;
-  }
-
-  .hero-center {
-    padding-top: 2rem;
-    align-items: center;
-  }
-
-  .hero-actions {
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    width: auto;
-    max-width: 100%;
-  }
-
-  .install-glow,
-  .install {
-    width: fit-content;
-    max-width: 100%;
-  }
-
-  .topbar-inner {
-    width: 100%;
-    padding: 0.65rem 16px;
-  }
-
-  .section {
-    width: 100%;
-  }
-
-  .footer,
-  .page-docs .footer {
-    width: calc(100% - 32px);
-  }
-
-  .docs-shell {
-    width: calc(100% - 32px);
-  }
-
-  .content-main {
-    width: calc(100% - 32px);
-  }
-
-  .nav {
-    gap: 0.65rem;
-    font-size: 0.9rem;
-  }
-
-  .nav-links {
-    display: none;
-  }
-
-  .nav-menu {
-    display: block;
-  }
-
-  .nav-logo {
-    height: 1.1rem;
-  }
-
-  .feature-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
-  }
-
-  .feature-card-body {
-    padding: 1rem 1rem 1.1rem;
-  }
-
-  .feature-chip {
-    width: 2.15rem;
-    height: 2.15rem;
-    margin-bottom: 0.65rem;
-  }
-
-  .feature-list h3 {
-    font-size: 0.98rem;
-  }
-
-  .feature-list p {
-    font-size: 0.88rem;
-  }
-
-  .section {
-    padding-top: 3rem;
-  }
-}
-
-/* Landing body sections */
-.landing-sections {
-  width: var(--page);
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 0 clamp(1.25rem, 4vw, 2.5rem) 2rem;
-}
-
-@media (max-width: 640px) {
-  .landing-sections {
-    width: 100%;
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-}
-
-.btn-inline {
-  min-width: 0;
-  margin-top: 0.5rem;
-}
-
-/* Standalone content pages (e.g. /about) */
-.page-content .topbar {
-  border-bottom-color: var(--line);
-}
-
-.content-main {
-  width: min(40rem, calc(100% - 2.5rem));
-  margin: 0 auto;
-  padding: 2.5rem 0 4rem;
-}
-
-.content-main h1 {
-  margin: 0 0 1.25rem;
-  font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3vw, 2.25rem);
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-}
-
-.content-main h2 {
-  margin: 2.25rem 0 0.75rem;
-  font-family: var(--font-display);
-  font-size: 1.2rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-.content-main p {
-  margin: 0 0 1rem;
-  color: var(--ink-soft);
-  max-width: 38rem;
-}
-
-.content-main .docs-table-scroll {
-  margin: 0 0 1.25rem;
-  max-width: 100%;
-}
-
-.content-main a {
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
-}
-
-.content-main code {
-  color: var(--ink);
-  font-size: 0.88em;
-}
-
-/* Docs layout */
-.docs-shell {
-  display: grid;
-  grid-template-columns: 14rem minmax(0, 1fr);
-  gap: 2.5rem;
-  width: min(78rem, calc(100% - 2.5rem));
-  margin: 0 auto;
-  padding: 2rem 0 3rem;
-}
-
-.docs-sidebar {
-  position: sticky;
-  top: 4.5rem;
-  align-self: start;
-  max-height: calc(100vh - 5.5rem);
-  overflow: auto;
-}
-
-/*
- * Pagefind search (production builds only).
+/* ------------------------------------------------------------------ *
+ * Cookie consent
  *
- * The UI is mounted from JS once /pagefind/ answers, so the mount is empty in
- * the served HTML. Reserving the input's height up front stops the sidebar
- * label and nav — and, on a narrow screen, the whole article below them —
- * being pushed down when it lands. 64px is the height pagefind gives
- * .pagefind-ui__search-input, so scaling it here keeps the two in step.
- */
-#docs-search {
-  --pagefind-ui-scale: 0.8;
-  --pagefind-ui-primary: var(--accent);
-  --pagefind-ui-text: var(--ink);
-  --pagefind-ui-background: var(--paper-elevated);
-  --pagefind-ui-border: color-mix(in srgb, var(--ink) 14%, transparent);
-  --pagefind-ui-tag: var(--paper-elevated);
-  --pagefind-ui-border-width: 1px;
-  --pagefind-ui-border-radius: 0.55rem;
-  --pagefind-ui-font: var(--font-body);
-  min-height: calc(64px * var(--pagefind-ui-scale));
-  margin-bottom: 1.25rem;
-}
-
-/* No index to answer the probe — dev, usually — so hand the space back. */
-#docs-search.is-unavailable {
-  min-height: 0;
-  margin-bottom: 0;
-}
-
-#docs-search .pagefind-ui__search-input:focus,
-#docs-search .pagefind-ui__search-input:focus-visible {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
-}
-
-/*
- * The sidebar's disclosure, open here and closed on a phone — see the
- * 860px block. `content-visibility` is how a browser hides a closed
- * <details>, so overriding it on the content is what holds this one open
- * whatever the `open` attribute says.
- */
-.docs-sidebar-disclosure::details-content {
-  content-visibility: visible;
-  block-size: auto;
-}
-
-.docs-sidebar-label {
-  margin: 0 0 0.75rem;
-  color: var(--ink-faint);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-/* The phone's label — the summary of the disclosure the nav sits in. */
-.docs-sidebar-disclosure > .su-collapsible-trigger {
-  display: none;
-  align-items: center;
-  gap: 0.5rem;
-  list-style: none;
-}
-
-.docs-sidebar-disclosure > .su-collapsible-trigger::-webkit-details-marker {
-  display: none;
-}
-
-.docs-side-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.docs-side-nav a {
-  display: block;
-  padding: 0.4rem 0.65rem;
-  border-radius: 0.45rem;
-  color: var(--ink-soft);
-  text-decoration: none;
-  font-size: 0.95rem;
-}
-
-.docs-side-nav a:hover {
-  color: var(--ink);
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
-}
-
-.docs-side-nav a.is-active {
-  color: var(--accent-ink);
-  background: var(--accent);
-  font-weight: 600;
-}
-
-.docs-main {
-  min-width: 0;
-  max-width: 46rem;
-  padding-bottom: 2rem;
-}
-
-.docs-main > h1 {
-  margin: 0 0 1rem;
-  font-family: var(--font-display);
-  font-size: clamp(1.8rem, 3vw, 2.4rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-}
-
-.docs-main > h2 {
-  margin: 2.25rem 0 0.75rem;
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  scroll-margin-top: 4.5rem;
-}
-
-/* On this page — table of contents */
-.docs-toc {
-  margin: 0 0 1.75rem;
-  padding: 0.9rem 1.1rem;
-  border: 1px solid var(--line);
-  border-radius: 0.7rem;
-  background: color-mix(in srgb, var(--paper-elevated) 55%, transparent);
-  font-size: 0.92rem;
-}
-
-.docs-toc-label {
-  margin: 0 0 0.5rem;
-  color: var(--ink-faint);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.docs-toc ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 1.1rem;
-}
-
-.docs-toc a {
-  color: var(--ink-soft);
-  text-decoration: none;
-}
-
-.docs-toc a:hover {
-  color: var(--accent);
-}
-
-/* Previous / next page links */
-.docs-pagenav {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 3rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--line);
-}
-
-.docs-pagenav-link {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  max-width: 48%;
-  text-decoration: none;
-}
-
-.docs-pagenav-next {
-  text-align: right;
-  margin-left: auto;
-}
-
-.docs-pagenav-direction {
-  color: var(--ink-faint);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.docs-pagenav-label {
-  color: var(--ink-soft);
-  font-family: var(--font-display);
-  font-weight: 600;
-}
-
-.docs-pagenav-link:hover .docs-pagenav-label {
-  color: var(--accent);
-}
-
-.docs-main > h3 {
-  margin: 1.5rem 0 0.45rem;
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-weight: 700;
-}
-
-.docs-main > p {
-  margin: 0 0 1rem;
-  color: var(--ink-soft);
-}
-
-.docs-main > p code,
-.docs-list code {
-  padding: 0.1rem 0.35rem;
-  border-radius: 0.3rem;
-  background: color-mix(in srgb, var(--ink) 8%, transparent);
-  color: var(--ink);
-}
-
-.docs-list {
-  margin: 0 0 1.25rem;
-  padding-left: 1.2rem;
-  color: var(--ink-soft);
-}
-
-.docs-list li {
-  margin: 0.35rem 0;
-}
-
-/*
- * The props tables are `table()` from sitelo-ui, which brings its own
- * scroll container — `.su-table-wrap` — and everything this class does
- * except the space under it.
- */
-.docs-main .su-table-wrap {
-  margin: 0 0 1.5rem;
-}
-
-/* The tables written by hand in a page still use this one. */
-.docs-table-scroll {
-  width: 100%;
-  max-width: 100%;
-  margin: 0 0 1.5rem;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
-}
-
-.docs-table {
-  width: 100%;
-  min-width: 32rem;
-  margin: 0;
-  border-collapse: collapse;
-  font-size: 0.92rem;
-}
-
-.docs-table th,
-.docs-table td {
-  padding: 0.65rem 0.75rem;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-  vertical-align: top;
-  white-space: nowrap;
-}
-
-/*
- * `thead th` rather than `th`, to match the specificity of the rule
- * `.su-table` sets for the same cell. The component's version is close
- * to this one — uppercase, muted, tracked — but it sizes and colours the
- * heading itself, and a sheet that means to decide those should say so
- * rather than win or lose on which file was linked last.
- */
-.docs-table thead th {
-  color: var(--ink-faint);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.docs-table td {
-  color: var(--ink-soft);
-}
-
-.docs-table--wrap-last th:last-child,
-.docs-table--wrap-last td:last-child {
-  white-space: normal;
-  min-width: 14rem;
-  max-width: 22rem;
-  line-height: 1.45;
-}
-
-.page-docs .footer {
-  width: min(78rem, calc(100% - 2.5rem));
-}
-
-@media (max-width: 860px) {
-  .docs-shell {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-  }
-
-  .docs-sidebar {
-    position: static;
-    max-height: none;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--line);
-  }
-
-  /*
-   * Sixty-odd component links push the article a screen and a half down a
-   * phone, so the nav closes and hands that space back. One tap on the row
-   * below opens it; a page load closes it again, which is what a visitor
-   * who has just followed one of its links wants anyway.
-   */
-  .docs-sidebar-disclosure:not([open])::details-content {
-    content-visibility: hidden;
-    block-size: 0;
-  }
-
-  .docs-sidebar-label {
-    display: none;
-  }
-
-  .docs-sidebar-disclosure > .su-collapsible-trigger {
-    display: flex;
-    padding: 0.5rem 0.65rem;
-    border: 1px solid var(--line);
-    border-radius: 0.55rem;
-    color: var(--ink-faint);
-    background: color-mix(in srgb, var(--ink) 4%, transparent);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-
-  /* Same caret as the language switcher, turned over when open. */
-  .docs-sidebar-disclosure > .su-collapsible-trigger::after {
-    content: '';
-    flex: none;
-    width: 0.4rem;
-    height: 0.4rem;
-    margin-left: auto;
-    border-right: 1.5px solid currentColor;
-    border-bottom: 1.5px solid currentColor;
-    transform: translateY(-2px) rotate(45deg);
-  }
-
-  .docs-sidebar-disclosure[open] > .su-collapsible-trigger {
-    color: var(--ink-soft);
-  }
-
-  .docs-sidebar-disclosure[open] > .su-collapsible-trigger::after {
-    transform: translateY(1px) rotate(-135deg);
-  }
-
-  /*
-   * The page the visitor is on. Worth the row only while the nav is closed,
-   * but it costs nothing open either, and hiding it there would make the
-   * summary jump between two widths on every tap.
-   */
-  .docs-sidebar-current {
-    overflow: hidden;
-    color: var(--ink);
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-    letter-spacing: normal;
-    text-transform: none;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .docs-side-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    margin-top: 0.75rem;
-  }
-
-  /*
-   * The sidebar becomes a wrapping row here, so a group heading has to
-   * claim its own line or it reads as one more link in the middle of the
-   * list.
-   */
-  .docs-side-nav-heading {
-    flex-basis: 100%;
-    margin: 0.5rem 0 0;
-    padding: 0;
-  }
-}
-
-/*
- * Cookie consent.
+ * A frame in the bottom-left corner rather than a bar across the foot or
+ * a modal over the page: it overlaps nothing at the reading width, and
+ * the page stays usable for a visitor who would rather just ignore it.
+ * `alert()` draws it; here it is ruled in the strong line, as what floats
+ * is in this preset, rather than filled.
  *
- * A card in the bottom-left corner rather than a bar across the foot or a
- * modal over the page: it overlaps nothing at the reading width, and the page
- * stays usable for a visitor who would rather just ignore it.
- *
- * Sits above the topbar but below the nav and language panels — an open menu
- * is something the visitor is actively using, and on a short screen it can
- * reach this far down.
- */
-.cookie-banner {
+ * Sits above the topbar but below the nav and language panels — an open
+ * menu is something the visitor is actively using, and on a short screen
+ * it can reach this far down.
+ * ------------------------------------------------------------------ */
+
+.cookie-banner.su-alert {
   position: fixed;
   left: 1rem;
   bottom: 1rem;
@@ -2077,19 +1872,18 @@ a.feature-card:hover h3 {
   width: min(24rem, calc(100% - 2rem));
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-  padding: 1rem 1.1rem;
-  border: 1px solid var(--line);
-  border-radius: 0.9rem;
-  background: color-mix(in srgb, var(--paper-elevated) 94%, transparent);
-  backdrop-filter: blur(12px);
-  box-shadow: var(--shadow-panel);
+  gap: 1rem;
+  padding: 1.1rem 1.2rem;
+  border: var(--su-border-width) solid var(--line-strong);
+  background: var(--paper);
   color: var(--ink-soft);
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   line-height: 1.5;
   opacity: 0;
   transform: translateY(0.75rem);
-  transition: opacity 240ms ease, transform 240ms ease;
+  transition:
+    opacity 240ms ease,
+    transform 240ms ease;
   /*
    * Only the shown banner takes clicks. A faded one is still laid out, and
    * without this it would keep swallowing them in the corner it used to fill.
@@ -2101,7 +1895,7 @@ a.feature-card:hover h3 {
   display: none;
 }
 
-.cookie-banner.is-visible {
+.cookie-banner.su-alert.is-visible {
   opacity: 1;
   transform: none;
   pointer-events: auto;
@@ -2119,18 +1913,15 @@ a.feature-card:hover h3 {
 
 /*
  * The two buttons are `button()` from sitelo-ui — ghost for decline,
- * solid for accept — so the pill shape, the sizing, the hover and the
- * focus ring all arrive with the component. What used to be here was
- * thirty lines saying the same thing in this site's own words.
- */
-
-/*
+ * solid for accept — so the shape, the caption, the hover and the focus
+ * ring all arrive with the component and the preset.
+ *
  * sitelo-ui's own reduced-motion block covers its animations but not the
- * transitions on `su-btn`, so the two buttons are named here alongside
- * the banner they sit in.
+ * transitions on `su-btn`, so the two buttons are named here alongside the
+ * banner they sit in.
  */
 @media (prefers-reduced-motion: reduce) {
-  .cookie-banner,
+  .cookie-banner.su-alert,
   .cookie-banner .su-btn {
     transition: none;
   }
@@ -2142,66 +1933,34 @@ a.feature-card:hover h3 {
  * The sidebar keeps the component reference's groups, and every demo
  * shows the live component above the code that produced it.
  *
- * The demos are the one place on the site that does *not* follow the
- * docs palette. Everything else renders sitelo-ui through the token map
- * in `lib/ui-theme.js`; inside `.ui-demo-preview` and the gallery's
- * `.ui-gallery-preview` the library's own tokens are put back, so a
- * reader looking up what a primary button looks like is shown the one
- * they will get, not this site's green.
+ * The demos are the one place on the site that is *not* in the blueprint
+ * preset. Its rules stop at `.ui-demo-preview`, `.ui-gallery-preview` and
+ * a preset's stage, and `uiDemoDefaults()` in `lib/ui-theme.js` puts the
+ * library's own tokens back inside them — so a reader looking up what a
+ * primary button looks like is shown the one they will get. The frames
+ * round them are the docs', and drawn like everything else here.
  * ------------------------------------------------------------------ */
 
-.docs-side-nav-heading {
-  margin: 0.9rem 0 0.15rem;
-  padding: 0 0.65rem;
-  color: var(--ink-faint);
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.docs-side-nav-heading:first-child {
-  margin-top: 0;
-}
-
-/*
- * The "js" against a component's name in the UI sidebar: it fetches a
- * runtime module of its own on the first interaction. Deliberately quiet —
- * every one of them still renders before that, so this is a note, not a
- * warning.
- *
- * `top: 0` cancels the superscript lift the browser applies by default,
- * which on a 0.6rem mark inside a 0.95rem link was enough to push the row
- * taller than its neighbours.
- */
-.docs-side-nav-js {
-  top: 0;
-  margin-left: 0.3em;
-  color: var(--ink-faint);
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.04em;
-  vertical-align: super;
-}
-
-.docs-side-nav a:hover .docs-side-nav-js,
-.docs-side-nav a.is-active .docs-side-nav-js {
-  color: inherit;
-}
-
+/* A demo is one frame: the component on its own ground, the code under it. */
 .ui-demo {
-  margin: 0 0 1.75rem;
+  position: relative;
+  margin: 0 0 2rem;
+}
+
+/* The demo's lines are its two parts' borders, inside it. */
+.ui-demo::before,
+.ui-sandbox::before {
+  --mark-inset: calc(-1 * var(--arm));
 }
 
 .ui-demo-preview {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  padding: 2rem 1.5rem;
-  margin-bottom: 0.75rem;
-  border: 1px solid var(--line);
-  border-radius: 0.85rem;
-  background: var(--paper-elevated);
+  padding: 2.5rem 1.5rem;
+  border: var(--su-border-width) solid var(--line);
+  border-bottom: 0;
+  background: var(--su-bg);
 }
 
 .ui-demo-preview--center {
@@ -2223,18 +1982,59 @@ a.feature-card:hover h3 {
   min-width: 0;
 }
 
-/* The demo's own code block sits directly under its preview. */
-.ui-demo .code-glow {
+.ui-demo .code-frame {
   margin-bottom: 0;
 }
 
 /*
  * The grain sandbox: a row of controls, the grain they drive, and the
- * call that would render it. Same frame as a demo preview, so it reads
- * as one of them that happens to have knobs.
+ * call that would render it. One frame like a demo's, that happens to
+ * have knobs.
  */
 .ui-sandbox {
-  margin: 0 0 1.75rem;
+  position: relative;
+  margin: 0 0 2rem;
+}
+
+.ui-sandbox-controls {
+  display: grid;
+  /* Two to a row, so the pairs in the markup stay pairs: the dropdowns,
+     then the sliders, then the two colours. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem 1.25rem;
+  padding: 1.25rem 1.5rem;
+  border: var(--su-border-width) solid var(--line);
+  border-bottom: 0;
+}
+
+@media (max-width: 36rem) {
+  .ui-sandbox-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The picker's trigger is a swatch; give it the row's height. */
+.ui-sandbox-controls wa-color-picker {
+  display: block;
+  --swatch-size: 2.25rem;
+}
+
+/* Just the grid and the two sliders: no hex field, no eyedropper, and
+   no copy-to-clipboard preview beside the sliders. */
+.ui-sandbox-controls wa-color-picker::part(input),
+.ui-sandbox-controls wa-color-picker::part(eyedropper-button),
+.ui-sandbox-controls wa-color-picker::part(preview) {
+  display: none;
+}
+
+.ui-sandbox-preview {
+  padding: 8rem 1.5rem;
+  border: var(--su-border-width) solid var(--line);
+  border-bottom: 0;
+}
+
+.ui-sandbox .code-frame {
+  margin-bottom: 0;
 }
 
 /*
@@ -2245,10 +2045,10 @@ a.feature-card:hover h3 {
  * one colour.
  */
 .ui-preset-stage {
-  margin: 0 0 1.75rem;
+  position: relative;
+  margin: 0 0 2rem;
   padding: 2rem 1.5rem;
-  border: 1px solid var(--line);
-  border-radius: 0.85rem;
+  border: var(--su-border-width) solid var(--line);
   background: var(--su-bg);
   color: var(--su-text);
   font-family: var(--su-font-sans);
@@ -2280,101 +2080,65 @@ a.feature-card:hover h3 {
   max-width: none;
 }
 
-.ui-sandbox-controls {
-  display: grid;
-  /* Two to a row, so the pairs in the markup stay pairs: the dropdowns,
-     then the sliders, then the two colours. */
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem 1.25rem;
-  padding: 1.25rem 1.5rem;
-  margin-bottom: 0.75rem;
-  border: 1px solid var(--line);
-  border-radius: 0.85rem;
-  background: var(--paper-elevated);
-}
-
-@media (max-width: 36rem) {
-  .ui-sandbox-controls {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-/* The picker's trigger is a swatch; give it the row's height. */
-.ui-sandbox-controls wa-color-picker {
-  display: block;
-  --swatch-size: 2.25rem;
-}
-
-/* Just the grid and the two sliders: no hex field, no eyedropper, and
-   no copy-to-clipboard preview beside the sliders. */
-.ui-sandbox-controls wa-color-picker::part(input),
-.ui-sandbox-controls wa-color-picker::part(eyedropper-button),
-.ui-sandbox-controls wa-color-picker::part(preview) {
-  display: none;
-}
-
-.ui-sandbox-preview {
-  padding: 8rem 1.5rem;
-  margin-bottom: 0.75rem;
-  border: 1px solid var(--line);
-  border-radius: 0.85rem;
-  background: var(--paper-elevated);
-}
-
-.ui-sandbox .code-glow {
-  margin-bottom: 0;
-}
-
-/* Landing page gallery */
+/*
+ * Landing page gallery: a schedule of cells, as on the home page. Each
+ * cell is ruled all round and laps over its neighbours by a line, so
+ * the lines between them are single and a short last row still closes.
+ */
 .ui-gallery {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-  gap: 1rem;
-  margin: 0 0 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  margin: 0 0 2.5rem;
   padding: 0;
   list-style: none;
+}
+
+/* The schedule's lines are its cells', inside it on the top and left and
+   lapping out by one on the right and bottom. */
+.ui-gallery::before {
+  --mark-inset: calc(-1 * var(--arm)) calc(-1 * (var(--su-border-width) + var(--arm)))
+    calc(-1 * (var(--su-border-width) + var(--arm))) calc(-1 * var(--arm));
+}
+
+.ui-gallery > li {
+  display: flex;
+  margin: 0 calc(-1 * var(--su-border-width)) calc(-1 * var(--su-border-width)) 0;
+  border: var(--su-border-width) solid var(--line);
 }
 
 .ui-gallery-card {
   position: relative;
   display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: 0.75rem;
-  /*
-   * The grid already stretches the <li> to the tallest in its row; this
-   * makes the card fill it, so two cards side by side match even when
-   * one summary wraps to an extra line.
-   */
-  height: 100%;
-  padding: 1.1rem;
-  border: 1px solid var(--line);
-  border-radius: 0.85rem;
-  background: var(--paper-elevated);
-  transition: border-color 160ms ease, transform 160ms ease;
+  gap: 0.6rem;
+  padding: 1rem 1rem 1.15rem;
+  transition: background-color 140ms ease;
 }
 
 .ui-gallery-card:hover,
 .ui-gallery-card:focus-within {
-  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-  transform: translateY(-2px);
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
 }
 
 .ui-gallery-preview {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 5rem;
+  min-height: 5.5rem;
+  margin-bottom: 0.35rem;
   padding: 0.75rem;
-  border-radius: 0.55rem;
-  background: color-mix(in srgb, var(--ink) 4%, transparent);
+  border: var(--su-border-width) dashed var(--line-strong);
+  background: var(--su-bg);
 }
 
 /* Stretched link: the anchor is on the name, the hit area is the card. */
 .ui-gallery-name {
   color: var(--ink);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  letter-spacing: -0.01em;
   text-decoration: none;
 }
 
@@ -2382,11 +2146,15 @@ a.feature-card:hover h3 {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: inherit;
 }
 
-.ui-gallery-name:hover {
-  text-decoration: underline;
+.ui-gallery-name:focus-visible {
+  outline: none;
+}
+
+.ui-gallery-card:has(.ui-gallery-name:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 /* A <p>, so its text stays its own sentence apart from the name above it;
@@ -2394,18 +2162,267 @@ a.feature-card:hover h3 {
 .ui-gallery-summary {
   margin: 0;
   color: var(--ink-soft);
-  font-size: 0.88rem;
+  font-size: 0.8125rem;
   line-height: 1.45;
 }
 
+/* ------------------------------------------------------------------ *
+ * Narrow screens
+ *
+ * Below the sidebar's breakpoint the column is the window: no rails, no
+ * marks where they would meet, and a gutter in px rather than rem, so it
+ * is the same on every phone — 16px on the narrowest.
+ * ------------------------------------------------------------------ */
+
+@media (max-width: 860px) {
+  :root {
+    --gutter: 20px;
+  }
+
+  .topbar-inner,
+  .page-landing main,
+  .docs-shell,
+  .content-main {
+    width: 100%;
+    border-inline: 0;
+  }
+
+  /*
+   * With no rails to land on, the schedule's outer lines would sit on the
+   * window's edges — and the one lapping out on the right would scroll the
+   * page sideways. Clipped instead; `clip` rather than `hidden`, so this
+   * is not a scroll container.
+   */
+  .page-landing main {
+    overflow-x: clip;
+  }
+
+  .topbar-inner::before,
+  .page-landing main::before,
+  .docs-shell::before,
+  .content-main::before,
+  .section::before,
+  .feature-list::before {
+    display: none;
+  }
+
+  .topbar-inner {
+    padding-block: 0.6rem;
+  }
+
+  .docs-shell {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0 var(--gutter);
+    background: var(--paper);
+  }
+
+  .docs-sidebar {
+    position: static;
+    max-height: none;
+    padding: 1.25rem 0 1rem;
+    border-bottom: var(--su-border-width) solid var(--line);
+  }
+
+  .docs-main {
+    padding: 2rem 0 2.5rem;
+  }
+
+  .content-main {
+    padding: 2.5rem var(--gutter) 3.5rem;
+  }
+
+  .footer {
+    width: 100%;
+  }
+
+  /*
+   * Sixty-odd component links push the article a screen and a half down a
+   * phone, so the nav closes and hands that space back. One tap on the row
+   * below opens it; a page load closes it again, which is what a visitor
+   * who has just followed one of its links wants anyway.
+   */
+  .docs-sidebar-disclosure:not([open])::details-content {
+    content-visibility: hidden;
+    block-size: 0;
+  }
+
+  .docs-sidebar-label {
+    display: none;
+  }
+
+  /* A ruled row with the preset's plus at its end, a minus once open. */
+  .docs-sidebar-disclosure > .su-collapsible-trigger {
+    display: flex;
+    padding: 0.6rem 0.75rem;
+    border: var(--su-border-width) solid var(--line);
+    color: var(--ink-faint);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .docs-sidebar-disclosure > .su-collapsible-trigger::after {
+    margin-left: auto;
+  }
+
+  .docs-sidebar-disclosure[open] > .su-collapsible-trigger {
+    border-color: var(--line-strong);
+    color: var(--ink-soft);
+  }
+
+  /*
+   * The page the visitor is on. Worth the row only while the nav is closed,
+   * but it costs nothing open either, and hiding it there would make the
+   * summary jump between two widths on every tap.
+   */
+  .docs-sidebar-current {
+    overflow: hidden;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    letter-spacing: normal;
+    text-transform: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .docs-side-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.85rem;
+  }
+
+  /*
+   * The sidebar becomes a wrapping row here, so a group heading has to
+   * claim its own line or it reads as one more link in the middle of the
+   * list.
+   */
+  .docs-side-nav-heading {
+    flex-basis: 100%;
+    margin: 0.6rem 0 0.1rem;
+    padding: 0;
+  }
+
+  .docs-side-nav a {
+    border: var(--su-border-width) solid var(--line);
+  }
+
+  .docs-side-nav a.is-active {
+    border-color: var(--su-primary);
+  }
+
+  .landing-sections {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .section:not(:has(.feature-list)) + .section {
+    border-left: 0;
+  }
+}
+
 @media (max-width: 640px) {
+  :root {
+    --gutter: 16px;
+  }
+
+  .hero {
+    min-height: auto;
+    padding-bottom: 3rem;
+  }
+
+  .hero-center {
+    padding-top: 2.5rem;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    gap: 0.85rem;
+    max-width: 100%;
+  }
+
+  .nav {
+    gap: 0.65rem;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .nav-menu {
+    display: block;
+  }
+
+  .nav-logo {
+    height: 1.1rem;
+  }
+
+  .section {
+    --section-pad: 3rem;
+  }
+
+  .feature-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .feature-card-body {
+    padding: 1.1rem 1rem 1.2rem;
+  }
+
+  .feature-chip {
+    width: 2rem;
+    height: 2rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .feature-list h3 {
+    font-size: 0.9375rem;
+  }
+
+  .feature-list p {
+    font-size: 0.8125rem;
+  }
+
   .ui-demo-preview {
-    padding: 1.25rem 1rem;
+    padding: 1.5rem 1rem;
+  }
+
+  .docs-pagenav {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .docs-pagenav-next {
+    grid-column: auto;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ui-gallery-card {
+  .hero-logo,
+  .hero h1,
+  .hero-lede,
+  .hero-actions {
+    animation: none;
+  }
+
+  .hero-typed.is-typing::after {
+    animation: none;
+    opacity: 0;
+  }
+
+  .btn,
+  .btn-arrow,
+  .install-copy,
+  .feature-card,
+  .feature-card::before,
+  .feature-card::after,
+  .feature-chip,
+  .ui-gallery-card,
+  .ui-gallery-card::before,
+  .docs-pagenav-link,
+  .docs-pagenav-link::before {
     transition: none;
   }
 }

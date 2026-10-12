@@ -13,6 +13,19 @@
       "port": 5173
     },
     {
+      "name": "docs-preview",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "./bin/sitelo.js",
+        "preview",
+        "--root",
+        "docs",
+        "--port",
+        "4174"
+      ],
+      "port": 4174
+    },
+    {
       "name": "ui-example",
       "runtimeExecutable": "node",
       "runtimeArgs": [

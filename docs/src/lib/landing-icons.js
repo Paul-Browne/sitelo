@@ -2,21 +2,22 @@
  * Inline SVG for the landing page — shared by every locale, since none of it
  * carries text.
  *
- * All but two are sitelo-ui's own icons, asked for by name. The lighthouse and
+ * All but two are sitelo-ui's own icons, asked for by name from the square set
+ * the blueprint preset is drawn with. The lighthouse and
  * the components grid are not: each illustrates one feature on one page, and a
  * shared icon set is the wrong home for them. They stay local rather than going
  * through `registerIcons()`, which would put them in `iconNames()` and so on
  * the `/ui/icons` page, documenting them as part of the library.
  */
-import { icon } from 'sitelo/ui'
+import { siteIcon } from './ui-theme.js'
 
-/** The same 24x24 grid and stroke weight the built-in set is drawn on. */
+/** The same 24x24 grid, stroke and square ends the square set is drawn in. */
 const featureIcon = (paths) =>
-  `<svg class="feature-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`
+  `<svg class="feature-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">${paths}</svg>`
 
-export const arrowIcon = icon('arrow-right', { class: 'btn-arrow' })
+export const arrowIcon = siteIcon('arrow-right', { class: 'btn-arrow' })
 
-const feature = (name) => icon(name, { class: 'feature-icon' })
+const feature = (name) => siteIcon(name, { class: 'feature-icon' })
 
 export const icons = {
   routing: feature('folder'),
@@ -24,7 +25,7 @@ export const icons = {
   data: feature('database'),
   pipeline: feature('package'),
   components: featureIcon(
-    '<rect x="3.5" y="3.5" width="7" height="7" rx="1.4"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.4"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.4"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.4"/>',
+    '<path d="M3.5 3.5h7v7h-7zM13.5 3.5h7v7h-7zM3.5 13.5h7v7h-7zM13.5 13.5h7v7h-7z"/>',
   ),
   terminal: feature('terminal'),
   search: feature('search'),

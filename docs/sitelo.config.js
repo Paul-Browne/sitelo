@@ -1,4 +1,5 @@
 import { machineReadable } from './plugins/machine-readable.js'
+import { sitePreset } from './plugins/site-preset.js'
 import { draftPageGlobs } from './src/lib/drafts.js'
 
 export default {
@@ -6,12 +7,19 @@ export default {
   pagefind: true,
   /* Written but unpublished pages; see `src/lib/drafts.js`. */
   exclude: draftPageGlobs(),
-  /*
-   * The sitemap (indexable pages only, with dates), a Markdown copy of each
-   * English page, llms.txt's page index and llms-full.txt.
-   */
   vite: {
-    plugins: [machineReadable()],
+    plugins: [
+      /*
+       * The blueprint preset, written to src/site-preset.css for styles.css
+       * to import, with its rules held out of the component demos.
+       */
+      sitePreset(),
+      /*
+       * The sitemap (indexable pages only, with dates), a Markdown copy of
+       * each English page, llms.txt's page index and llms-full.txt.
+       */
+      machineReadable(),
+    ],
   },
   /*
    * Flat `docs.html` rather than `docs/index.html`. GitHub Pages serves
