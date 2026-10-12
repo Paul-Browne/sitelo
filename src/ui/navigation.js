@@ -15,7 +15,7 @@ import {
 } from 'javascript-to-html'
 
 import { handler } from './handlers.js'
-import { icon } from './icons.js'
+import { icon, iconSet } from './icons.js'
 import { attrs, colorClass, cx, el, parseArgs, space } from './internal.js'
 
 /**
@@ -448,12 +448,16 @@ export function navLink(...args) {
 }
 
 /*
- * Stroke-width 2 rather than the set's 1.8: these render at 1.15em on a
- * toggle, small enough that the default weight goes spindly next to the
- * button's own text.
+ * Stroke-width 2 rather than the round set's 1.8: these render at 1.15em
+ * on a toggle, small enough that the default weight goes spindly next to
+ * the button's own text. The square set keeps its own 1.5, since a
+ * hairline is what it is drawn to be.
  */
 const themeIcon = (name) =>
-  icon(name, { class: `su-theme-icon su-theme-icon-${name}`, 'stroke-width': 2 })
+  icon(name, {
+    class: `su-theme-icon su-theme-icon-${name}`,
+    ...(iconSet() === 'square' ? {} : { 'stroke-width': 2 }),
+  })
 
 /**
  * Light/dark toggle.

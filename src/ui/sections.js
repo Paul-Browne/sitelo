@@ -17,7 +17,7 @@ import {
 } from 'javascript-to-html'
 
 // Aliased: `timelineItem` takes an `icon` prop, which would shadow it.
-import { icon as iconSvg } from './icons.js'
+import { iconSet, icon as iconSvg } from './icons.js'
 import { attrs, colorClass, cx, el, oneOf, parseArgs, SIZES } from './internal.js'
 
 /**
@@ -162,11 +162,12 @@ export function statGroup(...args) {
 }
 
 /*
- * The tick on a completed step. Bolder than the set's 1.8, because the
- * marker renders it at 0.85rem — at that size the default weight is a
- * hairline on a filled circle.
+ * The tick on a completed step. Bolder than the round set's 1.8, because
+ * the marker renders it at 0.85rem — at that size the default weight is
+ * a hairline on a filled circle. The square set is drawn to be hairlines,
+ * so its tick only steps up to the weight of the rules beside it.
  */
-const stepTick = () => iconSvg('check', { 'stroke-width': 3.4 })
+const stepTick = () => iconSvg('check', { 'stroke-width': iconSet() === 'square' ? 2 : 3.4 })
 
 /**
  * A numbered flow, with the steps behind you marked done.
