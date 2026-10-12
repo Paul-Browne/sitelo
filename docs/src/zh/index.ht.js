@@ -1,5 +1,6 @@
 import {
   a,
+  br,
   button,
   code,
   div,
@@ -14,6 +15,7 @@ import {
 } from 'javascript-to-html'
 import { landingLayout } from '../lib/zh.js'
 import { arrowIcon, icons } from '../lib/landing-icons.js'
+import { heroTyped } from '../lib/hero-typed.js'
 import { gettingStartedSnippets } from '../lib/snippets/getting-started.js'
 
 const { install } = gettingStartedSnippets('zh')
@@ -116,15 +118,11 @@ function headerHero() {
         span(
           { class: 'hero-headline-text' },
           '打造',
-          span(
-            {
-              class: 'hero-typed',
-              'data-phrases':
-                '快速网站|博客|作品集|落地页|内容站点|电商网站',
-              'aria-live': 'polite',
-            },
-            '快速网站',
+          heroTyped(
+            ['快速网站', '博客', '作品集', '落地页', '内容站点', '电商网站'],
+            { inline: true },
           ),
+          br(),
           '的现代框架',
         ),
       ),

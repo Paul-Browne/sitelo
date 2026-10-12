@@ -14,6 +14,7 @@ import {
 } from 'javascript-to-html'
 import { landingLayout } from '../lib/pt.js'
 import { arrowIcon, icons } from '../lib/landing-icons.js'
+import { heroTyped } from '../lib/hero-typed.js'
 import { gettingStartedSnippets } from '../lib/snippets/getting-started.js'
 
 const { install } = gettingStartedSnippets('pt')
@@ -121,15 +122,14 @@ function headerHero() {
         span(
           { class: 'hero-headline-text' },
           'A framework moderna para ',
-          span(
-            {
-              class: 'hero-typed',
-              'data-phrases':
-                'sites rápidos|blogues|portefólios|páginas de destino|sites de conteúdo|lojas online',
-              'aria-live': 'polite',
-            },
+          heroTyped([
             'sites rápidos',
-          ),
+            'blogues',
+            'portefólios',
+            'páginas de destino',
+            'sites de conteúdo',
+            'lojas online',
+          ]),
         ),
       ),
       p(

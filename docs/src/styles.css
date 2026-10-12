@@ -628,7 +628,7 @@ code {
 
 .hero-logo {
   display: block;
-  width: min(10.5rem, 56vw);
+  width: min(12rem, 60vw);
   height: auto;
   margin: 0 auto 2.25rem;
   filter: invert(var(--logo-invert));
@@ -642,7 +642,9 @@ code {
   margin: 0 auto 1.25rem;
   max-width: 15em;
   min-height: calc(1.06em * 2);
-  font-size: clamp(2.1rem, 5.4vw, 3.9rem);
+  /* On a phone, small enough for the sentence before the typed phrase to stay
+     on one line: under 12.4em in every locale but Russian. */
+  font-size: clamp(min(2.1rem, (100vw - 2 * var(--gutter)) / 12.4), 5.4vw, 3.9rem);
   font-weight: 500;
   line-height: 1.06;
   letter-spacing: -0.045em;
@@ -656,17 +658,47 @@ code {
   width: 100%;
 }
 
+/*
+ * Every phrase sits in the one grid cell, the hidden copies setting its size,
+ * so the slot never changes height while the visible one is typed. It is a
+ * line of its own under the rest of the sentence, which never rewraps.
+ */
 .hero-typed {
-  display: inline;
+  display: grid;
   color: var(--accent);
+  text-wrap: wrap;
 }
 
-.hero-typed.is-typing::after {
+/* Mid-sentence, as in Chinese, the slot stays in the line, as wide as its
+   widest phrase. Its text starts at the left edge, so the words either side
+   hold still and a short phrase leaves room at its end. */
+.hero-typed--inline {
+  display: inline-grid;
+  max-width: 100%;
+  text-align: start;
+}
+
+.hero-typed > * {
+  grid-area: 1 / 1;
+}
+
+.hero-typed-sizer {
+  visibility: hidden;
+}
+
+.hero-typed-sizer::before {
+  content: attr(data-phrase);
+}
+
+/* The negative margin keeps the caret out of the line's width, so it can
+   neither widen the slot nor wrap onto a line of its own. */
+.hero-typed.is-typing .hero-typed-text::after {
   content: '';
   display: inline-block;
   width: 0.06em;
   height: 0.9em;
   margin-left: 0.06em;
+  margin-right: -0.12em;
   vertical-align: -0.06em;
   background: currentColor;
   animation: caret-blink 1s steps(1) infinite;
@@ -2446,7 +2478,7 @@ a.feature-card:hover .feature-chip {
     animation: none;
   }
 
-  .hero-typed.is-typing::after {
+  .hero-typed.is-typing .hero-typed-text::after {
     animation: none;
     opacity: 0;
   }

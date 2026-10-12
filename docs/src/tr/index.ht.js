@@ -14,6 +14,7 @@ import {
 } from 'javascript-to-html'
 import { landingLayout } from '../lib/tr.js'
 import { arrowIcon, icons } from '../lib/landing-icons.js'
+import { heroTyped } from '../lib/hero-typed.js'
 import { gettingStartedSnippets } from '../lib/snippets/getting-started.js'
 
 const { install } = gettingStartedSnippets('tr')
@@ -121,15 +122,14 @@ function headerHero() {
         span(
           { class: 'hero-headline-text' },
           'Modern çatı: ',
-          span(
-            {
-              class: 'hero-typed',
-              'data-phrases':
-                'hızlı web siteleri|bloglar|portfolyolar|açılış sayfaları|içerik odaklı siteler|e-ticaret siteleri',
-              'aria-live': 'polite',
-            },
+          heroTyped([
             'hızlı web siteleri',
-          ),
+            'bloglar',
+            'portfolyolar',
+            'açılış sayfaları',
+            'içerik odaklı siteler',
+            'e-ticaret siteleri',
+          ]),
         ),
       ),
       p(
