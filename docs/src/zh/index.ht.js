@@ -136,7 +136,7 @@ function headerHero() {
         { class: 'hero-actions' },
         a({ class: 'btn', href: '/zh/docs' }, '开始使用'),
         div(
-          { class: 'install-glow' },
+          { class: 'install-frame' },
           div(
             { class: 'install' },
             code({ class: 'install-cmd' }, install),

@@ -140,7 +140,7 @@ function headerHero() {
         { class: 'hero-actions' },
         a({ class: 'btn', href: '/id/docs' }, 'Mulai'),
         div(
-          { class: 'install-glow' },
+          { class: 'install-frame' },
           div(
             { class: 'install' },
             code({ class: 'install-cmd' }, install),

@@ -2,10 +2,10 @@
  * Regenerates the favicon and app icons from the "S" in public/logo.svg.
  *
  * The full wordmark is unreadable at 16px, so the icons use the S on its own,
- * sitting on the site's dark plaque and filled with the same cool-to-neon
- * sweep the conic glow runs on cards and code blocks.
+ * in ink on the near-black sheet the site is drawn on — the blueprint
+ * preset's dark page and text colours, and its square corners.
  *
- * Run `npm run docs:icons` after logo.svg or the accent tokens change, then
+ * Run `npm run docs:icons` after logo.svg or the preset's colours change, then
  * commit the four files it writes. Needs sharp, already an optional peer for
  * image optimization.
  */
@@ -15,21 +15,15 @@ import sharp from 'sharp'
 const publicDir = new URL('../public/', import.meta.url)
 const out = (name) => new URL(name, publicDir)
 
-/** --paper, and the three gradient stops: --glow-cool, --accent, --accent-deep lifted. */
-const PLAQUE = '#071410'
-const STOPS = [
-  [0, '#8fd4ff'],
-  [0.3, '#3dff9a'],
-  [1, '#1fb56d'],
-]
+/** --paper and --ink in the dark theme: the preset's `--su-bg` and `--su-text`. */
+const PLAQUE = '#0a0a0a'
+const INK = '#ededed'
 
 const BOX = 512
 /** Cap height inside a 512 box. Large, so the counters survive down to 16px. */
 const CAP = 360
 /** Android may crop a maskable icon to the inner 80%, so that S runs smaller. */
 const MASKABLE_CAP = 250
-/** Matches the squircle a tab strip and a home screen both read as a tile. */
-const RADIUS = 112
 
 const round = (n) => Math.round(n * 100) / 100
 
@@ -67,19 +61,14 @@ async function measure({ d, viewBox }) {
   }
 }
 
-/** The glyph centred in a BOX-sized square, gradient running corner to corner. */
-function mark({ d, box: b }, { cap, radius = 0 }) {
+/** The glyph centred in a BOX-sized square. */
+function mark({ d, box: b }, { cap }) {
   const s = cap / b.height
   const x = round((BOX - b.width * s) / 2)
   const y = round((BOX - cap) / 2)
-  const stops = STOPS.map(([o, c]) => `\n\t\t\t<stop offset="${o}" stop-color="${c}"/>`).join('')
   return `<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="sitelo" width="${BOX}" height="${BOX}" viewBox="0 0 ${BOX} ${BOX}">
-	<defs>
-		<linearGradient id="s" gradientUnits="userSpaceOnUse" x1="${x}" y1="${y}" x2="${round(x + b.width * s)}" y2="${round(y + cap)}">${stops}
-		</linearGradient>
-	</defs>
-	<rect width="${BOX}" height="${BOX}"${radius ? ` rx="${radius}"` : ''} fill="${PLAQUE}"/>
-	<path transform="translate(${round(x - b.x * s)} ${round(y - b.y * s)}) scale(${round(s)})" d="${d}" fill="url(#s)"/>
+	<rect width="${BOX}" height="${BOX}" fill="${PLAQUE}"/>
+	<path transform="translate(${round(x - b.x * s)} ${round(y - b.y * s)}) scale(${round(s)})" d="${d}" fill="${INK}"/>
 </svg>
 `
 }
@@ -87,15 +76,15 @@ function mark({ d, box: b }, { cap, radius = 0 }) {
 const glyph = readGlyph()
 const shape = { d: glyph.d, box: await measure(glyph) }
 
-// rel="icon": rounded, so the mark holds its own shape against a tab strip.
-writeFileSync(out('favicon.svg'), mark(shape, { cap: CAP, radius: RADIUS }))
+// rel="icon": a square tile, as nothing on the site is rounded.
+const square = mark(shape, { cap: CAP })
+writeFileSync(out('favicon.svg'), square)
 
-// apple-touch and PWA icons: full-bleed, the platform applies its own mask.
-const square = Buffer.from(mark(shape, { cap: CAP }))
+// apple-touch and PWA icons: the same tile; the platform applies its own mask.
 const maskable = Buffer.from(mark(shape, { cap: MASKABLE_CAP }))
 
-await sharp(square).resize(192, 192).png().toFile(out('icon-192.png').pathname)
-await sharp(square).resize(BOX, BOX).png().toFile(out('icon-512.png').pathname)
+await sharp(Buffer.from(square)).resize(192, 192).png().toFile(out('icon-192.png').pathname)
+await sharp(Buffer.from(square)).resize(BOX, BOX).png().toFile(out('icon-512.png').pathname)
 await sharp(maskable).resize(BOX, BOX).png().toFile(out('icon-maskable-512.png').pathname)
 
 console.log('wrote favicon.svg, icon-192.png, icon-512.png, icon-maskable-512.png')

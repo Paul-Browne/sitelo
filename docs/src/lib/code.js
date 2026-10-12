@@ -80,7 +80,7 @@ export function createCodeHelpers(lang = DEFAULT_LOCALE) {
 
   function codeBlock(label, source, language = 'javascript') {
     return div(
-      { class: 'code-glow' },
+      { class: 'code-frame' },
       pre(
         { class: `code language-${language}`, 'data-label': label },
         rawCode({ class: `language-${language}` }, highlight(source, language)),
@@ -138,7 +138,7 @@ export function createCodeHelpers(lang = DEFAULT_LOCALE) {
     ]
 
     return div(
-      { class: 'code-tabs code-glow', 'data-code-tabs': '' },
+      { class: 'code-tabs code-frame', 'data-code-tabs': '' },
       div(
         { class: 'code-tabs-nav', role: 'tablist', 'aria-label': t.markupStyle },
         ...tabs.map(({ id, label, badge }) =>

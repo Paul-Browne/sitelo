@@ -1,176 +1,234 @@
 import { style } from 'javascript-to-html'
-import { stylesheet, theme } from 'sitelo/ui'
+import { icon, iconSet, stylesheet } from 'sitelo/ui'
 
 /**
- * The docs palette, expressed as sitelo-ui tokens.
+ * The preset this site is drawn in.
  *
- * Every value is a `var()` pointing at the token this site already
- * defines in `styles.css`, rather than a literal colour. Custom
- * properties resolve where they are *used*, not where they are
- * declared, so one block covers both themes: when the boot script
- * stamps `data-theme="light"` on <html>, `--paper` changes on `:root`
- * and `--su-bg` follows it. There is no second, light-only copy of this
- * map to keep in step with the one in `styles.css`.
- *
- * The five palettes are not five hues here. This site has one accent,
- * so `primary` is it and `neutral` is the ink; `success`, `warning` and
- * `danger` keep sitelo-ui's own, since the docs chrome never asks for
- * them and a component that did should still look right.
+ * The docs are a sitelo-ui site like any other, so they take their look
+ * from one of the library's presets rather than from a palette of their
+ * own: the bar, the sidebar, the tables, the footer and the cookie notice
+ * are the library's components, and `styles.css` draws the rest — the
+ * hero, the code blocks, the page frame — in the same hand, from the same
+ * tokens.
  */
-const TOKENS = {
-  // Surfaces
-  bg: 'var(--paper)',
-  bgSubtle: 'var(--paper)',
-  surface: 'var(--paper-elevated)',
-  '--su-surface-2': 'color-mix(in srgb, var(--ink) 5%, var(--paper-elevated))',
-  surfaceHover: 'color-mix(in srgb, var(--ink) 8%, var(--paper-elevated))',
-  border: 'var(--line)',
-  borderStrong: 'color-mix(in srgb, var(--ink) 26%, transparent)',
-  text: 'var(--ink)',
-  textMuted: 'var(--ink-soft)',
-  textSubtle: 'var(--ink-faint)',
-  overlay: 'color-mix(in srgb, var(--paper) 70%, transparent)',
+export const SITE_PRESET = 'blueprint'
 
-  // Type — the same three families the rest of the site preloads.
-  fontSans: 'var(--font-body)',
-  fontMono: 'var(--font-mono)',
+/** The icon set that preset is drawn for: straight hairlines, square ends. */
+const SITE_ICONS = 'square'
 
-  // Elevation
-  shadowSm: '0 2px 8px rgb(0 0 0 / 0.18)',
-  shadowMd: 'var(--shadow-panel)',
-  shadowLg: 'var(--shadow-panel)',
+/**
+ * An icon from that set, for the site's own chrome.
+ *
+ * Asked for one at a time rather than with a global `iconSet()`: the set
+ * is module state, and the component demos render in the same process
+ * and have to draw the library's default.
+ *
+ * @param {string} name
+ * @param {Record<string, unknown>} [attrs]
+ * @returns {string}
+ */
+export function siteIcon(name, attrs) {
+  const previous = iconSet(SITE_ICONS)
 
-  primary: {
-    base: 'var(--accent)',
-    hover: 'var(--accent-deep)',
-    active: 'var(--accent-deep)',
-    fg: 'var(--accent-ink)',
-    soft: {
-      base: 'color-mix(in srgb, var(--accent) 14%, transparent)',
-      hover: 'color-mix(in srgb, var(--accent) 22%, transparent)',
-      fg: 'var(--accent)',
-    },
-    border: 'color-mix(in srgb, var(--accent) 40%, transparent)',
-    ring: 'color-mix(in srgb, var(--accent) 36%, transparent)',
-  },
-
-  neutral: {
-    base: 'var(--ink-soft)',
-    hover: 'var(--ink)',
-    active: 'var(--ink)',
-    fg: 'var(--paper)',
-    soft: {
-      base: 'color-mix(in srgb, var(--ink) 8%, transparent)',
-      hover: 'color-mix(in srgb, var(--ink) 14%, transparent)',
-      fg: 'var(--ink)',
-    },
-    border: 'var(--line)',
-    ring: 'color-mix(in srgb, var(--ink) 28%, transparent)',
-  },
+  try {
+    return icon(name, attrs)
+  } finally {
+    iconSet(previous)
+  }
 }
 
-/*
- * `:root` three times over, which is not a typo.
+/**
+ * Top-level blocks of a minified sheet, as prelude and body. The sheets
+ * this reads are the library's own, with no brace inside a string.
  *
- * sitelo-ui's dark tokens live under
- * `:root:not([data-theme='light']):not([data-su-theme='light'])` — three
- * pseudo-classes, and a media query adds no specificity of its own. A
- * plain `:root` block here would lose to it for every visitor whose OS
- * is set to dark, which on this site is the default look. Repeating
- * `:root` matches that specificity exactly and wins on source order,
- * without inventing an attribute the markup would then have to carry.
+ * @param {string} css
+ * @returns {{ prelude: string, body: string }[]}
  */
-export const uiTheme = () => theme(TOKENS, { selector: ':root:root:root' })
+export function cssBlocks(css) {
+  const blocks = []
+  let i = 0
+
+  while (i < css.length) {
+    const open = css.indexOf('{', i)
+    if (open < 0) break
+    let depth = 1
+    let j = open + 1
+    for (; depth; j++) {
+      if (css[j] === '{') depth++
+      else if (css[j] === '}') depth--
+    }
+    blocks.push({ prelude: css.slice(i, open).trim(), body: css.slice(open + 1, j - 1) })
+    i = j
+  }
+
+  return blocks
+}
+
+const cssText = ({ prelude, body }) => `${prelude}{${body}}`
 
 /*
- * Sitelo-ui's own tokens, read back out of the sheet it ships.
- *
- * The block above repaints every component on the site in this site's
- * colours, which is the point — but it also reaches the demos on the
- * component pages, and those have to show the library as it arrives.
- * With `--su-primary` remapped to the docs accent, `/ui/button`'s
- * "Colors" section was arguing that a primary button is neon green.
- *
- * So the demo previews get the defaults back. They are lifted from
- * `ui.css` rather than copied into this file: a palette this site does
- * not own is one it cannot keep in step by hand, and the reference is
- * the one page where being a version behind would actually mislead.
- *
- * Only the tokens `TOKENS` actually overrides are restored, and the list
- * of those is read off this module's own output — so a token added to
- * the map above is restored here without anyone remembering to.
+ * Both read when asked for rather than once, as the library reads them:
+ * edit the preset with the dev server running and the next page shows it.
  */
-function declarationsIn(block) {
-  return block
-    // Comments first: `ui.css` groups its tokens under headings, and a
-    // declaration whose segment still carries the `/* Surfaces */` above
-    // it no longer starts with `--su-`.
-    .replace(/\/\*[\s\S]*?\*\//g, '')
+const coreCss = () => stylesheet()
+
+// `stylesheet({ preset })` is the core and then the preset, and the core
+// is linked on its own — so only the part after it is the preset's.
+const presetCss = () => stylesheet({ preset: SITE_PRESET }).slice(coreCss().length)
+
+/*
+ * Every box on the site that shows something other than the site's own
+ * look: the demo above the code on a component page, the thumbnail on a
+ * gallery card on `/ui`, and the stage a preset's page shows that preset
+ * on. The gallery is the first of these a reader meets, so it is the last
+ * place that should be showing them the docs' preset instead of the
+ * library as it arrives.
+ */
+const ELSEWHERE = ['.ui-demo-preview', '.ui-gallery-preview', '[data-preset-stage]']
+
+/** A selector that reads the theme off an element: `:root`, or an attribute. */
+const THEME_SELECTOR = /^(:root|\[data-(su-)?theme)/
+
+/**
+ * A block that only says what the tokens are: the preset's light and dark
+ * values, and the composites it declares alongside them. Everything else
+ * in the sheet is a rule that restyles a component.
+ */
+function isTokenBlock({ prelude, body }) {
+  if (prelude.startsWith('@media (prefers-color-scheme: dark)')) {
+    return cssBlocks(body).every(isTokenBlock)
+  }
+  return !prelude.startsWith('@') && prelude.split(',').every((s) => THEME_SELECTOR.test(s))
+}
+
+/**
+ * A token block held to the document element.
+ *
+ * The preset declares its dark tokens on any element carrying a theme
+ * attribute, so that a `data-su-theme="dark"` region of a page goes dark
+ * in the preset's colours. Here a demo can carry one, and it should go
+ * dark in the library's — the docs only ever set the theme on <html>.
+ */
+function onRoot({ prelude, body }) {
+  if (prelude.startsWith('@')) return `${prelude}{${cssBlocks(body).map(onRoot).join('')}}`
+  const selectors = prelude.split(',').map((s) => (s.startsWith(':root') ? s : `:root${s}`))
+  return `${[...new Set(selectors)].join(',')}{${body}}`
+}
+
+/**
+ * The preset, for every part of the page but the boxes in {@link ELSEWHERE}.
+ *
+ * Its tokens are set on `:root` as the preset sets them, so the docs'
+ * own sheet can read them too. Its rules — every one that restyles a
+ * component — go inside `@scope`, with those boxes as its lower
+ * boundary, so a button in a demo is drawn as the library draws it and
+ * not as this site does. What the boxes inherit from the page is put
+ * back by {@link uiDemoDefaults}.
+ *
+ * `@property` and `@keyframes` cannot be scoped, and are global anyway.
+ *
+ * A note for `styles.css`: a scoped rule beats an unscoped one of the
+ * same specificity whichever comes first, so a docs rule overriding one
+ * of these needs a class more than the rule it overrides.
+ *
+ * @returns {string}
+ */
+export function sitePresetCss() {
+  const blocks = cssBlocks(presetCss())
+  const global = blocks.filter(({ prelude }) => /^@(property|keyframes)/.test(prelude))
+  const tokens = blocks.filter(isTokenBlock)
+  const rules = blocks.filter((block) => !global.includes(block) && !tokens.includes(block))
+
+  return (
+    global.map(cssText).join('') +
+    tokens.map(onRoot).join('') +
+    `@scope (:root) to (${ELSEWHERE.join(',')}){${rules.map(cssText).join('')}}`
+  )
+}
+
+/** The `--su-` declarations in a block's body. */
+const tokensIn = (body) =>
+  body
     .split(';')
     .map((part) => part.trim())
     .filter((part) => part.startsWith('--su-'))
+
+const nameOf = (declaration) => declaration.slice(0, declaration.indexOf(':')).trim()
+
+/**
+ * Every token the preset sets but its own `--su-bp-*` ones: only the
+ * preset's rules read those, and its rules stop at the boxes.
+ */
+function presetTokens() {
+  return new Set(
+    cssBlocks(presetCss())
+      .filter(isTokenBlock)
+      .flatMap(function names({ prelude, body }) {
+        return prelude.startsWith('@')
+          ? cssBlocks(body).flatMap(names)
+          : tokensIn(body).map(nameOf)
+      })
+      .filter((name) => !name.startsWith('--su-bp-')),
+  )
 }
 
 /**
- * The `--su-*` names the docs theme takes over.
+ * The core's own values for those tokens, read out of the sheet it
+ * ships rather than copied here: a palette this site does not own is one
+ * it cannot keep in step by hand, and the reference is the one page where
+ * being a version behind would actually mislead.
  *
- * Read off `theme()`'s own output rather than off `TOKENS`, because it
- * is `theme()` that decides a key called `surfaceHover` becomes
- * `--su-surface-hover` — and a nested palette one key becomes nine.
- */
-const OVERRIDDEN = new Set(
-  [...theme(TOKENS).matchAll(/(--su-[a-z0-9-]+)\s*:/g)].map((m) => m[1]),
-)
-
-/**
- * The declarations for those names, as `ui.css` itself writes them.
+ * A token the preset sets and the core does not — a composite such as
+ * `--su-c-focus` — goes back to `initial`, so the core's fallback for it
+ * is the one used.
  *
- * @param {string} opener - The selector introducing the block to read.
- * @returns {string}
+ * @param {(prelude: string) => boolean} matches - Which of the core's
+ *   blocks to read.
+ * @param {boolean} fill - Whether a token missing from them goes to
+ *   `initial` rather than being left out.
  */
-function defaults(opener) {
-  const css = stylesheet({ minify: false })
-  const from = css.indexOf(opener) + opener.length
-  const block = css.slice(from, css.indexOf('\n}', from))
+function coreValues(matches, fill) {
+  const values = new Map(
+    cssBlocks(coreCss())
+      .filter(({ prelude }) => matches(prelude))
+      .flatMap(({ body }) => tokensIn(body))
+      .map((declaration) => [nameOf(declaration), declaration]),
+  )
 
-  return declarationsIn(block)
-    .filter((part) => OVERRIDDEN.has(part.slice(0, part.indexOf(':'))))
-    // `ui.css` wraps its longer values over two indented lines, which is
-    // right in a file and pure weight in an inline <style> on 351 pages.
-    .map((part) => part.replace(/\s+/g, ' '))
+  return [...presetTokens()]
+    .map((name) => values.get(name) ?? (fill ? `${name}:initial` : ''))
+    .filter(Boolean)
     .join(';')
 }
 
-const LIGHT = defaults(':root {')
-const DARK = defaults("[data-su-theme='dark'] {")
+/** The boxes as one selector list, each optionally under an ancestor. */
+const scoped = (ancestor = '') => ELSEWHERE.map((scope) => `${ancestor}${scope}`).join(',')
 
 /*
- * Both boxes that show the library as it ships: the demo above the code
- * on a component page, and the thumbnail on a gallery card on `/ui`. The
- * gallery is the first of the two a reader meets, so it is the last
- * place that should be showing them a green primary button.
- */
-const SCOPES = ['.ui-demo-preview', '.ui-gallery-preview']
-
-/** The scopes as one selector list, each optionally under an ancestor. */
-const scoped = (ancestor = '') =>
-  SCOPES.map((scope) => `${ancestor}${scope}`).join(',')
-
-/*
- * The defaults, for the pages that document them.
+ * The library's own tokens, for the pages that document it.
  *
  * Three blocks rather than `theme()`'s own `dark` option, which composes
  * its selectors as `<scope> [data-theme='dark']` — the themed element
  * *inside* the scope. Here it is the other way round: the attribute is
  * on <html> and the scope is a div deep in the article.
+ *
+ * A preset's stage is one of the boxes, so the docs' focus colour and
+ * the rest come off it too. The stage's own sheet declares the core's
+ * tokens and its preset's on the stage from inside an `@scope`, which
+ * wins over these at the same specificity — so they only fill what that
+ * preset leaves alone.
  */
-export const uiDemoDefaults = () =>
-  style(
+export function uiDemoDefaults() {
+  const light = coreValues((prelude) => prelude === ':root', true)
+  const dark = coreValues((prelude) => prelude.split(',').includes("[data-su-theme='dark']"), false)
+
+  return style(
     { 'data-sitelo-ui-demo': '' },
-    `${scoped()}{${LIGHT}}` +
+    `${scoped()}{${light}}` +
       `${scoped("[data-theme='dark'] ")},` +
-      `${scoped("[data-su-theme='dark'] ")}{${DARK}}` +
+      `${scoped("[data-su-theme='dark'] ")}{${dark}}` +
       `@media (prefers-color-scheme: dark){` +
       `${scoped(":root:not([data-theme='light']):not([data-su-theme='light']) ")}` +
-      `{${DARK}}}`,
+      `{${dark}}}`,
   )
+}

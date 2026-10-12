@@ -14,19 +14,19 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 
 /**
- * Sora and Source Sans 3 are asked for as weight ranges, so Google serves one
- * variable file per subset instead of one per weight — 25 KB of Sora covering
- * 500/600/700 rather than 25 KB each. IBM Plex Mono has no variable axis on
- * Google Fonts, so it stays two static weights.
+ * Geist and Geist Mono, the faces the blueprint preset names first. Both are
+ * asked for as weight ranges, so Google serves one variable file per subset
+ * instead of one per weight: 400 for running text and what is typed into a
+ * field, 500 for headings and labels, 600 for the odd strong word.
  */
 const FAMILIES =
-  'family=IBM+Plex+Mono:wght@400&family=Sora:wght@500..700&family=Source+Sans+3:wght@400..600'
+  'family=Geist:wght@400..600&family=Geist+Mono:wght@400..500'
 
 /**
- * The scripts these seven locales actually set. Google also offers greek,
- * greek-ext and vietnamese for these families; nothing here renders them, and
- * the Chinese pages fall back to a system face regardless, since none of the
- * three families carries CJK.
+ * The scripts the eleven locales actually set. Google also offers vietnamese
+ * for both families, and symbols2 for the mono; nothing here renders them, and
+ * the Chinese pages fall back to a system face regardless, since neither
+ * family carries CJK.
  */
 const SUBSETS = new Set(['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'])
 

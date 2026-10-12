@@ -84,7 +84,7 @@ for (const button of buttons) {
 for (const button of document.querySelectorAll('.code-copy')) {
   button.addEventListener('click', async () => {
     const source = button
-      .closest('.code-glow')
+      .closest('.code-frame')
       ?.querySelector('.code code')?.textContent
     if (!source) return
     try {

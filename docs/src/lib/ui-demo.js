@@ -4,6 +4,7 @@ import * as extras from 'sitelo/ui-extras'
 
 import { createCodeHelpers } from './code.js'
 import { DEFAULT_LOCALE } from './i18n.js'
+import { cssBlocks } from './ui-theme.js'
 
 /*
  * A few plain elements the demos need for scaffolding — a wrapper to
@@ -137,33 +138,6 @@ const PRESET_ICONS = {
 /** Where a preset preview's sheet applies, and nowhere else. */
 const PRESET_STAGE = '[data-preset-stage]'
 
-/**
- * Top-level blocks of a minified sheet, as prelude and body. The sheets
- * this reads are the library's own, with no brace inside a string.
- *
- * @param {string} css
- * @returns {{ prelude: string, body: string }[]}
- */
-function cssBlocks(css) {
-  const blocks = []
-  let i = 0
-
-  while (i < css.length) {
-    const open = css.indexOf('{', i)
-    if (open < 0) break
-    let depth = 1
-    let j = open + 1
-    for (; depth; j++) {
-      if (css[j] === '{') depth++
-      else if (css[j] === '}') depth--
-    }
-    blocks.push({ prelude: css.slice(i, open).trim(), body: css.slice(open + 1, j - 1) })
-    i = j
-  }
-
-  return blocks
-}
-
 /*
  * A preset written for a whole page, confined to one element.
  *
@@ -229,8 +203,8 @@ function coreTokens(css) {
  * The core's own tokens go in first, scoped the same way. A site that
  * picks a preset has the core's defaults under it, and the preset only
  * restates what it changes; here the stage would otherwise inherit this
- * site's `uiTheme()` for everything the preset leaves alone — its soft
- * fills and its borders — and show the docs' green through the preset.
+ * site's own preset for everything the one on show leaves alone — its
+ * soft fills and its borders — and show blueprint through neumorphism.
  *
  * @param {string} preset
  * @returns {string}
