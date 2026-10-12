@@ -1992,6 +1992,19 @@ test('iconSet() reaches the glyphs components draw for themselves', () => {
   assert.doesNotMatch(ui.alert('Heads up'), squareLine, 'and none of them once the set is put back');
 });
 
+test('the square set keeps the step tick and theme toggle near its own line', () => {
+  // Distinct weights: every step carries a tick, shown once it is complete.
+  const weights = (html) => [...new Set([...html.matchAll(/stroke-width="([\d.]+)"/g)].map(([, width]) => Number(width)))];
+
+  square(() => {
+    assert.deepEqual(weights(ui.themeToggle()), [1.5], "the toggle's sun and moon in the set's 1.5");
+    assert.deepEqual(weights(ui.steps({ items: ['a', 'b'], current: 1 })), [2], 'the tick only up to the rules beside it');
+  });
+
+  assert.deepEqual(weights(ui.themeToggle()), [2], 'the round set keeps its heavier toggle');
+  assert.deepEqual(weights(ui.steps({ items: ['a', 'b'], current: 1 })), [3.4], 'and its bold tick');
+});
+
 test('a registered glyph wins under the square set too, drawn in its line', (t) => {
   ui.registerIcons({ check: '<path data-test="mine" d="M4 12h16"/>' });
   t.after(() => ui.registerIcons({ check: null }));
