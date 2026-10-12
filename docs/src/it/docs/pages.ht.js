@@ -33,7 +33,7 @@ export default () =>
         code('javascript-to-html'),
         '): funzioni-tag che restituiscono stringhe, senza motori di template né runtime React.',
       ),
-      h2('1. Una funzione che restituisce HTML'),
+      h2('Una funzione che restituisce HTML'),
       pageCodeTabs({
         file: 'page.ht.js',
         template: s.fnTemplate,
@@ -53,9 +53,9 @@ export default () =>
         a({ href: '#limitazioni-di-jsx' }, 'limitazioni di JSX'),
         ' più sotto — sitelo trasforma JSX in HTML statico in fase di build; non è un’app React nel browser.',
       ),
-      h2('2. Una semplice stringa'),
+      h2('Una semplice stringa'),
       codeBlock('page.ht.js', s.string, 'javascript'),
-      h2('3. Un modulo strutturato'),
+      h2('Un modulo strutturato'),
       p(
         'Tieni insieme ',
         code('render'),

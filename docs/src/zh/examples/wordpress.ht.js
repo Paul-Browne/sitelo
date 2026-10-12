@@ -35,7 +35,7 @@ export default () =>
       h2('项目结构'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. 指向你的 WordPress 站点'),
+      h2('指向你的 WordPress 站点'),
       p(
         '现代 WordPress 默认开启 REST API。可以在 ',
         code('https://你的站点.com/wp-json/wp/v2/posts'),
@@ -47,7 +47,7 @@ export default () =>
         '（试验阶段直接写死也行）：',
       ),
       codeBlock('.env', s.env, 'bash'),
-      h2('2. 共用的 WordPress 辅助函数'),
+      h2('共用的 WordPress 辅助函数'),
       p(
         code('getAllPosts()'),
         ' 读取 ',
@@ -59,14 +59,14 @@ export default () =>
         ' —— 只在取单篇文章时才请求内嵌内容。',
       ),
       codeBlock('src/lib/wordpress.js', s.wpLib, 'javascript'),
-      h2('3. 首页'),
+      h2('首页'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.homeTemplate,
         ht: s.homeHt,
         jsx: s.homeJsx,
       }),
-      h2('4. 博客索引'),
+      h2('博客索引'),
       p(
         '使用 ',
         code('getAllPosts()'),
@@ -78,7 +78,7 @@ export default () =>
         ht: s.blogIndexHt,
         jsx: s.blogIndexJsx,
       }),
-      h2('5. 把每篇文章都变成静态页面'),
+      h2('把每篇文章都变成静态页面'),
       p(
         code('generateStaticParams'),
         ' 必须返回你希望出现在 ',
@@ -95,7 +95,7 @@ export default () =>
         ht: s.blogPostHt,
         jsx: s.blogPostJsx,
       }),
-      h2('6. 构建'),
+      h2('构建'),
       codeBlock('shell', s.build, 'bash'),
       p(
         '首次构建会完整走一遍 WordPress，并填满 fetch 缓存。后续构建会复用缓存的列表和详情响应（',

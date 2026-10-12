@@ -48,7 +48,7 @@ export default () =>
       h2('Struttura del progetto'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Modulo island'),
+      h2('Modulo island'),
       p(
         'Un semplice ',
         code('.js'),
@@ -59,7 +59,7 @@ export default () =>
         ' e restituisce una stringa HTML. Questo usa l’ora della richiesta e lo user-agent, così vedi che viene renderizzato a ogni richiesta.',
       ),
       codeBlock('src/islands/time.js', s.island, 'javascript'),
-      h2('2. Metti l’island in una pagina'),
+      h2('Metti l’island in una pagina'),
       p(
         code('island()'),
         ' incorpora le props nel segnaposto. La build pubblica il contenuto di riserva; il loader lo sostituisce quando l’endpoint risponde.',
@@ -70,10 +70,10 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. Loader client'),
+      h2('Loader client'),
       codeBlock('src/js/islands.js', s.loader, 'javascript'),
       codeBlock('src/css/styles.css', s.styles, 'css'),
-      h2('4. Host Node'),
+      h2('Host Node'),
       p(
         'Dopo ',
         code('sitelo build'),
@@ -90,7 +90,7 @@ export default () =>
         '.',
       ),
       codeBlock('server.js', s.server, 'javascript'),
-      h2('5. Build ed esecuzione'),
+      h2('Build ed esecuzione'),
       codeBlock('shell', s.buildRun, 'bash'),
       p(
         'Apri ',

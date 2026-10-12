@@ -48,7 +48,7 @@ export default () =>
         code('src/'),
         ', jadi sitelo tidak pernah menganggapnya halaman atau aset.',
       ),
-      h2('1. Taruh kontennya di data/'),
+      h2('Taruh kontennya di data/'),
       p(
         'Satu berkas per produk. Nama berkasnya adalah slug, jadi ',
         code('aeron-chair.json'),
@@ -63,21 +63,21 @@ export default () =>
         ' sebagai sebuah koleksi.',
       ),
       codeBlock('data/categories.json', s.categories, 'json'),
-      h2('2. Baca di satu tempat'),
+      h2('Baca di satu tempat'),
       p(
         'Modul kecil khusus server membungkus pembacaannya. Tidak ada di HTML yang merujuknya, jadi ia tidak pernah sampai ke peramban — dan karena ',
         code('sitelo/data'),
         ' mengingat hasil per berkas, setiap halaman yang memanggil pembantu ini tetap hanya mengurai tiap berkas JSON sekali untuk seluruh build.',
       ),
       codeBlock('src/lib/catalogue.js', s.lib, 'javascript'),
-      h2('3. Daftarkan semuanya di beranda'),
+      h2('Daftarkan semuanya di beranda'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.indexTemplate,
         ht: s.indexHt,
         jsx: s.indexJsx,
       }),
-      h2('4. Satu halaman per berkas JSON'),
+      h2('Satu halaman per berkas JSON'),
       p(
         code('generateStaticParams'),
         ' mengembalikan satu slug per berkas saat build; ',
@@ -90,7 +90,7 @@ export default () =>
         ht: s.slugHt,
         jsx: s.slugJsx,
       }),
-      h2('5. Sunting dan amati'),
+      h2('Sunting dan amati'),
       codeBlock('terminal', s.build, 'bash'),
       p(
         'Di bawah ',

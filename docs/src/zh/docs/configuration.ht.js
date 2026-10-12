@@ -373,7 +373,7 @@ export default () =>
         '。',
       ),
       codeBlock('shell', s.installPagefind, 'bash'),
-      h3('1. 开启索引'),
+      h3('开启索引'),
       p(
         '设置 ',
         code('pagefind: true'),
@@ -392,7 +392,7 @@ export default () =>
         '。',
       ),
       codeBlock('sitelo.config.js', s.pagefind, 'javascript'),
-      h3('2. 标记内容并加一个挂载点'),
+      h3('标记内容并加一个挂载点'),
       p(
         '在主内容上加 ',
         code('data-pagefind-body'),
@@ -404,7 +404,7 @@ export default () =>
         ht: s.pagefindPageHt,
         jsx: s.pagefindPageJsx,
       }),
-      h3('3. 挂载 Pagefind 界面'),
+      h3('挂载 Pagefind 界面'),
       p(
         '在客户端脚本里加载 ',
         code('/pagefind/pagefind-ui.js'),
@@ -413,7 +413,7 @@ export default () =>
         '（只在构建产生索引之后）：',
       ),
       codeBlock('src/main.js', s.pagefindMain, 'javascript'),
-      h3('4. 构建，并忽略同步过去的那份副本'),
+      h3('构建，并忽略同步过去的那份副本'),
       codeBlock('shell', s.pagefindBuild, 'bash'),
       codeBlock('.gitignore', s.pagefindGitignore, 'bash'),
       p(

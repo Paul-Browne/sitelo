@@ -14,7 +14,7 @@ export default () =>
       p(
         'Às vezes uma região de uma página, de resto estática, precisa de dados frescos a cada pedido — os comentários por baixo de um artigo em cache, uma etiqueta de stock numa página de produto. As ilhas de servidor mantêm a página estática e renderizam só essa região num servidor, quando a página é vista.',
       ),
-      h2('1. Escreve a ilha'),
+      h2('Escreve a ilha'),
       p(
         'Uma ilha é um módulo de fragmento dentro de ',
         code('src/islands/'),
@@ -34,7 +34,7 @@ export default () =>
         code('src/'),
         ' nunca chega ao navegador.',
       ),
-      h2('2. Coloca-a numa página'),
+      h2('Coloca-a numa página'),
       p(
         'Importa ',
         code('island()'),
@@ -48,7 +48,7 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. Acrescenta o carregador de cliente'),
+      h2('Acrescenta o carregador de cliente'),
       p(
         'Um script minúsculo vai buscar cada fragmento renderizado e troca-o. Passa pelo pipeline de recursos habitual, por isso basta um ponto de entrada ',
         code('src/islands.js'),

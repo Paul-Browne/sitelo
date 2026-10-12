@@ -33,7 +33,7 @@ export default () =>
         code('javascript-to-html'),
         '): funciones de etiqueta que devuelven cadenas, sin motor de plantillas ni runtime de React.',
       ),
-      h2('1. Una función que devuelve HTML'),
+      h2('Una función que devuelve HTML'),
       pageCodeTabs({
         file: 'page.ht.js',
         template: s.fnTemplate,
@@ -53,9 +53,9 @@ export default () =>
         a({ href: '#limitaciones-de-jsx' }, 'limitaciones de JSX'),
         ' más abajo: sitelo convierte JSX en HTML estático en tiempo de compilación; no es una aplicación de React en el navegador.',
       ),
-      h2('2. Una simple cadena'),
+      h2('Una simple cadena'),
       codeBlock('page.ht.js', s.string, 'javascript'),
-      h2('3. Un módulo estructurado'),
+      h2('Un módulo estructurado'),
       p(
         'Mantén ',
         code('render'),

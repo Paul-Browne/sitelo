@@ -390,7 +390,7 @@ export default () =>
         '.',
       ),
       codeBlock('shell', s.installPagefind, 'bash'),
-      h3('1. Activer l’indexation'),
+      h3('Activer l’indexation'),
       p(
         'Mettez ',
         code('pagefind: true'),
@@ -409,7 +409,7 @@ export default () =>
         ' sans reconstruire.',
       ),
       codeBlock('sitelo.config.js', s.pagefind, 'javascript'),
-      h3('2. Marquer le contenu et ajouter un point de montage'),
+      h3('Marquer le contenu et ajouter un point de montage'),
       p(
         'Placez ',
         code('data-pagefind-body'),
@@ -421,7 +421,7 @@ export default () =>
         ht: s.pagefindPageHt,
         jsx: s.pagefindPageJsx,
       }),
-      h3('3. Monter l’interface Pagefind'),
+      h3('Monter l’interface Pagefind'),
       p(
         'Chargez ',
         code('/pagefind/pagefind-ui.js'),
@@ -430,7 +430,7 @@ export default () =>
         ' depuis votre script client (seulement après qu’un build a produit l’index) :',
       ),
       codeBlock('src/main.js', s.pagefindMain, 'javascript'),
-      h3('4. Construire et ignorer le bundle synchronisé'),
+      h3('Construire et ignorer le bundle synchronisé'),
       codeBlock('shell', s.pagefindBuild, 'bash'),
       codeBlock('.gitignore', s.pagefindGitignore, 'bash'),
       p(

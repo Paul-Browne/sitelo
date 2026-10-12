@@ -390,7 +390,7 @@ export default () =>
         '.',
       ),
       codeBlock('shell', s.installPagefind, 'bash'),
-      h3('1. Включите индексацию'),
+      h3('Включите индексацию'),
       p(
         'Поставьте ',
         code('pagefind: true'),
@@ -409,7 +409,7 @@ export default () =>
         ' без пересборки.',
       ),
       codeBlock('sitelo.config.js', s.pagefind, 'javascript'),
-      h3('2. Разметьте содержимое и добавьте точку монтирования'),
+      h3('Разметьте содержимое и добавьте точку монтирования'),
       p(
         'Поставьте ',
         code('data-pagefind-body'),
@@ -421,7 +421,7 @@ export default () =>
         ht: s.pagefindPageHt,
         jsx: s.pagefindPageJsx,
       }),
-      h3('3. Подключите интерфейс Pagefind'),
+      h3('Подключите интерфейс Pagefind'),
       p(
         'Загрузите ',
         code('/pagefind/pagefind-ui.js'),
@@ -430,7 +430,7 @@ export default () =>
         ' из своего клиентского скрипта (только после того, как сборка создала индекс):',
       ),
       codeBlock('src/main.js', s.pagefindMain, 'javascript'),
-      h3('4. Соберите и исключите синхронизированную копию из Git'),
+      h3('Соберите и исключите синхронизированную копию из Git'),
       codeBlock('shell', s.pagefindBuild, 'bash'),
       codeBlock('.gitignore', s.pagefindGitignore, 'bash'),
       p(

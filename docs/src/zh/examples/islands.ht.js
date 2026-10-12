@@ -46,7 +46,7 @@ export default () =>
       h2('项目结构'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. 区块模块'),
+      h2('区块模块'),
       p(
         '一个普通的 ',
         code('.js'),
@@ -57,7 +57,7 @@ export default () =>
         '，并返回一个 HTML 字符串。这个模块用到了请求时间和 user-agent，好让你看出它确实是按请求渲染的。',
       ),
       codeBlock('src/islands/time.js', s.island, 'javascript'),
-      h2('2. 把区块放进页面'),
+      h2('把区块放进页面'),
       p(
         code('island()'),
         ' 会把 props 嵌进占位元素。构建产物发布的是回退内容；端点响应之后，加载器会替换它。',
@@ -68,10 +68,10 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. 客户端加载器'),
+      h2('客户端加载器'),
       codeBlock('src/js/islands.js', s.loader, 'javascript'),
       codeBlock('src/css/styles.css', s.styles, 'css'),
-      h2('4. Node 宿主'),
+      h2('Node 宿主'),
       p(
         '执行 ',
         code('sitelo build'),
@@ -88,7 +88,7 @@ export default () =>
         ' 导入它们。',
       ),
       codeBlock('server.js', s.server, 'javascript'),
-      h2('5. 构建并运行'),
+      h2('构建并运行'),
       codeBlock('shell', s.buildRun, 'bash'),
       p(
         '打开 ',

@@ -14,7 +14,7 @@ export default () =>
       p(
         'A volte una sola regione di una pagina per il resto statica ha bisogno di dati freschi a ogni richiesta — i commenti sotto un articolo in cache, un badge di disponibilità su una pagina prodotto. Le island server tengono la pagina statica e renderizzano solo quella regione su un server quando la pagina viene visitata.',
       ),
-      h2('1. Scrivi l’island'),
+      h2('Scrivi l’island'),
       p(
         'Un’island è un modulo-frammento sotto ',
         code('src/islands/'),
@@ -34,7 +34,7 @@ export default () =>
         code('src/'),
         ' non arriva mai al browser.',
       ),
-      h2('2. Mettila in una pagina'),
+      h2('Mettila in una pagina'),
       p(
         'Importa ',
         code('island()'),
@@ -48,7 +48,7 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. Aggiungi il loader client'),
+      h2('Aggiungi il loader client'),
       p(
         'Un minuscolo script scarica ogni frammento renderizzato e lo scambia al suo posto. Passa dalla normale pipeline delle risorse, quindi basta un semplice punto di ingresso ',
         code('src/islands.js'),

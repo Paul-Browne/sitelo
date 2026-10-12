@@ -33,7 +33,7 @@ export default () =>
         code('javascript-to-html'),
         '): Tag-Funktionen, die Strings zurückgeben — ohne Template-Engine und ohne React-Runtime.',
       ),
-      h2('1. Eine Funktion, die HTML zurückgibt'),
+      h2('Eine Funktion, die HTML zurückgibt'),
       pageCodeTabs({
         file: 'page.ht.js',
         template: s.fnTemplate,
@@ -53,9 +53,9 @@ export default () =>
         a({ href: '#jsx-einschraenkungen' }, 'JSX-Einschränkungen'),
         ' weiter unten — sitelo verwandelt JSX zur Build-Zeit in statisches HTML; es ist keine React-Anwendung im Browser.',
       ),
-      h2('2. Ein einfacher String'),
+      h2('Ein einfacher String'),
       codeBlock('page.ht.js', s.string, 'javascript'),
-      h2('3. Ein strukturiertes Modul'),
+      h2('Ein strukturiertes Modul'),
       p(
         'Halte ',
         code('render'),

@@ -33,7 +33,7 @@ export default () =>
         code('javascript-to-html'),
         '): funkcje-znaczniki zwracające ciągi, bez silnika szablonów i bez runtime’u Reacta.',
       ),
-      h2('1. Funkcja zwracająca HTML'),
+      h2('Funkcja zwracająca HTML'),
       pageCodeTabs({
         file: 'page.ht.js',
         template: s.fnTemplate,
@@ -53,9 +53,9 @@ export default () =>
         a({ href: '#ograniczenia-jsx' }, 'ograniczenia JSX'),
         ' poniżej — sitelo zamienia JSX na statyczny HTML podczas buildu; to nie jest aplikacja React w przeglądarce.',
       ),
-      h2('2. Zwykły ciąg znaków'),
+      h2('Zwykły ciąg znaków'),
       codeBlock('page.ht.js', s.string, 'javascript'),
-      h2('3. Moduł strukturalny'),
+      h2('Moduł strukturalny'),
       p(
         'Trzymaj ',
         code('render'),

@@ -57,7 +57,7 @@ export default () =>
       ),
       h2('Структура проекта'),
       codeBlock('project', s.structure, 'bash'),
-      h2('1. Встроенные импорты в странице'),
+      h2('Встроенные импорты в странице'),
       p(
         'Никакого ',
         code('<script type="module" src>'),
@@ -73,7 +73,7 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('2. Экспортируемые обработчики'),
+      h2('Экспортируемые обработчики'),
       p(
         'Модуль — обычный ES-файл в ',
         code('src/js/'),
@@ -86,7 +86,7 @@ export default () =>
         '.',
       ),
       codeBlock('src/js/todo.js', s.todoJs, 'javascript'),
-      h2('3. Запуск'),
+      h2('Запуск'),
       codeBlock('shell', s.run, 'bash'),
       p(
         'Либо ',

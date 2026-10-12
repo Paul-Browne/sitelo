@@ -36,7 +36,7 @@ export default () =>
       h2('Project layout'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Point at your WordPress site'),
+      h2('Point at your WordPress site'),
       p(
         'The REST API is on by default in modern WordPress. Confirm it at ',
         code('https://your-site.com/wp-json/wp/v2/posts'),
@@ -48,7 +48,7 @@ export default () =>
         ' in the environment (or hardcode it while experimenting):',
       ),
       codeBlock('.env', s.env, 'bash'),
-      h2('2. Shared WordPress helpers'),
+      h2('Shared WordPress helpers'),
       p(
         code('getAllPosts()'),
         ' reads ',
@@ -60,14 +60,14 @@ export default () =>
         ' while collecting slugs — only fetch embeds for individual posts.',
       ),
       codeBlock('src/lib/wordpress.js', s.wpLib, 'javascript'),
-      h2('3. Home page'),
+      h2('Home page'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.homeTemplate,
         ht: s.homeHt,
         jsx: s.homeJsx,
       }),
-      h2('4. Blog index'),
+      h2('Blog index'),
       p('Use ', code('getAllPosts()'), ' so the archive isn’t capped at 50–100 items.'),
       pageCodeTabs({
         file: 'src/blog/index.ht.js',
@@ -75,7 +75,7 @@ export default () =>
         ht: s.blogIndexHt,
         jsx: s.blogIndexJsx,
       }),
-      h2('5. Rip every post into static pages'),
+      h2('Rip every post into static pages'),
       p(
         code('generateStaticParams'),
         ' must return ',
@@ -92,7 +92,7 @@ export default () =>
         ht: s.blogPostHt,
         jsx: s.blogPostJsx,
       }),
-      h2('6. Build'),
+      h2('Build'),
       codeBlock('shell', s.build, 'bash'),
       p(
         'First build pages through WordPress once and fills the fetch cache. Later builds reuse cached list/detail responses (',

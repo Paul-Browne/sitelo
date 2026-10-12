@@ -14,7 +14,7 @@ export default () =>
       p(
         'Kadang satu bagian dari halaman yang selebihnya statis butuh data segar per permintaan — komentar di bawah pos blog yang disinggahkan, lencana stok di halaman produk. Island server membiarkan halaman tetap statis dan merender hanya bagian itu di server ketika halamannya dilihat.',
       ),
-      h2('1. Tulis island-nya'),
+      h2('Tulis island-nya'),
       p(
         'Island adalah modul fragmen di bawah ',
         code('src/islands/'),
@@ -34,7 +34,7 @@ export default () =>
         code('src/'),
         ' tidak pernah sampai ke peramban.',
       ),
-      h2('2. Tempatkan di sebuah halaman'),
+      h2('Tempatkan di sebuah halaman'),
       p(
         'Impor ',
         code('island()'),
@@ -48,7 +48,7 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. Tambahkan pemuat klien'),
+      h2('Tambahkan pemuat klien'),
       p(
         'Skrip mungil mengambil tiap fragmen hasil render dan menukarnya masuk. Ia melewati jalur aset biasa, jadi entri ',
         code('src/islands.js'),

@@ -47,7 +47,7 @@ export default () =>
       h2('Project layout'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Island module'),
+      h2('Island module'),
       p(
         'Plain ',
         code('.js'),
@@ -58,7 +58,7 @@ export default () =>
         ' and returns an HTML string. This one uses the request time and user-agent so you can see it’s rendered per request.',
       ),
       codeBlock('src/islands/time.js', s.island, 'javascript'),
-      h2('2. Place the island on a page'),
+      h2('Place the island on a page'),
       p(
         code('island()'),
         ' embeds props in the placeholder. The build ships the fallback; the loader replaces it when the endpoint responds.',
@@ -69,10 +69,10 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('3. Client loader'),
+      h2('Client loader'),
       codeBlock('src/js/islands.js', s.loader, 'javascript'),
       codeBlock('src/css/styles.css', s.styles, 'css'),
-      h2('4. Node host'),
+      h2('Node host'),
       p(
         'After ',
         code('sitelo build'),
@@ -89,7 +89,7 @@ export default () =>
         '.',
       ),
       codeBlock('server.js', s.server, 'javascript'),
-      h2('5. Build and run'),
+      h2('Build and run'),
       codeBlock('shell', s.buildRun, 'bash'),
       p(
         'Open ',

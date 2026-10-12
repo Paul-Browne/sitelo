@@ -57,7 +57,7 @@ export default () =>
       ),
       h2('Układ projektu'),
       codeBlock('project', s.structure, 'bash'),
-      h2('1. Wbudowane importy na stronie'),
+      h2('Wbudowane importy na stronie'),
       p(
         'Żadnego ',
         code('<script type="module" src>'),
@@ -73,7 +73,7 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('2. Eksportowane handlery'),
+      h2('Eksportowane handlery'),
       p(
         'Moduł to zwykły plik ES pod ',
         code('src/js/'),
@@ -86,7 +86,7 @@ export default () =>
         '.',
       ),
       codeBlock('src/js/todo.js', s.todoJs, 'javascript'),
-      h2('3. Uruchomienie'),
+      h2('Uruchomienie'),
       codeBlock('shell', s.run, 'bash'),
       p(
         'Albo ',

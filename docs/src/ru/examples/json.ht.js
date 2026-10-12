@@ -50,7 +50,7 @@ export default () =>
         code('src/'),
         ', поэтому sitelo никогда не считает их страницами или ресурсами.',
       ),
-      h2('1. Положите контент в data/'),
+      h2('Положите контент в data/'),
       p(
         'По файлу на товар. Имя файла и есть slug, поэтому ',
         code('aeron-chair.json'),
@@ -65,21 +65,21 @@ export default () =>
         ' читает его точно так же, как коллекцию.',
       ),
       codeBlock('data/categories.json', s.categories, 'json'),
-      h2('2. Читайте в одном месте'),
+      h2('Читайте в одном месте'),
       p(
         'Небольшой серверный модуль оборачивает чтение. В HTML на него нет ссылок, поэтому он никогда не попадает в браузер, — а поскольку ',
         code('sitelo/data'),
         ' запоминает результат по файлу, сколько бы страниц ни вызывало эти помощники, каждый JSON-файл разбирается за сборку один раз.',
       ),
       codeBlock('src/lib/catalogue.js', s.lib, 'javascript'),
-      h2('3. Выведите всё на главной'),
+      h2('Выведите всё на главной'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.indexTemplate,
         ht: s.indexHt,
         jsx: s.indexJsx,
       }),
-      h2('4. По странице на JSON-файл'),
+      h2('По странице на JSON-файл'),
       p(
         code('generateStaticParams'),
         ' возвращает slug для каждого файла во время сборки, а ',
@@ -92,7 +92,7 @@ export default () =>
         ht: s.slugHt,
         jsx: s.slugJsx,
       }),
-      h2('5. Правьте и смотрите'),
+      h2('Правьте и смотрите'),
       codeBlock('terminal', s.build, 'bash'),
       p(
         'В режиме ',

@@ -35,7 +35,7 @@ export default () =>
       h2('Struttura del progetto'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Punta al tuo sito WordPress'),
+      h2('Punta al tuo sito WordPress'),
       p(
         'Nelle versioni moderne di WordPress la REST API è attiva per impostazione predefinita. Verificalo su ',
         code('https://your-site.com/wp-json/wp/v2/posts'),
@@ -47,7 +47,7 @@ export default () =>
         ' nell’ambiente (oppure scrivilo nel codice mentre sperimenti):',
       ),
       codeBlock('.env', s.env, 'bash'),
-      h2('2. Helper condivisi per WordPress'),
+      h2('Helper condivisi per WordPress'),
       p(
         code('getAllPosts()'),
         ' legge ',
@@ -59,14 +59,14 @@ export default () =>
         ' mentre raccogli gli slug — scarica gli embed solo per i singoli articoli.',
       ),
       codeBlock('src/lib/wordpress.js', s.wpLib, 'javascript'),
-      h2('3. Home page'),
+      h2('Home page'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.homeTemplate,
         ht: s.homeHt,
         jsx: s.homeJsx,
       }),
-      h2('4. Indice del blog'),
+      h2('Indice del blog'),
       p(
         'Usa ',
         code('getAllPosts()'),
@@ -78,7 +78,7 @@ export default () =>
         ht: s.blogIndexHt,
         jsx: s.blogIndexJsx,
       }),
-      h2('5. Scarica ogni articolo in pagine statiche'),
+      h2('Scarica ogni articolo in pagine statiche'),
       p(
         code('generateStaticParams'),
         ' deve restituire ',
@@ -95,7 +95,7 @@ export default () =>
         ht: s.blogPostHt,
         jsx: s.blogPostJsx,
       }),
-      h2('6. Build'),
+      h2('Build'),
       codeBlock('shell', s.build, 'bash'),
       p(
         'La prima build passa da WordPress una volta e riempie la cache delle fetch. Le build successive riusano le risposte di elenco e dettaglio in cache (',

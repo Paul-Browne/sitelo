@@ -35,7 +35,7 @@ export default () =>
       h2('Układ projektu'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Wskaż swoją witrynę WordPress'),
+      h2('Wskaż swoją witrynę WordPress'),
       p(
         'W nowoczesnym WordPressie REST API jest domyślnie włączone. Sprawdź to pod ',
         code('https://your-site.com/wp-json/wp/v2/posts'),
@@ -47,7 +47,7 @@ export default () =>
         ' w środowisku (albo wpisz na sztywno, póki eksperymentujesz):',
       ),
       codeBlock('.env', s.env, 'bash'),
-      h2('2. Wspólne pomocniki WordPressa'),
+      h2('Wspólne pomocniki WordPressa'),
       p(
         code('getAllPosts()'),
         ' czyta ',
@@ -59,14 +59,14 @@ export default () =>
         ' — osadzenia pobieraj tylko dla pojedynczych wpisów.',
       ),
       codeBlock('src/lib/wordpress.js', s.wpLib, 'javascript'),
-      h2('3. Strona główna'),
+      h2('Strona główna'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.homeTemplate,
         ht: s.homeHt,
         jsx: s.homeJsx,
       }),
-      h2('4. Indeks bloga'),
+      h2('Indeks bloga'),
       p(
         'Użyj ',
         code('getAllPosts()'),
@@ -78,7 +78,7 @@ export default () =>
         ht: s.blogIndexHt,
         jsx: s.blogIndexJsx,
       }),
-      h2('5. Pobierz każdy wpis do statycznych stron'),
+      h2('Pobierz każdy wpis do statycznych stron'),
       p(
         code('generateStaticParams'),
         ' musi zwrócić ',
@@ -95,7 +95,7 @@ export default () =>
         ht: s.blogPostHt,
         jsx: s.blogPostJsx,
       }),
-      h2('6. Build'),
+      h2('Build'),
       codeBlock('shell', s.build, 'bash'),
       p(
         'Pierwszy build raz przechodzi przez WordPressa i wypełnia cache pobrań. Kolejne buildy korzystają z zapisanych odpowiedzi list i szczegółów (',

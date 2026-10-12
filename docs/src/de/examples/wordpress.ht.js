@@ -35,7 +35,7 @@ export default () =>
       h2('Projektstruktur'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Auf deine WordPress-Website zeigen'),
+      h2('Auf deine WordPress-Website zeigen'),
       p(
         'Die REST-API ist in modernem WordPress standardmäßig aktiv. Prüfe das unter ',
         code('https://deine-website.com/wp-json/wp/v2/posts'),
@@ -47,7 +47,7 @@ export default () =>
         ' in der Umgebung (oder schreib es beim Ausprobieren fest hinein):',
       ),
       codeBlock('.env', s.env, 'bash'),
-      h2('2. Gemeinsame WordPress-Helfer'),
+      h2('Gemeinsame WordPress-Helfer'),
       p(
         code('getAllPosts()'),
         ' liest ',
@@ -59,14 +59,14 @@ export default () =>
         ' beim Sammeln der Slugs weg — hole die Embeds nur für einzelne Beiträge.',
       ),
       codeBlock('src/lib/wordpress.js', s.wpLib, 'javascript'),
-      h2('3. Startseite'),
+      h2('Startseite'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.homeTemplate,
         ht: s.homeHt,
         jsx: s.homeJsx,
       }),
-      h2('4. Blog-Übersicht'),
+      h2('Blog-Übersicht'),
       p(
         'Nutze ',
         code('getAllPosts()'),
@@ -78,7 +78,7 @@ export default () =>
         ht: s.blogIndexHt,
         jsx: s.blogIndexJsx,
       }),
-      h2('5. Jeden Beitrag zu einer statischen Seite machen'),
+      h2('Jeden Beitrag zu einer statischen Seite machen'),
       p(
         code('generateStaticParams'),
         ' muss ',
@@ -95,7 +95,7 @@ export default () =>
         ht: s.blogPostHt,
         jsx: s.blogPostJsx,
       }),
-      h2('6. Build'),
+      h2('Build'),
       codeBlock('shell', s.build, 'bash'),
       p(
         'Der erste Build geht einmal durch WordPress und füllt den Fetch-Cache. Spätere Builds greifen auf die gecachten Listen- und Detailantworten zurück (',

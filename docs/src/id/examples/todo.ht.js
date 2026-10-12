@@ -52,7 +52,7 @@ export default () =>
       ),
       h2('Tata letak proyek'),
       codeBlock('project', s.structure, 'bash'),
-      h2('1. Impor sebaris di halaman'),
+      h2('Impor sebaris di halaman'),
       p(
         'Tanpa ',
         code('<script type="module" src>'),
@@ -68,7 +68,7 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('2. Penangan yang diekspor'),
+      h2('Penangan yang diekspor'),
       p(
         'Modulnya adalah berkas ES biasa di bawah ',
         code('src/js/'),
@@ -81,7 +81,7 @@ export default () =>
         '.',
       ),
       codeBlock('src/js/todo.js', s.todoJs, 'javascript'),
-      h2('3. Jalankan'),
+      h2('Jalankan'),
       codeBlock('shell', s.run, 'bash'),
       p(
         'Atau ',

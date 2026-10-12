@@ -35,7 +35,7 @@ export default () =>
       h2('Estructura del proyecto'),
       codeBlock('project', s.structure, 'bash'),
       codeBlock('sitelo.config.js', s.config, 'javascript'),
-      h2('1. Apunta a tu sitio WordPress'),
+      h2('Apunta a tu sitio WordPress'),
       p(
         'La API REST viene activada por defecto en las versiones modernas de WordPress. Compruébalo en ',
         code('https://tu-sitio.com/wp-json/wp/v2/posts'),
@@ -47,7 +47,7 @@ export default () =>
         ' en el entorno (o escríbelo directamente mientras experimentas):',
       ),
       codeBlock('.env', s.env, 'bash'),
-      h2('2. Ayudantes compartidos de WordPress'),
+      h2('Ayudantes compartidos de WordPress'),
       p(
         code('getAllPosts()'),
         ' lee ',
@@ -59,14 +59,14 @@ export default () =>
         ' mientras recoges slugs — pide los embeds solo para cada entrada concreta.',
       ),
       codeBlock('src/lib/wordpress.js', s.wpLib, 'javascript'),
-      h2('3. Portada'),
+      h2('Portada'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.homeTemplate,
         ht: s.homeHt,
         jsx: s.homeJsx,
       }),
-      h2('4. Índice del blog'),
+      h2('Índice del blog'),
       p(
         'Usa ',
         code('getAllPosts()'),
@@ -78,7 +78,7 @@ export default () =>
         ht: s.blogIndexHt,
         jsx: s.blogIndexJsx,
       }),
-      h2('5. Convierte todas las entradas en páginas estáticas'),
+      h2('Convierte todas las entradas en páginas estáticas'),
       p(
         code('generateStaticParams'),
         ' debe devolver ',
@@ -95,7 +95,7 @@ export default () =>
         ht: s.blogPostHt,
         jsx: s.blogPostJsx,
       }),
-      h2('6. Compilar'),
+      h2('Compilar'),
       codeBlock('shell', s.build, 'bash'),
       p(
         'La primera compilación pasa una vez por WordPress y llena la caché de fetch. Las siguientes reutilizan las respuestas cacheadas de listado y detalle (',

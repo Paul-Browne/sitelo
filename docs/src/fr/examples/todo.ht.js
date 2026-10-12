@@ -57,7 +57,7 @@ export default () =>
       ),
       h2('Structure du projet'),
       codeBlock('project', s.structure, 'bash'),
-      h2('1. Imports en ligne dans la page'),
+      h2('Imports en ligne dans la page'),
       p(
         'Pas de ',
         code('<script type="module" src>'),
@@ -73,7 +73,7 @@ export default () =>
         ht: s.pageHt,
         jsx: s.pageJsx,
       }),
-      h2('2. Gestionnaires exportés'),
+      h2('Gestionnaires exportés'),
       p(
         'Le module est un fichier ES ordinaire sous ',
         code('src/js/'),
@@ -86,7 +86,7 @@ export default () =>
         '.',
       ),
       codeBlock('src/js/todo.js', s.todoJs, 'javascript'),
-      h2('3. Lancer'),
+      h2('Lancer'),
       codeBlock('shell', s.run, 'bash'),
       p(
         'Ou bien ',

@@ -50,7 +50,7 @@ export default () =>
         code('src/'),
         ' dışında yaşar, bu yüzden sitelo onu hiçbir zaman sayfa ya da varlık saymaz.',
       ),
-      h2('1. İçeriği data/ içine koyun'),
+      h2('İçeriği data/ içine koyun'),
       p(
         'Ürün başına bir dosya. Dosya adı slug’dır, bu yüzden ',
         code('aeron-chair.json'),
@@ -65,21 +65,21 @@ export default () =>
         ' onu da aynı şekilde bir koleksiyon olarak okur.',
       ),
       codeBlock('data/categories.json', s.categories, 'json'),
-      h2('2. Tek bir yerde okuyun'),
+      h2('Tek bir yerde okuyun'),
       p(
         'Yalnızca sunucuya ait küçük bir modül okumaları sarar. HTML içinde hiçbir şey ona başvurmaz, bu yüzden tarayıcıya hiç gönderilmez — ve ',
         code('sitelo/data'),
         ' dosya başına belleğe aldığından, bu yardımcıları çağıran her sayfaya rağmen her JSON dosyası bütün derleme boyunca bir kez ayrıştırılır.',
       ),
       codeBlock('src/lib/catalogue.js', s.lib, 'javascript'),
-      h2('3. Ana sayfada her şeyi listeleyin'),
+      h2('Ana sayfada her şeyi listeleyin'),
       pageCodeTabs({
         file: 'src/index.ht.js',
         template: s.indexTemplate,
         ht: s.indexHt,
         jsx: s.indexJsx,
       }),
-      h2('4. JSON dosyası başına bir sayfa'),
+      h2('JSON dosyası başına bir sayfa'),
       p(
         code('generateStaticParams'),
         ' derleme sırasında dosya başına bir slug döndürür; ',
@@ -92,7 +92,7 @@ export default () =>
         ht: s.slugHt,
         jsx: s.slugJsx,
       }),
-      h2('5. Düzenleyin ve izleyin'),
+      h2('Düzenleyin ve izleyin'),
       codeBlock('terminal', s.build, 'bash'),
       p(
         code('sitelo'),

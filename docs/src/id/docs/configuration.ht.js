@@ -355,7 +355,7 @@ export default () =>
         '.',
       ),
       codeBlock('shell', s.installPagefind, 'bash'),
-      h3('1. Aktifkan pengindeksan'),
+      h3('Aktifkan pengindeksan'),
       p(
         'Setel ',
         code('pagefind: true'),
@@ -374,7 +374,7 @@ export default () =>
         ' tanpa membangun ulang.',
       ),
       codeBlock('sitelo.config.js', s.pagefind, 'javascript'),
-      h3('2. Tandai konten dan tambahkan titik pasang'),
+      h3('Tandai konten dan tambahkan titik pasang'),
       p(
         'Taruh ',
         code('data-pagefind-body'),
@@ -386,7 +386,7 @@ export default () =>
         ht: s.pagefindPageHt,
         jsx: s.pagefindPageJsx,
       }),
-      h3('3. Pasang antarmuka Pagefind'),
+      h3('Pasang antarmuka Pagefind'),
       p(
         'Muat ',
         code('/pagefind/pagefind-ui.js'),
@@ -395,7 +395,7 @@ export default () =>
         ' dari skrip klien Anda (hanya setelah sebuah build menghasilkan indeksnya):',
       ),
       codeBlock('src/main.js', s.pagefindMain, 'javascript'),
-      h3('4. Build dan abaikan bundel yang disinkronkan'),
+      h3('Build dan abaikan bundel yang disinkronkan'),
       codeBlock('shell', s.pagefindBuild, 'bash'),
       codeBlock('.gitignore', s.pagefindGitignore, 'bash'),
       p(

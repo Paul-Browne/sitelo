@@ -1416,6 +1416,45 @@ a.feature-card:hover .feature-chip {
 }
 
 /*
+ * Every section of an article is numbered, as a drawing numbers its
+ * views: 01, 02, 03 down the h2s — the numbers the table of contents
+ * gives them — and 03.1, 03.2 down the h3s under one. The headings
+ * themselves carry no numbers, so a section can move without its
+ * neighbours being renumbered by hand.
+ */
+.docs-main,
+.content-main {
+  counter-reset: h2;
+}
+
+:is(.docs-main, .content-main) > h2 {
+  counter-increment: h2;
+  counter-reset: h3;
+}
+
+:is(.docs-main, .content-main) > h3 {
+  counter-increment: h3;
+}
+
+:is(.docs-main, .content-main) > :is(h2, h3)::before {
+  margin-right: 0.85rem;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+:is(.docs-main, .content-main) > h2::before {
+  content: counter(h2, decimal-leading-zero);
+}
+
+:is(.docs-main, .content-main) > h3::before {
+  content: counter(h2, decimal-leading-zero) '.' counter(h3);
+  font-size: 0.6875rem;
+}
+
+/*
  * Prose links are underlined in dashes, drawn in full when pointed at.
  * Only a link without a class of its own: a list straight inside the
  * article can be a gallery of cards, whose links are their names.
