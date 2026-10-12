@@ -1,5 +1,5 @@
-import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
+import { div, h2, p } from 'javascript-to-html'
+import { button, fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
 
@@ -33,6 +33,25 @@ const squareGallery = () => {
 
   try {
     return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
+
+/** 方形加载图标：播放中、静止时和放在按钮里，像演示一样加上框。 */
+const squareSpinner = () => {
+  const previous = iconSet('square')
+
+  try {
+    return div(
+      { class: 'ui-demo-preview ui-demo-preview--center', 'data-pagefind-ignore': '' },
+      stack(
+        { direction: 'row', gap: 'md', align: 'center', wrap: true },
+        icon('spinner', { spin: true, size: 'lg' }),
+        icon('spinner', { size: 'lg' }),
+        button({ variant: 'soft' }, icon('spinner', { spin: true }), '保存中…'),
+      ),
+    )
   } finally {
     iconSet(previous)
   }
@@ -247,6 +266,14 @@ iconSet('square')`, 'javascript'),
         code('iconSet()'),
         ' 会返回被替换掉的那套，便于还原；不带名称调用时，它只告诉你当前用的是哪一套。',
       ),
+      p(
+        '它的加载图标是一个盲文点阵，而不是圆环。加上 ',
+        code('spin'),
+        ' 后，点会像终端里的加载动画那样绕着点阵转——⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏——而不是整个图形旋转；静止时显示第一帧，在 ',
+        code('prefers-reduced-motion'),
+        ' 下会放慢而不是停下。',
+      ),
+      squareSpinner(),
       squareGallery(),
 
       h2('品牌标识'),

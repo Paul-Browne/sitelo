@@ -94,12 +94,24 @@ export const SQUARE = {
   'x-circle': `${BOX}<path d="M9 9 15 15"/><path d="M15 9 9 15"/>`,
   help: `${BOX}<path d="M9 9V7h6v4.5h-3V14"/>${dot(12, 17)}`,
   /*
-   * Eight spokes, the one at twelve o'clock solid and each one before it
-   * fainter, so turning the whole thing reads as the light running on.
+   * A braille cell, two dots across and three down, as a terminal draws
+   * its spinner: ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏. The dots are listed in the order
+   * the run of lit ones comes round them — along the top, down the
+   * right, back up the left — because the core sheet animates them by
+   * position: under `spin` each is lit for its own stretch of the cycle,
+   * and the cell is not turned. At rest it shows the first frame, ⠋, so
+   * the three dots that frame leaves dark start hidden.
    */
-  spinner: [1, 0.25, 0.3, 0.38, 0.46, 0.58, 0.7, 0.85]
-    .map((opacity, step) => `<path d="${spoke(12, 12, step * 45, 4.5, 9)}"${opacity < 1 ? ` opacity="${opacity}"` : ''}/>`)
-    .join(''),
+  spinner: `<g class="su-icon-braille">${[
+    { x: 8, y: 4, lit: true },
+    { x: 16, y: 4, lit: true },
+    { x: 16, y: 12, lit: false },
+    { x: 16, y: 20, lit: false },
+    { x: 8, y: 20, lit: false },
+    { x: 8, y: 12, lit: true },
+  ]
+    .map(({ x, y, lit }) => `<rect x="${x - 2}" y="${y - 2}" width="4" height="4" fill="currentColor" stroke="none"${lit ? '' : ' opacity="0"'}/>`)
+    .join('')}</g>`,
   'thumbs-up': '<path d="M3 10h4v11H3z"/><path d="M7 10 10 3h2v6h8l-2 12H7"/>',
   'thumbs-down': '<path d="M3 3h4v11H3z"/><path d="M7 14l3 7h2v-6h8L18 3H7"/>',
   sparkles: '<path d="M10 3 11.8 8.2 17 10 11.8 11.8 10 17 8.2 11.8 3 10 8.2 8.2z"/><path d="M17.5 14 18.5 16.5 21 17.5 18.5 18.5 17.5 21 16.5 18.5 14 17.5 16.5 16.5z"/>',

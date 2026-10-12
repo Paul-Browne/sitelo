@@ -803,6 +803,58 @@
   .su-icon--spin > g { animation-duration: 3s; }
 }
 
+/*
+ * The square set's spinner is a braille cell, and it is not turned: its
+ * dots run round the cell the way a terminal's spinner does,
+ * ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏, ten frames to the cycle. The glyph lists its six
+ * dots in the order the run comes round them, and each is lit for its
+ * own stretch of frames: six for a corner, five for the middle two,
+ * which is what the ten frames add up to. The delay is the frame its
+ * stretch starts on, as a share of the cycle counted back from the end,
+ * so every dot is already mid-cycle on the first paint.
+ */
+.su-icon--spin > g:has(> .su-icon-braille) {
+  animation: none;
+  will-change: auto;
+}
+
+.su-icon--spin .su-icon-braille {
+  --su-icon-braille-cycle: 0.8s;
+}
+
+.su-icon--spin .su-icon-braille > * {
+  animation: su-icon-braille-6 var(--su-icon-braille-cycle) step-end infinite;
+}
+
+.su-icon--spin .su-icon-braille > :nth-child(3),
+.su-icon--spin .su-icon-braille > :nth-child(6) {
+  animation-name: su-icon-braille-5;
+}
+
+.su-icon--spin .su-icon-braille > :nth-child(1) { animation-delay: calc(var(--su-icon-braille-cycle) * -0.3); }
+.su-icon--spin .su-icon-braille > :nth-child(2) { animation-delay: calc(var(--su-icon-braille-cycle) * -0.1); }
+.su-icon--spin .su-icon-braille > :nth-child(3) { animation-delay: calc(var(--su-icon-braille-cycle) * -0.9); }
+.su-icon--spin .su-icon-braille > :nth-child(4) { animation-delay: calc(var(--su-icon-braille-cycle) * -0.8); }
+.su-icon--spin .su-icon-braille > :nth-child(5) { animation-delay: calc(var(--su-icon-braille-cycle) * -0.6); }
+.su-icon--spin .su-icon-braille > :nth-child(6) { animation-delay: calc(var(--su-icon-braille-cycle) * -0.4); }
+
+/* `step-end`: each dot is on or off for whole frames, never between. */
+@keyframes su-icon-braille-6 {
+  0% { opacity: 1; }
+  60%, 100% { opacity: 0; }
+}
+
+@keyframes su-icon-braille-5 {
+  0% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Slowed rather than stopped, as the turning spinner is. The delays are
+   shares of the cycle, so the frames keep their order at any speed. */
+@media (prefers-reduced-motion: reduce) {
+  .su-icon--spin .su-icon-braille { --su-icon-braille-cycle: 3s; }
+}
+
 /* ------------------------------------------------------------------ *
  * Button
  * ------------------------------------------------------------------ */

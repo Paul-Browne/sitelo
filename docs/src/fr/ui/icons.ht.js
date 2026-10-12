@@ -1,5 +1,5 @@
-import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
+import { div, h2, p } from 'javascript-to-html'
+import { button, fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/fr.js'
 
@@ -34,6 +34,25 @@ const squareGallery = () => {
 
   try {
     return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
+
+/** Le spinner carré en marche, au repos et dans un bouton, encadré comme une démo. */
+const squareSpinner = () => {
+  const previous = iconSet('square')
+
+  try {
+    return div(
+      { class: 'ui-demo-preview ui-demo-preview--center', 'data-pagefind-ignore': '' },
+      stack(
+        { direction: 'row', gap: 'md', align: 'center', wrap: true },
+        icon('spinner', { spin: true, size: 'lg' }),
+        icon('spinner', { size: 'lg' }),
+        button({ variant: 'soft' }, icon('spinner', { spin: true }), 'Enregistrement…'),
+      ),
+    )
   } finally {
     iconSet(previous)
   }
@@ -250,6 +269,14 @@ iconSet('square')`, 'javascript'),
         code('iconSet()'),
         ' renvoie le jeu qu’il remplace, pour pouvoir le remettre ; appelé sans nom, il indique seulement lequel est utilisé.',
       ),
+      p(
+        'Son spinner est une cellule braille plutôt qu’un anneau. Avec ',
+        code('spin'),
+        ', ses points font le tour de la cellule comme le spinner d’un terminal — ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ — au lieu que le glyphe tourne ; au repos il montre la première image, et avec ',
+        code('prefers-reduced-motion'),
+        ' il ralentit plutôt que de s’arrêter.',
+      ),
+      squareSpinner(),
       squareGallery(),
 
       h2('Marques'),

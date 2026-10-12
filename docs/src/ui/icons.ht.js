@@ -1,5 +1,5 @@
-import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
+import { div, h2, p } from 'javascript-to-html'
+import { button, fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
@@ -36,6 +36,25 @@ const squareGallery = () => {
 
   try {
     return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
+
+/** The square spinner playing, at rest and in a button, framed like a demo. */
+const squareSpinner = () => {
+  const previous = iconSet('square')
+
+  try {
+    return div(
+      { class: 'ui-demo-preview ui-demo-preview--center', 'data-pagefind-ignore': '' },
+      stack(
+        { direction: 'row', gap: 'md', align: 'center', wrap: true },
+        icon('spinner', { spin: true, size: 'lg' }),
+        icon('spinner', { size: 'lg' }),
+        button({ variant: 'soft' }, icon('spinner', { spin: true }), 'Saving…'),
+      ),
+    )
   } finally {
     iconSet(previous)
   }
@@ -252,6 +271,14 @@ iconSet('square')`, 'javascript'),
         code('iconSet()'),
         ' hands back the set it replaced, so it can be put back; called with no name, it only says which one is in use.',
       ),
+      p(
+        'Its spinner is a braille cell rather than a ring. Under ',
+        code('spin'),
+        ' its dots run round the cell the way a terminal’s spinner does — ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ — instead of the glyph turning; at rest it shows the first frame, and under ',
+        code('prefers-reduced-motion'),
+        ' it slows down rather than stopping.',
+      ),
+      squareSpinner(),
       squareGallery(),
 
       h2('Brands'),

@@ -1,5 +1,5 @@
-import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
+import { div, h2, p } from 'javascript-to-html'
+import { button, fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/de.js'
 
@@ -34,6 +34,25 @@ const squareGallery = () => {
 
   try {
     return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
+
+/** Der eckige Spinner in Bewegung, in Ruhe und in einem Button, gerahmt wie eine Demo. */
+const squareSpinner = () => {
+  const previous = iconSet('square')
+
+  try {
+    return div(
+      { class: 'ui-demo-preview ui-demo-preview--center', 'data-pagefind-ignore': '' },
+      stack(
+        { direction: 'row', gap: 'md', align: 'center', wrap: true },
+        icon('spinner', { spin: true, size: 'lg' }),
+        icon('spinner', { size: 'lg' }),
+        button({ variant: 'soft' }, icon('spinner', { spin: true }), 'Speichert…'),
+      ),
+    )
   } finally {
     iconSet(previous)
   }
@@ -250,6 +269,14 @@ iconSet('square')`, 'javascript'),
         code('iconSet()'),
         ' gibt den Satz zurück, den es ersetzt, damit er sich wiederherstellen lässt; ohne Namen aufgerufen, sagt es nur, welcher gerade gilt.',
       ),
+      p(
+        'Sein Spinner ist eine Braillezelle statt eines Rings. Mit ',
+        code('spin'),
+        ' laufen ihre Punkte um die Zelle wie der Spinner eines Terminals – ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ –, statt dass sich das Zeichen dreht; in Ruhe zeigt er das erste Bild, und bei ',
+        code('prefers-reduced-motion'),
+        ' wird er langsamer, statt stehen zu bleiben.',
+      ),
+      squareSpinner(),
       squareGallery(),
 
       h2('Marken'),

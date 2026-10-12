@@ -1,5 +1,5 @@
-import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
+import { div, h2, p } from 'javascript-to-html'
+import { button, fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/tr.js'
 
@@ -34,6 +34,25 @@ const squareGallery = () => {
 
   try {
     return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
+
+/** Köşeli spinner: dönerken, dururken ve bir düğmenin içinde, bir demo gibi çerçeveli. */
+const squareSpinner = () => {
+  const previous = iconSet('square')
+
+  try {
+    return div(
+      { class: 'ui-demo-preview ui-demo-preview--center', 'data-pagefind-ignore': '' },
+      stack(
+        { direction: 'row', gap: 'md', align: 'center', wrap: true },
+        icon('spinner', { spin: true, size: 'lg' }),
+        icon('spinner', { size: 'lg' }),
+        button({ variant: 'soft' }, icon('spinner', { spin: true }), 'Kaydediliyor…'),
+      ),
+    )
   } finally {
     iconSet(previous)
   }
@@ -250,6 +269,14 @@ iconSet('square')`, 'javascript'),
         code('iconSet()'),
         ' yerine geçtiği kümeyi döndürür, böylece geri konabilir; adsız çağrıldığında yalnızca hangisinin kullanımda olduğunu söyler.',
       ),
+      p(
+        'Spinner’ı bir halka değil, bir Braille hücresidir. ',
+        code('spin'),
+        ' ile noktaları, glif dönmek yerine bir terminaldeki spinner gibi hücrenin çevresinde dolaşır — ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏; dururken ilk kareyi gösterir, ',
+        code('prefers-reduced-motion'),
+        ' altında ise durmak yerine yavaşlar.',
+      ),
+      squareSpinner(),
       squareGallery(),
 
       h2('Markalar'),
