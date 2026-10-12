@@ -112,8 +112,8 @@ export const SQUARE = {
   ]
     .map(({ x, y, lit }) => `<rect x="${x - 2}" y="${y - 2}" width="4" height="4" fill="currentColor" stroke="none"${lit ? '' : ' opacity="0"'}/>`)
     .join('')}</g>`,
-  'thumbs-up': '<path d="M3 10h4v11H3z"/><path d="M7 10 10 3h2v6h8l-2 12H7"/>',
-  'thumbs-down': '<path d="M3 3h4v11H3z"/><path d="M7 14l3 7h2v-6h8L18 3H7"/>',
+  'thumbs-up': '<path d="M3 10h4v11H3z"/><path d="M7 10 10 3h2v7h8l-2 11H7"/>',
+  'thumbs-down': '<path d="M3 3h4v11H3z"/><path d="M7 14l3 7h2v-7h8L18 3H7"/>',
   sparkles: '<path d="M10 3 11.8 8.2 17 10 11.8 11.8 10 17 8.2 11.8 3 10 8.2 8.2z"/><path d="M17.5 14 18.5 16.5 21 17.5 18.5 18.5 17.5 21 16.5 18.5 14 17.5 16.5 16.5z"/>',
   bell: '<path d="M4 17h16v-1l-2-2V9l-3-4H9L6 9v5l-2 2z"/><path d="M10 20h4"/>',
   star: '<path d="M12 3.5 14.7 9 20.8 9.9 16.4 14.2 17.4 20.2 12 17.4 6.6 20.2 7.6 14.2 3.2 9.9 9.3 9z"/>',
