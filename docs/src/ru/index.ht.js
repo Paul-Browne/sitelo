@@ -14,6 +14,7 @@ import {
 } from 'javascript-to-html'
 import { landingLayout } from '../lib/ru.js'
 import { arrowIcon, icons } from '../lib/landing-icons.js'
+import { heroTyped } from '../lib/hero-typed.js'
 import { gettingStartedSnippets } from '../lib/snippets/getting-started.js'
 
 const { install } = gettingStartedSnippets('ru')
@@ -121,15 +122,14 @@ function headerHero() {
         span(
           { class: 'hero-headline-text' },
           'Современный фреймворк для ',
-          span(
-            {
-              class: 'hero-typed',
-              'data-phrases':
-                'быстрых сайтов|блогов|портфолио|лендингов|контентных сайтов|интернет-магазинов',
-              'aria-live': 'polite',
-            },
+          heroTyped([
             'быстрых сайтов',
-          ),
+            'блогов',
+            'портфолио',
+            'лендингов',
+            'контентных сайтов',
+            'интернет-магазинов',
+          ]),
         ),
       ),
       p(

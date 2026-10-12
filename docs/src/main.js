@@ -368,20 +368,15 @@ async function initDocsSearch() {
 }
 
 function startHeroTypewriter() {
-  const el = document.querySelector('.hero-typed')
+  const slot = document.querySelector('.hero-typed')
+  const el = slot?.querySelector('.hero-typed-text')
   if (!el) return
 
-  const phrases = (el.getAttribute('data-phrases') ?? '')
-    .split('|')
-    .map((p) => p.trim())
-    .filter(Boolean)
+  const phrases = [...slot.querySelectorAll('.hero-typed-sizer')].map(
+    (sizer) => sizer.dataset.phrase,
+  )
 
-  if (phrases.length < 2) return
-
-  if (reduceMotion) {
-    el.textContent = phrases[0]
-    return
-  }
+  if (phrases.length < 2 || reduceMotion) return
 
   const typeMs = 75
   const deleteMs = 38
@@ -389,8 +384,7 @@ function startHeroTypewriter() {
   const gapMs = 320
 
   let index = 0
-  el.textContent = phrases[0]
-  el.classList.add('is-typing')
+  slot.classList.add('is-typing')
 
   const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms))
 

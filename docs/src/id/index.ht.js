@@ -14,6 +14,7 @@ import {
 } from 'javascript-to-html'
 import { landingLayout } from '../lib/id.js'
 import { arrowIcon, icons } from '../lib/landing-icons.js'
+import { heroTyped } from '../lib/hero-typed.js'
 import { gettingStartedSnippets } from '../lib/snippets/getting-started.js'
 
 const { install } = gettingStartedSnippets('id')
@@ -121,15 +122,14 @@ function headerHero() {
         span(
           { class: 'hero-headline-text' },
           'Framework modern untuk ',
-          span(
-            {
-              class: 'hero-typed',
-              'data-phrases':
-                'situs web cepat|blog|portofolio|halaman arahan|situs berbasis konten|situs e-commerce',
-              'aria-live': 'polite',
-            },
+          heroTyped([
             'situs web cepat',
-          ),
+            'blog',
+            'portofolio',
+            'halaman arahan',
+            'situs berbasis konten',
+            'situs e-commerce',
+          ]),
         ),
       ),
       p(
