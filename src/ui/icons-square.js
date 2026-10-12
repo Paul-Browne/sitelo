@@ -131,7 +131,13 @@ export const SQUARE = {
   bold: '<path d="M7 4h6.5L16 6.5v2L13.5 11H7z"/><path d="M7 11h7.5L17 13.5v4L14.5 20H7z"/>',
   italic: '<path d="M10 4h8"/><path d="M6 20h8"/><path d="M15 4 9 20"/>',
   terminal: '<path d="M5 7 10 12 5 17"/><path d="M12 17h7"/>',
-  database: '<path d="M4 6 7 4h10l3 2-3 2H7z"/><path d="M4 6v12l3 2h10l3-2V6"/><path d="M4 12l3 2h10l3-2"/>',
+  /*
+   * Each rim stands on a short upright at either side, and each line
+   * that meets a side starts and ends on one, so its square ends and
+   * mitres stay inside the side's stroke rather than spiking past it.
+   */
+  database:
+    '<path d="M4 5.5 5 4.5 8 3.5h8l3 1 1 1v1l-1 1-3 1H8l-3-1-1-1z"/><path d="M4 6.5v12l1 1 3 1h8l3-1 1-1v-12"/><path d="M4 12v.5l1 1 3 1h8l3-1 1-1V12"/>',
   layers: '<path d="M12 3 21 8 12 13 3 8z"/><path d="M3 12.5 12 17.5 21 12.5"/><path d="M3 17 12 22 21 17"/>',
   package: '<path d="M12 3 20.5 7.5v9L12 21l-8.5-4.5v-9z"/><path d="M3.5 7.5 12 12 20.5 7.5"/><path d="M12 12v9"/>',
   calendar: '<path d="M3 5h18v16H3z"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/>',
