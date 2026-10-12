@@ -1,5 +1,5 @@
-import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
+import { div, h2, p } from 'javascript-to-html'
+import { button, fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/pt.js'
 
@@ -34,6 +34,25 @@ const squareGallery = () => {
 
   try {
     return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
+
+/** O spinner quadrado a correr, em repouso e dentro de um botão, emoldurado como uma demo. */
+const squareSpinner = () => {
+  const previous = iconSet('square')
+
+  try {
+    return div(
+      { class: 'ui-demo-preview ui-demo-preview--center', 'data-pagefind-ignore': '' },
+      stack(
+        { direction: 'row', gap: 'md', align: 'center', wrap: true },
+        icon('spinner', { spin: true, size: 'lg' }),
+        icon('spinner', { size: 'lg' }),
+        button({ variant: 'soft' }, icon('spinner', { spin: true }), 'A guardar…'),
+      ),
+    )
   } finally {
     iconSet(previous)
   }
@@ -250,6 +269,14 @@ iconSet('square')`, 'javascript'),
         code('iconSet()'),
         ' devolve o conjunto que substituiu, para o poderes repor; chamado sem nome, apenas diz qual está em uso.',
       ),
+      p(
+        'O seu spinner é uma célula braille e não um anel. Com ',
+        code('spin'),
+        ', os pontos dão a volta à célula como o spinner de um terminal — ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ — em vez de o glifo rodar; em repouso mostra o primeiro fotograma, e com ',
+        code('prefers-reduced-motion'),
+        ' abranda em vez de parar.',
+      ),
+      squareSpinner(),
       squareGallery(),
 
       h2('Marcas'),

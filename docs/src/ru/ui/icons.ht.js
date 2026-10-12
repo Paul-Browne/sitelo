@@ -1,5 +1,5 @@
-import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
+import { div, h2, p } from 'javascript-to-html'
+import { button, fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/ru.js'
 
@@ -34,6 +34,25 @@ const squareGallery = () => {
 
   try {
     return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
+
+/** Квадратный спиннер в движении, в покое и в кнопке, в рамке, как у демо. */
+const squareSpinner = () => {
+  const previous = iconSet('square')
+
+  try {
+    return div(
+      { class: 'ui-demo-preview ui-demo-preview--center', 'data-pagefind-ignore': '' },
+      stack(
+        { direction: 'row', gap: 'md', align: 'center', wrap: true },
+        icon('spinner', { spin: true, size: 'lg' }),
+        icon('spinner', { size: 'lg' }),
+        button({ variant: 'soft' }, icon('spinner', { spin: true }), 'Сохраняем…'),
+      ),
+    )
   } finally {
     iconSet(previous)
   }
@@ -250,6 +269,14 @@ iconSet('square')`, 'javascript'),
         code('iconSet()'),
         ' возвращает набор, который заменил, чтобы его можно было вернуть; вызванный без имени, он лишь сообщает, какой набор сейчас используется.',
       ),
+      p(
+        'Его спиннер — это ячейка шрифта Брайля, а не кольцо. С ',
+        code('spin'),
+        ' её точки бегут по кругу, как у спиннера в терминале, — ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏, — а сам глиф не вращается; в покое он показывает первый кадр, а при ',
+        code('prefers-reduced-motion'),
+        ' замедляется, а не останавливается.',
+      ),
+      squareSpinner(),
       squareGallery(),
 
       h2('Бренды'),

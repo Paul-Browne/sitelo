@@ -770,7 +770,9 @@ iconSet('square')
 ```
 
 The names, aliases and filled forms are the same in both, so no call
-changes.
+changes. The square spinner is a braille cell rather than a ring: under
+`spin` its dots run round it the way a terminal's spinner does —
+⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ — instead of the glyph turning.
 
 Eight brand marks come with the set — `facebook`, `google`, `instagram`,
 `linkedin`, `tiktok`, `whatsapp`, `x-twitter` and `youtube`. They break

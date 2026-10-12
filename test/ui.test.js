@@ -1928,6 +1928,57 @@ test('the square set fills the same glyphs the round set does, the same ways', (
   });
 });
 
+test('the square spinner plays ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏, and rests on the first', () => {
+  /*
+   * Read back out of what ships: the dots' places from the glyph, and
+   * each dot's stretch of the cycle from the core sheet — the frame it
+   * lights on, from its delay, and for how many, from its keyframes —
+   * then played frame by frame and spelled as braille.
+   */
+  const css = ui.stylesheet({ minify: false });
+  const glyph = square(() => ui.icon('spinner'));
+  const dots = [...glyph.matchAll(/<rect x="([\d.]+)" y="([\d.]+)"[^>]*?( opacity="0")?\/>/g)].map(([, x, y, dark]) => ({
+    // Braille numbers the left column 1–3 and the right 4–6, top down.
+    bit: 1 << ((Number(x) < 12 ? 0 : 3) + Math.round((Number(y) + 2 - 4) / 8)),
+    lit: !dark,
+  }));
+
+  assert.equal(dots.length, 6);
+
+  const spell = (bits) => String.fromCodePoint(0x2800 + bits);
+  const lengths = Object.fromEntries(
+    [...css.matchAll(/@keyframes (su-icon-braille-\d) \{\s*0% \{ opacity: 1; \}\s*(\d+)%, 100% \{ opacity: 0; \}/g)].map(
+      ([, name, off]) => [name, Number(off) / 10],
+    ),
+  );
+  const named = /\.su-icon-braille > \* \{\s*animation: (su-icon-braille-\d) /.exec(css)[1];
+  const renamed = /((?:\.su-icon--spin \.su-icon-braille > :nth-child\(\d\),?\s*)+)\{\s*animation-name: (su-icon-braille-\d);/.exec(css);
+  const nameOf = (child) => (renamed[1].includes(`:nth-child(${child})`) ? renamed[2] : named);
+  const starts = Object.fromEntries(
+    [...css.matchAll(/:nth-child\((\d)\) \{ animation-delay: calc\(var\(--su-icon-braille-cycle\) \* (-[\d.]+)\); \}/g)].map(
+      ([, child, share]) => [Number(child), Math.round(10 + Number(share) * 10)],
+    ),
+  );
+
+  const frames = Array.from({ length: 10 }, (_, frame) =>
+    spell(
+      dots.reduce((bits, dot, index) => {
+        const child = index + 1;
+        const lit = (frame - starts[child] + 10) % 10 < lengths[nameOf(child)];
+        return lit ? bits | dot.bit : bits;
+      }, 0),
+    ),
+  );
+
+  assert.equal(frames.join(' '), '⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏');
+  assert.equal(spell(dots.reduce((bits, dot) => (dot.lit ? bits | dot.bit : bits), 0)), '⠋', 'at rest');
+
+  // The cell is played, not turned, and the round spinner still turns.
+  assert.match(css, /\.su-icon--spin > g:has\(> \.su-icon-braille\) \{\s*animation: none;/);
+  assert.match(square(() => ui.icon('spinner', { spin: true })), /<g><g class="su-icon-braille">/);
+  assert.doesNotMatch(ui.icon('spinner', { spin: true }), /su-icon-braille/);
+});
+
 test('iconSet() reaches the glyphs components draw for themselves', () => {
   const squareLine = /stroke-linecap="square"/;
 

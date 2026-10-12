@@ -1,5 +1,5 @@
-import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
+import { div, h2, p } from 'javascript-to-html'
+import { button, fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/id.js'
 
@@ -34,6 +34,25 @@ const squareGallery = () => {
 
   try {
     return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
+
+/** Spinner persegi saat berjalan, saat diam, dan di dalam tombol, dibingkai seperti demo. */
+const squareSpinner = () => {
+  const previous = iconSet('square')
+
+  try {
+    return div(
+      { class: 'ui-demo-preview ui-demo-preview--center', 'data-pagefind-ignore': '' },
+      stack(
+        { direction: 'row', gap: 'md', align: 'center', wrap: true },
+        icon('spinner', { spin: true, size: 'lg' }),
+        icon('spinner', { size: 'lg' }),
+        button({ variant: 'soft' }, icon('spinner', { spin: true }), 'Menyimpan…'),
+      ),
+    )
   } finally {
     iconSet(previous)
   }
@@ -250,6 +269,14 @@ iconSet('square')`, 'javascript'),
         code('iconSet()'),
         ' mengembalikan kumpulan yang digantikannya, agar bisa dipasang kembali; dipanggil tanpa nama, ia hanya memberi tahu kumpulan mana yang sedang dipakai.',
       ),
+      p(
+        'Spinner-nya berupa sel braille, bukan cincin. Dengan ',
+        code('spin'),
+        ', titik-titiknya berputar mengelilingi sel seperti spinner di terminal — ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ — alih-alih glifnya yang berputar; saat diam ia menampilkan bingkai pertama, dan di bawah ',
+        code('prefers-reduced-motion'),
+        ' ia melambat alih-alih berhenti.',
+      ),
+      squareSpinner(),
       squareGallery(),
 
       h2('Merek'),
