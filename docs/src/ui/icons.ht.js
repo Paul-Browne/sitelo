@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
+import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock } from '../lib/code.js'
 import { uiLayout } from '../lib/layout.js'
@@ -29,6 +29,17 @@ const cell = (name) =>
 /* Alphabetical, straight from the library, so the page cannot fall
  * behind the set it documents. */
 const gallery = () => grid({ min: '7.5rem', gap: 'sm' }, ...iconNames().map(cell))
+
+/** The same cells in the square set, with the set in use put back. */
+const squareGallery = () => {
+  const previous = iconSet('square')
+
+  try {
+    return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
 
 /**
  * The glyphs filled by painting their own path, as opposed to the ones
@@ -223,6 +234,25 @@ icon(liked ? 'heart-filled' : 'heart')`, 'javascript'),
         ' — because the same drawing gets used for unrelated jobs, and a name that describes the picture stays true when it does. The aliases below cover the common intents.',
       ),
       gallery(),
+
+      h2('The square set'),
+      p(
+        code("iconSet('square')"),
+        ' draws every glyph again in straight lines — horizontal, vertical or at 45° wherever the thing drawn allows — with square ends, sharp corners and a thinner stroke; a circle is squared off, or cut to an octagon where being round is the point. It is the set the ',
+        code('blueprint'),
+        ' and ',
+        code('terminal'),
+        ' presets are drawn for, and it reaches the icons components draw for themselves too — an alert’s glyph, a dialog’s close button. Call it once, from a module your pages import:',
+      ),
+      codeBlock('src/lib/icons.js', `import { iconSet } from 'sitelo/ui'
+
+iconSet('square')`, 'javascript'),
+      p(
+        'The names, the aliases and the filled forms are the same in both sets, so no call has to change, and the brand marks stay the brands’ own. ',
+        code('iconSet()'),
+        ' hands back the set it replaced, so it can be put back; called with no name, it only says which one is in use.',
+      ),
+      squareGallery(),
 
       h2('Brands'),
       p(

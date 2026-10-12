@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
+import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/pl.js'
 
@@ -27,6 +27,17 @@ const cell = (name) =>
 /* Alfabetycznie, prosto z biblioteki, żeby strona nie mogła zostać w tyle
  * za zestawem, który dokumentuje. */
 const gallery = () => grid({ min: '7.5rem', gap: 'sm' }, ...iconNames().map(cell))
+
+/** Te same komórki w zestawie kwadratowym; potem wraca poprzedni. */
+const squareGallery = () => {
+  const previous = iconSet('square')
+
+  try {
+    return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
 
 /**
  * Glify wypełniane przez zamalowanie własnej ścieżki, w odróżnieniu od tych,
@@ -221,6 +232,25 @@ icon(liked ? 'heart-filled' : 'heart')`, 'javascript'),
         ' — bo ten sam rysunek bywa używany do niepowiązanych zadań, a nazwa opisująca obrazek zostaje wtedy prawdziwa. Aliasy poniżej pokrywają typowe intencje.',
       ),
       gallery(),
+
+      h2('Zestaw kwadratowy'),
+      p(
+        code("iconSet('square')"),
+        ' rysuje każdy znak na nowo prostymi liniami — poziomymi, pionowymi albo pod kątem 45° wszędzie, gdzie rysowany przedmiot na to pozwala — z kwadratowymi końcami, ostrymi narożnikami i cieńszą kreską; okrąg staje się kwadratem albo, tam gdzie liczy się okrągłość, ośmiokątem. To zestaw, dla którego narysowano presety ',
+        code('blueprint'),
+        ' i ',
+        code('terminal'),
+        ', i obejmuje też ikony, które komponenty rysują same — znak alertu, przycisk zamykania okna dialogowego. Wywołaj ją raz, w module, który importują twoje strony:',
+      ),
+      codeBlock('src/lib/icons.js', `import { iconSet } from 'sitelo/ui'
+
+iconSet('square')`, 'javascript'),
+      p(
+        'Nazwy, aliasy i formy wypełnione są w obu zestawach takie same, więc żadne wywołanie nie musi się zmienić, a znaki marek pozostają znakami samych marek. ',
+        code('iconSet()'),
+        ' zwraca zestaw, który zastąpiła, żeby dało się go przywrócić; wywołana bez nazwy mówi tylko, który jest w użyciu.',
+      ),
+      squareGallery(),
 
       h2('Marki'),
       p(

@@ -16,7 +16,9 @@ export default () =>
       presetPreview('blueprint'),
 
       h2('使用'),
-      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+      codeBlock('src/index.ht.js', `import { iconSet, styles } from 'sitelo/ui'
+
+iconSet('square')
 
 head(
   title('我的站点'),
@@ -24,6 +26,10 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/blueprint-4d1f8a20.css">`, 'javascript'),
+      p(
+        code("iconSet('square')"),
+        ' 会让图标与之匹配——以方头、尖角的直细线绘制，就像上面的预览那样——组件自己绘制的图标也包括在内。在页面导入的某个模块里调用一次即可。',
+      ),
       p(
         '用 ',
         code('var(--su-bp-backdrop)'),

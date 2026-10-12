@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
+import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/zh.js'
 
@@ -26,6 +26,17 @@ const cell = (name) =>
 
 /* 按字母序，直接取自库本身，这样页面就不会落后于它所记录的那套图标。 */
 const gallery = () => grid({ min: '7.5rem', gap: 'sm' }, ...iconNames().map(cell))
+
+/** 同样的格子，用方形图标集绘制，之后换回原来那套。 */
+const squareGallery = () => {
+  const previous = iconSet('square')
+
+  try {
+    return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
 
 /**
  * 靠给自身路径上色来填充的图形，区别于那些另带一张画的图形——判断依据是两种
@@ -218,6 +229,25 @@ icon(liked ? 'heart-filled' : 'heart')`, 'javascript'),
         '——因为同一张画会用在互不相干的地方，而描述图形的名字在那时依然成立。下面的别名覆盖了常见意图。',
       ),
       gallery(),
+
+      h2('方形图标集'),
+      p(
+        code("iconSet('square')"),
+        ' 用直线把每个图形重新画一遍——只要画的东西允许，就用水平、垂直或 45° 的线——方头、尖角，线条更细；圆形改成正方形，若圆形本身就是重点，则切成八边形。这是为 ',
+        code('blueprint'),
+        ' 和 ',
+        code('terminal'),
+        ' 预设绘制的图标集，组件自己绘制的图标也会随之改变——提示框里的图形、对话框的关闭按钮。在页面导入的某个模块里调用一次即可：',
+      ),
+      codeBlock('src/lib/icons.js', `import { iconSet } from 'sitelo/ui'
+
+iconSet('square')`, 'javascript'),
+      p(
+        '两套图标的名称、别名和填充形式完全相同，所以不需要改动任何调用；品牌标识仍是品牌自己的样子。',
+        code('iconSet()'),
+        ' 会返回被替换掉的那套，便于还原；不带名称调用时，它只告诉你当前用的是哪一套。',
+      ),
+      squareGallery(),
 
       h2('品牌标识'),
       p(

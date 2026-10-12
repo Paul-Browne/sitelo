@@ -16,7 +16,9 @@ export default () =>
       presetPreview('terminal'),
 
       h2('L’utiliser'),
-      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+      codeBlock('src/index.ht.js', `import { iconSet, styles } from 'sitelo/ui'
+
+iconSet('square')
 
 head(
   title('Mon site'),
@@ -24,6 +26,10 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/terminal-06767808.css">`, 'javascript'),
+      p(
+        code("iconSet('square')"),
+        ' dessine les icônes assorties — des traits fins et droits aux extrémités carrées et aux angles vifs, comme dans l’aperçu ci-dessus —, celles que les composants dessinent eux-mêmes comprises. Appelez-le une fois, depuis un module que vos pages importent.',
+      ),
       p(
         'Composez aussi la page avec — son fond, sa couleur de texte et sa police — et les composants s’y posent comme ci-dessus. Le préréglage utilise JetBrains Mono, IBM Plex Mono ou Source Code Pro si la page en charge une, sinon la police à chasse fixe du système ; il ne télécharge rien.',
       ),

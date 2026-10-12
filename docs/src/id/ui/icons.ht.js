@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
+import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/id.js'
 
@@ -27,6 +27,17 @@ const cell = (name) =>
 /* Alfabetis, langsung dari pustakanya, sehingga halamannya tidak bisa
  * tertinggal dari kumpulan yang didokumentasikannya. */
 const gallery = () => grid({ min: '7.5rem', gap: 'sm' }, ...iconNames().map(cell))
+
+/** Sel yang sama dalam kumpulan persegi, lalu kumpulan sebelumnya dipasang kembali. */
+const squareGallery = () => {
+  const previous = iconSet('square')
+
+  try {
+    return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
 
 /**
  * Glif yang diisi dengan mengecat jalurnya sendiri, dibandingkan yang
@@ -221,6 +232,25 @@ icon(liked ? 'heart-filled' : 'heart')`, 'javascript'),
         ' — karena gambar yang sama dipakai untuk pekerjaan yang tidak berkaitan, dan nama yang menjelaskan gambarnya tetap benar ketika itu terjadi. Takaran alias di bawah ini mencakup maksud-maksud yang umum.',
       ),
       gallery(),
+
+      h2('Kumpulan persegi'),
+      p(
+        code("iconSet('square')"),
+        ' menggambar ulang setiap glif dengan garis lurus — mendatar, tegak, atau 45° di mana pun bentuknya memungkinkan — dengan ujung persegi, sudut tajam, dan goresan yang lebih tipis; lingkaran menjadi persegi, atau segi delapan bila kebulatannya yang penting. Inilah kumpulan yang menjadi pasangan preset ',
+        code('blueprint'),
+        ' dan ',
+        code('terminal'),
+        ', dan ia juga menjangkau ikon yang digambar komponen sendiri — glif pada peringatan, tombol tutup pada dialog. Panggil sekali, dari modul yang diimpor halaman Anda:',
+      ),
+      codeBlock('src/lib/icons.js', `import { iconSet } from 'sitelo/ui'
+
+iconSet('square')`, 'javascript'),
+      p(
+        'Nama, alias, dan bentuk terisinya sama di kedua kumpulan, jadi tidak ada panggilan yang perlu diubah, dan tanda merek tetap milik mereknya sendiri. ',
+        code('iconSet()'),
+        ' mengembalikan kumpulan yang digantikannya, agar bisa dipasang kembali; dipanggil tanpa nama, ia hanya memberi tahu kumpulan mana yang sedang dipakai.',
+      ),
+      squareGallery(),
 
       h2('Merek'),
       p(

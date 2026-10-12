@@ -16,7 +16,9 @@ export default () =>
       presetPreview('terminal'),
 
       h2('Как подключить'),
-      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+      codeBlock('src/index.ht.js', `import { iconSet, styles } from 'sitelo/ui'
+
+iconSet('square')
 
 head(
   title('Мой сайт'),
@@ -24,6 +26,10 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/terminal-06767808.css">`, 'javascript'),
+      p(
+        code("iconSet('square')"),
+        ' рисует иконки в тон — прямыми тонкими линиями с квадратными концами и острыми углами, как в примере выше, — включая те, что компоненты рисуют сами. Вызовите его один раз, в модуле, который импортируют ваши страницы.',
+      ),
       p(
         'Оформите в нём и саму страницу — её фон, цвет текста и шрифт, — и компоненты лягут на неё так же, как выше. Пресет использует JetBrains Mono, IBM Plex Mono или Source Code Pro, если страница загружает один из них, а иначе — системный моноширинный шрифт; сам он ничего не скачивает.',
       ),

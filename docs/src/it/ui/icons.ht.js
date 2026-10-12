@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
+import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/it.js'
 
@@ -27,6 +27,17 @@ const cell = (name) =>
 /* In ordine alfabetico, direttamente dalla libreria, così la pagina non
  * può restare indietro rispetto all’insieme che documenta. */
 const gallery = () => grid({ min: '7.5rem', gap: 'sm' }, ...iconNames().map(cell))
+
+/** Le stesse celle nell’insieme squadrato, rimettendo poi quello in uso. */
+const squareGallery = () => {
+  const previous = iconSet('square')
+
+  try {
+    return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
 
 /**
  * I glifi riempiti dipingendo il proprio tracciato, in contrapposizione a
@@ -222,6 +233,25 @@ icon(liked ? 'heart-filled' : 'heart')`, 'javascript'),
         ' — perché lo stesso disegno viene usato per compiti senza relazione fra loro, e un nome che descrive l’immagine resta vero anche allora. Gli alias qui sotto coprono le intenzioni più comuni.',
       ),
       gallery(),
+
+      h2('L’insieme squadrato'),
+      p(
+        code("iconSet('square')"),
+        ' ridisegna ogni glifo con linee dritte — orizzontali, verticali o a 45° ovunque il soggetto lo consenta —, con estremità quadrate, angoli vivi e un tratto più sottile; un cerchio diventa un quadrato, o un ottagono dove la rotondità è il punto. È l’insieme per cui sono disegnati i preset ',
+        code('blueprint'),
+        ' e ',
+        code('terminal'),
+        ', e raggiunge anche le icone che i componenti disegnano da sé: il glifo di un avviso, il pulsante di chiusura di una finestra di dialogo. Chiamalo una volta, da un modulo che le tue pagine importano:',
+      ),
+      codeBlock('src/lib/icons.js', `import { iconSet } from 'sitelo/ui'
+
+iconSet('square')`, 'javascript'),
+      p(
+        'I nomi, gli alias e le forme piene sono gli stessi nei due insiemi, quindi nessuna chiamata deve cambiare, e i marchi restano quelli dei marchi stessi. ',
+        code('iconSet()'),
+        ' restituisce l’insieme che ha sostituito, così lo si può rimettere; chiamato senza nome, dice soltanto quale è in uso.',
+      ),
+      squareGallery(),
 
       h2('Marchi'),
       p(

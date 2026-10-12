@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import * as ui from '../src/ui/index.js';
 import defaultExport from '../src/ui/index.js';
 import { configureUiClient, RUNTIME_MODULES } from '../src/ui/handlers.js';
+import { SQUARE } from '../src/ui/icons-square.js';
 import { attrs, parseArgs, space } from '../src/ui/internal.js';
 import { editableSheet } from './helpers/sheet.js';
 import { contrast, parseHex, readTokens } from './helpers/tokens.js';
@@ -1760,6 +1761,194 @@ test('registerIcons() overrides a built-in, and null puts it back', () => {
 
   ui.registerIcons({ check: null });
   assert.equal(ui.icon('check'), original);
+});
+
+/* ------------------------------------------------------------------ *
+ * The square set
+ * ------------------------------------------------------------------ */
+
+/** Run `draw` with the square set chosen, putting the default back. */
+const square = (draw) => {
+  const previous = ui.iconSet('square');
+
+  try {
+    return draw();
+  } finally {
+    ui.iconSet(previous);
+  }
+};
+
+/** Everything inside the `<svg>`. */
+const glyphOf = (html) => html.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
+
+/** A brand mark: one solid shape, the brand's rather than either set's. */
+const isBrand = (name) => /^<path fill="currentColor" stroke="none" d=/.test(glyphOf(ui.icon(name)));
+
+test('iconSet() is round until told otherwise, and hands back the set it replaced', (t) => {
+  t.after(() => ui.iconSet('round'));
+
+  assert.equal(ui.iconSet(), 'round');
+  assert.equal(ui.iconSet('square'), 'round');
+  assert.equal(ui.iconSet(), 'square', 'asking changes nothing');
+  assert.equal(ui.iconSet('round'), 'square');
+  assert.match(ui.icon('check'), /stroke-linecap="round"/);
+});
+
+test('iconSet() rejects a set it does not have, and keeps the one it had', () => {
+  for (const name of ['pixel', 'Square', '', 'toString', 42, null]) {
+    assert.throws(
+      () => ui.iconSet(name),
+      (error) => error instanceof TypeError && error.message.includes("'round', 'square'"),
+      `iconSet(${JSON.stringify(name)})`,
+    );
+    assert.equal(ui.iconSet(), 'round');
+  }
+});
+
+test('the square set draws in its own line: thinner, with square ends and sharp corners', () => {
+  const html = square(() => ui.icon('check'));
+
+  assert.match(html, /stroke-width="1.5"/);
+  assert.match(html, /stroke-linecap="square"/);
+  assert.match(html, /stroke-linejoin="miter"/);
+  assert.match(ui.icon('check'), /stroke-width="1.8"/, 'and the round set is untouched');
+});
+
+test('the square set redraws every glyph but the brand marks, under the same names', () => {
+  const names = ui.iconNames();
+
+  assert.deepEqual(square(() => ui.iconNames()), names, 'one list of names whichever set');
+
+  const brands = names.filter(isBrand);
+
+  assert.ok(brands.length >= 6, brands.join(', '));
+  assert.deepEqual(
+    Object.keys(SQUARE).sort(),
+    names.filter((name) => !brands.includes(name)),
+    'a drawing for every glyph, and nothing the round set does not have',
+  );
+
+  for (const name of brands) {
+    assert.equal(glyphOf(square(() => ui.icon(name))), glyphOf(ui.icon(name)), `${name} is the brand's own mark`);
+  }
+
+  // Aliases follow the drawing they name.
+  assert.equal(square(() => ui.icon('error')), square(() => ui.icon('x-circle')));
+});
+
+test('the square set is straight lines on the grid, and nothing else', () => {
+  /*
+   * Every vertex of every path, read with absolute and relative moves,
+   * lines and the closing `z`: a curve or an arc command is not in that
+   * alphabet, and so fails here as well as anywhere drawn off the grid.
+   * A stroke reaches up to 1.5 past its vertex at a mitred corner, so
+   * each vertex has to leave that much room inside 0–24.
+   */
+  const vertices = (d) => {
+    const points = [];
+    let x = 0;
+    let y = 0;
+    let startX = 0;
+    let startY = 0;
+
+    for (const [, command, args] of d.matchAll(/([a-zA-Z])([^a-zA-Z]*)/g)) {
+      assert.match(command, /^[MLHVZmlhvz]$/, `"${command}" is a straight-line command`);
+
+      const values = (args.match(/-?\d*\.?\d+/g) ?? []).map(Number);
+      const relative = command === command.toLowerCase();
+
+      if (/[Zz]/.test(command)) {
+        x = startX;
+        y = startY;
+        continue;
+      }
+
+      if (/[Hh]/.test(command)) {
+        for (const value of values) points.push([(x = relative ? x + value : value), y]);
+        continue;
+      }
+
+      if (/[Vv]/.test(command)) {
+        for (const value of values) points.push([x, (y = relative ? y + value : value)]);
+        continue;
+      }
+
+      for (let i = 0; i < values.length; i += 2) {
+        x = relative ? x + values[i] : values[i];
+        y = relative ? y + values[i + 1] : values[i + 1];
+        points.push([x, y]);
+
+        if (i === 0 && /[Mm]/.test(command)) {
+          startX = x;
+          startY = y;
+        }
+      }
+    }
+
+    return points;
+  };
+
+  for (const name of ui.iconNames().filter((name) => !isBrand(name))) {
+    for (const filled of [false, true]) {
+      const glyph = glyphOf(square(() => ui.icon(name, { filled })));
+
+      assert.ok(!/<(circle|ellipse|polyline|polygon|line)\b/.test(glyph), `${name} draws with paths and rects`);
+      assert.ok(!/\brx=/.test(glyph), `${name} rounds no corner`);
+
+      for (const [, d] of glyph.matchAll(/ d="([^"]+)"/g)) {
+        for (const [px, py] of vertices(d)) {
+          assert.ok(px >= 1 && px <= 23 && py >= 1 && py <= 23, `${name}${filled ? ' (filled)' : ''}: ${px},${py} is on the grid`);
+        }
+      }
+    }
+  }
+});
+
+test('the square set fills the same glyphs the round set does, the same ways', () => {
+  assert.deepEqual(square(() => ui.fillableIcons()), ui.fillableIcons());
+
+  square(() => {
+    for (const name of ['bell', 'bookmark', 'folder', 'heart', 'star']) {
+      assert.equal(glyphOf(ui.icon(name, { filled: true })), glyphOf(ui.icon(name)), `${name} paints its own path`);
+    }
+
+    for (const name of ['alert-triangle', 'check-circle', 'help', 'info', 'x-circle']) {
+      const filled = ui.icon(name, { filled: true });
+
+      assert.match(filled, /fill-rule="evenodd"/, `${name} knocks its mark out`);
+      assert.match(filled, /stroke="none"/, `${name} carries no stroke`);
+    }
+
+    for (const name of ['chevron-up', 'chevron-down', 'chevron-left', 'chevron-right']) {
+      const filled = ui.icon(name, { filled: true });
+
+      assert.match(filled, /fill="currentColor"/, name);
+      assert.ok(!filled.includes('stroke="none"'), `${name} keeps its stroke, and with it its sharp corners`);
+    }
+  });
+});
+
+test('iconSet() reaches the glyphs components draw for themselves', () => {
+  const squareLine = /stroke-linecap="square"/;
+
+  square(() => {
+    assert.match(ui.alert('Heads up'), squareLine, "the alert's default glyph");
+    assert.match(ui.themeToggle(), squareLine, 'the theme toggle');
+    assert.match(ui.steps({ items: ['a'], current: 1 }), squareLine, 'a completed step');
+    assert.match(ui.modal({ id: 'm', title: 'T' }, 'body'), squareLine, "a dialog's close button");
+  });
+
+  assert.doesNotMatch(ui.alert('Heads up'), squareLine, 'and none of them once the set is put back');
+});
+
+test('a registered glyph wins under the square set too, drawn in its line', (t) => {
+  ui.registerIcons({ check: '<path data-test="mine" d="M4 12h16"/>' });
+  t.after(() => ui.registerIcons({ check: null }));
+
+  const html = square(() => ui.icon('check'));
+
+  assert.match(html, /data-test="mine"/);
+  assert.match(html, /stroke-linecap="square"/);
 });
 
 /* ------------------------------------------------------------------ *

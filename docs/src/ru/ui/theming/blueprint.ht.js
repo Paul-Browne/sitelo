@@ -16,7 +16,9 @@ export default () =>
       presetPreview('blueprint'),
 
       h2('Как подключить'),
-      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+      codeBlock('src/index.ht.js', `import { iconSet, styles } from 'sitelo/ui'
+
+iconSet('square')
 
 head(
   title('Мой сайт'),
@@ -24,6 +26,10 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/blueprint-4d1f8a20.css">`, 'javascript'),
+      p(
+        code("iconSet('square')"),
+        ' рисует иконки в тон — прямыми тонкими линиями с квадратными концами и острыми углами, как в примере выше, — включая те, что компоненты рисуют сами. Вызовите его один раз, в модуле, который импортируют ваши страницы.',
+      ),
       p(
         'Задайте странице фон ',
         code('var(--su-bp-backdrop)'),

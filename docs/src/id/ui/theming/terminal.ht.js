@@ -16,7 +16,9 @@ export default () =>
       presetPreview('terminal'),
 
       h2('Cara memakai'),
-      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+      codeBlock('src/index.ht.js', `import { iconSet, styles } from 'sitelo/ui'
+
+iconSet('square')
 
 head(
   title('Situs saya'),
@@ -24,6 +26,10 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/terminal-06767808.css">`, 'javascript'),
+      p(
+        code("iconSet('square')"),
+        ' menggambar ikon agar serasi — garis tipis lurus dengan ujung persegi dan sudut tajam, seperti pada pratinjau di atas — termasuk ikon yang digambar komponen sendiri. Panggil sekali, dari modul yang diimpor halaman Anda.',
+      ),
       p(
         'Susun juga halamannya dengan ini — latarnya, warna teksnya, dan fonnya — dan komponen akan duduk di atasnya seperti di atas. Preset memakai JetBrains Mono, IBM Plex Mono, atau Source Code Pro bila halaman memuat salah satunya, dan fon monospace sistem bila tidak; preset tidak mengunduh apa pun.',
       ),

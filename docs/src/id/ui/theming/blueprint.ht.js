@@ -16,7 +16,9 @@ export default () =>
       presetPreview('blueprint'),
 
       h2('Cara memakai'),
-      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+      codeBlock('src/index.ht.js', `import { iconSet, styles } from 'sitelo/ui'
+
+iconSet('square')
 
 head(
   title('Situs saya'),
@@ -24,6 +26,10 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/blueprint-4d1f8a20.css">`, 'javascript'),
+      p(
+        code("iconSet('square')"),
+        ' menggambar ikon agar serasi — garis tipis lurus dengan ujung persegi dan sudut tajam, seperti pada pratinjau di atas — termasuk ikon yang digambar komponen sendiri. Panggil sekali, dari modul yang diimpor halaman Anda.',
+      ),
       p(
         'Warnai halaman dengan ',
         code('var(--su-bp-backdrop)'),

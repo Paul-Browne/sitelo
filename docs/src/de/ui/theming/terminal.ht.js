@@ -16,7 +16,9 @@ export default () =>
       presetPreview('terminal'),
 
       h2('Verwendung'),
-      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+      codeBlock('src/index.ht.js', `import { iconSet, styles } from 'sitelo/ui'
+
+iconSet('square')
 
 head(
   title('Meine Website'),
@@ -24,6 +26,10 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/terminal-06767808.css">`, 'javascript'),
+      p(
+        code("iconSet('square')"),
+        ' zeichnet die Icons passend dazu – gerade Haarlinien mit eckigen Enden und scharfen Ecken, wie in der Vorschau oben –, auch die, die Komponenten selbst zeichnen. Ruf es einmal auf, aus einem Modul, das deine Seiten importieren.',
+      ),
       p(
         'Setz auch die Seite darin – ihren Grund, ihre Textfarbe und ihre Schrift –, dann stehen die Komponenten darauf wie oben. Das Preset nutzt JetBrains Mono, IBM Plex Mono oder Source Code Pro, wenn die Seite eine davon lädt, sonst die Monospace-Schrift des Systems; es lädt nichts herunter.',
       ),

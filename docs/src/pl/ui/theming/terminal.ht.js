@@ -16,7 +16,9 @@ export default () =>
       presetPreview('terminal'),
 
       h2('Użycie'),
-      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+      codeBlock('src/index.ht.js', `import { iconSet, styles } from 'sitelo/ui'
+
+iconSet('square')
 
 head(
   title('Moja strona'),
@@ -24,6 +26,10 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/terminal-06767808.css">`, 'javascript'),
+      p(
+        code("iconSet('square')"),
+        ' rysuje ikony do kompletu — prostymi cienkimi liniami o kwadratowych końcach i ostrych narożnikach, jak w podglądzie powyżej — łącznie z tymi, które komponenty rysują same. Wywołaj ją raz, w module, który importują twoje strony.',
+      ),
       p(
         'Złóż w nim także samą stronę — jej tło, kolor tekstu i krój — a komponenty ułożą się na niej jak powyżej. Preset używa JetBrains Mono, IBM Plex Mono albo Source Code Pro, jeśli strona wczytuje któryś z nich, a w przeciwnym razie systemowego kroju o stałej szerokości; sam niczego nie pobiera.',
       ),

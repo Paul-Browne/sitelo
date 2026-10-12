@@ -16,7 +16,9 @@ export default () =>
       presetPreview('blueprint'),
 
       h2('Como usar'),
-      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+      codeBlock('src/index.ht.js', `import { iconSet, styles } from 'sitelo/ui'
+
+iconSet('square')
 
 head(
   title('O meu site'),
@@ -24,6 +26,10 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/blueprint-4d1f8a20.css">`, 'javascript'),
+      p(
+        code("iconSet('square')"),
+        ' desenha os ícones a condizer — linhas finas e retas, de pontas quadradas e cantos vivos, como na pré-visualização acima —, incluindo os que os componentes desenham por si. Chama-o uma vez, a partir de um módulo que as tuas páginas importem.',
+      ),
       p(
         'Pinta a página com ',
         code('var(--su-bp-backdrop)'),

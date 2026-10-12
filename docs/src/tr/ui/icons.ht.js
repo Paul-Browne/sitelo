@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
+import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/tr.js'
 
@@ -27,6 +27,17 @@ const cell = (name) =>
 /* Alfabetik, doğrudan kitaplıktan; böylece sayfa, belgelediği kümenin
  * gerisinde kalamaz. */
 const gallery = () => grid({ min: '7.5rem', gap: 'sm' }, ...iconNames().map(cell))
+
+/** Aynı hücreler köşeli kümeyle; ardından önceki küme geri konur. */
+const squareGallery = () => {
+  const previous = iconSet('square')
+
+  try {
+    return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
 
 /**
  * Kendi yolunu boyayarak dolan glifler ile ikinci bir çizim taşıyanlar —
@@ -221,6 +232,25 @@ icon(liked ? 'heart-filled' : 'heart')`, 'javascript'),
         ' — çünkü aynı çizim birbiriyle ilgisiz işler için kullanılır ve resmi betimleyen bir ad, bu olduğunda da doğru kalır. Aşağıdaki takma adlar yaygın niyetleri karşılar.',
       ),
       gallery(),
+
+      h2('Köşeli küme'),
+      p(
+        code("iconSet('square')"),
+        ' her glifi düz çizgilerle yeniden çizer — çizilen şeyin izin verdiği her yerde yatay, dikey ya da 45° — kare uçlu, keskin köşeli ve daha ince bir çizgiyle; bir daire kareye, yuvarlaklığın asıl mesele olduğu yerde ise sekizgene döner. ',
+        code('blueprint'),
+        ' ve ',
+        code('terminal'),
+        ' hazır ayarlarının çizildiği küme budur ve bileşenlerin kendi çizdiği simgelere de ulaşır — bir uyarının glifi, bir iletişim kutusunun kapatma düğmesi. Sayfalarınızın içe aktardığı bir modülden bir kez çağırın:',
+      ),
+      codeBlock('src/lib/icons.js', `import { iconSet } from 'sitelo/ui'
+
+iconSet('square')`, 'javascript'),
+      p(
+        'Adlar, takma adlar ve dolu biçimler iki kümede de aynıdır; bu yüzden hiçbir çağrının değişmesi gerekmez ve marka işaretleri markaların kendi işaretleri olarak kalır. ',
+        code('iconSet()'),
+        ' yerine geçtiği kümeyi döndürür, böylece geri konabilir; adsız çağrıldığında yalnızca hangisinin kullanımda olduğunu söyler.',
+      ),
+      squareGallery(),
 
       h2('Markalar'),
       p(

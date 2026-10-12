@@ -16,7 +16,9 @@ export default () =>
       presetPreview('blueprint'),
 
       h2('Użycie'),
-      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+      codeBlock('src/index.ht.js', `import { iconSet, styles } from 'sitelo/ui'
+
+iconSet('square')
 
 head(
   title('Moja strona'),
@@ -24,6 +26,10 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/blueprint-4d1f8a20.css">`, 'javascript'),
+      p(
+        code("iconSet('square')"),
+        ' rysuje ikony do kompletu — prostymi cienkimi liniami o kwadratowych końcach i ostrych narożnikach, jak w podglądzie powyżej — łącznie z tymi, które komponenty rysują same. Wywołaj ją raz, w module, który importują twoje strony.',
+      ),
       p(
         'Pomaluj stronę ',
         code('var(--su-bp-backdrop)'),
