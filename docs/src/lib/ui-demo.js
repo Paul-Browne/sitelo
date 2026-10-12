@@ -125,6 +125,15 @@ const PRESET_LABELS = {
  */
 const RUNTIME = ui.stylesUrl({ hash: false }).replace(/ui\.css$/, '')
 
+/**
+ * The icon set each preset is drawn for, where it is not the default:
+ * the presets set in hairlines and monospace pair with `iconSet('square')`.
+ */
+const PRESET_ICONS = {
+  blueprint: 'square',
+  terminal: 'square',
+}
+
 /** Where a preset preview's sheet applies, and nowhere else. */
 const PRESET_STAGE = '[data-preset-stage]'
 
@@ -433,10 +442,30 @@ export function createUiDemo(lang = DEFAULT_LOCALE) {
    * `<link>` inside `srcdoc` is escaped text it rightly passes over —
    * linked here, it would work in dev and 404 in production.
    *
+   * Drawn with the icon set the preset is meant to be paired with, and
+   * the docs' own set put back afterwards: `iconSet()` is global, and
+   * the rest of the page is not in the preset.
+   *
    * @param {string} preset
    * @returns {string}
    */
   function presetPreview(preset) {
+    const previous = ui.iconSet(PRESET_ICONS[preset] ?? 'round')
+
+    try {
+      return presetStage(preset)
+    } finally {
+      ui.iconSet(previous)
+    }
+  }
+
+  /**
+   * The stage itself, in whichever icon set is current.
+   *
+   * @param {string} preset
+   * @returns {string}
+   */
+  function presetStage(preset) {
     const t = presetLabels
     const soft = { variant: 'soft', color: 'neutral' }
 

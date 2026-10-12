@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
+import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/fr.js'
 
@@ -27,6 +27,17 @@ const cell = (name) =>
 /* Par ordre alphabétique, directement depuis la bibliothèque, pour que la
  * page ne puisse pas prendre du retard sur le jeu qu’elle documente. */
 const gallery = () => grid({ min: '7.5rem', gap: 'sm' }, ...iconNames().map(cell))
+
+/** Les mêmes cellules dans le jeu carré, en remettant ensuite celui qui était utilisé. */
+const squareGallery = () => {
+  const previous = iconSet('square')
+
+  try {
+    return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
 
 /**
  * Les glyphes remplis en peignant leur propre tracé, par opposition à ceux
@@ -221,6 +232,25 @@ icon(liked ? 'heart-filled' : 'heart')`, 'javascript'),
         ' — parce que le même dessin sert à des rôles sans rapport, et qu’un nom décrivant l’image reste vrai quand cela arrive. Les alias ci-dessous couvrent les intentions courantes.',
       ),
       gallery(),
+
+      h2('Le jeu carré'),
+      p(
+        code("iconSet('square')"),
+        ' redessine chaque glyphe en traits droits — horizontaux, verticaux ou à 45° partout où l’objet dessiné le permet —, avec des extrémités carrées, des angles vifs et un trait plus fin ; un cercle devient un carré, ou un octogone quand la rondeur compte. C’est le jeu pour lequel sont dessinés les préréglages ',
+        code('blueprint'),
+        ' et ',
+        code('terminal'),
+        ', et il atteint aussi les icônes que les composants dessinent eux-mêmes : le glyphe d’une alerte, le bouton de fermeture d’une boîte de dialogue. Appelez-le une fois, depuis un module que vos pages importent :',
+      ),
+      codeBlock('src/lib/icons.js', `import { iconSet } from 'sitelo/ui'
+
+iconSet('square')`, 'javascript'),
+      p(
+        'Les noms, les alias et les formes pleines sont les mêmes dans les deux jeux : aucun appel n’a à changer, et les marques restent celles de leurs propriétaires. ',
+        code('iconSet()'),
+        ' renvoie le jeu qu’il remplace, pour pouvoir le remettre ; appelé sans nom, il indique seulement lequel est utilisé.',
+      ),
+      squareGallery(),
 
       h2('Marques'),
       p(

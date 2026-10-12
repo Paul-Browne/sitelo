@@ -16,7 +16,9 @@ export default () =>
       presetPreview('blueprint'),
 
       h2('Cómo usarlo'),
-      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+      codeBlock('src/index.ht.js', `import { iconSet, styles } from 'sitelo/ui'
+
+iconSet('square')
 
 head(
   title('Mi sitio'),
@@ -24,6 +26,10 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/blueprint-4d1f8a20.css">`, 'javascript'),
+      p(
+        code("iconSet('square')"),
+        ' dibuja los iconos a juego —líneas finas y rectas con extremos cuadrados y esquinas vivas, como en la vista previa de arriba—, también los que los componentes dibujan por su cuenta. Llámalo una vez, desde un módulo que importen tus páginas.',
+      ),
       p(
         'Pinta la página con ',
         code('var(--su-bp-backdrop)'),

@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
+import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/de.js'
 
@@ -27,6 +27,17 @@ const cell = (name) =>
 /* Alphabetisch, direkt aus der Bibliothek, damit die Seite nicht hinter
  * dem Satz zurückfallen kann, den sie dokumentiert. */
 const gallery = () => grid({ min: '7.5rem', gap: 'sm' }, ...iconNames().map(cell))
+
+/** Dieselben Zellen im eckigen Satz; danach gilt wieder der vorige. */
+const squareGallery = () => {
+  const previous = iconSet('square')
+
+  try {
+    return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
 
 /**
  * Die Zeichen, die durch Ausmalen des eigenen Pfads gefüllt werden, im
@@ -221,6 +232,25 @@ icon(liked ? 'heart-filled' : 'heart')`, 'javascript'),
         ' —, weil dieselbe Zeichnung für unzusammenhängende Zwecke benutzt wird und ein Name, der das Bild beschreibt, dabei wahr bleibt. Die Aliase unten decken die üblichen Absichten ab.',
       ),
       gallery(),
+
+      h2('Der eckige Satz'),
+      p(
+        code("iconSet('square')"),
+        ' zeichnet jedes Zeichen neu in geraden Linien – waagerecht, senkrecht oder im 45°-Winkel, wo immer das Gezeichnete es zulässt –, mit eckigen Enden, scharfen Ecken und einem dünneren Strich; ein Kreis wird zum Quadrat oder zum Achteck, wo das Runde der Punkt ist. Es ist der Satz, für den die Presets ',
+        code('blueprint'),
+        ' und ',
+        code('terminal'),
+        ' gezeichnet sind, und er erreicht auch die Icons, die Komponenten selbst zeichnen – das Zeichen eines Alerts, den Schließen-Button eines Dialogs. Ruf es einmal auf, aus einem Modul, das deine Seiten importieren:',
+      ),
+      codeBlock('src/lib/icons.js', `import { iconSet } from 'sitelo/ui'
+
+iconSet('square')`, 'javascript'),
+      p(
+        'Die Namen, die Aliase und die gefüllten Formen sind in beiden Sätzen dieselben, kein Aufruf muss sich also ändern, und die Markenzeichen bleiben die der Marken. ',
+        code('iconSet()'),
+        ' gibt den Satz zurück, den es ersetzt, damit er sich wiederherstellen lässt; ohne Namen aufgerufen, sagt es nur, welcher gerade gilt.',
+      ),
+      squareGallery(),
 
       h2('Marken'),
       p(

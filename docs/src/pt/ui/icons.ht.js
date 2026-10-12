@@ -1,5 +1,5 @@
 import { h2, p } from 'javascript-to-html'
-import { fillableIcons, grid, icon, iconNames, stack, text } from 'sitelo/ui'
+import { fillableIcons, grid, icon, iconNames, iconSet, stack, text } from 'sitelo/ui'
 
 import { code, codeBlock, demo, propsTable, uiLayout } from '../../lib/pt.js'
 
@@ -27,6 +27,17 @@ const cell = (name) =>
 /* Por ordem alfabética, tirado diretamente da biblioteca, para a página não
  * poder ficar atrás do conjunto que documenta. */
 const gallery = () => grid({ min: '7.5rem', gap: 'sm' }, ...iconNames().map(cell))
+
+/** As mesmas células no conjunto quadrado, repondo depois o que estava em uso. */
+const squareGallery = () => {
+  const previous = iconSet('square')
+
+  try {
+    return gallery()
+  } finally {
+    iconSet(previous)
+  }
+}
 
 /**
  * Os símbolos que se preenchem pintando o próprio traçado, por oposição aos
@@ -221,6 +232,25 @@ icon(liked ? 'heart-filled' : 'heart')`, 'javascript'),
         ' — porque o mesmo desenho serve funções sem relação entre si, e um nome que descreve a imagem continua verdadeiro quando isso acontece. Os aliases abaixo cobrem as intenções comuns.',
       ),
       gallery(),
+
+      h2('O conjunto quadrado'),
+      p(
+        code("iconSet('square')"),
+        ' volta a desenhar cada glifo em linhas retas — horizontais, verticais ou a 45° sempre que o que se desenha o permite —, com pontas quadradas, cantos vivos e um traço mais fino; um círculo passa a quadrado, ou a octógono quando o redondo é o que importa. É o conjunto para o qual os presets ',
+        code('blueprint'),
+        ' e ',
+        code('terminal'),
+        ' foram desenhados, e chega também aos ícones que os componentes desenham por si: o glifo de um alerta, o botão de fechar de um diálogo. Chama-o uma vez, a partir de um módulo que as tuas páginas importem:',
+      ),
+      codeBlock('src/lib/icons.js', `import { iconSet } from 'sitelo/ui'
+
+iconSet('square')`, 'javascript'),
+      p(
+        'Os nomes, os aliases e as formas preenchidas são os mesmos nos dois conjuntos, por isso nenhuma chamada tem de mudar, e as marcas continuam a ser as das próprias marcas. ',
+        code('iconSet()'),
+        ' devolve o conjunto que substituiu, para o poderes repor; chamado sem nome, apenas diz qual está em uso.',
+      ),
+      squareGallery(),
 
       h2('Marcas'),
       p(

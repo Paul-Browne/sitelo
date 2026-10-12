@@ -190,6 +190,21 @@ export function fillableIcons(): string[]
 /** Whether a name resolves to a glyph, following aliases. */
 export function hasIcon(name?: unknown): boolean
 
+/**
+ * The drawings every icon is made from. `round` is the default;
+ * `square` is the same glyphs in straight hairlines with square ends
+ * and sharp corners, drawn for the `blueprint` and `terminal` presets.
+ */
+export type IconSet = 'round' | 'square'
+
+/**
+ * Choose the set every icon is drawn from — components' own icons
+ * included — and get back the one that was in use. Without a name it
+ * changes nothing. Call it once, from a module your pages import. An
+ * unknown name throws.
+ */
+export function iconSet(name?: IconSet): IconSet
+
 /* -------------------------------------------------------------- *
  * Client runtime
  * -------------------------------------------------------------- */

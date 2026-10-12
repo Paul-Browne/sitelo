@@ -17,7 +17,9 @@ export default () =>
       presetPreview('terminal'),
 
       h2('Como usar'),
-      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+      codeBlock('src/index.ht.js', `import { iconSet, styles } from 'sitelo/ui'
+
+iconSet('square')
 
 head(
   title('O meu site'),
@@ -25,6 +27,10 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/terminal-06767808.css">`, 'javascript'),
+      p(
+        code("iconSet('square')"),
+        ' desenha os ícones a condizer — linhas finas e retas, de pontas quadradas e cantos vivos, como na pré-visualização acima —, incluindo os que os componentes desenham por si. Chama-o uma vez, a partir de um módulo que as tuas páginas importem.',
+      ),
       p(
         'Compõe também a página com ele — o fundo, a cor do texto e o tipo de letra — e os componentes assentam nela como acima. O preset usa a JetBrains Mono, a IBM Plex Mono ou a Source Code Pro quando a página carrega uma delas e, caso contrário, o tipo de letra monoespaçado do sistema; não descarrega nada.',
       ),

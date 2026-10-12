@@ -18,7 +18,9 @@ export default () =>
       presetPreview('blueprint'),
 
       h2('Using it'),
-      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+      codeBlock('src/index.ht.js', `import { iconSet, styles } from 'sitelo/ui'
+
+iconSet('square')
 
 head(
   title('My site'),
@@ -26,6 +28,10 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/blueprint-4d1f8a20.css">`, 'javascript'),
+      p(
+        code("iconSet('square')"),
+        ' draws the icons to match — straight hairlines with square ends and sharp corners, as in the preview above — the ones components draw for themselves included. Call it once, from a module your pages import.',
+      ),
       p(
         'Paint the page with ',
         code('var(--su-bp-backdrop)'),

@@ -679,7 +679,7 @@ nothing is shadowed. Light mode prints it in black on near-white.
 `--su-tm-tracking` sets how far apart a label's capitals are,
 `--su-tm-field` the line round a field, and
 `body { background: var(--su-bg); color: var(--su-text); font-family: var(--su-font-mono) }`
-sets the page in it too.
+sets the page in it too. `iconSet('square')` draws the icons to match.
 
 `blueprint` is a technical drawing — hairlines on a near-black sheet,
 square corners, and a registration mark on each corner of a card, a
@@ -693,7 +693,7 @@ Nothing is shadowed. Light mode prints it in ink on white. `primary` is
 the ink; `--su-bp-accent` sets the blue, `--su-bp-mark` the marks
 (`transparent` removes them) and `--su-bp-field` the line round a field,
 and `body { background: var(--su-bp-backdrop) }` rules a faint grid
-across the page.
+across the page. `iconSet('square')` draws the icons to match.
 
 ### Icons
 
@@ -753,6 +753,24 @@ Names describe the drawing rather than the job — `x-circle`, not
 `error` — because the same drawing gets used for unrelated jobs. Common
 intents are aliased, so `icon('danger')`, `icon('error')` and
 `icon('x-circle')` are the same glyph. `iconNames()` lists them all.
+
+There are two sets of the same glyphs. `round` is the default; `square`
+redraws every glyph but the brand marks in straight lines — horizontal,
+vertical or at 45° — with square ends, sharp corners and a thinner
+stroke, a circle squared off or cut to an octagon. It is drawn for the
+`blueprint` and `terminal` presets. `iconSet()` chooses one for every
+icon drawn after it, the ones components draw for themselves included,
+and hands back the set it replaced; call it once, from a module your
+pages import:
+
+```js
+import { iconSet } from 'sitelo/ui'
+
+iconSet('square')
+```
+
+The names, aliases and filled forms are the same in both, so no call
+changes.
 
 Eight brand marks come with the set — `facebook`, `google`, `instagram`,
 `linkedin`, `tiktok`, `whatsapp`, `x-twitter` and `youtube`. They break

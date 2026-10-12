@@ -16,7 +16,9 @@ export default () =>
       presetPreview('terminal'),
 
       h2('Kullanım'),
-      codeBlock('src/index.ht.js', `import { styles } from 'sitelo/ui'
+      codeBlock('src/index.ht.js', `import { iconSet, styles } from 'sitelo/ui'
+
+iconSet('square')
 
 head(
   title('Sitem'),
@@ -24,6 +26,10 @@ head(
 )
 // <link rel="stylesheet" href="/su/ui-c9428b65.css">
 // <link rel="stylesheet" href="/su/terminal-06767808.css">`, 'javascript'),
+      p(
+        code("iconSet('square')"),
+        ' simgeleri de buna uygun çizer — yukarıdaki önizlemedeki gibi kare uçlu, keskin köşeli, düz ince çizgilerle — bileşenlerin kendi çizdikleri dahil. Sayfalarınızın içe aktardığı bir modülden bir kez çağırın.',
+      ),
       p(
         'Sayfanın kendisini de bununla dizin — zeminini, metin rengini ve yazı tipini — bileşenler de yukarıdaki gibi onun üzerine oturur. Hazır ayar, sayfa JetBrains Mono, IBM Plex Mono ya da Source Code Pro’dan birini yüklüyorsa onu, yüklemiyorsa sistemin eş aralıklı yazı tipini kullanır; kendisi hiçbir şey indirmez.',
       ),

@@ -18,13 +18,18 @@
  * Every glyph is drawn on a 24x24 grid as unfilled strokes in
  * `currentColor`, so an icon takes the color and the font size of
  * whatever it sits in and needs no styling of its own.
+ *
+ * There are two sets of the same glyphs: `round`, below, and `square`,
+ * in `icons-square.js`, drawn in straight hairlines for the presets set
+ * in monospace. {@link iconSet} chooses between them.
  */
 
+import { SQUARE, SQUARE_FILLED } from './icons-square.js'
 import { attrs, cx, oneOf, parseArgs, SIZES } from './internal.js'
 
 /**
- * Attributes shared by every glyph, so the individual drawings carry
- * geometry and nothing else.
+ * Attributes shared by every glyph of the round set, so the individual
+ * drawings carry geometry and nothing else.
  */
 const BASE = {
   viewBox: '0 0 24 24',
@@ -346,6 +351,77 @@ const FILLED = {
     '<path stroke="none" d="M11.22 2.95a.9.9 0 0 1 1.56 0l9.6 16.6a.9.9 0 0 1-.78 1.35H2.4a.9.9 0 0 1-.78-1.35zM12 8.7a.9.9 0 0 1 .9.9v4.4a.9.9 0 0 1-1.8 0V9.6a.9.9 0 0 1 .9-.9zM12 15.95a1.05 1.05 0 1 1 0 2.1 1.05 1.05 0 0 1 0-2.1z"/>',
 }
 
+/**
+ * The two drawings of the set, with the line each is drawn in.
+ *
+ * The square set redraws every glyph but the brand marks, and a name it
+ * does not draw falls back to the round one — so the names, the aliases
+ * and the glyphs that can be filled are the same whichever is chosen.
+ */
+const SETS = {
+  round: { glyphs: ICONS, filled: FILLED, base: BASE },
+  square: {
+    glyphs: SQUARE,
+    filled: SQUARE_FILLED,
+    base: { ...BASE, 'stroke-width': '1.5', 'stroke-linecap': 'square', 'stroke-linejoin': 'miter' },
+  },
+}
+
+/** The set {@link icon} draws from: see {@link iconSet}. */
+let active = 'round'
+
+/**
+ * Choose the drawings every icon is made from, and get back the name of
+ * the set that was in use.
+ *
+ * ```js
+ * iconSet('square')
+ * ```
+ *
+ * `'round'` is the default. `'square'` is the same glyphs redrawn for the
+ * `blueprint` and `terminal` presets: straight lines only, square ends,
+ * sharp corners and a thinner stroke, with a circle squared off — or cut
+ * to an octagon where being round is the point.
+ *
+ * It reaches every icon drawn after it, the ones components draw for
+ * themselves included — an alert's glyph, a dialog's close button, a
+ * finished step's tick, the theme toggle's sun and moon. Call it once,
+ * from a module your pages import, as you would {@link registerIcons};
+ * a glyph you registered yourself still wins, and is drawn in the
+ * chosen set's line.
+ *
+ * Called without a name it changes nothing and says which set is in
+ * use, so a set can be put back:
+ *
+ * ```js
+ * const previous = iconSet('square')
+ * const card = renderCard()
+ * iconSet(previous)
+ * ```
+ *
+ * An unknown name throws with a list of the sets there are: unlike a
+ * cosmetic prop, this is configuration, and a typo in it would quietly
+ * change nothing on every page.
+ *
+ * @param {string} [name] - `'round'` or `'square'`.
+ * @returns {string} The set that was in use before the call.
+ */
+export function iconSet(name) {
+  const previous = active
+
+  if (name === undefined) return previous
+
+  if (typeof name !== 'string' || !Object.hasOwn(SETS, name)) {
+    throw new TypeError(
+      `sitelo/ui: unknown icon set ${JSON.stringify(name)} — expected one of ${Object.keys(SETS).map((set) => `'${set}'`).join(', ')}`,
+    )
+  }
+
+  active = name
+
+  return previous
+}
+
 /** Icons added by {@link registerIcons}, checked before the built-ins. */
 const custom = new Map()
 
@@ -428,8 +504,9 @@ export function hasIcon(name) {
 
 /**
  * Look a name up, following aliases. Registered icons win over
- * built-ins, and the same lookup answers both what to draw and whether
- * it can be filled, so the two cannot disagree.
+ * built-ins, then the chosen set, then the round set for what the chosen
+ * one does not draw; and the same lookup answers both what to draw and
+ * whether it can be filled, so the two cannot disagree.
  *
  * @param {unknown} name
  * @returns {{ markup: string, filled?: true | string } | undefined}
@@ -445,7 +522,11 @@ function resolve(name) {
     }
   }
 
-  return ICONS[key] ? { markup: ICONS[key], filled: FILLED[key] } : undefined
+  const set = SETS[active]
+
+  if (Object.hasOwn(set.glyphs, key)) return { markup: set.glyphs[key], filled: set.filled[key] }
+
+  return Object.hasOwn(ICONS, key) ? { markup: ICONS[key], filled: FILLED[key] } : undefined
 }
 
 /**
@@ -542,7 +623,7 @@ export function icon(...args) {
   const content = spin ? `<g>${markup}</g>` : markup
 
   return `<svg${serialize({
-    ...BASE,
+    ...SETS[active].base,
     ...paint,
     ...attrs(rest, {
       class: cx(
