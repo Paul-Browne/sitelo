@@ -2529,13 +2529,18 @@ a.feature-card:hover .feature-chip {
   }
 
   /*
-   * The badges two by two rather than three and one. The columns come out
-   * one width, so the two narrower badges stretch to it and their value
-   * cells take up the slack.
+   * The badges two by two rather than three and one, Node moved last so
+   * that each column pairs two badges of a width: sitelo over Vite, the
+   * licence over Node. Should a version string ever make one wider than
+   * its partner, the narrower stretches and its value cell takes the slack.
    */
   .footer-meta {
     display: grid;
     grid-template-columns: repeat(2, max-content);
+  }
+
+  .badge-node {
+    order: 1;
   }
 
   .badge-value {
