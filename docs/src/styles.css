@@ -369,11 +369,18 @@ code {
   display: none;
 }
 
-/* The preset's open-and-shut mark: a plus, a minus once open. */
+/*
+ * The preset's open-and-shut mark: a plus, a minus once open.
+ *
+ * Geist Mono hangs both on the maths axis, 0.292em up, while the label is
+ * all capitals and centres on half its cap height, 0.355em. Lifted by the
+ * difference, the mark sits level with the word.
+ */
 .lang-switch-toggle::after {
   content: '+';
   content: '+' / '';
   color: var(--ink-faint);
+  translate: 0 -0.063em;
 }
 
 .lang-switch[open] .lang-switch-toggle::after {
