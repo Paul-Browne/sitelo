@@ -703,7 +703,7 @@ size of whatever it sits in:
 
 ```js
 button({ color: 'danger' }, icon('trash'), 'Delete')
-iconButton({ 'aria-label': 'Close' }, icon('close'))
+iconButton({ label: 'Close', icon: icon('close') })
 text(icon('check', { size: 'sm' }), ' Done')
 ```
 
