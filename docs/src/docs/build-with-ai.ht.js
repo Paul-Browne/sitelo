@@ -1,7 +1,7 @@
 import { a, h2, h3, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
-import { buildWithAiSnippets } from '../lib/snippets/build-with-ai.js'
+import { buildWithAiSnippets, SKILLS_INSTALL } from '../lib/snippets/build-with-ai.js'
 
 const s = buildWithAiSnippets('en')
 
@@ -9,11 +9,38 @@ export default () =>
   docsLayout({
     title: 'Build with AI',
     description:
-      'Give coding agents up-to-date sitelo knowledge with llms.txt, project rules, and practical tips.',
+      'Give coding agents up-to-date sitelo knowledge with agent skills, llms.txt, project rules, and practical tips.',
     activeHref: '/docs/build-with-ai',
     children: [
       p(
         'AI editors and coding agents often guess wrong about sitelo — they reach for React, Next, or Astro patterns that don’t apply. This guide shows how to point them at current sitelo docs and keep generated code on-model.',
+      ),
+      h2('Agent skills'),
+      p(
+        'sitelo ships two ',
+        a({ href: 'https://agentskills.io', rel: 'noopener' }, 'Agent Skills'),
+        ': instructions a coding agent loads only when a task calls for them. The ',
+        a({ href: 'https://github.com/vercel-labs/skills', rel: 'noopener' }, code('skills'), ' CLI'),
+        ' installs them into your project for Claude Code, Cursor, Codex, and the other agents it supports:',
+      ),
+      codeBlock('shell', SKILLS_INSTALL, 'bash'),
+      ul(
+        { class: 'docs-list' },
+        li(
+          code('sitelo'),
+          ' — pages, routing, data loading, configuration, assets, images, server islands, Lighthouse, and deployment',
+        ),
+        li(
+          code('sitelo-ui'),
+          ' — the component library: every component’s props, theming, presets, icons, and the client helpers',
+        ),
+      ),
+      p(
+        'Add ',
+        code('--skill sitelo-ui'),
+        ' to install just one, or ',
+        code('-g'),
+        ' to install them for every project. A skill lives in the project, so the agent finds it without being pointed at a URL.',
       ),
       h2('llms.txt'),
       p(

@@ -1,6 +1,6 @@
 import { a, h2, h3, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock, docsLayout } from '../../lib/tr.js'
-import { buildWithAiSnippets } from '../../lib/snippets/build-with-ai.js'
+import { buildWithAiSnippets, SKILLS_INSTALL } from '../../lib/snippets/build-with-ai.js'
 
 const s = buildWithAiSnippets('tr')
 
@@ -8,11 +8,38 @@ export default () =>
   docsLayout({
     title: 'Yapay zekâ ile geliştirme',
     description:
-      'llms.txt, proje kuralları ve pratik ipuçlarıyla kodlama ajanlarına güncel sitelo bilgisi verin.',
+      'Ajan becerileri, llms.txt, proje kuralları ve pratik ipuçlarıyla kodlama ajanlarına güncel sitelo bilgisi verin.',
     activeHref: '/tr/docs/build-with-ai',
     children: [
       p(
         'Yapay zekâ destekli düzenleyiciler ve kodlama ajanları sitelo konusunda sık sık yanlış tahmin eder — geçerli olmayan React, Next ya da Astro kalıplarına uzanırlar. Bu rehber, onları güncel sitelo belgelerine nasıl yönlendireceğinizi ve üretilen kodu modele uygun tutmayı gösterir.',
+      ),
+      h2('Ajan becerileri'),
+      p(
+        'sitelo, ',
+        a({ href: 'https://agentskills.io', rel: 'noopener' }, 'Agent Skills'),
+        ' biçiminde iki beceriyle gelir: bir kodlama ajanının yalnızca bir görev gerektirdiğinde yüklediği talimatlar. ',
+        a({ href: 'https://github.com/vercel-labs/skills', rel: 'noopener' }, code('skills'), ' CLI'),
+        ', bunları Claude Code, Cursor, Codex ve desteklediği diğer ajanlar için projenize kurar:',
+      ),
+      codeBlock('shell', SKILLS_INSTALL, 'bash'),
+      ul(
+        { class: 'docs-list' },
+        li(
+          code('sitelo'),
+          ' — sayfalar, yönlendirme, veri yükleme, yapılandırma, varlıklar, görseller, sunucu adaları, Lighthouse ve dağıtım',
+        ),
+        li(
+          code('sitelo-ui'),
+          ' — bileşen kütüphanesi: her bileşenin propları, temalar, hazır ayarlar (preset), ikonlar ve istemci yardımcıları',
+        ),
+      ),
+      p(
+        'Yalnızca birini kurmak için ',
+        code('--skill sitelo-ui'),
+        ', tüm projelerinize kurmak için ',
+        code('-g'),
+        ' ekleyin. Beceri projenin içinde durduğundan ajan, kendisine bir URL gösterilmeden onu bulur.',
       ),
       h2('llms.txt'),
       p(

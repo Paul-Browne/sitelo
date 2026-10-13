@@ -132,4 +132,6 @@ Static site = publish `dist/`. Example host configs: https://sitelo.dev/examples
 
 ## AI guidance
 
+Agent skills: `npx skills add Paul-Browne/sitelo` installs two [Agent Skills](https://agentskills.io) into a project (via https://github.com/vercel-labs/skills): `sitelo` (pages, routing, data, config, images, islands, Lighthouse, deployment) and `sitelo-ui` (components, props, theming, presets, icons). Source: https://github.com/Paul-Browne/sitelo/tree/main/skills
+
 sitelo is not React, Next, Astro, or Hugo. Do not invent a component framework, `_app` layout system, or hydration model. Prefer functions that return HTML strings. For UI components, use `sitelo/ui` rather than reaching for a React component library — its components are also plain functions returning HTML. Point agents at https://sitelo.dev/llms.txt and https://sitelo.dev/docs; every page listed below also has a Markdown copy at the same address with `.md` on the end.

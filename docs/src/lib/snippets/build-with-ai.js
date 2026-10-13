@@ -209,6 +209,9 @@ Prefere javascript-to-html (https://ht.js.org) para a marcação. Usa encaminham
 Consulta https://sitelo.dev/llms.txt para as APIs do sitelo.
 `
 
+/** Installs the skills in `skills/`; a command, so the same in every language. */
+export const SKILLS_INSTALL = 'npx skills add Paul-Browne/sitelo'
+
 const BY_LOCALE = {
   en: { agents: AGENTS_EN, cursorRule: CURSOR_EN },
   es: { agents: AGENTS_ES, cursorRule: CURSOR_ES },
