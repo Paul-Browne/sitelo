@@ -832,7 +832,15 @@ the build; each is well under a kilobyte, none is fetched before the
 first interaction, and every component renders correctly until it is —
 menus open and close on their own, the dismiss button does nothing.
 
-Deploying under a sub-path, or hosting the modules elsewhere:
+A sub-path deploy needs nothing more: `/su/` is under Vite's `base`, so
+a GitHub Pages project site built with `--base /repo/` links and
+imports `/repo/su/…`, and the build writes the files to `dist/su/`,
+which is where `/repo/` serves them from.
+
+To serve them from somewhere else, `uiClient.base` is the URL the
+browser asks for. A path from the root includes Vite's `base` — on that
+same site, `/repo/assets/su/` is written to `dist/assets/su/` — and an
+absolute URL is yours to host:
 
 ```js
 // vite.config.js
@@ -1909,7 +1917,7 @@ export default {
 | `renderConcurrency` | `8` | Pages rendered in parallel |
 | `renderBatchSize` | `max(concurrency, 32)` | Pages per render batch |
 | `buildReport` | `true` | Post-build summary. `false` to disable, or `{ top }` for how many large files to list (CLI only) |
-| `uiClient` | `{ base: '/su/' }` | Where the `sitelo/ui` runtime and stylesheet are served from; an absolute URL to host them yourself |
+| `uiClient` | `{ base: '/su/' }`, under Vite's `base` | Where the `sitelo/ui` runtime and stylesheet are served from, as the browser asks for them — Vite's `base` included; an absolute URL to host them yourself |
 | `pruneCss` | `false` | `true`, or `{ keep }`; writes the `sitelo/ui` stylesheet with only the rules the built pages can match |
 | `debug` | `false` | Verbose logging of discovery, routing, and emission |
 

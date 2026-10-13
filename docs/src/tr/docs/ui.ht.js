@@ -194,7 +194,7 @@ export default () =>
       ),
       p('Giriş dosyanıza eklenecek bir şey yok — içe aktarma, olay özniteliğinin kendisi:'),
       codeBlock('İşlenen biçimlendirme', s.handler, 'html'),
-      p('sitelo siz geliştirirken bu modülleri /su/ altından sunar ve sayfalarınızın gerçekten başvurduklarını derlemeye kopyalar. Her biri bir kilobaytın epey altındadır, hiçbiri ilk etkileşimden önce getirilmez ve o ana dek her bileşen doğru işlenir: menüler kendi başlarına açılıp kapanır, kapatma düğmesi bir şey yapmaz.'),
+      p('sitelo siz geliştirirken bu modülleri /su/ altından (ya da --base /repo/ ile /repo/su/ altından) sunar ve sayfalarınızın gerçekten başvurduklarını derlemeye kopyalar. Her biri bir kilobaytın epey altındadır, hiçbiri ilk etkileşimden önce getirilmez ve o ana dek her bileşen doğru işlenir: menüler kendi başlarına açılıp kapanır, kapatma düğmesi bir şey yapmaz.'),
       p(
         'İstisna ',
         code('toast()'),

@@ -196,7 +196,7 @@ export default () =>
       ),
       p('There is nothing to add to your entry file — the import is the event attribute:'),
       codeBlock('Rendered markup', s.handler, 'html'),
-      p('sitelo serves those modules from /su/ while you develop, and copies the ones your pages actually reference into the build. Each is well under a kilobyte, none is fetched before the first interaction, and every component renders correctly until it is: menus open and close on their own, the dismiss button does nothing.'),
+      p('sitelo serves those modules from /su/ (or /repo/su/ with --base /repo/) while you develop, and copies the ones your pages actually reference into the build. Each is well under a kilobyte, none is fetched before the first interaction, and every component renders correctly until it is: menus open and close on their own, the dismiss button does nothing.'),
       p(
         'The exception is ',
         code('toast()'),

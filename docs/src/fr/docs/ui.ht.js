@@ -195,7 +195,7 @@ export default () =>
       ),
       p('Rien à ajouter à votre fichier d’entrée : l’import est l’attribut d’événement :'),
       codeBlock('Balisage rendu', s.handler, 'html'),
-      p('sitelo sert ces modules depuis /su/ pendant le développement et copie dans la build uniquement ceux que vos pages référencent réellement. Chacun pèse bien moins d’un kilo-octet, aucun n’est chargé avant la première interaction, et jusque-là chaque composant s’affiche correctement : les menus s’ouvrent et se ferment seuls, et le bouton de fermeture ne fait rien.'),
+      p('sitelo sert ces modules depuis /su/ (ou /repo/su/ avec --base /repo/) pendant le développement et copie dans la build uniquement ceux que vos pages référencent réellement. Chacun pèse bien moins d’un kilo-octet, aucun n’est chargé avant la première interaction, et jusque-là chaque composant s’affiche correctement : les menus s’ouvrent et se ferment seuls, et le bouton de fermeture ne fait rien.'),
       p(
         'L’exception est ',
         code('toast()'),

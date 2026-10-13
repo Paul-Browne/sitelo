@@ -195,7 +195,7 @@ export default () =>
       ),
       p('No hay nada que añadir a tu archivo de entrada: el import es el atributo del evento:'),
       codeBlock('Marcado renderizado', s.handler, 'html'),
-      p('sitelo sirve esos módulos desde /su/ mientras desarrollas y copia al build solo los que tus páginas referencian de verdad. Cada uno pesa bastante menos de un kilobyte, ninguno se descarga antes de la primera interacción y hasta entonces todos los componentes se renderizan bien: los menús se abren y se cierran solos y el botón de descartar no hace nada.'),
+      p('sitelo sirve esos módulos desde /su/ (o /repo/su/ con --base /repo/) mientras desarrollas y copia al build solo los que tus páginas referencian de verdad. Cada uno pesa bastante menos de un kilobyte, ninguno se descarga antes de la primera interacción y hasta entonces todos los componentes se renderizan bien: los menús se abren y se cierran solos y el botón de descartar no hace nada.'),
       p(
         'La excepción es ',
         code('toast()'),

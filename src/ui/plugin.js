@@ -26,8 +26,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
-  DEFAULT_UI_CLIENT_BASE,
+  defaultUiClientBase,
   RUNTIME_MODULES,
+  siteBase,
   uiClientBase,
 } from './handlers.js';
 import { classesIn, pruneCss } from './prune.js';
@@ -240,24 +241,106 @@ function staleTriggerMessage(page, ids) {
  * `configureUiClient()` can move it from a page module, which runs long
  * after this plugin was constructed; reading it late is what keeps the
  * two halves pointing at the same place.
+ *
+ * `prefix` is the URL as the pages carry it — what the build looks for,
+ * and what the dev server answers on, since its middleware sees a
+ * request before Vite takes the base off. `dir` is where under `outDir`
+ * that URL lands: `outDir` is served at the site's base, so the base
+ * comes off the front. A root-relative prefix outside the site's base
+ * has nowhere under `outDir` to land; it is written at its whole path,
+ * as on a site at the root, and `outside` says so.
+ *
+ * @returns {{ external: boolean, prefix: string, dir: string, outside: boolean }}
  */
 function target() {
   const base = uiClientBase();
+  const site = siteBase();
 
-  return isExternal(base)
-    ? { external: true, prefix: base }
-    : { external: false, prefix: normalize(base) };
+  // Another origin is somebody else's — unless the build was given a
+  // full URL for its own base, and this is under it.
+  if (isExternal(base) && !base.startsWith(site)) {
+    return { external: true, prefix: base, dir: '', outside: false };
+  }
+
+  const prefix = isExternal(base) ? base : normalize(base);
+  const inside = prefix.startsWith(site);
+
+  return {
+    external: false,
+    prefix,
+    dir: inside ? prefix.slice(site.length) : prefix.slice(1),
+    outside: !inside,
+  };
+}
+
+/**
+ * Publish Vite's base for the pages, whose default base follows it.
+ *
+ * A relative base (`./`) is published as the root: a page can only
+ * reach a runtime that moves with it by a path of its own, and an event
+ * attribute is written once for every page.
+ *
+ * @param {string} base - Vite's resolved `base`
+ */
+function publishSiteBase(base) {
+  if (!base || base === '/' || base.startsWith('.')) delete process.env.SITELO_BASE;
+  else process.env.SITELO_BASE = base;
+}
+
+/**
+ * Take back the base Vite's dev server put in front of the URLs the
+ * middleware answers.
+ *
+ * In dev, Vite joins its base onto every root-relative URL in an asset
+ * attribute — a `<link>`'s `href`, a `<script>`'s `src` — taking the page
+ * to have been written for a site at the root. These pages carry the URL
+ * the build serves, base included, so the sheet would be asked for at
+ * `/repo/repo/su/…`. Only files under {@link target}'s prefix that the
+ * middleware answers are put back; an event attribute is not an asset
+ * attribute, so the runtime's imports were never touched.
+ *
+ * @param {string} html
+ * @param {string} prefix
+ * @param {string} site
+ * @returns {string}
+ */
+function undoDevBase(html, prefix, site) {
+  if (site === '/' || !prefix.startsWith('/')) return html;
+
+  const doubled = `${site}${prefix.slice(1)}`.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+  return html.replace(new RegExp(`(=["']?)${doubled}([^"'?#\\s>]*)`, 'g'), (whole, open, file) =>
+    sheetFor(file) || RUNTIME_MODULES.includes(file.replace(/\.js$/, ''))
+      ? `${open}${prefix}${file}`
+      : whole,
+  );
+}
+
+/**
+ * The warning for a root-relative base the build cannot put where it
+ * points.
+ *
+ * @param {string} prefix - what the pages ask for
+ * @param {string} dir - where under `outDir` it was written
+ * @param {string} site - Vite's base, where `outDir` is served
+ */
+function outsideBaseMessage(prefix, dir, site) {
+  return (
+    `[sitelo] uiClient.base ${prefix} is outside Vite's base ${site}: the build writes the runtime to ${dir}, ` +
+    `served at ${site}${dir}, and the pages ask for ${prefix}. Leave uiClient.base unset to serve it from ` +
+    `${defaultUiClientBase()}, or start it with ${site}.`
+  );
 }
 
 /**
  * The root-relative prefix the runtime answers on, or `null` when it
  * lives on another origin and is nobody here's to account for.
  *
- * Read from the static option rather than {@link uiClientBase}, because
- * the only caller runs while the plugin array is being built — before
- * `config()` has set the environment, and long before a page module
- * could have called `configureUiClient()`. A site that moves the base
- * that late is telling the components, not the bundler.
+ * Read from the static option rather than {@link uiClientBase}: the
+ * static option is what the site told the bundler, and a site that moves
+ * the base from a page module is telling the components. The default
+ * does follow Vite's base, so the caller asks once the config is
+ * resolved rather than while the plugin array is being built.
  *
  * @param {object} [options]
  * @param {string} [options.base]
@@ -265,7 +348,7 @@ function target() {
  */
 export function uiClientPrefix({ base } = {}) {
   const resolved =
-    base ?? process.env.SITELO_UI_BASE ?? DEFAULT_UI_CLIENT_BASE;
+    base ?? process.env.SITELO_UI_BASE ?? defaultUiClientBase();
 
   return isExternal(resolved) ? null : normalize(resolved);
 }
@@ -317,16 +400,31 @@ export function uiRuntime({ base, prune = false } = {}) {
       outDir = path.resolve(config.root, config.build.outDir);
       if (config.logger) logger = config.logger;
       serving = config.command === 'serve';
+
+      /*
+       * A build renders its pages through a second, middleware-mode
+       * server that html-pages makes from vite.config alone — which runs
+       * this plugin too, but never saw a `--base` given on the command
+       * line. Letting it publish would put the pages back at the root.
+       */
+      if (!config.server?.middlewareMode) publishSiteBase(config.base);
     },
 
     /*
      * Dev's half of the warning `writeBundle` gives a build: a page is
-     * rendered here on request, so this is where it can be read.
+     * rendered here on request, so this is where it can be read. After
+     * Vite's own transform, which is what puts a second base on the sheet.
      */
     transformIndexHtml: {
       order: 'post',
       handler(html, ctx) {
-        if (serving) warnAboutTriggers(ctx?.path ?? '/', html);
+        if (!serving) return;
+
+        warnAboutTriggers(ctx?.path ?? '/', html);
+
+        const { external, prefix } = target();
+
+        return external ? html : undoDevBase(html, prefix, siteBase());
       },
     },
 
@@ -371,7 +469,7 @@ export function uiRuntime({ base, prune = false } = {}) {
      * a plugin, not emitted from a module graph this one can inspect.
      */
     writeBundle() {
-      const { external, prefix } = target();
+      const { external, prefix, dir: under, outside } = target();
 
       if (!outDir || !fs.existsSync(outDir)) return;
 
@@ -413,9 +511,13 @@ export function uiRuntime({ base, prune = false } = {}) {
         }
       }
 
-      const dir = path.join(outDir, prefix.slice(1));
+      const dir = path.join(outDir, under);
 
-      if (wanted.size || sheets.size) fs.mkdirSync(dir, { recursive: true });
+      if (wanted.size || sheets.size) {
+        if (outside) logger.warn(outsideBaseMessage(prefix, under, siteBase()));
+
+        fs.mkdirSync(dir, { recursive: true });
+      }
 
       for (const name of withImports(wanted)) {
         fs.copyFileSync(

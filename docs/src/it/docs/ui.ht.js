@@ -205,7 +205,7 @@ export default () =>
       ),
       codeBlock('Markup renderizzato', s.handler, 'html'),
       p(
-        'sitelo serve quei moduli da /su/ mentre sviluppi, e copia nella build quelli che le tue pagine referenziano davvero. Ognuno sta ben sotto il kilobyte, nessuno viene scaricato prima della prima interazione, e ogni componente si renderizza correttamente finché non lo è: i menu si aprono e si chiudono da soli, il pulsante di chiusura non fa nulla.',
+        'sitelo serve quei moduli da /su/ (o /repo/su/ con --base /repo/) mentre sviluppi, e copia nella build quelli che le tue pagine referenziano davvero. Ognuno sta ben sotto il kilobyte, nessuno viene scaricato prima della prima interazione, e ogni componente si renderizza correttamente finché non lo è: i menu si aprono e si chiudono da soli, il pulsante di chiusura non fa nulla.',
       ),
       p(
         'L’eccezione è ',
