@@ -33,6 +33,25 @@ export function siteBase() {
 }
 
 /**
+ * A URL as a page writes it into an asset attribute — a `<link>`'s
+ * `href` — which is written for the site root: Vite's dev server and
+ * html-pages' build put the site's base on it themselves. Under the
+ * base, the base comes off, so `/repo/su/` is written `/su/`; anything
+ * else, on another origin or outside the base, is left as it is.
+ *
+ * An event attribute is not an asset attribute and nothing rebases it,
+ * so a handler's import keeps the URL the browser asks for.
+ *
+ * @param {string} url
+ * @returns {string}
+ */
+export function withoutSiteBase(url) {
+  const site = siteBase()
+
+  return site !== '/' && url.startsWith(site) ? `/${url.slice(site.length)}` : url
+}
+
+/**
  * Where the plugin serves `runtime/` from unless told otherwise: `su/`
  * under the site's base, so a site built for `/repo/` has it at
  * `/repo/su/` and in the build's `su/` directory.

@@ -5,7 +5,7 @@
 | Call | Returns |
 | --- | --- |
 | `styles(options?)` | A `<link>` to `/su/ui-<hash>.css`, which sitelo serves in dev and writes into the build. Options: `inline` (a `<style>` instead), `minify`, `nonce`, `hash` (default `true`), `base`, `preset` |
-| `stylesUrl(options?)` | The href alone, for your own `<link media integrity>` or a preload hint |
+| `stylesUrl(options?)` | The href alone, for your own `<link media integrity>` or a preload hint. Written for the site root: under a Vite `base`, a `<link>` gets the base added |
 | `stylesheet(options?)` | The raw CSS string (`{ minify, preset }`), for hosting it yourself |
 | `theme(tokens, options?)` | A `<style>` of token overrides. Place it **after** `styles()` |
 | `themeScript(options?)` | A blocking inline `<script>` that applies the stored light or dark choice before first paint. Use it with `themeToggle()` |

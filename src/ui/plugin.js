@@ -30,6 +30,7 @@ import {
   RUNTIME_MODULES,
   siteBase,
   uiClientBase,
+  withoutSiteBase,
 } from './handlers.js';
 import { classesIn, pruneCss } from './prune.js';
 import { digestOf, sheetNamed } from './sheet.js';
@@ -103,6 +104,59 @@ function stylesheetHrefs(html) {
   }
 
   return found;
+}
+
+/** Stands in for the site's origin, so a page's URLs resolve the way the browser's would. */
+const SITE_ORIGIN = 'http://sitelo.invalid';
+
+/**
+ * Where a URL on a built page lands inside `outDir`, or `null` when it
+ * is not there: another origin, or outside the base.
+ *
+ * `outDir` is served at the site's base and `page` is where the page sits
+ * in it, so this is the browser's own resolution with the base taken off.
+ * A `<link>` arrives either way the build writes it — the base joined on
+ * (`/repo/su/…`), or, for a relative base, a path back up from the page
+ * (`../su/…`).
+ *
+ * @param {string} url
+ * @param {string} page - `blog/post/index.html`
+ * @param {string} site - Vite's base, as {@link siteBase} gives it
+ * @returns {string | null}
+ */
+function outputPath(url, page, site) {
+  let root;
+  let resolved;
+
+  try {
+    root = new URL(site, `${SITE_ORIGIN}/`);
+    resolved = new URL(url, new URL(page, root));
+  } catch {
+    return null;
+  }
+
+  if (resolved.origin !== root.origin || !resolved.pathname.startsWith(root.pathname)) {
+    return null;
+  }
+
+  return resolved.pathname.slice(root.pathname.length);
+}
+
+/**
+ * The page with every `<link>` that reaches `file` in `outDir` asking for
+ * `to` in place of `from`, the file's name. Resolved rather than matched
+ * as text, since the href is however the build wrote it.
+ *
+ * @param {{ html: string, page: string }} built
+ * @param {string} site
+ * @param {string} file
+ * @param {string} from
+ * @param {string} to
+ */
+function relink({ html, page }, site, file, from, to) {
+  return html.replace(/(<link\b[^>]*\shref=")([^"]*)(")/gi, (whole, open, href, close) =>
+    outputPath(href, page, site) === file ? `${open}${href.replace(from, to)}${close}` : whole,
+  );
 }
 
 /**
@@ -242,15 +296,19 @@ function staleTriggerMessage(page, ids) {
  * after this plugin was constructed; reading it late is what keeps the
  * two halves pointing at the same place.
  *
- * `prefix` is the URL as the pages carry it — what the build looks for,
- * and what the dev server answers on, since its middleware sees a
- * request before Vite takes the base off. `dir` is where under `outDir`
- * that URL lands: `outDir` is served at the site's base, so the base
- * comes off the front. A root-relative prefix outside the site's base
- * has nowhere under `outDir` to land; it is written at its whole path,
- * as on a site at the root, and `outside` says so.
+ * `prefix` is the URL as the handlers carry it — what the build looks
+ * for in event attributes, and what the dev server answers on, since its
+ * middleware sees a request before Vite takes the base off. `dir` is
+ * where under `outDir` that URL lands: `outDir` is served at the site's
+ * base, so the base comes off the front. A root-relative prefix outside
+ * the site's base has nowhere under `outDir` to land; it is written at
+ * its whole path, as on a site at the root, and `outside` says so.
  *
- * @returns {{ external: boolean, prefix: string, dir: string, outside: boolean }}
+ * `served` is where that copy is served, which is what the stylesheet's
+ * `<link>` asks for once the base is joined on: the same as `prefix`,
+ * unless `prefix` is outside the base.
+ *
+ * @returns {{ external: boolean, prefix: string, dir: string, outside: boolean, served: string }}
  */
 function target() {
   const base = uiClientBase();
@@ -259,18 +317,14 @@ function target() {
   // Another origin is somebody else's — unless the build was given a
   // full URL for its own base, and this is under it.
   if (isExternal(base) && !base.startsWith(site)) {
-    return { external: true, prefix: base, dir: '', outside: false };
+    return { external: true, prefix: base, dir: '', outside: false, served: base };
   }
 
   const prefix = isExternal(base) ? base : normalize(base);
   const inside = prefix.startsWith(site);
+  const dir = inside ? prefix.slice(site.length) : prefix.slice(1);
 
-  return {
-    external: false,
-    prefix,
-    dir: inside ? prefix.slice(site.length) : prefix.slice(1),
-    outside: !inside,
-  };
+  return { external: false, prefix, dir, outside: !inside, served: `${site}${dir}` };
 }
 
 /**
@@ -288,35 +342,6 @@ function publishSiteBase(base) {
 }
 
 /**
- * Take back the base Vite's dev server put in front of the URLs the
- * middleware answers.
- *
- * In dev, Vite joins its base onto every root-relative URL in an asset
- * attribute — a `<link>`'s `href`, a `<script>`'s `src` — taking the page
- * to have been written for a site at the root. These pages carry the URL
- * the build serves, base included, so the sheet would be asked for at
- * `/repo/repo/su/…`. Only files under {@link target}'s prefix that the
- * middleware answers are put back; an event attribute is not an asset
- * attribute, so the runtime's imports were never touched.
- *
- * @param {string} html
- * @param {string} prefix
- * @param {string} site
- * @returns {string}
- */
-function undoDevBase(html, prefix, site) {
-  if (site === '/' || !prefix.startsWith('/')) return html;
-
-  const doubled = `${site}${prefix.slice(1)}`.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-  return html.replace(new RegExp(`(=["']?)${doubled}([^"'?#\\s>]*)`, 'g'), (whole, open, file) =>
-    sheetFor(file) || RUNTIME_MODULES.includes(file.replace(/\.js$/, ''))
-      ? `${open}${prefix}${file}`
-      : whole,
-  );
-}
-
-/**
  * The warning for a root-relative base the build cannot put where it
  * points.
  *
@@ -327,14 +352,17 @@ function undoDevBase(html, prefix, site) {
 function outsideBaseMessage(prefix, dir, site) {
   return (
     `[sitelo] uiClient.base ${prefix} is outside Vite's base ${site}: the build writes the runtime to ${dir}, ` +
-    `served at ${site}${dir}, and the pages ask for ${prefix}. Leave uiClient.base unset to serve it from ` +
+    `served at ${site}${dir}, and the handlers import from ${prefix}. Leave uiClient.base unset to serve it from ` +
     `${defaultUiClientBase()}, or start it with ${site}.`
   );
 }
 
 /**
- * The root-relative prefix the runtime answers on, or `null` when it
- * lives on another origin and is nobody here's to account for.
+ * The runtime's prefix from the site root, for html-pages to exempt from
+ * its missing-asset check, or `null` when it lives on another origin and
+ * is nobody here's to account for. From the site root because html-pages
+ * takes Vite's base off a URL before it matches `externalAssets`, and
+ * that is how the sheet's link and the handlers' imports both arrive.
  *
  * Read from the static option rather than {@link uiClientBase}: the
  * static option is what the site told the bundler, and a site that moves
@@ -347,8 +375,9 @@ function outsideBaseMessage(prefix, dir, site) {
  * @returns {string | null}
  */
 export function uiClientPrefix({ base } = {}) {
-  const resolved =
-    base ?? process.env.SITELO_UI_BASE ?? defaultUiClientBase();
+  const resolved = withoutSiteBase(
+    base ?? process.env.SITELO_UI_BASE ?? defaultUiClientBase(),
+  );
 
   return isExternal(resolved) ? null : normalize(resolved);
 }
@@ -403,39 +432,39 @@ export function uiRuntime({ base, prune = false } = {}) {
 
       /*
        * A build renders its pages through a second, middleware-mode
-       * server that html-pages makes from vite.config alone — which runs
-       * this plugin too, but never saw a `--base` given on the command
-       * line. Letting it publish would put the pages back at the root.
+       * server that html-pages makes from vite.config — which runs this
+       * plugin too. Before html-pages 2.6 it never saw a `--base` given on
+       * the command line; now it does, but as a dev server resolves it,
+       * so a full URL is cut to its path and `./` to `/`. Either way the
+       * build's own is the one to keep.
        */
       if (!config.server?.middlewareMode) publishSiteBase(config.base);
     },
 
     /*
      * Dev's half of the warning `writeBundle` gives a build: a page is
-     * rendered here on request, so this is where it can be read. After
-     * Vite's own transform, which is what puts a second base on the sheet.
+     * rendered here on request, so this is where it can be read.
      */
     transformIndexHtml: {
       order: 'post',
       handler(html, ctx) {
-        if (!serving) return;
-
-        warnAboutTriggers(ctx?.path ?? '/', html);
-
-        const { external, prefix } = target();
-
-        return external ? html : undoDevBase(html, prefix, siteBase());
+        if (serving) warnAboutTriggers(ctx?.path ?? '/', html);
       },
     },
 
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
-        const { external, prefix } = target();
+        const { external, prefix, served } = target();
         const url = (req.url ?? '').split('?')[0];
 
-        if (external || !url.startsWith(prefix)) return next();
+        // The handlers ask at `prefix`; the sheet's link, with Vite's base
+        // joined on, where the build's copy is served. One place, unless
+        // the prefix is outside the base.
+        const at = external ? undefined : [prefix, served].find((root) => url.startsWith(root));
 
-        const file = url.slice(prefix.length);
+        if (!at) return next();
+
+        const file = url.slice(at.length);
 
         /*
          * Any hash, not only the current one: the sheet is read fresh
@@ -473,13 +502,15 @@ export function uiRuntime({ base, prune = false } = {}) {
 
       if (!outDir || !fs.existsSync(outDir)) return;
 
+      const viteBase = siteBase();
       const pages = filesUnder(outDir, ['.html']).map((file) => ({
         file,
+        page: path.relative(outDir, file).split(path.sep).join('/'),
         html: fs.readFileSync(file, 'utf8'),
       }));
 
-      for (const { file, html } of pages) {
-        warnAboutTriggers(path.relative(outDir, file).split(path.sep).join('/'), html);
+      for (const { page, html } of pages) {
+        warnAboutTriggers(page, html);
       }
 
       if (external) return;
@@ -488,7 +519,7 @@ export function uiRuntime({ base, prune = false } = {}) {
       /** File name → the sheet whose bytes go under it. */
       const sheets = new Map();
 
-      for (const { html } of pages) {
+      for (const { page, html } of pages) {
         for (const value of eventAttributes(html)) {
           for (const name of RUNTIME_MODULES) {
             if (value.includes(`${prefix}${name}.js`)) wanted.add(name);
@@ -502,9 +533,11 @@ export function uiRuntime({ base, prune = false } = {}) {
          * leave the page asking for a file that is not there.
          */
         for (const href of stylesheetHrefs(html)) {
-          if (!href.startsWith(prefix)) continue;
+          const file = outputPath(href, page, viteBase);
 
-          const name = href.slice(prefix.length);
+          if (!file?.startsWith(under)) continue;
+
+          const name = file.slice(under.length);
           const sheet = sheetFor(name);
 
           if (sheet) sheets.set(name, sheet);
@@ -568,8 +601,8 @@ export function uiRuntime({ base, prune = false } = {}) {
 
         if (written === name) continue;
 
-        for (const page of pages) {
-          page.html = page.html.replaceAll(`${prefix}${name}`, `${prefix}${written}`);
+        for (const built of pages) {
+          built.html = relink(built, viteBase, `${under}${name}`, name, written);
         }
       }
 
