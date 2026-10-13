@@ -195,7 +195,7 @@ export default () =>
       ),
       p('In der Einstiegsdatei ist dafür nichts zu ergänzen — der Import steht im Event-Attribut:'),
       codeBlock('Gerendertes Markup', s.handler, 'html'),
-      p('sitelo liefert diese Module während der Entwicklung unter /su/ aus und kopiert beim Build genau die, auf die deine Seiten tatsächlich verweisen. Jedes ist deutlich kleiner als ein Kilobyte, keines wird vor der ersten Interaktion geladen, und bis dahin rendert jede Komponente korrekt: Menüs öffnen und schließen von allein, und der Schließen-Button tut schlicht nichts.'),
+      p('sitelo liefert diese Module während der Entwicklung unter /su/ aus (oder unter /repo/su/ mit --base /repo/) und kopiert beim Build genau die, auf die deine Seiten tatsächlich verweisen. Jedes ist deutlich kleiner als ein Kilobyte, keines wird vor der ersten Interaktion geladen, und bis dahin rendert jede Komponente korrekt: Menüs öffnen und schließen von allein, und der Schließen-Button tut schlicht nichts.'),
       p(
         'Die Ausnahme ist ',
         code('toast()'),

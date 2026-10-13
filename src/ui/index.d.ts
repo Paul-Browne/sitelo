@@ -211,10 +211,12 @@ export function iconSet(name?: IconSet): IconSet
 
 /**
  * Serve the runtime that components import from their event attributes
- * somewhere other than `/su/` — a sub-path deploy, or a CDN.
+ * somewhere other than `su/` under Vite's `base` — elsewhere on the
+ * site, or a CDN. A sub-path deploy needs none of this.
  *
  * Equivalent to the plugin's `uiClient.base` option; call it once, from
- * a module your pages import.
+ * a module your pages import. A path from the root is the URL the
+ * browser asks for, Vite's `base` included.
  */
 export function configureUiClient(options?: { base?: string | null }): void
 

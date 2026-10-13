@@ -1,6 +1,6 @@
 import { a, h2, h3, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock, docsLayout } from '../../lib/de.js'
-import { buildWithAiSnippets } from '../../lib/snippets/build-with-ai.js'
+import { buildWithAiSnippets, SKILLS_INSTALL } from '../../lib/snippets/build-with-ai.js'
 
 const s = buildWithAiSnippets('de')
 
@@ -8,11 +8,38 @@ export default () =>
   docsLayout({
     title: 'Mit KI entwickeln',
     description:
-      'Gib Coding-Agenten aktuelles sitelo-Wissen mit llms.txt, Projektregeln und praktischen Tipps.',
+      'Gib Coding-Agenten aktuelles sitelo-Wissen mit Agent Skills, llms.txt, Projektregeln und praktischen Tipps.',
     activeHref: '/de/docs/build-with-ai',
     children: [
       p(
         'KI-Editoren und Coding-Agenten liegen bei sitelo oft daneben: Sie greifen zu Mustern aus React, Next oder Astro, die hier nicht passen. Diese Anleitung zeigt, wie du sie auf die aktuelle sitelo-Dokumentation lenkst und generierten Code beim richtigen Modell hältst.',
+      ),
+      h2('Agent Skills'),
+      p(
+        'sitelo bringt zwei ',
+        a({ href: 'https://agentskills.io', rel: 'noopener' }, 'Agent Skills'),
+        ' mit: Anweisungen, die ein Coding-Agent erst lädt, wenn eine Aufgabe sie braucht. Die ',
+        a({ href: 'https://github.com/vercel-labs/skills', rel: 'noopener' }, code('skills'), '-CLI'),
+        ' installiert sie in deinem Projekt, für Claude Code, Cursor, Codex und die anderen Agenten, die sie unterstützt:',
+      ),
+      codeBlock('shell', SKILLS_INSTALL, 'bash'),
+      ul(
+        { class: 'docs-list' },
+        li(
+          code('sitelo'),
+          ' — Seiten, Routing, Daten laden, Konfiguration, Assets, Bilder, Server-Islands, Lighthouse und Deployment',
+        ),
+        li(
+          code('sitelo-ui'),
+          ' — die Komponentenbibliothek: die Props jeder Komponente, Theming, Presets, Icons und die Client-Helfer',
+        ),
+      ),
+      p(
+        'Mit ',
+        code('--skill sitelo-ui'),
+        ' installierst du nur einen davon, mit ',
+        code('-g'),
+        ' installierst du sie für alle Projekte. Ein Skill liegt im Projekt, also findet der Agent ihn, ohne dass du ihm eine URL nennen musst.',
       ),
       h2('llms.txt'),
       p(

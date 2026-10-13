@@ -703,7 +703,7 @@ size of whatever it sits in:
 
 ```js
 button({ color: 'danger' }, icon('trash'), 'Delete')
-iconButton({ 'aria-label': 'Close' }, icon('close'))
+iconButton({ label: 'Close', icon: icon('close') })
 text(icon('check', { size: 'sm' }), ' Done')
 ```
 
@@ -832,7 +832,15 @@ the build; each is well under a kilobyte, none is fetched before the
 first interaction, and every component renders correctly until it is —
 menus open and close on their own, the dismiss button does nothing.
 
-Deploying under a sub-path, or hosting the modules elsewhere:
+A sub-path deploy needs nothing more: `/su/` is under Vite's `base`, so
+a GitHub Pages project site built with `--base /repo/` links and
+imports `/repo/su/…`, and the build writes the files to `dist/su/`,
+which is where `/repo/` serves them from.
+
+To serve them from somewhere else, `uiClient.base` is the URL the
+browser asks for. A path from the root includes Vite's `base` — on that
+same site, `/repo/assets/su/` is written to `dist/assets/su/` — and an
+absolute URL is yours to host:
 
 ```js
 // vite.config.js
@@ -1922,7 +1930,7 @@ export default {
 | `renderConcurrency` | `8` | Pages rendered in parallel |
 | `renderBatchSize` | `max(concurrency, 32)` | Pages per render batch |
 | `buildReport` | `true` | Post-build summary. `false` to disable, or `{ top }` for how many large files to list (CLI only) |
-| `uiClient` | `{ base: '/su/' }` | Where the `sitelo/ui` runtime and stylesheet are served from; an absolute URL to host them yourself |
+| `uiClient` | `{ base: '/su/' }`, under Vite's `base` | Where the `sitelo/ui` runtime and stylesheet are served from, as the browser asks for them — Vite's `base` included; an absolute URL to host them yourself |
 | `pruneCss` | `false` | `true`, or `{ keep }`; writes the `sitelo/ui` stylesheet with only the rules the built pages can match |
 | `debug` | `false` | Verbose logging of discovery, routing, and emission |
 
@@ -1937,6 +1945,31 @@ export default {
   renderBatchSize: 128,
 }
 ```
+
+---
+
+## Agent skills
+
+sitelo ships two [Agent Skills](https://agentskills.io): instructions a
+coding agent loads when a task calls for them, so it writes sitelo code
+rather than guessing from React or Astro. Install them into a project
+with the [`skills` CLI](https://github.com/vercel-labs/skills), which
+supports Claude Code, Cursor, Codex and many other agents:
+
+```bash
+npx skills add Paul-Browne/sitelo
+```
+
+| Skill | Covers |
+|-------|--------|
+| `sitelo` | Pages, routing, data loading, configuration, assets, images, server islands, Lighthouse, deployment |
+| `sitelo-ui` | The component library: every component's props, theming, presets, icons, the client helpers |
+
+`--skill sitelo-ui` installs just one, and `-g` installs them for every
+project. The skills also ship in the npm package, so
+`npx skills add ./node_modules/sitelo` installs the ones written for the
+version you have. They live in [`skills/`](skills/), and the test suite
+checks every API they name against the package's exports.
 
 ---
 

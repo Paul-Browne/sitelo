@@ -15,8 +15,33 @@
  * pages reference into the build.
  */
 
-/** Where the plugin serves `runtime/` from unless told otherwise. */
-export const DEFAULT_UI_CLIENT_BASE = '/su/'
+/**
+ * Vite's `base` for the site, as the plugin last resolved it, with a
+ * trailing slash: `/` for a site at the root of its domain, `/repo/` for
+ * a GitHub Pages project site, or a full URL when a build was given one.
+ *
+ * The plugin publishes it to `SITELO_BASE` once Vite has resolved its
+ * config. Pages are rendered in a module graph of their own, so the
+ * environment is the channel the two halves share.
+ *
+ * @returns {string}
+ */
+export function siteBase() {
+  const base = process.env.SITELO_BASE || '/'
+
+  return base.endsWith('/') ? base : `${base}/`
+}
+
+/**
+ * Where the plugin serves `runtime/` from unless told otherwise: `su/`
+ * under the site's base, so a site built for `/repo/` has it at
+ * `/repo/su/` and in the build's `su/` directory.
+ *
+ * @returns {string}
+ */
+export function defaultUiClientBase() {
+  return `${siteBase()}su/`
+}
 
 /**
  * Every module under `runtime/`, which is what the plugin will serve.
@@ -46,12 +71,18 @@ export const RUNTIME_MODULES = [
 let configured
 
 /**
- * Serve the runtime from somewhere other than `/su/`.
+ * Serve the runtime from somewhere other than `su/` under the site's
+ * base.
  *
- * Call it once, from a module your pages import, when the site is
- * deployed under a sub-path or the runtime lives on a CDN. Passing the
- * same value as the plugin's `uiClient.base` option is equivalent —
- * that sets `SITELO_UI_BASE`, which this reads.
+ * Call it once, from a module your pages import, when the runtime lives
+ * elsewhere on the site or on a CDN. A sub-path deploy needs none of
+ * this: the default follows Vite's `base`. Passing the same value as the
+ * plugin's `uiClient.base` option is equivalent — that sets
+ * `SITELO_UI_BASE`, which this reads.
+ *
+ * A root-relative base is the URL the browser asks for, so on a site
+ * built for `/repo/` it includes `/repo/`; the build writes the files to
+ * the rest of it.
  *
  * ```js
  * configureUiClient({ base: '/assets/su/' })
@@ -77,7 +108,7 @@ export function configureUiClient({ base } = {}) {
  * @returns {string}
  */
 export function uiClientBase() {
-  const base = configured ?? process.env.SITELO_UI_BASE ?? DEFAULT_UI_CLIENT_BASE
+  const base = configured ?? process.env.SITELO_UI_BASE ?? defaultUiClientBase()
 
   return base.endsWith('/') ? base : `${base}/`
 }

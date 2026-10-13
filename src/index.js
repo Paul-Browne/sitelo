@@ -21,8 +21,9 @@ function toArray(value) {
  * taken from the shipped declaration so the two cannot drift:
  *
  * - `uiClient` — where to serve the sitelo-ui runtime from. Defaults to
- *   `/su/`; set it for a sub-path deploy, or to an absolute URL to host
- *   the files yourself.
+ *   `su/` under Vite's `base`, so a sub-path deploy needs nothing; set
+ *   it to serve from elsewhere on the site, or to an absolute URL to
+ *   host the files yourself.
  * - `pruneCss` — write only the rules of the sitelo-ui stylesheet that
  *   the built pages can match, rather than the whole sheet. `keep` names
  *   classes to keep regardless — for markup that arrives at request
@@ -33,23 +34,29 @@ function toArray(value) {
 export default function sitelo(options = {}) {
   const { uiClient, pruneCss, externalAssets, ...pluginOptions } = options;
 
-  /*
-   * The runtime is served by the plugin below — in dev from middleware,
-   * on a build by copying out of the package — so there is no file under
-   * the pages directory for the page validator to find. Left to itself it
-   * reports every component that imports one as a missing asset. Naming
-   * the prefix here is the whole of the fix; a site's own
-   * `externalAssets` still comes through untouched.
-   */
-  const runtimePrefix = uiClientPrefix(uiClient);
-
   return [
     htmlPages({
       ...pluginOptions,
-      externalAssets: [
-        ...toArray(externalAssets),
-        ...(runtimePrefix ? [runtimePrefix] : []),
-      ],
+      /*
+       * The runtime is served by the plugin below — in dev from
+       * middleware, on a build by copying out of the package — so there
+       * is no file under the pages directory for the page validator to
+       * find. Left to itself it reports every component that imports one
+       * as a missing asset. Naming the prefix here is the whole of the
+       * fix; a site's own `externalAssets` still comes through untouched.
+       *
+       * A getter, because the prefix follows Vite's `base`, which is not
+       * resolved yet while this array would be built; html-pages reads
+       * the option for each page it checks, by which time it is.
+       */
+      get externalAssets() {
+        const runtimePrefix = uiClientPrefix(uiClient);
+
+        return [
+          ...toArray(externalAssets),
+          ...(runtimePrefix ? [runtimePrefix] : []),
+        ];
+      },
       generatedTypesDir: options.generatedTypesDir ?? '.sitelo/types',
       displayName: options.displayName ?? 'sitelo',
     }),

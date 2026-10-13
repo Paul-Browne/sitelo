@@ -203,7 +203,7 @@ export default () =>
       ),
       codeBlock('Wyrenderowane znaczniki', s.handler, 'html'),
       p(
-        'sitelo serwuje te moduły z /su/ podczas pracy i kopiuje do buildu te, do których Twoje strony faktycznie się odwołują. Każdy waży znacznie poniżej kilobajta, żaden nie jest pobierany przed pierwszą interakcją, a każdy komponent renderuje się poprawnie, dopóki to nie nastąpi: menu otwierają się i zamykają same, a przycisk zamykania nic nie robi.',
+        'sitelo serwuje te moduły z /su/ (lub /repo/su/ z --base /repo/) podczas pracy i kopiuje do buildu te, do których Twoje strony faktycznie się odwołują. Każdy waży znacznie poniżej kilobajta, żaden nie jest pobierany przed pierwszą interakcją, a każdy komponent renderuje się poprawnie, dopóki to nie nastąpi: menu otwierają się i zamykają same, a przycisk zamykania nic nie robi.',
       ),
       p(
         'Wyjątkiem jest ',

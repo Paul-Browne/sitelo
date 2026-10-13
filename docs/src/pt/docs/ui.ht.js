@@ -196,7 +196,7 @@ export default () =>
       ),
       p('Não há nada a acrescentar ao teu ficheiro de entrada — o import é o atributo do evento:'),
       codeBlock('Marcação renderizada', s.handler, 'html'),
-      p('O sitelo serve esses módulos a partir de /su/ enquanto desenvolves e copia para o build apenas aqueles que as tuas páginas referenciam de facto. Cada um tem bem menos de um kilobyte, nenhum é descarregado antes da primeira interação e, até lá, todos os componentes renderizam corretamente: os menus abrem e fecham sozinhos e o botão de dispensar não faz nada.'),
+      p('O sitelo serve esses módulos a partir de /su/ (ou /repo/su/ com --base /repo/) enquanto desenvolves e copia para o build apenas aqueles que as tuas páginas referenciam de facto. Cada um tem bem menos de um kilobyte, nenhum é descarregado antes da primeira interação e, até lá, todos os componentes renderizam corretamente: os menus abrem e fecham sozinhos e o botão de dispensar não faz nada.'),
       p(
         'A exceção é ',
         code('toast()'),

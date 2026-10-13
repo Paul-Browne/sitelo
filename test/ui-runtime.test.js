@@ -117,6 +117,219 @@ test('an absolute base is somebody else’s to serve', () => {
 });
 
 /* ------------------------------------------------------------------ *
+ * Vite base
+ * ------------------------------------------------------------------ */
+
+/**
+ * Resolve the plugin's config the way Vite does for a site under `base`,
+ * and run `fn` while that base is published; the environment is put back
+ * after, so the base cannot leak into a later test.
+ */
+function underBase(base, fn, { command = 'build', middlewareMode = false, ...options } = {}) {
+  const before = { ui: process.env.SITELO_UI_BASE, site: process.env.SITELO_BASE };
+  const root = mkdtempSync(path.join(tmpdir(), 'sitelo-ui-'));
+  const outDir = path.join(root, 'dist');
+  const warnings = [];
+  const plugin = makePlugin(options);
+
+  try {
+    plugin.configResolved({
+      root,
+      base,
+      command,
+      build: { outDir },
+      server: { middlewareMode },
+      logger: { warn: (message) => warnings.push(message) },
+    });
+
+    return fn({ plugin, outDir, warnings });
+  } finally {
+    restoreEnv(before.ui);
+
+    if (before.site === undefined) delete process.env.SITELO_BASE;
+    else process.env.SITELO_BASE = before.site;
+  }
+}
+
+/**
+ * Render the page the way a site would — after the config is resolved —
+ * write it, and run the build half. What landed in `outDir`, and the page.
+ */
+function buildPage(plugin, outDir) {
+  const html =
+    ui.styles() + ui.alert({ dismissible: true }, 'hi') + ui.themeToggle();
+
+  mkdirSync(outDir, { recursive: true });
+  writeFileSync(path.join(outDir, 'index.html'), html);
+  plugin.writeBundle();
+
+  const files = readdirSync(outDir, { recursive: true, withFileTypes: true })
+    .filter((entry) => entry.isFile())
+    .map((entry) => path.relative(outDir, path.join(entry.parentPath, entry.name)).split(path.sep).join('/'))
+    .sort();
+
+  return { html, files, sheet: stylesUrl().split('/').pop() };
+}
+
+test('under a Vite base, the runtime is served beneath it and written to su/', () => {
+  // `sitelo build --base /repo/` for a GitHub Pages project site: dist/
+  // is served at /repo/, so /repo/su/ is dist/su/.
+  underBase('/repo/', ({ plugin, outDir }) => {
+    const { html, files, sheet } = buildPage(plugin, outDir);
+
+    assert.ok(html.includes(`href="/repo/su/${sheet}"`), 'the sheet is linked under the base');
+    assert.ok(html.includes(`import('/repo/su/alert.js')`), 'and the handlers import from under it');
+    assert.ok(html.includes(`import('/repo/su/theme.js')`));
+    assert.deepEqual(files, ['index.html', 'su/alert.js', `su/${sheet}`, 'su/theme.js'].sort());
+  });
+});
+
+test('an explicit base that includes Vite’s is written without it', () => {
+  // The URL is the browser's, base and all; the directory is where that
+  // URL lands inside dist/, which is served at the base.
+  underBase('/repo/', ({ plugin, outDir, warnings }) => {
+    const { html, files, sheet } = buildPage(plugin, outDir);
+
+    assert.ok(html.includes(`href="/repo/su/${sheet}"`));
+    assert.ok(html.includes(`import('/repo/su/alert.js')`));
+    assert.deepEqual(files, ['index.html', 'su/alert.js', `su/${sheet}`, 'su/theme.js'].sort());
+    assert.deepEqual(warnings, []);
+  }, { base: '/repo/su/' });
+
+  underBase('/repo/', ({ plugin, outDir }) => {
+    const { files, sheet } = buildPage(plugin, outDir);
+
+    assert.deepEqual(files, ['assets/su/alert.js', `assets/su/${sheet}`, 'assets/su/theme.js', 'index.html'].sort());
+  }, { base: '/repo/assets/su/' });
+});
+
+test('an explicit base outside Vite’s is written at its whole path, and the build says so', () => {
+  underBase('/repo/', ({ plugin, outDir, warnings }) => {
+    const { html, files, sheet } = buildPage(plugin, outDir);
+
+    assert.ok(html.includes(`import('/assets/su/alert.js')`), 'the pages point where they were told');
+    assert.deepEqual(files, ['assets/su/alert.js', `assets/su/${sheet}`, 'assets/su/theme.js', 'index.html'].sort());
+    assert.equal(warnings.length, 1);
+    assert.match(warnings[0], /uiClient\.base \/assets\/su\/ is outside Vite's base \/repo\//);
+    assert.match(warnings[0], /served at \/repo\/assets\/su\//);
+  }, { base: '/assets/su/' });
+});
+
+test('a full-URL Vite base is the runtime’s too', () => {
+  underBase('https://cdn.example/repo/', ({ plugin, outDir }) => {
+    const { html, files, sheet } = buildPage(plugin, outDir);
+
+    assert.ok(html.includes(`href="https://cdn.example/repo/su/${sheet}"`));
+    assert.ok(html.includes(`import('https://cdn.example/repo/su/alert.js')`));
+    assert.deepEqual(files, ['index.html', 'su/alert.js', `su/${sheet}`, 'su/theme.js'].sort());
+  });
+});
+
+test('a relative Vite base leaves the runtime at the root', () => {
+  // An event attribute is written once for every page, so it has no path
+  // of its own to a runtime that moves with the page.
+  underBase('./', ({ plugin, outDir }) => {
+    const { html, files, sheet } = buildPage(plugin, outDir);
+
+    assert.ok(html.includes(`import('/su/alert.js')`));
+    assert.deepEqual(files, ['index.html', 'su/alert.js', `su/${sheet}`, 'su/theme.js'].sort());
+  });
+});
+
+test('html-pages’ page loader does not move the base the build resolved', () => {
+  /*
+   * A build renders its pages through a second, middleware-mode server
+   * made from vite.config alone — which never saw `--base` on the
+   * command line, and runs this plugin too if vite.config registers it.
+   */
+  underBase('/repo/', () => {
+    const loader = makePlugin();
+
+    loader.configResolved({ root: '.', base: '/', command: 'serve', build: { outDir: 'dist' }, server: { middlewareMode: true } });
+
+    assert.ok(ui.alert({ dismissible: true }, 'x').includes(`import('/repo/su/alert.js')`));
+  });
+});
+
+test('uiClientPrefix follows Vite’s base for the page validator', () => {
+  underBase('/repo/', () => {
+    assert.equal(uiClientPrefix(), '/repo/su/');
+    assert.equal(uiClientPrefix({ base: '/repo/su/' }), '/repo/su/');
+  });
+
+  underBase('https://cdn.example/repo/', () => {
+    assert.equal(uiClientPrefix(), null, 'a URL the validator never checks');
+  });
+});
+
+test('a pruned sheet under a Vite base is renamed where the pages link it', () => {
+  underBase('/repo/', ({ plugin, outDir }) => {
+    const linked = stylesUrl().split('/').pop();
+
+    mkdirSync(outDir, { recursive: true });
+    writeFileSync(
+      path.join(outDir, 'index.html'),
+      `${ui.styles()}<a class="su-btn">x</a>`,
+    );
+    plugin.writeBundle();
+
+    const [written] = readdirSync(path.join(outDir, 'su'));
+    const html = readFileSync(path.join(outDir, 'index.html'), 'utf8');
+
+    assert.notEqual(written, linked, 'the hash follows the bytes');
+    assert.ok(html.includes(`href="/repo/su/${written}"`), 'and the page follows the file');
+    assert.doesNotMatch(readFileSync(path.join(outDir, 'su', written), 'utf8'), /\.su-card\{/);
+  }, { prune: true });
+});
+
+test('under a Vite base, dev answers on the same prefix', () => {
+  // The middleware runs before Vite takes the base off a request.
+  underBase('/repo/', ({ plugin }) => {
+    let middleware;
+
+    plugin.configureServer({ middlewares: { use: (fn) => { middleware = fn; } } });
+
+    const handled = (url) => {
+      let passed = false;
+
+      middleware({ url }, { setHeader: () => {}, end: () => {} }, () => { passed = true; });
+
+      return !passed;
+    };
+
+    assert.ok(handled('/repo/su/alert.js'));
+    assert.ok(handled(`/repo/su/${stylesUrl().split('/').pop()}`));
+    assert.ok(!handled('/su/alert.js'), 'the root is not where the pages point');
+  }, { command: 'serve' });
+});
+
+test('dev takes back the second base Vite puts on the sheet, and still warns', () => {
+  /*
+   * Vite's dev server joins its base onto every root-relative `href`,
+   * taking the page to have been written for the root. The sheet's
+   * already carries it.
+   */
+  underBase('/repo/', ({ plugin, warnings }) => {
+    const sheet = stylesUrl().split('/').pop();
+    const html =
+      `<link rel="stylesheet" href="/repo/repo/su/${sheet}">` +
+      `<link rel="preload" as="style" href='/repo/repo/su/${sheet}'>` +
+      '<link rel="stylesheet" href="/repo/repo/su/site.css">' +
+      '<a href="/repo/about">About</a>' +
+      `<button popovertarget="confirm">Open</button>${ui.modal({ id: 'confirm' }, 'x')}`;
+    const out = plugin.transformIndexHtml.handler(html, { path: '/' });
+
+    assert.ok(out.includes(`href="/repo/su/${sheet}"`), 'the sheet is put back');
+    assert.ok(out.includes(`href='/repo/su/${sheet}'`), 'however the attribute is quoted');
+    assert.ok(out.includes('href="/repo/repo/su/site.css"'), 'a file the middleware does not answer is left alone');
+    assert.ok(out.includes('href="/repo/about"'));
+    assert.ok(out.includes(`import('/repo/su/dialog.js')`), 'the handlers were never touched');
+    assert.equal(warnings.length, 1, 'the stale trigger is still reported');
+    assert.match(warnings[0], /popovertarget points at #confirm/);
+  }, { command: 'serve' });
+});
+
+/* ------------------------------------------------------------------ *
  * Dev server
  * ------------------------------------------------------------------ */
 

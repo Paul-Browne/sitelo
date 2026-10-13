@@ -7,10 +7,14 @@ export interface SiteloPluginOptions extends HtPagesPluginOptions {
   /** Where to serve the `sitelo/ui` runtime from. */
   uiClient?: {
     /**
-     * Base URL the components' inline imports point at, and the
-     * directory they are copied into on a build. Defaults to `/su/`.
-     * An absolute URL turns the copying off — the files are yours to
-     * host.
+     * Base URL the components' inline imports and the stylesheet's link
+     * point at. Defaults to `su/` under Vite's `base`: `/su/`, or
+     * `/repo/su/` for a site built with `--base /repo/`.
+     *
+     * A path from the root is the URL the browser asks for, Vite's
+     * `base` included; a build copies the files to the rest of it under
+     * `outDir`. An absolute URL turns the copying off — the files are
+     * yours to host.
      */
     base?: string;
   };

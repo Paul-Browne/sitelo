@@ -1,6 +1,6 @@
 import { a, h2, h3, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock, docsLayout } from '../../lib/pl.js'
-import { buildWithAiSnippets } from '../../lib/snippets/build-with-ai.js'
+import { buildWithAiSnippets, SKILLS_INSTALL } from '../../lib/snippets/build-with-ai.js'
 
 const s = buildWithAiSnippets('pl')
 
@@ -8,11 +8,38 @@ export default () =>
   docsLayout({
     title: 'Tworzenie z AI',
     description:
-      'Daj agentom programistycznym aktualną wiedzę o sitelo dzięki llms.txt, regułom projektu i praktycznym wskazówkom.',
+      'Daj agentom programistycznym aktualną wiedzę o sitelo dzięki skillom dla agentów, llms.txt, regułom projektu i praktycznym wskazówkom.',
     activeHref: '/pl/docs/build-with-ai',
     children: [
       p(
         'Edytory z AI i agenci programistyczni często zgadują o sitelo źle — sięgają po wzorce Reacta, Nexta albo Astro, które tu nie obowiązują. Ten przewodnik pokazuje, jak skierować je do aktualnej dokumentacji sitelo i utrzymać generowany kod w zgodzie z modelem.',
+      ),
+      h2('Skille dla agentów'),
+      p(
+        'sitelo dostarcza dwa skille w formacie ',
+        a({ href: 'https://agentskills.io', rel: 'noopener' }, 'Agent Skills'),
+        ': instrukcje, które agent programistyczny wczytuje dopiero wtedy, gdy zadanie ich wymaga. ',
+        a({ href: 'https://github.com/vercel-labs/skills', rel: 'noopener' }, 'CLI ', code('skills')),
+        ' instaluje je w twoim projekcie dla Claude Code, Cursor, Codex i innych obsługiwanych agentów:',
+      ),
+      codeBlock('shell', SKILLS_INSTALL, 'bash'),
+      ul(
+        { class: 'docs-list' },
+        li(
+          code('sitelo'),
+          ' — strony, routing, wczytywanie danych, konfiguracja, zasoby, obrazy, wyspy serwerowe, Lighthouse i wdrożenie',
+        ),
+        li(
+          code('sitelo-ui'),
+          ' — biblioteka komponentów: propsy każdego komponentu, motywy, presety, ikony i helpery po stronie klienta',
+        ),
+      ),
+      p(
+        'Dodaj ',
+        code('--skill sitelo-ui'),
+        ', żeby zainstalować tylko jeden, albo ',
+        code('-g'),
+        ', żeby zainstalować je we wszystkich projektach. Skill leży w projekcie, więc agent go znajduje, nawet jeśli nie podasz mu adresu URL.',
       ),
       h2('llms.txt'),
       p(
