@@ -1096,11 +1096,17 @@ a.feature-card:hover .feature-chip {
 }
 
 /*
- * Version tags, two cells to a box: the name in grey, the value in ink,
- * a hairline between. Monochrome, as the preset keeps colour for what it
- * has to say.
+ * Version tags, two cells to a box: the name in grey, the value in the
+ * project's own colour, a hairline between. Hovered, the frame takes that
+ * colour too and the value cell fills with it.
+ *
+ * Each colour is set per theme and holds 4.5:1 against `--paper` both
+ * ways round: as the value's text, and as the fill behind paper-coloured
+ * text on hover.
  */
 .badge {
+  --badge-c: var(--ink);
+
   display: inline-flex;
   align-items: stretch;
   border: var(--su-border-width) solid var(--line-strong);
@@ -1116,7 +1122,7 @@ a.feature-card:hover .feature-chip {
 }
 
 .badge:hover {
-  border-color: var(--ink-faint);
+  border-color: var(--badge-c);
 }
 
 .badge-name,
@@ -1133,17 +1139,69 @@ a.feature-card:hover .feature-chip {
 
 .badge-value {
   border-left: var(--su-border-width) solid var(--line-strong);
-  color: var(--ink);
+  color: var(--badge-c);
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
 }
 
 .badge:hover .badge-value {
-  background: var(--su-primary);
-  color: var(--su-primary-fg);
+  border-left-color: var(--badge-c);
+  background: var(--badge-c);
+  color: var(--paper);
 }
 
 .badge-icon {
   width: 1em;
   height: 1em;
+  color: var(--badge-c);
+}
+
+/*
+ * sitelo is the blueprint blue; the rest wear their own. Vite takes the
+ * purple end of its logo, as its indigo sat too close to the blue.
+ */
+.badge-sitelo {
+  --badge-c: var(--accent);
+}
+
+.badge-license {
+  --badge-c: #9a5800;
+}
+
+.badge-node {
+  --badge-c: #417e38;
+}
+
+.badge-vite {
+  --badge-c: #9126d9;
+}
+
+:root[data-theme='dark'] .badge-license {
+  --badge-c: #ffb224;
+}
+
+:root[data-theme='dark'] .badge-node {
+  --badge-c: #5fa04e;
+}
+
+:root[data-theme='dark'] .badge-vite {
+  --badge-c: #c35cff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .badge-license {
+    --badge-c: #ffb224;
+  }
+
+  :root:not([data-theme='light']) .badge-node {
+    --badge-c: #5fa04e;
+  }
+
+  :root:not([data-theme='light']) .badge-vite {
+    --badge-c: #c35cff;
+  }
 }
 
 /* ------------------------------------------------------------------ *
