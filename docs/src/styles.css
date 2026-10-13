@@ -1119,20 +1119,19 @@ a.feature-card:hover .feature-chip {
 }
 
 /*
- * Version tags, two cells to a box: the name in grey, the value in the
- * project's own colour, a hairline between. Hovered, the frame takes that
- * colour too and the value cell fills with it.
+ * Version tags, two cells to a box: the name in grey on paper, the value
+ * filled with the project's own colour, and the frame drawn in it too.
  *
  * Each colour is set per theme and holds 4.5:1 against `--paper` both
- * ways round: as the value's text, and as the fill behind paper-coloured
- * text on hover.
+ * ways round: as the icon beside the name, and as the fill behind the
+ * paper-coloured value.
  */
 .badge {
   --badge-c: var(--ink);
 
   display: inline-flex;
   align-items: stretch;
-  border: var(--su-border-width) solid var(--line-strong);
+  border: var(--su-border-width) solid var(--badge-c);
   color: inherit;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
@@ -1141,11 +1140,6 @@ a.feature-card:hover .feature-chip {
   letter-spacing: var(--tracking);
   text-decoration: none;
   text-transform: uppercase;
-  transition: border-color 140ms ease;
-}
-
-.badge:hover {
-  border-color: var(--badge-c);
 }
 
 .badge-name,
@@ -1161,16 +1155,6 @@ a.feature-card:hover .feature-chip {
 }
 
 .badge-value {
-  border-left: var(--su-border-width) solid var(--line-strong);
-  color: var(--badge-c);
-  transition:
-    background-color 140ms ease,
-    border-color 140ms ease,
-    color 140ms ease;
-}
-
-.badge:hover .badge-value {
-  border-left-color: var(--badge-c);
   background: var(--badge-c);
   color: var(--paper);
 }
