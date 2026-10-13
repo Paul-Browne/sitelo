@@ -54,10 +54,6 @@ export default () =>
           code('.js'),
           ' / ',
           code('.ts'),
-          ' / ',
-          code('.jsx'),
-          ' / ',
-          code('.tsx'),
           ' — regroupés en modules ES, TypeScript retiré, imports intégrés',
         ),
         li(

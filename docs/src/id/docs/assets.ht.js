@@ -54,10 +54,6 @@ export default () =>
           code('.js'),
           ' / ',
           code('.ts'),
-          ' / ',
-          code('.jsx'),
-          ' / ',
-          code('.tsx'),
           ' — dibundel sebagai modul ES, TypeScript dilucuti, impor disisipkan',
         ),
         li(

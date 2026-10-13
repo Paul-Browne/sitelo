@@ -54,10 +54,6 @@ export default () =>
           code('.js'),
           ' / ',
           code('.ts'),
-          ' / ',
-          code('.jsx'),
-          ' / ',
-          code('.tsx'),
           ' —— 打包为 ES 模块，剥离 TypeScript，内联 import',
         ),
         li(
