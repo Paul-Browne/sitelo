@@ -235,6 +235,87 @@ export default defineConfig({
   }
 });
 
+test('sitelo build --base puts the ui runtime where its pages point', async (t) => {
+  const configPath = path.join(fixtureDir, 'sitelo.config.js');
+  const originalConfig = fs.readFileSync(configPath, 'utf8');
+  const pagePath = path.join(fixtureDir, 'src', 'ui.ht.js');
+  const viteConfigPath = path.join(fixtureDir, 'vite.config.mjs');
+
+  const cleanup = () => {
+    fs.writeFileSync(configPath, originalConfig);
+    fs.rmSync(pagePath, { force: true });
+    fs.rmSync(viteConfigPath, { force: true });
+    fs.rmSync(distDir, { recursive: true, force: true });
+    fs.rmSync(path.join(fixtureDir, '.sitelo'), {
+      recursive: true,
+      force: true,
+    });
+  };
+
+  cleanup();
+  t.after(cleanup);
+
+  fs.writeFileSync(
+    pagePath,
+    `import * as ui from ${JSON.stringify(path.join(rootDir, 'src/ui/index.js'))}
+
+export default () =>
+  \`<html><head>\${ui.styles()}</head><body>\${ui.alert({ dismissible: true }, 'hi')}\${ui.themeToggle()}</body></html>\`
+`,
+  );
+
+  /*
+   * dist/ is served at /repo/, so every URL the page links or imports has
+   * to start with /repo/ and name a file at the rest of it — the check a
+   * GitHub Pages project site makes in production.
+   */
+  const assertServed = async (label) => {
+    fs.rmSync(distDir, { recursive: true, force: true });
+    await runBuild(fixtureDir, ['--base', '/repo/']);
+
+    const html = fs.readFileSync(path.join(distDir, 'ui', 'index.html'), 'utf8');
+    const urls = [
+      ...html.matchAll(/href="([^"]*\/su\/[^"]*)"|import\('([^']*)'\)/g),
+    ].map(([, href, specifier]) => href ?? specifier);
+
+    assert.equal(urls.length, 3, `${label}: the sheet and two modules`);
+
+    for (const url of urls) {
+      assert.ok(url.startsWith('/repo/su/'), `${label}: ${url} is under the base`);
+      assert.ok(
+        fs.existsSync(path.join(distDir, url.slice('/repo/'.length))),
+        `${label}: ${url} is in dist/ where /repo/ serves it`,
+      );
+    }
+
+    assert.equal(fs.existsSync(path.join(distDir, 'repo')), false, `${label}: nothing under dist/repo/`);
+  };
+
+  await assertServed('default');
+
+  fs.writeFileSync(
+    configPath,
+    `export default {
+  site: 'https://example.com',
+  uiClient: { base: '/repo/su/' },
+}
+`,
+  );
+  await assertServed('uiClient.base with the base in it');
+
+  // Registered in vite.config, the plugin also runs in the server
+  // html-pages renders pages through, which never sees --base.
+  fs.rmSync(configPath);
+  fs.writeFileSync(
+    viteConfigPath,
+    `import sitelo from ${JSON.stringify(path.join(rootDir, 'src/index.js'))}
+
+export default { plugins: [sitelo()] }
+`,
+  );
+  await assertServed('plugin in vite.config');
+});
+
 test('sitelo build prints a build report', async (t) => {
   const configPath = path.join(fixtureDir, 'sitelo.config.js');
   const originalConfig = fs.readFileSync(configPath, 'utf8');

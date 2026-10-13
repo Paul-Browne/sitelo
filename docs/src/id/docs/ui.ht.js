@@ -195,7 +195,7 @@ export default () =>
       ),
       p('Tidak ada yang perlu ditambahkan ke berkas entri Anda — impornya adalah atribut peristiwa itu sendiri:'),
       codeBlock('Markup hasil render', s.handler, 'html'),
-      p('sitelo menyajikan modul-modul itu dari /su/ selagi Anda mengembangkan, dan menyalin yang benar-benar dirujuk halaman Anda ke dalam build. Masing-masing jauh di bawah satu kilobita, tidak ada yang diambil sebelum interaksi pertama, dan setiap komponen dirender dengan benar sampai saat itu tiba: menu membuka dan menutup sendiri, tombol tutupnya tidak melakukan apa-apa.'),
+      p('sitelo menyajikan modul-modul itu dari /su/ (atau /repo/su/ dengan --base /repo/) selagi Anda mengembangkan, dan menyalin yang benar-benar dirujuk halaman Anda ke dalam build. Masing-masing jauh di bawah satu kilobita, tidak ada yang diambil sebelum interaksi pertama, dan setiap komponen dirender dengan benar sampai saat itu tiba: menu membuka dan menutup sendiri, tombol tutupnya tidak melakukan apa-apa.'),
       p(
         'Pengecualiannya adalah ',
         code('toast()'),
