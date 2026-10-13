@@ -207,10 +207,16 @@ Reference assets from HTML with root-relative URLs, mapped from `pagesDir`:
 ```html
 <link rel="stylesheet" href="/styles.css">         <!-- src/styles.css -->
 <script type="module" src="/main.js"></script>      <!-- src/main.js -->
+<script type="module" src="/app.ts"></script>       <!-- src/app.ts -->
 ```
 
 - JS, TS and CSS that a page references are bundled and minified. Their
   imports are inlined, so npm packages work in client scripts.
+- Link a TypeScript entry by its source name, `/app.ts`. The dev server
+  serves it as is; the build emits `app.js` and rewrites the page's URL to
+  match. Linking `/app.js` for `src/app.ts` fails the build.
+- Relative URLs resolve against the page's own URL: `href="styles.css"`
+  on `/blog/hello/` asks for `/blog/hello/styles.css`. Stay root-relative.
 - **Code no page references is never emitted.** Modules that only `data()`
   or an island imports stay on the server, along with any secrets in them.
   Never link a script that contains secrets.
