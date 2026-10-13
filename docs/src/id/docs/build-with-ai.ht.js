@@ -1,6 +1,6 @@
 import { a, h2, h3, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock, docsLayout } from '../../lib/id.js'
-import { buildWithAiSnippets } from '../../lib/snippets/build-with-ai.js'
+import { buildWithAiSnippets, SKILLS_INSTALL } from '../../lib/snippets/build-with-ai.js'
 
 const s = buildWithAiSnippets('id')
 
@@ -8,11 +8,38 @@ export default () =>
   docsLayout({
     title: 'Membangun dengan AI',
     description:
-      'Beri agen pengodean pengetahuan sitelo yang mutakhir lewat llms.txt, aturan proyek, dan kiat praktis.',
+      'Beri agen pengodean pengetahuan sitelo yang mutakhir lewat skill agen, llms.txt, aturan proyek, dan kiat praktis.',
     activeHref: '/id/docs/build-with-ai',
     children: [
       p(
         'Editor AI dan agen pengodean sering menebak salah soal sitelo — mereka meraih pola React, Next, atau Astro yang tidak berlaku. Panduan ini menunjukkan cara mengarahkan mereka ke dokumentasi sitelo terkini dan menjaga kode hasil generasi tetap sesuai modelnya.',
+      ),
+      h2('Skill agen'),
+      p(
+        'sitelo menyertakan dua ',
+        a({ href: 'https://agentskills.io', rel: 'noopener' }, 'Agent Skills'),
+        ': instruksi yang baru dimuat agen pengodean ketika sebuah tugas membutuhkannya. ',
+        a({ href: 'https://github.com/vercel-labs/skills', rel: 'noopener' }, 'CLI ', code('skills')),
+        ' memasangnya ke proyek Anda untuk Claude Code, Cursor, Codex, dan agen lain yang didukungnya:',
+      ),
+      codeBlock('shell', SKILLS_INSTALL, 'bash'),
+      ul(
+        { class: 'docs-list' },
+        li(
+          code('sitelo'),
+          ' — halaman, routing, memuat data, konfigurasi, aset, gambar, island server, Lighthouse, dan penerapan',
+        ),
+        li(
+          code('sitelo-ui'),
+          ' — pustaka komponen: props setiap komponen, tema, preset, ikon, dan helper sisi klien',
+        ),
+      ),
+      p(
+        'Tambahkan ',
+        code('--skill sitelo-ui'),
+        ' untuk memasang satu saja, atau ',
+        code('-g'),
+        ' untuk memasangnya di semua proyek. Skill tinggal di dalam proyek, jadi agen menemukannya tanpa perlu diberi URL.',
       ),
       h2('llms.txt'),
       p(

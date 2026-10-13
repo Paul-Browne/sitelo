@@ -1,6 +1,6 @@
 import { a, h2, h3, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock, docsLayout } from '../../lib/ru.js'
-import { buildWithAiSnippets } from '../../lib/snippets/build-with-ai.js'
+import { buildWithAiSnippets, SKILLS_INSTALL } from '../../lib/snippets/build-with-ai.js'
 
 const s = buildWithAiSnippets('ru')
 
@@ -8,11 +8,38 @@ export default () =>
   docsLayout({
     title: 'Разработка с ИИ',
     description:
-      'Дайте кодовым агентам актуальные знания о sitelo с помощью llms.txt, правил проекта и практических советов.',
+      'Дайте кодовым агентам актуальные знания о sitelo с помощью навыков для агентов, llms.txt, правил проекта и практических советов.',
     activeHref: '/ru/docs/build-with-ai',
     children: [
       p(
         'ИИ-редакторы и кодовые агенты часто ошибаются насчёт sitelo: они тянутся к приёмам React, Next или Astro, которые здесь неприменимы. Это руководство показывает, как направить их на актуальную документацию sitelo и удержать генерируемый код в правильной модели.',
+      ),
+      h2('Навыки для агентов'),
+      p(
+        'sitelo поставляется с двумя навыками в формате ',
+        a({ href: 'https://agentskills.io', rel: 'noopener' }, 'Agent Skills'),
+        ' — это инструкции, которые кодовый агент загружает, только когда они нужны для задачи. ',
+        a({ href: 'https://github.com/vercel-labs/skills', rel: 'noopener' }, 'CLI ', code('skills')),
+        ' устанавливает их в ваш проект для Claude Code, Cursor, Codex и других поддерживаемых агентов:',
+      ),
+      codeBlock('shell', SKILLS_INSTALL, 'bash'),
+      ul(
+        { class: 'docs-list' },
+        li(
+          code('sitelo'),
+          ' — страницы, маршрутизация, загрузка данных, конфигурация, ассеты, изображения, серверные острова, Lighthouse и развёртывание',
+        ),
+        li(
+          code('sitelo-ui'),
+          ' — библиотека компонентов: пропсы каждого компонента, темы, пресеты, иконки и клиентские хелперы',
+        ),
+      ),
+      p(
+        'Добавьте ',
+        code('--skill sitelo-ui'),
+        ', чтобы установить только один, или ',
+        code('-g'),
+        ', чтобы установить их для всех проектов. Навык лежит в самом проекте, поэтому агент находит его, даже если вы не дали ему ссылку.',
       ),
       h2('llms.txt'),
       p(

@@ -1,6 +1,6 @@
 import { a, h2, h3, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock, docsLayout } from '../../lib/fr.js'
-import { buildWithAiSnippets } from '../../lib/snippets/build-with-ai.js'
+import { buildWithAiSnippets, SKILLS_INSTALL } from '../../lib/snippets/build-with-ai.js'
 
 const s = buildWithAiSnippets('fr')
 
@@ -8,11 +8,38 @@ export default () =>
   docsLayout({
     title: 'Créer avec l’IA',
     description:
-      'Donnez aux agents de code une connaissance à jour de sitelo grâce à llms.txt, aux règles de projet et à quelques conseils pratiques.',
+      'Donnez aux agents de code une connaissance à jour de sitelo grâce aux skills pour agents, à llms.txt, aux règles de projet et à quelques conseils pratiques.',
     activeHref: '/fr/docs/build-with-ai',
     children: [
       p(
         'Les éditeurs IA et les agents de code se trompent souvent sur sitelo : ils reprennent des schémas React, Next ou Astro qui ne s’appliquent pas ici. Ce guide montre comment les orienter vers la documentation à jour de sitelo et garder le code généré dans le bon modèle.',
+      ),
+      h2('Skills pour agents'),
+      p(
+        'sitelo fournit deux ',
+        a({ href: 'https://agentskills.io', rel: 'noopener' }, 'Agent Skills'),
+        ' : des instructions qu’un agent de code ne charge que lorsqu’une tâche en a besoin. La ',
+        a({ href: 'https://github.com/vercel-labs/skills', rel: 'noopener' }, 'CLI ', code('skills')),
+        ' les installe dans votre projet pour Claude Code, Cursor, Codex et les autres agents qu’elle prend en charge :',
+      ),
+      codeBlock('shell', SKILLS_INSTALL, 'bash'),
+      ul(
+        { class: 'docs-list' },
+        li(
+          code('sitelo'),
+          ' — pages, routage, chargement de données, configuration, assets, images, îlots serveur, Lighthouse et déploiement',
+        ),
+        li(
+          code('sitelo-ui'),
+          ' — la bibliothèque de composants : les props de chaque composant, les thèmes, les presets, les icônes et les helpers côté client',
+        ),
+      ),
+      p(
+        'Ajoutez ',
+        code('--skill sitelo-ui'),
+        ' pour n’en installer qu’une, ou ',
+        code('-g'),
+        ' pour les installer dans tous vos projets. Une skill vit dans le projet : l’agent la trouve sans qu’on ait à lui indiquer une URL.',
       ),
       h2('llms.txt'),
       p(
