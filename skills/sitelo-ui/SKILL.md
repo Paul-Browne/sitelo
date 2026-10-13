@@ -47,6 +47,12 @@ export default () =>
   sitelo serves in dev and writes into the build. Nothing needs copying.
   `styles({ inline: true })` inlines the sheet (about 11 kB gzipped) and
   suits a one-page site.
+- **Under a sub-path** (a GitHub Pages project site at
+  `user.github.io/repo`), build with `--base /repo/` and nothing else. The
+  sheet and the runtime modules follow it to `/repo/su/` and land in
+  `dist/su/`. Leave `uiClient.base` and `configureUiClient()` alone: they
+  move the files elsewhere, and a path given to either must include the
+  base. Do not hard-code `/su/`; `ui.stylesUrl()` is the sheet's URL.
 - **Import as a namespace** (`import * as ui from 'sitelo/ui'`).
   `button`, `input`, `table`, `link`, `code`, `select` and `progress`
   collide with javascript-to-html's element functions. Each has a
