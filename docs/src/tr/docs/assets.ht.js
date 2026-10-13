@@ -54,6 +54,10 @@ export default () =>
           code('.js'),
           ' / ',
           code('.ts'),
+          ' / ',
+          code('.jsx'),
+          ' / ',
+          code('.tsx'),
           ' — ES modülleri olarak paketlenir, TypeScript ayıklanır, içe aktarmalar satır içine alınır',
         ),
         li(

@@ -954,21 +954,29 @@ export default () => `
 
 At build time:
 
-- **Referenced JS / TS / CSS is bundled** with esbuild — imports are
-  inlined and output is minified.
-- **TypeScript is referenced by its source name.** Write
+- **Referenced JS / TS / JSX / CSS is bundled** with esbuild — imports
+  are inlined and output is minified.
+- **Compiled sources are referenced by their source name.** Write
   `src="/main.ts"`; the build emits `main.js` and rewrites the URL in
-  the generated HTML to match (`.mjs` likewise becomes `.js`). Code
-  samples inside `<pre>` and `<code>` keep the source name.
+  the generated HTML to match. `.tsx`, `.jsx`, `.mts` and `.mjs`
+  likewise become `.js`. Code samples inside `<pre>` and `<code>`
+  keep the source name.
+- **JSX compiles the way the dev server compiles it** — same runtime,
+  from `oxc.jsx` in your Vite config or tsconfig `jsx` /
+  `jsxImportSource` (which Vite applies to `.tsx`, not `.jsx`), and
+  React's automatic runtime (`react/jsx-runtime`) when neither is set.
 - **Unreferenced code files are not emitted.** A helper like
-  `src/lib/api.ts` that you only import from `data()` stays out of
+  `src/lib/api.ts` that you only import from `data()`, or a
+  `src/components/Card.tsx` only your pages render, stays out of
   `dist/` — server-only code (and its secrets) never ships by accident.
+  CommonJS (`.cjs` / `.cts`) is never emitted, since browsers can't
+  load it; a page that references one fails the build.
 - **Everything else is copied** (images, fonts, videos, ...), so CSS
   `url()` references keep working.
 - **`public/` behaves like normal Vite** — copied verbatim.
 
 In dev, the same URLs are served through Vite's transform pipeline, so
-TypeScript and CSS work identically without a build.
+TypeScript, JSX and CSS work identically without a build.
 
 Relative URLs resolve the way the browser resolves them: against the
 page's own location (or its `<base href>`). On `src/blog/[slug].ht.js`,
@@ -983,8 +991,8 @@ Every generated page is checked: a `<script src="/x.js">` or stylesheet
 **fails the build** with the exact paths that were checked. Relative
 URLs are checked where they resolve from that page, and the error
 suggests the root-relative URL when that is what was meant — or the
-`.ts` source, when a page asks for the `.js` it compiles to. Prefer a
-warning instead?
+`.ts` / `.tsx` source, when a page asks for the `.js` it compiles to.
+Prefer a warning instead?
 
 ```js
 // sitelo.config.js
