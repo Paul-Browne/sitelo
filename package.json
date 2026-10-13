@@ -95,7 +95,8 @@
   },
   "files": [
     "src",
-    "bin"
+    "bin",
+    "skills"
   ],
   "bin": {
     "sitelo": "bin/sitelo.js"

@@ -1927,6 +1927,31 @@ export default {
 
 ---
 
+## Agent skills
+
+sitelo ships two [Agent Skills](https://agentskills.io): instructions a
+coding agent loads when a task calls for them, so it writes sitelo code
+rather than guessing from React or Astro. Install them into a project
+with the [`skills` CLI](https://github.com/vercel-labs/skills), which
+supports Claude Code, Cursor, Codex and many other agents:
+
+```bash
+npx skills add Paul-Browne/sitelo
+```
+
+| Skill | Covers |
+|-------|--------|
+| `sitelo` | Pages, routing, data loading, configuration, assets, images, server islands, Lighthouse, deployment |
+| `sitelo-ui` | The component library: every component's props, theming, presets, icons, the client helpers |
+
+`--skill sitelo-ui` installs just one, and `-g` installs them for every
+project. The skills also ship in the npm package, so
+`npx skills add ./node_modules/sitelo` installs the ones written for the
+version you have. They live in [`skills/`](skills/), and the test suite
+checks every API they name against the package's exports.
+
+---
+
 ## Comparison
 
 | Tool | What it is |

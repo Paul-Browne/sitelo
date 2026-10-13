@@ -1,6 +1,6 @@
 import { a, h2, h3, li, p, ul } from 'javascript-to-html'
 import { code, codeBlock, docsLayout } from '../../lib/zh.js'
-import { buildWithAiSnippets } from '../../lib/snippets/build-with-ai.js'
+import { buildWithAiSnippets, SKILLS_INSTALL } from '../../lib/snippets/build-with-ai.js'
 
 const s = buildWithAiSnippets('zh')
 
@@ -8,11 +8,38 @@ export default () =>
   docsLayout({
     title: '用 AI 开发',
     description:
-      '通过 llms.txt、项目规则和一些实用建议，让编码智能体掌握最新的 sitelo 知识。',
+      '通过智能体技能、llms.txt、项目规则和一些实用建议，让编码智能体掌握最新的 sitelo 知识。',
     activeHref: '/zh/docs/build-with-ai',
     children: [
       p(
         'AI 编辑器和编码智能体常常把 sitelo 搞错 —— 它们会套用 React、Next 或 Astro 的写法，而这些在这里并不适用。本指南说明如何把它们指向最新的 sitelo 文档，并让生成的代码保持在正确的模型上。',
+      ),
+      h2('智能体技能'),
+      p(
+        'sitelo 附带两个 ',
+        a({ href: 'https://agentskills.io', rel: 'noopener' }, 'Agent Skills'),
+        ' 技能：编码智能体只在任务需要时才加载的说明。',
+        a({ href: 'https://github.com/vercel-labs/skills', rel: 'noopener' }, code('skills'), ' CLI'),
+        ' 会把它们安装到你的项目中，供 Claude Code、Cursor、Codex 及其支持的其他智能体使用：',
+      ),
+      codeBlock('shell', SKILLS_INSTALL, 'bash'),
+      ul(
+        { class: 'docs-list' },
+        li(
+          code('sitelo'),
+          ' —— 页面、路由、数据加载、配置、静态资源、图片、服务端区块、Lighthouse 和部署',
+        ),
+        li(
+          code('sitelo-ui'),
+          ' —— 组件库：每个组件的 props、主题、预设、图标和客户端辅助函数',
+        ),
+      ),
+      p(
+        '加上 ',
+        code('--skill sitelo-ui'),
+        ' 只安装其中一个，加上 ',
+        code('-g'),
+        ' 则为所有项目安装。技能就放在项目里，所以不用给智能体提供 URL，它也能找到。',
       ),
       h2('llms.txt'),
       p(
