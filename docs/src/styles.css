@@ -273,8 +273,13 @@ code {
   --mark-tr: transparent;
 }
 
+/*
+ * Each sheet of paper is its own stacking context, so a code block's glow
+ * (`z-index: -1`) is painted on the paper rather than under it.
+ */
 .docs-shell,
 .content-main {
+  isolation: isolate;
   background: var(--paper);
 }
 
@@ -1831,6 +1836,68 @@ a.feature-card:hover .feature-chip {
   opacity: 0;
 }
 
+/*
+ * Pointed at, the box's line lights up: arcs of the blue run round it on
+ * a slow turn, with a blur of the same arcs behind it for a glow. The
+ * hairline stays under the arcs, so the box never loses an edge. The glow
+ * sits behind the text around the box, on the paper — see the sheets
+ * under Page frame.
+ */
+@property --glow-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes glow-spin {
+  to {
+    --glow-angle: 360deg;
+  }
+}
+
+.code-frame::after {
+  content: '';
+  position: absolute;
+  inset: calc(-3px - var(--su-border-width));
+  z-index: -1;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--glow-angle),
+    transparent 0%,
+    color-mix(in srgb, var(--accent) 55%, transparent) 10%,
+    transparent 28%,
+    color-mix(in srgb, var(--accent) 30%, transparent) 42%,
+    transparent 58%,
+    color-mix(in srgb, var(--accent) 55%, transparent) 72%,
+    transparent 88%
+  );
+  filter: blur(12px);
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.code-frame:hover {
+  border-image: conic-gradient(
+      from var(--glow-angle),
+      var(--line) 0%,
+      color-mix(in srgb, var(--accent) 60%, var(--ink)) 8%,
+      var(--line) 22%,
+      color-mix(in srgb, var(--accent) 50%, var(--line)) 38%,
+      var(--line) 52%,
+      var(--accent) 68%,
+      var(--line) 82%,
+      color-mix(in srgb, var(--accent) 40%, var(--line)) 92%,
+      var(--line) 100%
+    )
+    1;
+  animation: glow-spin 5s linear infinite;
+}
+
+.code-frame:hover::after {
+  opacity: 0.65;
+  animation: glow-spin 5s linear infinite;
+}
+
 .code-copy:hover,
 .code-copy.is-copied {
   border-color: var(--su-primary);
@@ -2587,7 +2654,14 @@ a.feature-card:hover .feature-chip {
   .ui-gallery-card,
   .ui-gallery-card::before,
   .docs-pagenav-link,
-  .docs-pagenav-link::before {
+  .docs-pagenav-link::before,
+  .code-frame::after {
     transition: none;
+  }
+
+  /* The arcs still light the line, held still. */
+  .code-frame:hover,
+  .code-frame:hover::after {
+    animation: none;
   }
 }
