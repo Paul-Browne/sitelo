@@ -54,10 +54,6 @@ export default () =>
           code('.js'),
           ' / ',
           code('.ts'),
-          ' / ',
-          code('.jsx'),
-          ' / ',
-          code('.tsx'),
           ' — messi nel bundle come moduli ES, TypeScript rimosso, import incorporati',
         ),
         li(

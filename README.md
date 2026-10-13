@@ -945,7 +945,7 @@ export default () => `
   <html>
     <head>
       <link rel="stylesheet" href="/styles.css">
-      <script type="module" src="/main.js"></script>
+      <script type="module" src="/main.ts"></script>
     </head>
     <body>...</body>
   </html>
@@ -955,7 +955,11 @@ export default () => `
 At build time:
 
 - **Referenced JS / TS / CSS is bundled** with esbuild — imports are
-  inlined, output is minified, and `.ts` files compile to `.js`.
+  inlined and output is minified.
+- **TypeScript is referenced by its source name.** Write
+  `src="/main.ts"`; the build emits `main.js` and rewrites the URL in
+  the generated HTML to match (`.mjs` likewise becomes `.js`). Code
+  samples inside `<pre>` and `<code>` keep the source name.
 - **Unreferenced code files are not emitted.** A helper like
   `src/lib/api.ts` that you only import from `data()` stays out of
   `dist/` — server-only code (and its secrets) never ships by accident.
@@ -966,11 +970,20 @@ At build time:
 In dev, the same URLs are served through Vite's transform pipeline, so
 TypeScript and CSS work identically without a build.
 
+Relative URLs resolve the way the browser resolves them: against the
+page's own location (or its `<base href>`). On `src/blog/[slug].ht.js`,
+built to `blog/hello/index.html`, `href="styles.css"` means
+`/blog/hello/styles.css` — not `src/styles.css`. Use root-relative URLs
+for anything shared between pages.
+
 ### Missing-asset validation
 
 Every generated page is checked: a `<script src="/x.js">` or stylesheet
 `href` pointing at a file that exists in neither `src/` nor `public/`
-**fails the build** with the exact paths that were checked. Prefer a
+**fails the build** with the exact paths that were checked. Relative
+URLs are checked where they resolve from that page, and the error
+suggests the root-relative URL when that is what was meant — or the
+`.ts` source, when a page asks for the `.js` it compiles to. Prefer a
 warning instead?
 
 ```js
