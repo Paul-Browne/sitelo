@@ -602,7 +602,9 @@ The rest of the family hands you the pieces: `stylesheet()` is the raw
 CSS as a string — for hosting the sheet where sitelo cannot reach, or
 writing it somewhere yourself — and `stylesUrl()` the href alone, for a
 `<link>` of your own carrying `media` or `integrity`, a `rel="preload"`
-hint, or a CSP.
+hint, or a CSP. Like every asset URL in a page it is written for the
+site root: under a Vite `base`, the dev server and the build put the
+base on a `<link>` for you, and a CSP needs it put in front by hand.
 
 ### Props
 

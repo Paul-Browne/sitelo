@@ -14,7 +14,7 @@ import { createHash } from 'node:crypto'
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { link, style } from 'javascript-to-html'
 
-import { uiClientBase } from './handlers.js'
+import { uiClientBase, withoutSiteBase } from './handlers.js'
 
 const CORE = new URL('./ui.css', import.meta.url)
 const EXTRAS = new URL('../ui-extras/', import.meta.url)
@@ -167,7 +167,11 @@ export function createSheet(name, source) {
   }
 
   /**
-   * The URL the sheet is served from.
+   * The URL the sheet is served from, as a `<link>` writes it: for the
+   * site root, like every asset URL in a page, since Vite's dev server
+   * and html-pages' build join the site's base onto it. Given the URL
+   * the browser asks for — `/repo/su/` on a site built for `/repo/` —
+   * the base comes off here, or it would be there twice.
    *
    * @param {object} [options]
    * @param {string} [options.base]
@@ -175,7 +179,7 @@ export function createSheet(name, source) {
    * @returns {string}
    */
   function stylesUrl({ base, hash = true } = {}) {
-    const root = base ?? uiClientBase()
+    const root = withoutSiteBase(base ?? uiClientBase())
 
     return `${root.endsWith('/') ? root : `${root}/`}${fileName({ hash })}`
   }

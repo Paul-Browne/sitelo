@@ -62,7 +62,11 @@ export function styles(options?: CoreStyleOptions): string
 /** The stylesheet as raw CSS, with a preset's appended if one is named. */
 export function stylesheet(options?: { minify?: boolean; preset?: Preset }): string
 
-/** The URL the stylesheet is served from, for a `<link>` of your own. */
+/**
+ * The URL the stylesheet is served from, for a `<link>` of your own —
+ * written for the site root, like every asset URL in a page: under a
+ * Vite `base`, the dev server and the build put the base on a `<link>`.
+ */
 export function stylesUrl(options?: StylesUrlOptions): string
 
 export interface ThemeOptions {
