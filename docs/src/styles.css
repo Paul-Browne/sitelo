@@ -1081,6 +1081,7 @@ a.feature-card:hover .feature-chip {
   max-width: 100%;
   margin: 0 auto;
   padding: 2rem var(--gutter) 3rem;
+  gap: 1rem;
   font-size: 0.875rem;
 }
 
