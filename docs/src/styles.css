@@ -331,6 +331,16 @@ code {
   gap: 0.25rem;
 }
 
+/*
+ * The page you are on is reversed out of the blue rather than the
+ * preset's ink, in the bar and the mobile menu alike. The primary's
+ * foreground clears 4.5:1 on the blue in both themes.
+ */
+.nav .su-nav-link[aria-current='page'] {
+  background: var(--accent);
+  color: var(--su-primary-fg);
+}
+
 /* Square controls at the end of the bar, the height of a caption. */
 .lang-switch {
   position: relative;
@@ -441,10 +451,10 @@ code {
   color: var(--ink);
 }
 
-/* What is chosen is ink, printed in reverse. */
+/* What is chosen is reversed out of the blue, like the page you are on. */
 .lang-option.is-active,
 .lang-option.is-active:hover {
-  background: var(--su-primary);
+  background: var(--accent);
   color: var(--su-primary-fg);
 }
 
@@ -1432,9 +1442,9 @@ a.feature-card:hover .feature-chip {
   color: var(--ink);
 }
 
-/* The page you are on, printed in reverse. */
+/* The page you are on, reversed out of the blue as in the bar. */
 .docs-side-nav a.is-active {
-  background: var(--su-primary);
+  background: var(--accent);
   color: var(--su-primary-fg);
 }
 
@@ -1589,10 +1599,12 @@ a.feature-card:hover .feature-chip {
   font-size: 0.85em;
 }
 
+/* Bullets are a small open triangle pointing into the line. */
 .docs-list {
   margin: 0 0 1.25rem;
   padding-left: 1.2rem;
   color: var(--ink-soft);
+  list-style-type: '\25B9\00a0';
 }
 
 .docs-list li {
@@ -2520,7 +2532,7 @@ a.feature-card:hover .feature-chip {
   }
 
   .docs-side-nav a.is-active {
-    border-color: var(--su-primary);
+    border-color: var(--accent);
   }
 
   .landing-sections {
