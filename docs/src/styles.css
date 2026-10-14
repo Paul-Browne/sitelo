@@ -1791,8 +1791,10 @@ a.feature-card:hover .feature-chip {
   background: var(--code-bg);
 }
 
+/* Not positioned: the caption below then hangs off the box around the block
+   rather than the block itself, so it stays put at the right, with the copy
+   button, while a long line scrolls under it. */
 .code {
-  position: relative;
   margin: 0;
   padding: 1.35rem 1.25rem 1.2rem;
   overflow-x: auto;
