@@ -303,7 +303,7 @@ function splitSiteloConfig(options) {
   } = options;
 
   if (vite != null && (typeof vite !== 'object' || Array.isArray(vite))) {
-    throw new Error('[sitelo] sitelo.config.js "vite" must be an object');
+    throw new Error('sitelo.config.js "vite" must be an object');
   }
 
   return {
@@ -338,7 +338,7 @@ async function loadSiteloConfig(root) {
 
   if (options && typeof options !== 'object') {
     throw new Error(
-      `[sitelo] ${path.basename(configFile)} must export a configuration object`,
+      `${path.basename(configFile)} must export a configuration object`,
     );
   }
 
@@ -373,7 +373,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
   if (pluginOptions && hasPluginInUserConfig) {
     const viteConfigLabel = configFile ?? 'vite.config.*';
     throw new Error(
-      `[sitelo] Found both plugin options in ${path.basename(siteloConfigFile)} and a Vite config (${viteConfigLabel}) that already registers ${PLUGIN_NAME}.\n` +
+      `Found both plugin options in ${path.basename(siteloConfigFile)} and a Vite config (${viteConfigLabel}) that already registers ${PLUGIN_NAME}.\n` +
         'Remove the plugin from vite.config or move its options into one place.',
     );
   }
@@ -969,6 +969,132 @@ async function runLighthouseAudit(cli) {
   });
 }
 
+/**
+ * Rolldown fails a build with one Error whose message strings together
+ * every error behind it, each under a `[plugin …]` header and followed
+ * by its full stack. Through sitelo that header names
+ * vite-plugin-html-pages and the stack is node_modules frames, so the
+ * report is rebuilt from the `errors` Rolldown keeps beside the message:
+ * sitelo's own plugin goes unnamed, anyone else's keeps its header, and
+ * stacks wait for --debug.
+ *
+ * The plugin itself keeps its name: `inspectUserViteConfig` and the
+ * plugin's module loader both find it by that name.
+ *
+ * @param {unknown} error
+ * @param {boolean} debug
+ * @returns {string | null} null for anything that is not a build failure
+ */
+function formatBuildFailure(error, debug) {
+  if (
+    !(error instanceof Error) ||
+    error instanceof AggregateError ||
+    !Array.isArray(/** @type {any} */ (error).errors) ||
+    /** @type {any} */ (error).errors.length === 0
+  ) {
+    return null;
+  }
+
+  /** @type {unknown[]} */
+  const errors = /** @type {any} */ (error).errors;
+  let stacksHidden = false;
+
+  const blocks = errors.map((entry) => {
+    const block = formatBuildError(entry, debug);
+    stacksHidden ||= block.stacksHidden;
+    return block.text;
+  });
+
+  let report =
+    blocks.length === 1
+      ? blocks[0]
+      : `Build failed with ${blocks.length} errors:\n\n${blocks.join('\n\n')}`;
+
+  if (stacksHidden) report += '\n\nStack traces are hidden; run with --debug to see them.';
+
+  return report;
+}
+
+/**
+ * One entry of a Rolldown build failure, laid out as Rolldown's own
+ * `getErrorMessage` does, minus the stack unless `debug`.
+ *
+ * @param {unknown} error
+ * @param {boolean} debug
+ * @returns {{ text: string, stacksHidden: boolean }}
+ */
+function formatBuildError(error, debug) {
+  if (typeof error !== 'object' || error === null) {
+    return { text: String(error), stacksHidden: false };
+  }
+
+  /** @type {Record<string, any>} */
+  const entry = error;
+
+  // Rolldown's own diagnostics (an unresolved import, a missing export)
+  // arrive fully formatted and without a stack.
+  if (Object.hasOwn(entry, 'kind')) {
+    return { text: String(entry.message), stacksHidden: false };
+  }
+
+  const lines = [];
+  let header =
+    entry.plugin && entry.plugin !== PLUGIN_NAME ? `[plugin ${entry.plugin}]` : '';
+  const id = entry.id ?? entry.loc?.file;
+
+  if (id) {
+    header += `${header ? ' ' : ''}${id}`;
+    if (entry.loc) header += `:${entry.loc.line}:${entry.loc.column}`;
+  }
+
+  if (header) lines.push(header);
+
+  // The line is about to be printed after sitelo's own prefix. Versions of
+  // vite-plugin-html-pages before 2.6.4 brand their missing-asset error
+  // with their own name rather than the display name.
+  const message = String(entry.message ?? '').replace(
+    /^\[(?:sitelo|vite-plugin-html-pages)\] /,
+    '',
+  );
+  const name = entry.name && entry.name !== 'Error' ? `${entry.name}: ` : '';
+
+  lines.push(`${name}${message}`);
+
+  if (entry.frame) lines.push(String(entry.frame).replace(/^\n+|\n+$/g, ''));
+
+  let stacksHidden = false;
+  const frames = stackFrames(entry.stack);
+
+  if (frames && debug) lines.push(frames);
+  else if (frames) stacksHidden = true;
+
+  if (entry.cause !== undefined) {
+    const cause = formatBuildError(entry.cause, debug);
+    stacksHidden ||= cause.stacksHidden;
+    lines.push(
+      'Caused by:',
+      cause.text.split('\n').map((line) => `  ${line}`).join('\n'),
+    );
+  }
+
+  return { text: lines.join('\n'), stacksHidden };
+}
+
+/**
+ * Everything in a stack from its first frame on, so a `Caused by:` the
+ * thrower appended to its stack stays with the frames it explains.
+ *
+ * @param {unknown} stack
+ * @returns {string}
+ */
+function stackFrames(stack) {
+  if (typeof stack !== 'string') return '';
+
+  const start = stack.search(/^[ \t]+at /m);
+
+  return start === -1 ? '' : stack.slice(start).replace(/\n+$/, '');
+}
+
 async function main() {
   let cli;
 
@@ -1012,10 +1138,18 @@ async function main() {
         throw new Error(`Unknown command: ${cli.command}`);
     }
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(`[sitelo] ${message}`);
-    if (cli.debug && error instanceof Error && error.stack) {
-      console.error(error.stack);
+    const buildFailure = formatBuildFailure(error, cli.debug);
+
+    if (buildFailure) {
+      // The wrapper's own stack is only Rolldown collecting the errors
+      // above, each of which already carries its stack under --debug.
+      console.error(`[sitelo] ${buildFailure}`);
+    } else {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`[sitelo] ${message}`);
+      if (cli.debug && error instanceof Error && error.stack) {
+        console.error(error.stack);
+      }
     }
     process.exit(1);
   }

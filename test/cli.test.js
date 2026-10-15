@@ -221,10 +221,17 @@ export default defineConfig({
   );
 
   try {
-    await assert.rejects(
-      () => runBuild(fixtureDir),
-      /Found both plugin options in sitelo\.config\.js/,
+    const failure = await runBuild(fixtureDir).then(
+      () => null,
+      (error) => error,
     );
+
+    assert.ok(failure, 'expected the build to fail');
+
+    const output = `${failure.stdout ?? ''}${failure.stderr ?? ''}`;
+
+    assert.match(output, /\[sitelo\] Found both plugin options in sitelo\.config\.js/);
+    assert.doesNotMatch(output, /\[sitelo\] \[sitelo\]/);
   } finally {
     fs.rmSync(viteConfigPath, { force: true });
     fs.rmSync(distDir, { recursive: true, force: true });
@@ -399,20 +406,22 @@ test('config errors carry exactly one [sitelo] prefix', async (t) => {
   // bin/sitelo.js prefixes anything it reports, so modules on that path
   // must not prefix their own thrown messages.
   const cases = [
-    ['pagefind: "nonsense"', /"pagefind" must be true or an object/],
-    ['buildReport: { top: -1 }', /"buildReport.top" must be a non-negative integer/],
-    ['linkCheck: "loud"', /"linkCheck.mode" must be 'warn' or 'error'/],
+    ['{ pagefind: "nonsense" }', /"pagefind" must be true or an object/],
+    ['{ buildReport: { top: -1 } }', /"buildReport.top" must be a non-negative integer/],
+    ['{ linkCheck: "loud" }', /"linkCheck.mode" must be 'warn' or 'error'/],
+    ['{ vite: "nope" }', /sitelo\.config\.js "vite" must be an object/],
+    ['42', /sitelo\.config\.js must export a configuration object/],
   ];
 
-  for (const [option, expected] of cases) {
-    fs.writeFileSync(configPath, `export default { ${option} }\n`);
+  for (const [config, expected] of cases) {
+    fs.writeFileSync(configPath, `export default ${config}\n`);
 
     const failure = await runBuild(fixtureDir).then(
       () => null,
       (error) => error,
     );
 
-    assert.ok(failure, `expected { ${option} } to fail the build`);
+    assert.ok(failure, `expected ${config} to fail the build`);
 
     const output = `${failure.stdout ?? ''}${failure.stderr ?? ''}`;
 
@@ -420,7 +429,7 @@ test('config errors carry exactly one [sitelo] prefix', async (t) => {
     assert.doesNotMatch(
       output,
       /\[sitelo\] \[sitelo\]/,
-      `doubled prefix for { ${option} }`,
+      `doubled prefix for ${config}`,
     );
     assert.match(output, new RegExp(`\\[sitelo\\] ${expected.source}`));
   }
@@ -455,6 +464,48 @@ test('a mistyped command or a stray argument fails instead of starting a server'
     assert.equal(result.code, 1, `sitelo ${args.join(' ')} exits 1`);
     assert.match(result.output, expected);
   }
+});
+
+test('a failed build reports in sitelo\'s name, with stacks only under --debug', async (t) => {
+  const pagePath = path.join(fixtureDir, 'src', 'index.ht.js');
+  const originalPage = fs.readFileSync(pagePath, 'utf8');
+
+  const cleanup = () => {
+    fs.writeFileSync(pagePath, originalPage);
+    fs.rmSync(distDir, { recursive: true, force: true });
+    fs.rmSync(path.join(fixtureDir, '.sitelo'), {
+      recursive: true,
+      force: true,
+    });
+  };
+
+  cleanup();
+  t.after(cleanup);
+
+  fs.writeFileSync(
+    pagePath,
+    'export default () => `<html><head><script type="module" src="/js/missing.js"></script></head><body></body></html>`\n',
+  );
+
+  const plain = await runCli(['build']);
+
+  assert.equal(plain.code, 1);
+  assert.match(
+    plain.output,
+    /\[sitelo\] Missing JavaScript asset \(src\/index\.ht\.js\): \/js\/missing\.js/,
+  );
+  assert.doesNotMatch(plain.output, /\[sitelo\] \[sitelo\]/);
+  assert.doesNotMatch(plain.output, /vite-plugin-html-pages/);
+  assert.doesNotMatch(plain.output, /node_modules/);
+  assert.doesNotMatch(plain.output, /^\s+at /m);
+  assert.match(plain.output, /--debug/);
+
+  const debug = await runCli(['build', '--debug']);
+
+  assert.equal(debug.code, 1);
+  assert.match(debug.output, /\[sitelo\] Missing JavaScript asset/);
+  assert.doesNotMatch(debug.output, /\[plugin vite-plugin-html-pages\]/);
+  assert.match(debug.output, /^\s+at .*node_modules/m);
 });
 
 test('a logLevel set in vite.config reaches the logger', async (t) => {
