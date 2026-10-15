@@ -303,7 +303,7 @@ function splitSiteloConfig(options) {
   } = options;
 
   if (vite != null && (typeof vite !== 'object' || Array.isArray(vite))) {
-    throw new Error('[sitelo] sitelo.config.js "vite" must be an object');
+    throw new Error('sitelo.config.js "vite" must be an object');
   }
 
   return {
@@ -338,7 +338,7 @@ async function loadSiteloConfig(root) {
 
   if (options && typeof options !== 'object') {
     throw new Error(
-      `[sitelo] ${path.basename(configFile)} must export a configuration object`,
+      `${path.basename(configFile)} must export a configuration object`,
     );
   }
 
@@ -373,7 +373,7 @@ async function resolveSiteloConfig({ root, configFile, command, mode, debug }) {
   if (pluginOptions && hasPluginInUserConfig) {
     const viteConfigLabel = configFile ?? 'vite.config.*';
     throw new Error(
-      `[sitelo] Found both plugin options in ${path.basename(siteloConfigFile)} and a Vite config (${viteConfigLabel}) that already registers ${PLUGIN_NAME}.\n` +
+      `Found both plugin options in ${path.basename(siteloConfigFile)} and a Vite config (${viteConfigLabel}) that already registers ${PLUGIN_NAME}.\n` +
         'Remove the plugin from vite.config or move its options into one place.',
     );
   }
