@@ -457,6 +457,48 @@ test('a mistyped command or a stray argument fails instead of starting a server'
   }
 });
 
+test('a failed build reports in sitelo\'s name, with stacks only under --debug', async (t) => {
+  const pagePath = path.join(fixtureDir, 'src', 'index.ht.js');
+  const originalPage = fs.readFileSync(pagePath, 'utf8');
+
+  const cleanup = () => {
+    fs.writeFileSync(pagePath, originalPage);
+    fs.rmSync(distDir, { recursive: true, force: true });
+    fs.rmSync(path.join(fixtureDir, '.sitelo'), {
+      recursive: true,
+      force: true,
+    });
+  };
+
+  cleanup();
+  t.after(cleanup);
+
+  fs.writeFileSync(
+    pagePath,
+    'export default () => `<html><head><script type="module" src="/js/missing.js"></script></head><body></body></html>`\n',
+  );
+
+  const plain = await runCli(['build']);
+
+  assert.equal(plain.code, 1);
+  assert.match(
+    plain.output,
+    /\[sitelo\] Missing JavaScript asset \(src\/index\.ht\.js\): \/js\/missing\.js/,
+  );
+  assert.doesNotMatch(plain.output, /\[sitelo\] \[sitelo\]/);
+  assert.doesNotMatch(plain.output, /vite-plugin-html-pages/);
+  assert.doesNotMatch(plain.output, /node_modules/);
+  assert.doesNotMatch(plain.output, /^\s+at /m);
+  assert.match(plain.output, /--debug/);
+
+  const debug = await runCli(['build', '--debug']);
+
+  assert.equal(debug.code, 1);
+  assert.match(debug.output, /\[sitelo\] Missing JavaScript asset/);
+  assert.doesNotMatch(debug.output, /\[plugin vite-plugin-html-pages\]/);
+  assert.match(debug.output, /^\s+at .*node_modules/m);
+});
+
 test('a logLevel set in vite.config reaches the logger', async (t) => {
   const viteConfig = path.join(fixtureDir, 'vite.config.mjs');
 
