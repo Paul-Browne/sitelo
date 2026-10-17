@@ -508,6 +508,45 @@ test('a failed build reports in sitelo\'s name, with stacks only under --debug',
   assert.match(debug.output, /^\s+at .*node_modules/m);
 });
 
+test('a JSON file that does not parse is named, not [object Object]', async (t) => {
+  const pagePath = path.join(fixtureDir, 'src', 'index.ht.js');
+  const dataPath = path.join(fixtureDir, 'src', 'data.json');
+  const originalPage = fs.readFileSync(pagePath, 'utf8');
+
+  const cleanup = () => {
+    fs.writeFileSync(pagePath, originalPage);
+    fs.rmSync(dataPath, { force: true });
+    fs.rmSync(distDir, { recursive: true, force: true });
+    fs.rmSync(path.join(fixtureDir, '.sitelo'), {
+      recursive: true,
+      force: true,
+    });
+  };
+
+  cleanup();
+  t.after(cleanup);
+
+  fs.writeFileSync(dataPath, '{ "a": 1, }\n');
+  fs.writeFileSync(
+    pagePath,
+    "import data from './data.json';\nexport default () => `<html lang=\"en\"><head><title>x</title></head><body>${data.a}</body></html>`\n",
+  );
+
+  for (const args of [['build'], ['build', '--debug']]) {
+    const result = await runCli(args);
+
+    assert.equal(result.code, 1, `sitelo ${args.join(' ')} exits 1`);
+    // Rolldown hands over the transform's options as the failing id, and
+    // the Vite fork's plugin container puts the file back.
+    assert.match(
+      result.output,
+      /\[sitelo\] .*src[\\/]data\.json\ntrailing comma at line 1 column 11/,
+    );
+    assert.doesNotMatch(result.output, /\[object Object\]/);
+    assert.doesNotMatch(result.output, /\[sitelo\] \[sitelo\]/);
+  }
+});
+
 test('a logLevel set in vite.config reaches the logger', async (t) => {
   const viteConfig = path.join(fixtureDir, 'vite.config.mjs');
 
