@@ -1040,7 +1040,11 @@ function formatBuildError(error, debug) {
   const lines = [];
   let header =
     entry.plugin && entry.plugin !== PLUGIN_NAME ? `[plugin ${entry.plugin}]` : '';
-  const id = entry.id ?? entry.loc?.file;
+  // Rolldown's wrapper around its native plugins records a failed
+  // transform's options (`{ moduleType, ssr, inMap }`) as the id. The
+  // Vite fork's plugin container puts the module back, but an id that is
+  // still not a string names nothing worth printing.
+  const id = [entry.id, entry.loc?.file].find((value) => typeof value === 'string');
 
   if (id) {
     header += `${header ? ' ' : ''}${id}`;
