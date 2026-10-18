@@ -59,7 +59,9 @@ import { docNav, exampleNav, hasUiSection, uiExtrasNav, uiNav } from './nav.js'
 import { OG_IMAGE, SITE_NAME, SITE_URL, structuredData } from './seo.js'
 
 const require = createRequire(import.meta.url)
-const viteVersion = require('vite/package.json').version
+// Hardcoded: `vite` resolves to the @paul-browne/vite fork, whose own
+// version numbers run ahead of the upstream release it tracks.
+const viteVersion = '8.3.4'
 const siteloVersion = require('../../../package.json').version
 
 const viteBolt = `<svg class="badge-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 11-13h-8z"/></svg>`
