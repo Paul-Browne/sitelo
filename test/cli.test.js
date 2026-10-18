@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { execFile, spawn } from 'node:child_process';
 import fs from 'node:fs';
+import http from 'node:http';
 import net from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -448,6 +449,38 @@ async function runCli(args, cwd = fixtureDir) {
   );
 }
 
+/**
+ * Start `sitelo dev` or `sitelo preview` on a free port, stopped when the
+ * test ends, and resolve with its URL once it answers.
+ */
+async function startServer(t, command) {
+  const port = await new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.once('error', reject);
+    server.listen(0, () => {
+      const { port: free } = server.address();
+      server.close(() => resolve(free));
+    });
+  });
+
+  const child = spawn(
+    process.execPath,
+    [cliPath, command, '--port', String(port), '--strictPort', '--logLevel', 'error'],
+    { cwd: fixtureDir, env: process.env, stdio: 'ignore' },
+  );
+  t.after(() => child.kill('SIGTERM'));
+
+  const base = `http://localhost:${port}`;
+  const deadline = Date.now() + 15_000;
+  while (Date.now() < deadline) {
+    const up = await fetch(`${base}/`).then(() => true, () => false);
+    if (up) break;
+    await new Promise((resolve) => setTimeout(resolve, 150));
+  }
+
+  return base;
+}
+
 test('a mistyped command or a stray argument fails instead of starting a server', async () => {
   const cases = [
     [['biuld'], /\[sitelo\] Unknown command: biuld \(expected dev, build, preview, lighthouse/],
@@ -591,28 +624,7 @@ test('sitelo preview resolves the config in production mode, like the build', as
     `import fs from 'node:fs'\nexport default ({ command, mode }) => { fs.appendFileSync(${JSON.stringify(modes)}, \`\${command} \${mode}\\n\`); return {} }\n`,
   );
 
-  const port = await new Promise((resolve, reject) => {
-    const server = net.createServer();
-    server.once('error', reject);
-    server.listen(0, () => {
-      const { port: free } = server.address();
-      server.close(() => resolve(free));
-    });
-  });
-
-  const child = spawn(
-    process.execPath,
-    [cliPath, 'preview', '--port', String(port), '--strictPort', '--logLevel', 'error'],
-    { cwd: fixtureDir, env: process.env, stdio: 'ignore' },
-  );
-  t.after(() => child.kill('SIGTERM'));
-
-  const deadline = Date.now() + 15_000;
-  while (Date.now() < deadline) {
-    const up = await fetch(`http://localhost:${port}/`).then(() => true, () => false);
-    if (up) break;
-    await new Promise((resolve) => setTimeout(resolve, 150));
-  }
+  await startServer(t, 'preview');
 
   const resolved = fs.readFileSync(modes, 'utf8').trim().split('\n')
   assert.ok(resolved.length > 0)
@@ -620,5 +632,35 @@ test('sitelo preview resolves the config in production mode, like the build', as
     [...new Set(resolved)],
     ['serve production'],
     'every resolution of the config is in production mode',
+  );
+});
+
+test('Vite\'s hints point at sitelo.config.js, not vite.config.js', async (t) => {
+  const base = await startServer(t, 'dev');
+
+  // The error overlay's tip ("You can also disable this overlay by setting
+  // …"), which the client is served with.
+  const client = await fetch(`${base}/@vite/client`).then((response) => response.text());
+  assert.match(client, /"vite\.server\.hmr\.overlay"/);
+  assert.match(client, /"sitelo\.config\.js"/);
+  assert.doesNotMatch(client, /vite\.config\.js/);
+
+  // The blocked-host error. fetch() would send its own Host header.
+  const blocked = await new Promise((resolve, reject) => {
+    http
+      .get(`${base}/`, { headers: { host: 'example.com' } }, (response) => {
+        let body = '';
+        response.setEncoding('utf8');
+        response.on('data', (chunk) => {
+          body += chunk;
+        });
+        response.on('end', () => resolve({ status: response.statusCode, body }));
+      })
+      .on('error', reject);
+  });
+  assert.equal(blocked.status, 403);
+  assert.match(
+    blocked.body,
+    /add "example\.com" to `vite\.server\.allowedHosts` in sitelo\.config\.js/,
   );
 });

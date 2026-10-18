@@ -724,6 +724,10 @@ function buildInlineConfig(cli, command, viteFromSitelo = {}, viteLogging = {}) 
    */
   const siteloDefaults = {
     displayName: 'sitelo',
+    // Vite's own hints (the error overlay's tip, the blocked-host error)
+    // name the option to change. Point them at sitelo.config.js `vite`,
+    // where sitelo users set it, rather than vite.config.js.
+    configHint: { file: 'sitelo.config.js', key: 'vite' },
     build: { rollupOptions: { checks: { pluginTimings: false } } },
   };
 
