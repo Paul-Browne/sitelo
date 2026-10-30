@@ -197,11 +197,8 @@ Then the `dist/` folder: `index.html`, `about/index.html`, `404.html`,
 npm run preview
 ```
 
-**Say:** `preview` serves `dist/` the way a static host would.
-
-> ⚠️ Before recording, fix the `sitelo preview` clean-URL bug (see the
-> README). Until then `/about` in preview shows the home page. Only
-> `/about/` works.
+**Say:** `preview` serves `dist/` the way a static host would: `/about`
+lands on `about/index.html`, and a URL with no page gets the 404.
 
 ## Recap (9:30–10:00)
 

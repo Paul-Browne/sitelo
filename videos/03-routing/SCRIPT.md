@@ -2,16 +2,16 @@
 
 **Length:** ~14 min · **Starts from:** `02-data` · **Ends at:** this folder
 
-Four pages become 122. Every recipe gets its own page, cuisines get a
+Four pages become 121. Every recipe gets its own page, cuisines get a
 drill-down (`/cuisines/italian/dinner`), and the site gains a 404 page, a
 sitemap and a link checker.
 
 ## YouTube
 
-**Title:** File-based routing, from one page to 122 (sitelo, ep. 3)
+**Title:** File-based routing, from one page to 121 (sitelo, ep. 3)
 
-**Description:** Dynamic routes, generateStaticParams, catch-all routes,
-route groups and a custom 404, all from file names. Then we turn on the
+**Description:** Dynamic routes, generateStaticParams, optional catch-all
+routes, route groups and a custom 404, all from file names. Then we turn on the
 sitemap and a link checker that fails the build on a dead link.
 
 **Chapters**
@@ -23,7 +23,7 @@ sitemap and a link checker that fails the build on a dead link.
 3:00 A page per recipe: [slug]
 5:30 Dev renders anything, build renders what you list
 6:30 Static beats dynamic
-7:45 Cuisines: a catch-all route
+7:45 Cuisines: an optional catch-all
 10:30 Route groups and a 404
 11:45 Sitemap and link checking
 13:30 Next time
@@ -38,8 +38,7 @@ sitemap and a link checker that fails the build on a dead link.
 | `recipes/index.ht.js` | `/recipes` |
 | `recipes/[slug].ht.js` | `/recipes/classic-margherita-pizza` |
 | `recipes/quick.ht.js` | `/recipes/quick` |
-| `cuisines/index.ht.js` | `/cuisines` |
-| `cuisines/[...path].ht.js` | `/cuisines/italian`, `/cuisines/italian/dinner` |
+| `cuisines/[...path]?.ht.js` | `/cuisines`, `/cuisines/italian`, `/cuisines/italian/dinner` |
 | `(legal)/privacy.ht.js` | `/privacy` |
 | `404.ht.js` | `404.html` |
 
@@ -114,13 +113,14 @@ the recipes page.
 always wins over a parameter, and a parameter wins over a catch-all. Two
 files writing the same URL is a build error, not a silent overwrite.
 
-## 7. Cuisines: a catch-all route (7:45–10:30)
+## 7. Cuisines: an optional catch-all (7:45–10:30)
 
 **Do:**
 - Create `src/lib/cuisines.js` (in this folder): recipes grouped by
   cuisine, then by meal type.
-- Create `src/cuisines/index.ht.js`: every cuisine with a count.
-- Create `src/cuisines/[...path].ht.js`.
+- Create `src/cuisines/[...path]?.ht.js`. Build it in two steps: the
+  cuisine and meal pages first, then `/cuisines` itself, every cuisine with
+  a count.
 - Add Cuisines to the nav, and link the cuisine and meal types on the
   recipe page.
 
@@ -129,16 +129,14 @@ files writing the same URL is a build error, not a silent overwrite.
 **Say:**
 - Three dots make a catch-all. `params.path` is an array:
   `['italian']` or `['italian', 'dinner']`.
-- One file serves two depths. `generateStaticParams` returns both kinds:
-  `{ path: ['italian'] }` and `{ path: ['italian', 'dinner'] }`.
-- Destructuring the array reads like the URL:
-  `const [cuisineSlug, mealSlug] = params.path`.
-
-> ⚠️ sitelo documents an optional catch-all, `[...path]?.ht.js`, that would
-> serve `/cuisines` from the same file. It doesn't build in 2.9.13 (see the
-> README), so this episode uses `index.ht.js` beside the catch-all. If the
-> fix ships first, it's a nice 30-second aside: rename the file and delete
-> `index.ht.js`.
+- The `?` makes it optional: the file also serves `/cuisines`, where
+  there's no path at all. Without it, `/cuisines` would need its own
+  `index.ht.js`.
+- One file serves three depths. `generateStaticParams` returns all three:
+  `{ path: [] }`, `{ path: ['italian'] }` and
+  `{ path: ['italian', 'dinner'] }`.
+- Destructuring the array reads like the URL, with an empty one for
+  `/cuisines`: `const [cuisineSlug, mealSlug] = params.path ?? []`.
 
 ## 8. Route groups and a 404 (10:30–11:45)
 
@@ -171,9 +169,9 @@ npm run build
 **Show:**
 
 ```
-[sitelo] checked 1340 internal links - all good
+[sitelo] checked 1332 internal links - all good
 
-  pages   122 files  206.0 kB
+  pages   121 files  205.1 kB
 ```
 
 and `dist/sitemap.xml`.
@@ -189,7 +187,7 @@ and `dist/sitemap.xml`.
 ```
 
 Put it back. (Don't break a nav link for this: that's one broken link on
-each of 122 pages, and the list scrolls for a while.)
+each of 121 pages, and the list scrolls for a while.)
 
 **Say:**
 - `site` turns on `sitemap.xml`. We set the real URL when we deploy in
@@ -197,14 +195,11 @@ each of 122 pages, and the list scrolls for a while.)
 - The link checker reads the built HTML, so it sees exactly what a visitor
   could click, catch-all pages included.
 
-> ⚠️ With a custom `404.ht.js`, 2.9.13 also writes `dist/404/index.html`
-> and lists `/404` in the sitemap. Fix it first, or don't zoom into the
-> sitemap.
-
 ## Recap (13:30–14:00)
 
 - The file name is the route: `[slug]` for a parameter, `[...path]` for
-  any depth, `(group)` for folders that don't count.
+  any depth, `[...path]?` for any depth including none, `(group)` for
+  folders that don't count.
 - `generateStaticParams` decides what the build writes. Dev renders
   anything.
 - `site` gives you a sitemap; `linkCheck: 'error'` keeps links honest.
@@ -218,8 +213,7 @@ islands let one part of a static page render fresh on every request.
 src/recipes.ht.js → src/recipes/index.ht.js   moved
 src/recipes/[slug].ht.js                     new
 src/recipes/quick.ht.js                      new
-src/cuisines/index.ht.js                     new
-src/cuisines/[...path].ht.js                 new
+src/cuisines/[...path]?.ht.js                new
 src/(legal)/privacy.ht.js, terms.ht.js       new
 src/404.ht.js                                new
 src/lib/slug.js, cuisines.js                 new

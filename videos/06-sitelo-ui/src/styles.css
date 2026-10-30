@@ -18,14 +18,6 @@ body {
   border-radius: var(--su-radius-lg);
 }
 
-/* TODO(Paul): two sitelo-ui fixes to drop once they ship.
-   .su-card-media needs `height: auto`, or the height="1000" that image
-   optimization adds wins over the card's aspect-ratio.
-   Footer links are 17px tall with 4px between them, under the 24px
-   target size Lighthouse checks for. */
-.su-card-media { height: auto; }
-.su-footer-links a { display: inline-block; padding-block: 0.25rem; }
-
 .recipe { max-width: 48rem; }
 .recipe-image { aspect-ratio: 16 / 9; object-fit: cover; }
 

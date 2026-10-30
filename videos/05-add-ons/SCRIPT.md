@@ -95,7 +95,7 @@ sit under "Top rated". On the listing pages they come straight after the
 `h1`. A screen reader user jumping by heading skips a level.
 
 **Do:** give each grid a heading. In `src/recipes/index.ht.js`,
-`src/recipes/quick.ht.js` and `src/cuisines/[...path].ht.js`, the count
+`src/recipes/quick.ht.js` and `src/cuisines/[...path]?.ht.js`, the count
 becomes an `h2`:
 
 ```js
@@ -332,7 +332,7 @@ src/index.ht.js             hero: sizes, eager, fetchpriority
 src/recipes/[slug].ht.js    pagefind body, filters and image; eager image
 src/recipes/index.ht.js     h2 above the grid
 src/recipes/quick.ht.js     h2 above the grid
-src/cuisines/[...path].ht.js  h2 above the grid
+src/cuisines/[...path]?.ht.js h2 above the grid
 src/styles.css              Pagefind colours
 package.json                lighthouse, sharp, pagefind, knip; scripts
 .gitignore                  public/pagefind/

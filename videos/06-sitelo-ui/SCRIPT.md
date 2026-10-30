@@ -146,11 +146,6 @@ and use `recipeGrid(recipes)` on every listing page.
   one recipe gets one card-sized card, not one stretched across the page.
 - Children are still raw HTML, so escaping still matters.
 
-> ⚠️ In 2.9.13 the card images come out 1000px tall, because the image
-> optimizer adds `height="1000"` and `.su-card-media` has no
-> `height: auto`. This folder's `styles.css` works around it (marked
-> `TODO(Paul)`). Fix sitelo-ui before recording and drop the workaround.
-
 ## 5. The home page hero (6:45–8:00)
 
 **Do:** in `src/index.ht.js` (final version in this folder):
@@ -233,7 +228,7 @@ npm run build
 ```
 
 **Show:** the stylesheet in `dist/su/`. On the recording machine: 67 kB
-(11.8 kB gzipped) for the whole library, 26.6 kB (5.3 kB gzipped) pruned.
+(11.8 kB gzipped) for the whole library, 26.7 kB (5.3 kB gzipped) pruned.
 
 **Then:** `npm run preview`, open a recipe page, scroll to the comments:
 unstyled.
@@ -255,11 +250,6 @@ Build again: comments are styled.
 
 **Do:** finish with `npx sitelo lighthouse`. Still 100s.
 
-> ⚠️ In 2.9.13 the footer from `ui.siteFooter` fails Lighthouse's
-> `target-size` audit on mobile (accessibility 95): its links are 17px tall
-> with 4px between them. This folder's `styles.css` works around it. Fix
-> sitelo-ui before recording and drop the workaround.
-
 ## Recap (14:30–15:00)
 
 - `import * as ui from 'sitelo/ui'`, `ui.styles()` in the head, then
@@ -278,7 +268,7 @@ src/lib/theme.js                  new: orange palette, light and dark
 src/lib/recipe-card.js            ui.card, recipeGrid
 src/index.ht.js                   hero, sections
 src/recipes/*.ht.js               components throughout
-src/cuisines/*.ht.js              photo cards, chips, breadcrumbs
+src/cuisines/[...path]?.ht.js     photo cards, chips, breadcrumbs
 src/about.ht.js, (legal)/*        ui.prose
 src/404.ht.js                     ui.empty
 src/search.ht.js                  components

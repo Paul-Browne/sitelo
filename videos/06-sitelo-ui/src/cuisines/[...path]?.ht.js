@@ -4,12 +4,14 @@ import { escapeHtml } from '../lib/escape.js'
 import { layout } from '../lib/layout.js'
 import { recipeGrid } from '../lib/recipe-card.js'
 
-// One file, any depth below /cuisines:
+// One file, every depth of /cuisines:
+//   /cuisines                 params.path = [] (or missing)
 //   /cuisines/italian         params.path = ['italian']
 //   /cuisines/italian/dinner  params.path = ['italian', 'dinner']
 export async function generateStaticParams() {
   const cuisines = await getCuisines()
   return [
+    { path: [] },
     ...cuisines.map((cuisine) => ({ path: [cuisine.slug] })),
     ...cuisines.flatMap((cuisine) =>
       cuisine.meals.map((meal) => ({ path: [cuisine.slug, meal.slug] })),
@@ -18,8 +20,9 @@ export async function generateStaticParams() {
 }
 
 export async function data({ params }) {
-  const [cuisineSlug, mealSlug, ...rest] = params.path
+  const [cuisineSlug, mealSlug, ...rest] = params.path ?? []
   const cuisines = await getCuisines()
+  if (!cuisineSlug) return { cuisines }
 
   const cuisine = cuisines.find((cuisine) => cuisine.slug === cuisineSlug)
   if (!cuisine || rest.length > 0) throw new Error(`No such page: /cuisines/${params.path.join('/')}`)
@@ -30,7 +33,28 @@ export async function data({ params }) {
   return { cuisine, meal }
 }
 
-export default ({ page, data: { cuisine, meal } }) => {
+// /cuisines itself: every cuisine, with a count
+const cuisineIndex = (page, cuisines) =>
+  layout({ title: 'Cuisines', description: 'Browse recipes by cuisine.', path: page.routePath },
+    ui.stack({ gap: 'lg', class: 'section' },
+      ui.heading({ level: 1 }, 'Cuisines'),
+      ui.grid({ columns: 'repeat(auto-fill, minmax(min(100%, 12rem), 1fr))', gap: 'md' },
+        cuisines.map((cuisine) =>
+          ui.card({ href: `/cuisines/${cuisine.slug}` },
+            ui.cardMedia({ src: cuisine.recipes[0].image, alt: '', ratio: '1', sizes: '12rem' }),
+            ui.cardHeader({
+              title: escapeHtml(cuisine.name),
+              subtitle: `${cuisine.recipes.length} ${cuisine.recipes.length === 1 ? 'recipe' : 'recipes'}`,
+            }),
+          ),
+        ),
+      ),
+    ),
+  )
+
+export default ({ page, data: { cuisines, cuisine, meal } }) => {
+  if (cuisines) return cuisineIndex(page, cuisines)
+
   const recipes = meal ? meal.recipes : cuisine.recipes
   const name = meal ? `${cuisine.name} ${meal.name.toLowerCase()}` : cuisine.name
 

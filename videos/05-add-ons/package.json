@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "javascript-to-html": "^1.2.0",
-    "sitelo": "^2.9.13"
+    "sitelo": "^2.9.15"
   },
   "devDependencies": {
     "knip": "^6.44.0",

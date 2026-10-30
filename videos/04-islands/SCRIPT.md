@@ -165,10 +165,6 @@ preview.
 - `sitelo preview` serves islands from `src/islands/` too. A static host
   can't run them on its own. Episode 7 adds the small function that does.
 
-> ⚠️ Until the preview clean-URL bug is fixed (see the README), open recipe
-> pages in preview with a trailing slash, e.g.
-> `/recipes/classic-margherita-pizza/`.
-
 ## Recap (11:30–12:00)
 
 - Islands are functions in `src/islands/` that render on the server, per
