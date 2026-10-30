@@ -34,7 +34,7 @@ rather than its posts:
   episode 5 has real images to optimize. Posts have none.
 - **Things to route on.** 50 recipes across 21 cuisines and 9 meal types
   give episode 3 a natural catch-all (`/cuisines/italian/dinner`).
-- **Small enough to build fast.** The full site is 122 pages and builds in
+- **Small enough to build fast.** The full site is 121 pages and builds in
   well under a second once the cache is warm.
 - **Something to fetch at request time.** `/recipes/meal-type/{meal}` and
   `/comments/post/{id}` (0–5 comments per recipe, so the empty state shows
@@ -44,47 +44,23 @@ rather than its posts:
 The data has real-world wrinkles worth leaving in. "Snack" and "Snacks" are
 both meal types, and "Cocktail" and "Smoothie" are cuisines.
 
-## Before recording
+## Bugs the series turned up
 
-Building this series turned up some sitelo bugs. Four of them show on
-camera, so fix them (or plan around them) first:
+Building the series turned up seven sitelo bugs, all fixed in sitelo 2.9.15
+(with vite-plugin-html-pages 2.6.5), which every snapshot uses:
 
-1. **`sitelo preview` serves the home page for every clean URL.** `/about`,
-   `/recipes` and `/nope` all return `index.html` with a 200. Only
-   `/about/` works. `previewInlineConfig` in `bin/sitelo.js` keeps Vite's
-   default `appType: 'spa'`, whose fallback never tries `about/index.html`.
-   `sitelo lighthouse` already does the right thing (`appType: 'mpa'` plus
-   `staticHostPlugin` in `src/lighthouse.js`). Episodes 1, 4 and 5 use
-   `npm run preview`.
-2. **Optional catch-all routes don't build.** `src/cuisines/[...path]?.ht.js`
-   fails with `Failed to load url /src/cuisines/[...path]?.ht.js`, because
-   vite-plugin-html-pages passes the file path to Vite's module runner,
-   which reads the `?` as a query string. Encoding it as `%3F` doesn't help.
-   Episode 3 uses `cuisines/index.ht.js` plus `cuisines/[...path].ht.js`
-   instead, and does not mention optional catch-alls.
-3. **sitelo-ui card images stretch once images are optimized.** The
-   optimizer adds `width`/`height` attributes, and `.su-card-media` sets
-   `aspect-ratio` without `height: auto`, so every card image renders 1000px
-   tall.
-4. **sitelo-ui footer links fail Lighthouse's `target-size` audit.**
-   `.su-footer-links` puts a 4px gap between 17px-tall links, under WCAG
-   2.2's 24px minimum, so the README's own `siteFooter` example scores 95
-   for accessibility on mobile.
+- `sitelo preview` served the home page for every clean URL.
+- Optional catch-alls (`[...path]?.ht.js`) didn't build. Episode 3 now
+  uses one for `/cuisines`.
+- sitelo-ui card images stretched to 1000px once images were optimized.
+- sitelo-ui footer links failed Lighthouse's `target-size` audit.
+- A custom `404.ht.js` was also written to `dist/404/index.html`, and `/404`
+  was listed in `sitemap.xml`.
+- `fetchWithCache` cached to `node_modules/.cache/vite-plugin-html-pages/`
+  instead of the documented `node_modules/.cache/sitelo/`.
+- `sitelo build --logLevel silent` still printed image progress lines.
 
-`06-sitelo-ui/src/styles.css` and `07-deploy/src/styles.css` carry a
-two-line workaround for 3 and 4, marked `TODO(Paul)`. Delete it once
-`ui.css` has the fixes. Episode 6 runs Lighthouse on camera, and without
-the fix the footer fails it.
-
-Smaller things noticed along the way:
-
-- With the default `cleanUrls`, a custom `src/404.ht.js` is also written to
-  `dist/404/index.html`, and `/404` is listed in `sitemap.xml`.
-- The README and `skills/sitelo/references/data.md` say `fetchWithCache`
-  persists to `node_modules/.cache/sitelo/fetch/`. It actually writes to
-  `node_modules/.cache/vite-plugin-html-pages/fetch/`.
-- `sitelo build --logLevel silent` still prints the `[sitelo] images: n/123
-  pages…` progress lines.
+So record with 2.9.15 or later.
 
 ## Recording setup
 
@@ -102,7 +78,7 @@ Smaller things noticed along the way:
 - The islands print the server's local time, so record episode 4 at a time
   of day whose meal you want on screen (before 11:00 breakfast, before
   15:00 lunch, before 17:00 snack, otherwise dinner).
-- Every snapshot was built and checked on 2026-10-30 with sitelo 2.9.13.
+- Every snapshot was built and checked on 2026-10-31 with sitelo 2.9.15.
   Episodes 5–7 pass knip and their Lighthouse thresholds, and every
   lockfile passes `npm ci`.
 

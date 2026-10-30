@@ -130,7 +130,7 @@ npm run build
 300 ms and the second about 70 ms, with no network the second time.
 
 ```bash
-ls node_modules/.cache/vite-plugin-html-pages/fetch
+ls node_modules/.cache/sitelo/fetch
 ```
 
 **Say:**
@@ -138,10 +138,6 @@ ls node_modules/.cache/vite-plugin-html-pages/fetch
   dev it's kept in memory.
 - Error responses are never cached, so one flaky build doesn't poison the
   next one.
-
-> ⚠️ The README says the disk cache is `node_modules/.cache/sitelo/fetch`.
-> It's really `node_modules/.cache/vite-plugin-html-pages/fetch`. Fix the
-> docs (or the folder) before recording, and use whichever is right.
 
 **Aside (optional, 20 s):** if your content lives in the repo rather than
 an API, `readJson` and `readJsonCollection` from `sitelo/data` do the same
