@@ -998,6 +998,54 @@ test('aspectRatio() and figure() hold their space before the image loads', () =>
   assert.match(ui.figure({ src: '/a.jpg' }), /alt=""/);
 });
 
+/**
+ * Every selector in the sheet, with the declarations of every rule it
+ * appears in run together.
+ */
+function declarationsBySelector(css) {
+  const declared = new Map();
+  for (const { selectors, body } of rulesIn(css)) {
+    for (const selector of selectors) declared.set(selector, `${declared.get(selector) ?? ''}${body}`);
+  }
+  return declared;
+}
+
+test('an image the sheet sizes is given its height too, so a height attribute cannot win', () => {
+  // `images` writes width and height on every <img> it optimizes. A
+  // rule that sets the width and leaves the height to the attribute
+  // stretches the image to the height of the file.
+  const declared = declarationsBySelector(ui.stylesheet({ minify: false }));
+  const imageClasses = [ui.cardMedia({ src: '/a.jpg' }), ui.figure({ src: '/a.jpg' })].flatMap((html) =>
+    [...html.matchAll(/<img\b[^>]*\bclass="([^"]+)"/g)].flatMap(([, names]) => names.split(' ')),
+  );
+  assert.deepEqual(imageClasses, ['su-card-media', 'su-figure-media']);
+
+  const images = [...declared].filter(
+    ([selector]) => /\bimg$/.test(selector) || imageClasses.some((name) => selector.endsWith(`.${name}`)),
+  );
+  assert.ok(images.length >= 4, 'the image rules are found');
+
+  for (const [selector, body] of images) {
+    if (!/(^|[\s;])(max-)?width:/.test(body)) continue;
+    assert.match(body, /(^|[\s;])height:/, `${selector} sets a height as well as a width`);
+  }
+});
+
+test('an image sized as a child is sized the same inside a <picture>', () => {
+  // `images` wraps an <img> in a <picture> when it writes more than one
+  // format, which moves it a level down from where a `> img` rule looks.
+  const declared = declarationsBySelector(ui.stylesheet({ minify: false }));
+  const children = [...declared.keys()].filter(
+    (selector) => / > img$/.test(selector) && !/ > picture > img$/.test(selector),
+  );
+  assert.ok(children.length > 0, 'the child image rules are found');
+
+  for (const selector of children) {
+    const twin = selector.replace(/ > img$/, ' > picture > img');
+    assert.ok(declared.has(twin), `${twin} is sized alongside ${selector}`);
+  }
+});
+
 test('collapsible() puts nothing interactive in its summary', () => {
   const html = ui.collapsible({ trigger: 'Show more', open: true }, '<p>body</p>');
   const [, summary] = /<summary\b([\s\S]*?)<\/summary>/.exec(html);
@@ -1045,6 +1093,16 @@ test('footerBottom spans every column', () => {
 
   assert.match(html, /^<footer class="su-footer">/);
   assert.match(html, /<ul class="su-footer-links"><li><a href="\/docs">Guide<\/a><\/li><\/ul>/);
+});
+
+test('a footer link is a target big enough to hit', () => {
+  // Small text stacked with a small gap left each link 17px tall with
+  // centres 21px apart, short of the 24px Lighthouse's target-size
+  // audit asks for on a phone.
+  const declared = declarationsBySelector(ui.stylesheet({ minify: false }));
+
+  assert.match(declared.get('.su-footer-links a'), /display: inline-flex;[^}]*min-block-size: 1\.5rem/);
+  assert.doesNotMatch(declared.get('.su-footer-links'), /gap:/, 'the rows touch, so the pitch is the target');
 });
 
 test('steps() marks what is done, what is current, and what is next', () => {
