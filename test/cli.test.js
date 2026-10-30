@@ -604,6 +604,46 @@ test('a logLevel set in vite.config reaches the logger', async (t) => {
   assert.match(loud.output, /built in/);
 });
 
+test('--logLevel quiets the post-build phases as well', async (t) => {
+  const configPath = path.join(fixtureDir, 'sitelo.config.js');
+  const linksPage = path.join(fixtureDir, 'src', 'links.ht.js');
+  const originalConfig = fs.readFileSync(configPath, 'utf8');
+
+  const cleanup = () => {
+    fs.writeFileSync(configPath, originalConfig);
+    fs.rmSync(linksPage, { force: true });
+    fs.rmSync(distDir, { recursive: true, force: true });
+    fs.rmSync(path.join(fixtureDir, 'public'), { recursive: true, force: true });
+  };
+
+  cleanup();
+  t.after(cleanup);
+
+  fs.writeFileSync(
+    configPath,
+    "export default { site: 'https://example.com', pagefind: true, linkCheck: 'warn', buildReport: false }\n",
+  );
+  fs.writeFileSync(
+    linksPage,
+    "export default () => '<html lang=\"en\"><head><title>Links</title></head><body><a href=\"/missing\">gone</a></body></html>'\n",
+  );
+
+  const loud = await runCli(['build']);
+  assert.equal(loud.code, 0, loud.output);
+  assert.match(loud.output, /\[sitelo\] pagefind indexed/);
+  assert.match(loud.output, /\/missing/);
+
+  // Warnings still show at `warn`; the info lines do not.
+  const warnings = await runCli(['build', '--logLevel', 'warn']);
+  assert.doesNotMatch(warnings.output, /pagefind/);
+  assert.match(warnings.output, /\/missing/);
+
+  const silent = await runCli(['build', '--logLevel', 'silent']);
+  assert.equal(silent.code, 0, silent.output);
+  assert.doesNotMatch(silent.output, /\[sitelo\]/);
+  assert.ok(fs.existsSync(path.join(distDir, 'pagefind')), 'the index is still written');
+});
+
 test('sitelo preview resolves the config in production mode, like the build', async (t) => {
   const viteConfig = path.join(fixtureDir, 'vite.config.mjs');
   const modes = path.join(fixtureDir, 'modes.txt');
