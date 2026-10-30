@@ -1,0 +1,40 @@
+/* Everything else comes from sitelo-ui. These use its tokens, so they
+   follow the theme and dark mode. */
+body {
+  margin: 0;
+  background: var(--su-bg);
+  color: var(--su-text);
+  font-family: var(--su-font-sans);
+}
+
+.section { padding-block: var(--su-space-xl); }
+
+.su-hero-media img,
+.recipe-image,
+.su-prose img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--su-radius-lg);
+}
+
+/* TODO(Paul): two sitelo-ui fixes to drop once they ship.
+   .su-card-media needs `height: auto`, or the height="1000" that image
+   optimization adds wins over the card's aspect-ratio.
+   Footer links are 17px tall with 4px between them, under the 24px
+   target size Lighthouse checks for. */
+.su-card-media { height: auto; }
+.su-footer-links a { display: inline-block; padding-block: 0.25rem; }
+
+.recipe { max-width: 48rem; }
+.recipe-image { aspect-ratio: 16 / 9; object-fit: cover; }
+
+#search {
+  --pagefind-ui-primary: var(--su-primary);
+  --pagefind-ui-text: var(--su-text);
+  --pagefind-ui-background: var(--su-surface);
+  --pagefind-ui-border: var(--su-border);
+  --pagefind-ui-tag: var(--su-surface-2);
+  --pagefind-ui-border-radius: var(--su-radius-md);
+  --pagefind-ui-font: var(--su-font-sans);
+}

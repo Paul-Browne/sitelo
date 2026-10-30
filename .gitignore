@@ -148,6 +148,8 @@ docs/src/site-preset.css
 docs/public/pagefind/
 examples/**/dist/
 examples/**/node_modules/
+videos/**/dist/
+videos/**/public/pagefind/
 test/fixtures/**/dist/
 
 # per-test-file fixture working copies
