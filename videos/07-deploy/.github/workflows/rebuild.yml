@@ -1,0 +1,17 @@
+# Recipes are fetched at build time, so rebuild every morning to pick up
+# changes. NETLIFY_BUILD_HOOK is a build hook URL from Netlify's
+# Site configuration → Build & deploy → Build hooks.
+name: Daily rebuild
+
+on:
+  schedule:
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl --fail --silent --show-error -X POST -d '{}' "$HOOK"
+        env:
+          HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}

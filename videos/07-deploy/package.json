@@ -1,0 +1,22 @@
+{
+  "name": "weeknight-kitchen",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "sitelo",
+    "build": "sitelo build",
+    "preview": "sitelo preview",
+    "lighthouse": "sitelo lighthouse",
+    "knip": "knip"
+  },
+  "dependencies": {
+    "javascript-to-html": "^1.2.0",
+    "sitelo": "^2.9.13"
+  },
+  "devDependencies": {
+    "knip": "^6.44.0",
+    "lighthouse": "^13.6.0",
+    "pagefind": "^1.5.2",
+    "sharp": "^0.35.5"
+  }
+}

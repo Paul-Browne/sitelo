@@ -1,0 +1,14 @@
+{
+  "name": "weeknight-kitchen",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "sitelo",
+    "build": "sitelo build",
+    "preview": "sitelo preview"
+  },
+  "dependencies": {
+    "javascript-to-html": "^1.2.0",
+    "sitelo": "^2.9.13"
+  }
+}
