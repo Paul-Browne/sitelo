@@ -35,6 +35,7 @@ import {
   normalizeLighthouseOptions,
   runLighthouse,
 } from '../src/lighthouse.js';
+import { staticHostPlugin } from '../src/static-host.js';
 import {
   build,
   createLogger,
@@ -626,7 +627,10 @@ function dataDevPlugin() {
  * Inline config for a preview server over the current build.
  *
  * `sitelo preview` and `sitelo lighthouse` share it so an audit measures
- * the same server a visitor would see, islands endpoint included.
+ * the same server a visitor would see, islands endpoint included. Both
+ * answer like the static host the build is deployed to: `/about` for
+ * `about/index.html` redirects to `/about/`, and a miss is the build's
+ * 404 page with a 404, not `index.html` with a 200.
  */
 function previewInlineConfig(cli, { viteOptions, viteLogging, pluginOptions, plugins }) {
   return mergeConfig(buildInlineConfig(cli, 'preview', viteOptions, viteLogging), {
@@ -636,6 +640,7 @@ function previewInlineConfig(cli, { viteOptions, viteLogging, pluginOptions, plu
         pagesDir: pluginOptions?.pagesDir,
       }),
       ...plugins,
+      staticHostPlugin(),
     ],
   });
 }
@@ -644,6 +649,23 @@ function resolvePublicDir(viteOptions) {
   return viteOptions?.publicDir === false
     ? false
     : (viteOptions?.publicDir ?? 'public');
+}
+
+/**
+ * `log` and `warn` for a post-build phase, quiet below the level the
+ * build's logger was made at, so `--logLevel` covers sitelo's own lines
+ * the way it covers Vite's.
+ *
+ * @param {string | undefined} logLevel
+ */
+function phaseLogging(logLevel) {
+  const rank = LOG_LEVELS.indexOf(logLevel ?? 'info');
+  const quiet = () => {};
+
+  return {
+    log: rank <= 0 ? (message) => console.log(message) : quiet,
+    warn: rank <= 1 ? (message) => console.warn(message) : quiet,
+  };
 }
 
 function definedEntries(object) {
@@ -802,6 +824,7 @@ async function runBuild(cli) {
   const imageOptions = normalizeImageOptions(images);
   const reportOptions =
     inline.logLevel === 'silent' ? null : normalizeBuildReportOptions(buildReport);
+  const logging = phaseLogging(inline.logLevel);
   const linkCheckOptions = normalizeLinkCheckOptions(linkCheck);
   // Normalized up front: a typo here should fail before the build starts,
   // not twenty seconds of Lighthouse later.
@@ -842,6 +865,7 @@ async function runBuild(cli) {
       outDir,
       base: cli.base ?? viteOptions?.base ?? '/',
       options: imageOptions,
+      ...logging,
     });
     timings.images = since(imagesStartedAt);
   }
@@ -858,6 +882,7 @@ async function runBuild(cli) {
       // Matches the plugin's own default. A site that registers the plugin in
       // vite.config keeps its options there, out of reach here.
       cleanUrls: pluginOptions?.cleanUrls ?? true,
+      log: logging.log,
     });
     timings.pagefind = since(pagefindStartedAt);
   }
@@ -871,6 +896,7 @@ async function runBuild(cli) {
       outDir,
       base: cli.base ?? viteOptions?.base ?? '/',
       options: linkCheckOptions,
+      ...logging,
     });
     timings.links = since(linksStartedAt);
   }

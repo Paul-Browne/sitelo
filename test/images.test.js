@@ -756,6 +756,39 @@ test('sitelo build prunes only the originals it replaced', async (t) => {
   assert.ok(fs.existsSync(pub('broken.png')), 'and the source is never touched')
 })
 
+test('sitelo build --logLevel silent prints no image lines', async (t) => {
+  const root = remoteProject(t)
+
+  await solid(600).toFile(path.join(root, 'public', 'hero.png'))
+  fs.writeFileSync(path.join(root, 'sitelo.config.js'), "export default { images: { cacheDir: '.cache' }, buildReport: false }\n")
+  fs.writeFileSync(
+    path.join(root, 'src', 'index.ht.js'),
+    `export default () => '<!doctype html><html lang="en"><head><title>t</title></head><body><img src="/hero.png" alt="Hero"></body></html>'\n`,
+  )
+
+  const build = async (...args) => {
+    const { stdout, stderr } = await execFileAsync(
+      process.execPath,
+      [cliPath, 'build', '--root', root, ...args],
+      { env: process.env },
+    )
+    return `${stdout}${stderr}`
+  }
+
+  assert.match(await build(), /\[sitelo\] images optimized 1 source/)
+
+  // The progress lines a remote pass prints go through the same `log`.
+  const quiet = await build('--logLevel', 'silent')
+  assert.doesNotMatch(quiet, /images/)
+  assert.match(
+    fs.readFileSync(path.join(root, 'dist', 'index.html'), 'utf8'),
+    /<img src="\/assets\/img\/hero\.[a-f0-9]+-600\.webp"/,
+    'the images are still optimized',
+  )
+
+  assert.doesNotMatch(await build('--logLevel', 'warn'), /images/)
+})
+
 test('dev pipeline: a JPEG with data after its end marker is still optimized', async (t) => {
   const root = remoteProject(t)
   const jpeg = await sharp({ create: { width: 800, height: 600, channels: 3, background: { r: 200, g: 120, b: 40 } } })

@@ -604,6 +604,46 @@ test('a logLevel set in vite.config reaches the logger', async (t) => {
   assert.match(loud.output, /built in/);
 });
 
+test('--logLevel quiets the post-build phases as well', async (t) => {
+  const configPath = path.join(fixtureDir, 'sitelo.config.js');
+  const linksPage = path.join(fixtureDir, 'src', 'links.ht.js');
+  const originalConfig = fs.readFileSync(configPath, 'utf8');
+
+  const cleanup = () => {
+    fs.writeFileSync(configPath, originalConfig);
+    fs.rmSync(linksPage, { force: true });
+    fs.rmSync(distDir, { recursive: true, force: true });
+    fs.rmSync(path.join(fixtureDir, 'public'), { recursive: true, force: true });
+  };
+
+  cleanup();
+  t.after(cleanup);
+
+  fs.writeFileSync(
+    configPath,
+    "export default { site: 'https://example.com', pagefind: true, linkCheck: 'warn', buildReport: false }\n",
+  );
+  fs.writeFileSync(
+    linksPage,
+    "export default () => '<html lang=\"en\"><head><title>Links</title></head><body><a href=\"/missing\">gone</a></body></html>'\n",
+  );
+
+  const loud = await runCli(['build']);
+  assert.equal(loud.code, 0, loud.output);
+  assert.match(loud.output, /\[sitelo\] pagefind indexed/);
+  assert.match(loud.output, /\/missing/);
+
+  // Warnings still show at `warn`; the info lines do not.
+  const warnings = await runCli(['build', '--logLevel', 'warn']);
+  assert.doesNotMatch(warnings.output, /pagefind/);
+  assert.match(warnings.output, /\/missing/);
+
+  const silent = await runCli(['build', '--logLevel', 'silent']);
+  assert.equal(silent.code, 0, silent.output);
+  assert.doesNotMatch(silent.output, /\[sitelo\]/);
+  assert.ok(fs.existsSync(path.join(distDir, 'pagefind')), 'the index is still written');
+});
+
 test('sitelo preview resolves the config in production mode, like the build', async (t) => {
   const viteConfig = path.join(fixtureDir, 'vite.config.mjs');
   const modes = path.join(fixtureDir, 'modes.txt');
@@ -632,6 +672,50 @@ test('sitelo preview resolves the config in production mode, like the build', as
     [...new Set(resolved)],
     ['serve production'],
     'every resolution of the config is in production mode',
+  );
+});
+
+/**
+ * A build writes `about/index.html` for `/about`. Vite's preview server
+ * only tries `about.html`, then answered with the home page and a 200 —
+ * for `/about` and for a path that does not exist alike.
+ */
+test('sitelo preview serves clean URLs the way a static host does', async (t) => {
+  const aboutPage = path.join(fixtureDir, 'src', 'about.ht.js');
+
+  const cleanup = () => {
+    fs.rmSync(aboutPage, { force: true });
+    fs.rmSync(distDir, { recursive: true, force: true });
+  };
+
+  cleanup();
+  t.after(cleanup);
+
+  fs.writeFileSync(
+    aboutPage,
+    "export default () => '<html lang=\"en\"><head><title>About the fixture</title></head><body></body></html>'\n",
+  );
+
+  await runBuild(fixtureDir);
+  assert.ok(fs.existsSync(path.join(distDir, 'about', 'index.html')));
+
+  const base = await startServer(t, 'preview');
+  const get = (pathname) => fetch(`${base}${pathname}`, { redirect: 'manual' });
+
+  const about = await get('/about');
+  assert.equal(about.status, 307);
+  assert.equal(about.headers.get('location'), '/about/');
+
+  const page = await get('/about/');
+  assert.equal(page.status, 200);
+  assert.match(await page.text(), /About the fixture/);
+
+  const missing = await get('/nope');
+  assert.equal(missing.status, 404);
+  assert.equal(
+    await missing.text(),
+    fs.readFileSync(path.join(distDir, '404.html'), 'utf8'),
+    'the build’s own 404 page',
   );
 });
 
