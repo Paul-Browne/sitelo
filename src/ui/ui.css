@@ -613,9 +613,15 @@
   transform: translateY(-2px);
 }
 
+/*
+ * `height: auto` is what lets the ratio decide. Without it a `height`
+ * attribute — which `images` writes on every `<img>` it optimizes —
+ * wins, and the image is as tall as the file.
+ */
 .su-card-media {
   display: block;
   width: 100%;
+  height: auto;
   aspect-ratio: var(--su-card-media-ratio, 16 / 9);
   object-fit: cover;
 }
@@ -2636,7 +2642,13 @@ svg.su-theme-icon-moon {
   border-radius: inherit;
 }
 
-.su-aspect > * {
+/*
+ * An `<img>` that `images` gave more than one format arrives wrapped in a
+ * `<picture>`, which would take the sizing and leave the image inside it
+ * at the size its attributes say.
+ */
+.su-aspect > *,
+.su-aspect > picture > img {
   display: block;
   width: 100%;
   height: 100%;
@@ -2659,6 +2671,11 @@ svg.su-theme-icon-moon {
   width: 100%;
   height: auto;
   border-radius: var(--su-radius-md);
+}
+
+/* With a ratio, the box sets the height and the image fills it. */
+.su-aspect > .su-figure-media {
+  height: 100%;
 }
 
 .su-figure .su-aspect {
@@ -2755,6 +2772,14 @@ svg.su-theme-icon-moon {
    * header.
    */
   scroll-margin-block-start: var(--su-carousel-scroll-margin, var(--su-space-lg));
+}
+
+/* An image given as a slide fills it, at its own ratio. */
+.su-carousel-slide > img,
+.su-carousel-slide > picture > img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 /*
@@ -3359,8 +3384,18 @@ svg.su-theme-icon-moon {
   min-width: 0;
 }
 
-.su-hero-media > * {
+.su-hero-media > *,
+.su-hero-media > picture > img {
   max-width: 100%;
+}
+
+/*
+ * An image narrowed by `max-width` keeps the height its attribute says
+ * unless it is told otherwise, and squashes.
+ */
+.su-hero-media > img,
+.su-hero-media > picture > img {
+  height: auto;
 }
 
 /* Side by side once there is room for two columns. */
@@ -3415,13 +3450,20 @@ svg.su-theme-icon-moon {
 .su-footer-links {
   display: flex;
   flex-direction: column;
-  gap: var(--su-space-xs);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+/*
+ * Each link is a 1.5rem row rather than a line of small text with a gap
+ * under it: much the same rhythm, but the whole row is the target, and
+ * 24px is the smallest target WCAG will call big enough to hit.
+ */
 .su-footer-links a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 1.5rem;
   color: inherit;
   text-decoration: none;
 }
@@ -3856,7 +3898,8 @@ svg.su-theme-icon-moon {
   overflow: hidden;
 }
 
-.su-mockup-body > img {
+.su-mockup-body > img,
+.su-mockup-body > picture > img {
   display: block;
   width: 100%;
   height: auto;
