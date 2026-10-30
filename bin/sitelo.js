@@ -35,6 +35,7 @@ import {
   normalizeLighthouseOptions,
   runLighthouse,
 } from '../src/lighthouse.js';
+import { staticHostPlugin } from '../src/static-host.js';
 import {
   build,
   createLogger,
@@ -626,7 +627,10 @@ function dataDevPlugin() {
  * Inline config for a preview server over the current build.
  *
  * `sitelo preview` and `sitelo lighthouse` share it so an audit measures
- * the same server a visitor would see, islands endpoint included.
+ * the same server a visitor would see, islands endpoint included. Both
+ * answer like the static host the build is deployed to: `/about` for
+ * `about/index.html` redirects to `/about/`, and a miss is the build's
+ * 404 page with a 404, not `index.html` with a 200.
  */
 function previewInlineConfig(cli, { viteOptions, viteLogging, pluginOptions, plugins }) {
   return mergeConfig(buildInlineConfig(cli, 'preview', viteOptions, viteLogging), {
@@ -636,6 +640,7 @@ function previewInlineConfig(cli, { viteOptions, viteLogging, pluginOptions, plu
         pagesDir: pluginOptions?.pagesDir,
       }),
       ...plugins,
+      staticHostPlugin(),
     ],
   });
 }
