@@ -1,6 +1,6 @@
 {
   "name": "sitelo",
-  "version": "2.9.15",
+  "version": "2.9.16",
   "author": "Paul Browne",
   "type": "module",
   "license": "MIT",
@@ -118,7 +118,7 @@
   "dependencies": {
     "javascript-to-html": "^1.2.0",
     "vite": "npm:@paul-browne/vite@8.3.7",
-    "vite-plugin-html-pages": "^2.6.5"
+    "vite-plugin-html-pages": "^2.6.6"
   },
   "peerDependencies": {
     "lighthouse": "^12.0.0 || ^13.0.0",
