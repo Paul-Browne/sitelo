@@ -1472,6 +1472,10 @@ Create `src/404.ht.js` and it's emitted as `dist/404.html` (the
 convention GitHub Pages, Netlify, and Cloudflare Pages all understand).
 No 404 page? A clean default is generated.
 
+`sitelo` (the dev server) answers the same way as `sitelo preview` and a
+static host: a URL with no page behind it gets your 404 page, or the
+default, with a 404 status.
+
 ### Sitemap
 
 Set your site URL and `dist/sitemap.xml` is generated from all static
