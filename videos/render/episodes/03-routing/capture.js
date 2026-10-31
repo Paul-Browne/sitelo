@@ -1,6 +1,6 @@
 // Runs episode 3 for real, from episode 2's snapshot: each new route in the
-// dev server, an unknown slug, then the build with its sitemap and link
-// checker, once clean and once with a broken link.
+// dev server, an unknown slug, the 404 page, then the build with its sitemap
+// and link checker, once clean and once with a broken link.
 
 import fs from 'node:fs'
 import path from 'node:path'
@@ -11,17 +11,15 @@ import {
   normalizer,
   projectFrom,
   run,
-  shoot,
   sleep,
-  start,
 } from '../../lib/capture-kit.js'
 import * as files from './files.js'
 
 export default async function capture({ outDir }) {
   const project = path.join(outDir, 'weeknight-kitchen')
   const tree = projectFrom('02-data', project)
-  const clean = normalizer({ projectDir: project, ports: { 5273: 5173, 4273: 4173 } })
-  const rewrite = [[project, SHOWN_PROJECT_DIR], ['5273', '5173'], ['4273', '4173']]
+  const clean = normalizer({ projectDir: project, ports: { 5273: 5173 } })
+  const rewrite = [[project, SHOWN_PROJECT_DIR], ['5273', '5173']]
   const term = { tree }
   const shots = {}
   const { browser, page } = await launchBrowser()
@@ -78,20 +76,13 @@ export default async function capture({ outDir }) {
   })
   shots.privacy = await dev.visit('/privacy', 'privacy')
   term.devLegal = dev.take()
+  shots.notFound = await dev.visit('/no-such-page', 'notFound')
   await dev.stop()
 
   fs.writeFileSync(path.join(project, 'sitelo.config.js'), files.config)
   term.build = clean(run('npm', ['run', 'build'], project))
   term.sitemap = run('head', ['-n', '12', 'dist/sitemap.xml'], project)
   term.pages = run('sh', ['-c', 'find dist -name "*.html" | wc -l'], project).trim()
-  // The dev server leaves unknown URLs to the browser; preview serves 404.html.
-  const preview = start('npx', ['sitelo', 'preview', '--port', '4273', '--strictPort'], project)
-  await preview.waitFor(/Local/)
-  await sleep(300)
-  term.preview = clean(preview.take())
-  await page.goto('http://localhost:4273/no-such-page', { waitUntil: 'networkidle0' })
-  shots.notFound = await shoot(page, path.join(outDir, 'notFound.png'), { rewrite })
-  await preview.stop()
 
   fs.writeFileSync(path.join(project, 'src/recipes/index.ht.js'), files.recipes.broken)
   term.buildBroken = clean(run('npm', ['run', 'build'], project))

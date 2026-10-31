@@ -9,6 +9,6 @@
   },
   "dependencies": {
     "javascript-to-html": "^1.2.0",
-    "sitelo": "^2.9.15"
+    "sitelo": "^2.9.16"
   }
 }

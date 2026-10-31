@@ -46,8 +46,8 @@ both meal types, and "Cocktail" and "Smoothie" are cuisines.
 
 ## Bugs the series turned up
 
-Building the series turned up seven sitelo bugs, all fixed in sitelo 2.9.15
-(with vite-plugin-html-pages 2.6.5), which every snapshot uses:
+Building the series turned up eight sitelo bugs, all fixed by sitelo 2.9.16
+(with vite-plugin-html-pages 2.6.6), which every snapshot uses:
 
 - `sitelo preview` served the home page for every clean URL.
 - Optional catch-alls (`[...path]?.ht.js`) didn't build. Episode 3 now
@@ -59,8 +59,11 @@ Building the series turned up seven sitelo bugs, all fixed in sitelo 2.9.15
 - `fetchWithCache` cached to `node_modules/.cache/vite-plugin-html-pages/`
   instead of the documented `node_modules/.cache/sitelo/`.
 - `sitelo build --logLevel silent` still printed image progress lines.
+- The dev server answered an unknown URL with an empty 404, not
+  `404.ht.js`, so episode 3 had to show its 404 page in preview. It shows
+  it in the dev server now.
 
-So record with 2.9.15 or later.
+So record with 2.9.16 or later.
 
 ## Recording setup
 
@@ -78,7 +81,7 @@ So record with 2.9.15 or later.
 - The islands print the server's local time, so record episode 4 at a time
   of day whose meal you want on screen (before 11:00 breakfast, before
   15:00 lunch, before 17:00 snack, otherwise dinner).
-- Every snapshot was built and checked on 2026-10-31 with sitelo 2.9.15.
+- Every snapshot was built and checked on 2026-10-31 with sitelo 2.9.16.
   Episodes 5–7 pass knip and their Lighthouse thresholds, and every
   lockfile passes `npm ci`.
 

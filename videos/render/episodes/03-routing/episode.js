@@ -216,9 +216,13 @@ export default function episode(d, { term, shots }) {
   d.wait(1)
   d.showEditor()
   d.say(
-    "And 404.ht.js replaces the default 404 page. Netlify, Cloudflare and GitHub Pages all serve it for unknown URLs. We'll see it once the site is built.",
+    "And 404.ht.js replaces the default 404 page. Netlify, Cloudflare and GitHub Pages all serve it for unknown URLs, and so does the dev server.",
     () => d.wait(0.5).newFile('src/404.ht.js').paste('src/404.ht.js', files.notFound),
   )
+  d.showBrowser()
+  d.say("Try a URL that doesn't exist.", () => d.wait(0.4).load('notFound', 'localhost:5173/no-such-page'))
+  d.say("There's our 404 page, sent with a 404 status, the way a host sends it.")
+  d.showEditor()
 
   // ── 9. Sitemap and link checking ────────────────────────────────────
   d.chapter(9, 'Sitemap and link checking')
@@ -237,14 +241,6 @@ export default function episode(d, { term, shots }) {
   d.say('Here is the sitemap, with the site address on every URL. We set the real one when we deploy, in episode seven.', () => {
     d.wait(1).run('head -n 12 dist/sitemap.xml', term.sitemap, { wait: 0.3, dur: 0.2 })
   }, { speak: 'Here is the sitemap, with the site address on every U R L. We set the real one when we deploy, in episode seven.' })
-  d.say('Preview the build, and try a URL that doesn\'t exist.', () => {
-    d.wait(1).typeCommand('npm run preview').wait(0.6).print(npmRun('preview', 'sitelo preview') + term.preview, { dur: 0.2 })
-  })
-  d.showBrowser()
-  d.load('notFound', 'localhost:4173/no-such-page')
-  d.say("There's our 404 page.")
-  d.showEditor()
-  d.interrupt()
   d.terminal(330)
   d.say("Now break a link on purpose. Spell quick, q u i k.", () => {
     d.wait(1.8).type(RECIPES, files.recipes.broken, { cps: 20 })

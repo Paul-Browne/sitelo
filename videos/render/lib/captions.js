@@ -8,24 +8,31 @@ const stamp = (seconds, sep = ',') => {
   return `${h}:${m}:${s}${sep}${String(ms % 1000).padStart(3, '0')}`
 }
 
-/** Splits a line into caption-sized pieces at sentence, then clause, boundaries. */
+/**
+ * Splits a line into caption-sized pieces: at sentences, then a long sentence
+ * into even parts, so no word or two is left on a caption of its own. A
+ * sentence ends at a stop followed by a space, so file names like 404.ht.js
+ * stay in one piece.
+ */
 const chunks = (text, max = 84) => {
-  const sentences = text.match(/[^.!?]+[.!?]+["')]*\s*|[^.!?]+$/g) ?? [text]
+  const sentences = text.split(/(?<=[.!?]["')]*)\s+/)
   const out = []
   for (const sentence of sentences.map((s) => s.trim()).filter(Boolean)) {
-    if (sentence.length <= max) {
-      out.push(sentence)
-      continue
-    }
+    const parts = Math.ceil(sentence.length / max)
+    const share = sentence.length / parts
     let current = ''
+    let made = 0
     for (const word of sentence.split(' ')) {
-      if ((current + ' ' + word).trim().length > max && current) {
-        out.push(current.trim())
-        current = ''
+      const next = current ? `${current} ${word}` : word
+      if (current && made < parts - 1 && next.length > share) {
+        out.push(current)
+        made++
+        current = word
+      } else {
+        current = next
       }
-      current += ` ${word}`
     }
-    if (current.trim()) out.push(current.trim())
+    if (current) out.push(current)
   }
   return out
 }
