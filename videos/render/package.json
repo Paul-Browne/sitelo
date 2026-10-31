@@ -1,0 +1,19 @@
+{
+  "name": "sitelo-video-render",
+  "private": true,
+  "type": "module",
+  "description": "Renders the video series to MP4 from scripted timelines, real captures and synthesized narration.",
+  "scripts": {
+    "capture": "node capture.js",
+    "render": "node render.js"
+  },
+  "devDependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@highlightjs/cdn-assets": "^11.12.0",
+    "diff": "^9.0.0",
+    "ffmpeg-static": "^5.3.0",
+    "kokoro-js": "^1.2.1",
+    "puppeteer-core": "^25.16.0"
+  }
+}

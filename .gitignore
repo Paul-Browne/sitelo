@@ -150,6 +150,8 @@ examples/**/dist/
 examples/**/node_modules/
 videos/**/dist/
 videos/**/public/pagefind/
+# rendered episodes, captures and narration (big, and rebuilt by render.js)
+videos/render/out/
 test/fixtures/**/dist/
 
 # per-test-file fixture working copies
