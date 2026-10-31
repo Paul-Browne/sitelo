@@ -143,13 +143,14 @@ files writing the same URL is a build error, not a silent overwrite.
 **Do:**
 - Create `src/(legal)/privacy.ht.js` and `src/(legal)/terms.ht.js`, and
   link them from the footer.
-- Create `src/404.ht.js`.
+- Create `src/404.ht.js`, then open `http://localhost:5173/no-such-page`.
 
 **Say:**
 - A folder in parentheses is just for you. It keeps files together without
   adding to the URL, so this is `/privacy`, not `/legal/privacy`.
 - `404.ht.js` replaces the default `404.html`. Netlify, Cloudflare and
-  GitHub Pages all serve it for unknown URLs.
+  GitHub Pages all serve it for unknown URLs, and so does the dev server,
+  with a 404 status.
 
 ## 9. Sitemap and link checking (11:45–13:30)
 
