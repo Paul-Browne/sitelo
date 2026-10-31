@@ -13,7 +13,7 @@ If the edit runs long, split after section 4: **5a "Measure and fix"**
 
 **Title:** Lighthouse, image optimization, search and dead code in one config file (sitelo, ep. 5)
 
-**Description:** We audit the site with Lighthouse, find a 14-second
+**Description:** We audit the site with Lighthouse, find an 11-second
 Largest Contentful Paint and a heading-order bug, fix both, and add
 Pagefind search and knip. Every add-on is an optional peer dependency
 and one line in sitelo.config.js.
@@ -85,7 +85,7 @@ lighthouse: { …, output: true }
 ```
 
 **Show:** `.sitelo/lighthouse/index.report.html`: Largest Contentful Paint
-13.9 s (the 1.76 MB hero). Then `recipes/index.report.html`: "Heading
+11.3 s (the 1.76 MB hero). Then `recipes/index.report.html`: "Heading
 elements are not in a sequentially-descending order".
 
 ## 3. Fixing the heading order (3:30–4:45)
@@ -311,7 +311,7 @@ getRecipe  function  src/lib/api.js:17:23
 
 - `sitelo lighthouse` audits the real build; thresholds make it a check.
 - `images: { remote: true }` resized, converted and lazy-loaded every image.
-  The home page's LCP went from 13.9 s to a perfect score.
+  The home page's LCP went from 11.3 s to a perfect score.
 - `pagefind: true` plus `data-pagefind-body` is search with no server.
 - `knipConfig()` makes knip understand a sitelo site.
 
