@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Stage</title>
+    <link rel="stylesheet" href="stage.css" />
+  </head>
+  <body>
+    <div id="stage">
+      <div class="desktop"></div>
+
+      <section class="window ide" id="ide">
+        <header class="titlebar">
+          <span class="lights"><i></i><i></i><i></i></span>
+          <span class="titlebar-text">weeknight-kitchen</span>
+        </header>
+        <div class="ide-body">
+          <aside class="tree">
+            <div class="tree-heading">Explorer</div>
+            <div class="tree-items"></div>
+          </aside>
+          <div class="editor-col">
+            <nav class="tabs"></nav>
+            <div class="editor">
+              <div class="editor-empty">Open a file to start editing</div>
+              <div class="scroller">
+                <div class="gutter"></div>
+                <div class="code-wrap">
+                  <div class="hl-lines"></div>
+                  <div class="selection"></div>
+                  <pre class="code"></pre>
+                  <div class="caret"></div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-tabs"><span class="active">Terminal</span><span>Problems</span><span>Output</span><span class="term-tabs"></span></div>
+              <pre class="term"></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="window browser" id="browser">
+        <header class="tabstrip">
+          <span class="lights"><i></i><i></i><i></i></span>
+          <span class="tab"><img class="favicon" alt="" /><span class="tab-title"></span><span class="tab-x">×</span></span>
+        </header>
+        <div class="toolbar">
+          <span class="nav-buttons">
+            <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" /></svg>
+            <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
+            <svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.05-4.95M19 4v4h-4" /></svg>
+          </span>
+          <span class="url"></span>
+        </div>
+        <div class="viewport">
+          <div class="page-wrap"><img class="page" alt="" /></div>
+          <img class="devbar" alt="" />
+          <div class="loading"></div>
+        </div>
+      </section>
+
+      <div class="callout"><span class="callout-label"></span></div>
+      <svg class="cursor" viewBox="0 0 24 24"><path d="M4 2l16 11.2-7.1 1.1L9 21z" /></svg>
+      <div class="click-ring"></div>
+
+      <div class="overlay chapter">
+        <div class="chapter-card"><span class="chapter-num"></span><span class="chapter-title"></span></div>
+      </div>
+      <div class="overlay slide">
+        <div class="slide-card"><h2 class="slide-title"></h2><table class="slide-table"></table></div>
+      </div>
+      <div class="overlay card title-card">
+        <div class="brand">sitelo</div>
+        <div class="episode"></div>
+        <h1 class="card-title"></h1>
+        <p class="card-sub"></p>
+      </div>
+      <div class="overlay card end-card">
+        <div class="brand">sitelo</div>
+        <p class="next-label">Next time</p>
+        <h1 class="card-title"></h1>
+        <p class="card-sub"></p>
+        <p class="card-link"></p>
+      </div>
+    </div>
+    <script type="module" src="stage.js"></script>
+  </body>
+</html>
