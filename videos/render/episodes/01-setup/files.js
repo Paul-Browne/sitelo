@@ -18,7 +18,7 @@ export const packageJson = {
   "type": "module",
   "dependencies": {
     "javascript-to-html": "^1.2.0",
-    "sitelo": "^2.9.15"
+    "sitelo": "^2.9.16"
   }
 }
 `,
@@ -38,7 +38,7 @@ export const packageJson = {
   "type": "module",
   "dependencies": {
     "javascript-to-html": "^1.2.0",
-    "sitelo": "^2.9.15"
+    "sitelo": "^2.9.16"
   }
 }
 `,
