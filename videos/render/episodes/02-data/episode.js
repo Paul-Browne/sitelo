@@ -7,6 +7,7 @@ export const meta = {
   title: 'Fetch API data at build time (sitelo, ep. 2)',
   description: `A sitelo page can export a data() function. It runs at build time, and whatever it returns is handed to the page. We use it to load recipes from a public API, cache the requests, and render them through a card component, which is just another function.
 
+Full series: https://www.youtube.com/playlist?list=PLPb4YDBLI-jQ
 Code for every episode: https://github.com/Paul-Browne/sitelo/tree/main/videos
 Docs: https://sitelo.js.org`,
 }

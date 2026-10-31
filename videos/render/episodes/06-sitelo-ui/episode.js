@@ -9,6 +9,7 @@ export const meta = {
   title: "A component library that's just functions returning HTML (sitelo, ep. 6)",
   description: `sitelo-ui is a component library (buttons, cards, forms, modals, heroes) as plain functions. They nest inside javascript-to-html with nothing in between. We restyle the whole recipe site with it, theme it, add dark mode, try a few presets and prune the CSS to what we use.
 
+Full series: https://www.youtube.com/playlist?list=PLPb4YDBLI-jQ
 Code for every episode: https://github.com/Paul-Browne/sitelo/tree/main/videos
 Docs: https://sitelo.js.org`,
 }
