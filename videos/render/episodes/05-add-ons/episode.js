@@ -6,7 +6,7 @@ import * as files from './files.js'
 
 export const meta = {
   title: 'Lighthouse, image optimization, search and dead code in one config file (sitelo, ep. 5)',
-  description: `We audit the site with Lighthouse, find a 14-second Largest Contentful Paint and a heading-order bug, fix both, and add Pagefind search and knip. Every add-on is an optional peer dependency and one line in sitelo.config.js.
+  description: `We audit the site with Lighthouse, find an 11-second Largest Contentful Paint and a heading-order bug, fix both, and add Pagefind search and knip. Every add-on is an optional peer dependency and one line in sitelo.config.js.
 
 Code for every episode: https://github.com/Paul-Browne/sitelo/tree/main/videos
 Docs: https://sitelo.js.org`,
