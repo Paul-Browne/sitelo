@@ -306,6 +306,37 @@ Every page function receives one argument:
 | `page`   | `object` | Route metadata (`routePath`, `relativePath`, ...) |
 | `dev`    | `boolean` | `true` in the dev server, `false` at build |
 
+### Escaping text
+
+Template literals, javascript-to-html children and sitelo-ui children
+are all inserted as raw HTML, which is what lets markup nest. Text you
+did not write yourself, such as values from an API, a CMS, a JSON file, a
+query string or island props, needs escaping first. Otherwise a stray `<`
+becomes markup:
+
+```js
+// src/blog/[slug].ht.js
+import { escapeHtml } from 'sitelo/page'
+
+export default ({ data }) => `
+  <html lang="en">
+    <head>
+      <title>${escapeHtml(data.title)}</title>
+      <meta name="description" content="${escapeHtml(data.summary)}">
+    </head>
+    <body><h1>${escapeHtml(data.title)}</h1></body>
+  </html>
+`
+```
+
+`escapeHtml` replaces `&`, `<`, `>`, `"` and `'`, so its output is safe
+both as element content and inside a quoted attribute value. A value
+that isn't a string goes through `String()` first, as it would in a
+template literal. It has no dependencies, so the same import works in
+server islands and client scripts. Leave HTML you mean to render alone,
+such as a CMS body or Markdown output. Attribute props passed to
+javascript-to-html or sitelo-ui are already escaped for you.
+
 ---
 
 ## Routing
@@ -513,7 +544,7 @@ export default definePageModule({
 ```
 
 Individual helpers (`definePage`, `defineData`, `defineStaticParams`)
-are also exported. At build time this import is transparently swapped
+are also exported, as is [`escapeHtml`](#escaping-text). At build time this import is transparently swapped
 for a **per-route generated module** whose `PageParams` are inferred
 from the filename: `[slug]` → `{ slug: string }`, `[...path]` →
 `{ path: string[] }`, `[...path]?` → `{ path?: string[] }`.
@@ -1303,9 +1334,11 @@ a product page. An island is just another function that returns HTML.
 
 ```js
 // src/islands/comments.js
+import { escapeHtml } from 'sitelo/page'
+
 export default async function comments({ props, request }) {
   const comments = await fetchComments(props.postId)
-  return `<ul>${comments.map((c) => `<li>${c.text}</li>`).join('')}</ul>`
+  return `<ul>${comments.map((c) => `<li>${escapeHtml(c.text)}</li>`).join('')}</ul>`
 }
 ```
 

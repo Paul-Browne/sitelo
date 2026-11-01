@@ -1,5 +1,7 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
 
+import { escapeHtml } from './page.js'
+
 const NAME_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_-]*$/
 
 /** Loading strategies understood by `sitelo/islands/client`. */
@@ -22,15 +24,6 @@ const STATE = (globalThis[Symbol.for('sitelo.islands')] ??= {
 
 export function isValidIslandName(name) {
   return typeof name === 'string' && NAME_PATTERN.test(name)
-}
-
-function escapeAttribute(value) {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;')
 }
 
 /**
@@ -140,7 +133,7 @@ export function island(name, props = {}, fallback = '', options = {}) {
   let attributes = ''
 
   if (hasProps) {
-    attributes += ` data-sitelo-props="${escapeAttribute(json)}"`
+    attributes += ` data-sitelo-props="${escapeHtml(json)}"`
 
     const secret = getIslandsSecret()
 
@@ -152,7 +145,7 @@ export function island(name, props = {}, fallback = '', options = {}) {
   if (when !== 'load') attributes += ` data-sitelo-when="${when}"`
 
   if (rootMargin && when === 'visible') {
-    attributes += ` data-sitelo-root-margin="${escapeAttribute(rootMargin)}"`
+    attributes += ` data-sitelo-root-margin="${escapeHtml(rootMargin)}"`
   }
 
   return `<div data-sitelo-island="${name}"${attributes}>${fallback}</div>`

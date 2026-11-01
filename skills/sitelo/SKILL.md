@@ -80,21 +80,20 @@ default.
 Template literals and element children are inserted as raw HTML, both in
 javascript-to-html and in `sitelo/ui`. Only attribute values are escaped.
 Escape any text from an API, CMS, JSON file, query or island props before it
-goes into a child position:
+goes into a child position, with `escapeHtml` from `sitelo/page`. Do not write
+your own:
 
 ```js
-// src/lib/escape.js
-export const escapeHtml = (value) =>
-  String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;')
+import { escapeHtml } from 'sitelo/page'
+
+escapeHtml(`<b>"Tom" & 'Jerry'</b>`)
+// &lt;b&gt;&quot;Tom&quot; &amp; &#39;Jerry&#39;&lt;/b&gt;
 ```
 
-Leave HTML you deliberately render alone, such as a CMS body or Markdown
-output.
+It escapes `& < > " '`, so the result is also safe in a quoted attribute
+value written into a template literal. Non-strings go through `String()`, so
+`null` prints as `null`. Leave HTML you deliberately render alone, such as a
+CMS body or Markdown output.
 
 ### Layouts
 
@@ -103,7 +102,7 @@ call it from every page:
 
 ```js
 // src/lib/layout.js (not a page: no .ht.js, and never emitted unless a page links it)
-import { escapeHtml } from './escape.js'
+import { escapeHtml } from 'sitelo/page'
 
 export const layout = ({ title, children }) => `
   <html lang="en">
@@ -195,7 +194,8 @@ export default definePageModule({
 })
 ```
 
-`definePage`, `defineData` and `defineStaticParams` also exist. Param types
+`definePage`, `defineData`, `defineStaticParams` and `escapeHtml` also exist
+there, and work in `.js` pages too. Param types
 come from the filename: `[slug]` gives `string`, `[...path]` gives
 `string[]`, and `[...path]?` an optional `string[]`. Declarations are
 generated into `.sitelo/types/`. Add `.sitelo/` to `.gitignore`.

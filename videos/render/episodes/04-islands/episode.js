@@ -7,6 +7,7 @@ export const meta = {
   title: 'Fresh HTML inside a static page: server islands (sitelo, ep. 4)',
   description: `A static page can't know what time it is when you visit. A server island can: it's a function that renders a fragment of HTML on the server, per request, inside an otherwise static page. No client framework, about 1.7 kB of JavaScript.
 
+Full series: https://www.youtube.com/playlist?list=PLPb4YDBLI-jQ
 Code for every episode: https://github.com/Paul-Browne/sitelo/tree/main/videos
 Docs: https://sitelo.js.org`,
 }

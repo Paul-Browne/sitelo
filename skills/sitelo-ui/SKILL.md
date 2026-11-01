@@ -79,7 +79,8 @@ ui.button({ variant: 'soft', color: 'danger', id: 'del', 'data-id': 7 }, ui.icon
   `3xl`, a number (a multiple of the spacing unit) or any CSS length.
 - `href` turns `button`, `card`, `chip` and `listItem` into links.
 - **Children are raw HTML.** That is how components nest. Escape text from
-  APIs, CMSs or users before passing it as a child. Attribute values are
+  APIs, CMSs or users before passing it as a child, with `escapeHtml` from
+  `sitelo/page`. Attribute values are
   escaped for you. For a code sample, `ui.code({ text: '<h1>Hi</h1>' })`
   escapes.
 - Some components take data instead of children: `table({ columns, rows })`,
