@@ -1,13 +1,15 @@
 /**
- * The docs' rendered HTML, back to Markdown, for the copies the build writes
- * beside each English page and gathers into `llms-full.txt`.
+ * A built page's HTML, back to Markdown, for the copies `llms: true` writes
+ * beside each page and gathers into `llms-full.txt`. The docs site's own
+ * machine-readable plugin uses it too.
  *
- * Not a general converter. It reads the markup this site's own layout and
- * javascript-to-html produce — well-formed, every element closed, the demos
- * marked `data-pagefind-ignore` — and nothing else needs to survive it. What
- * an answer engine wants from a page is the prose, the code and the tables,
- * so that is what comes through: the live previews, the copy buttons, the
- * table of contents and the prev/next links stay behind.
+ * Not a general converter. It reads what a build emits — markup from
+ * template literals, javascript-to-html and sitelo-ui, well-formed and
+ * every element closed — and only what a reader of the page needs has to
+ * survive it. What an answer engine wants from a page is the prose, the
+ * code and the tables, so that is what comes through: navigation, forms,
+ * buttons, drawings, and anything marked `data-pagefind-ignore` or
+ * `aria-hidden="true"` stay behind.
  */
 
 const VOID = new Set([
@@ -84,7 +86,8 @@ function parse(html) {
 
     if (closing) {
       const tag = closing.toLowerCase()
-      const at = stack.findLastIndex((node) => node.tag === tag)
+      let at = stack.length - 1
+      while (at > 0 && stack[at].tag !== tag) at -= 1
       if (at > 0) stack.length = at
       continue
     }
@@ -146,14 +149,22 @@ function inlineCode(text) {
 }
 
 /**
- * @param {{ pageUrl: string, siteUrl: string }} context
+ * @param {{ pageUrl: string }} context
  */
-function createRenderer({ pageUrl, siteUrl }) {
+function createRenderer({ pageUrl }) {
+  /*
+   * Against the page's own URL, the way the browser reads them. The copy
+   * lives at a different address (`/blog/hello.md` for `/blog/hello/`),
+   * so a relative link left as written would point somewhere else.
+   */
   const absolute = (href) => {
-    if (!href) return href
-    if (href.startsWith('#')) return `${pageUrl}${href}`
-    if (href.startsWith('/')) return `${siteUrl}${href}`
-    return href
+    // One with a scheme already (`https:`, `mailto:`) stays as written.
+    if (!href || /^[a-z][a-z\d+.-]*:/i.test(href)) return href
+    try {
+      return new URL(href, pageUrl).href
+    } catch {
+      return href
+    }
   }
 
   /** @param {Node} node */
@@ -222,27 +233,43 @@ function createRenderer({ pageUrl, siteUrl }) {
   }
 
   /**
-   * The template / ht.js / JSX tabs. Every panel is kept, each named by its
-   * tab, since a reader who writes JSX wants the JSX one — the tab strip
-   * itself is a control and goes.
+   * A tab's name. A nested element after its own text — a badge — is set
+   * in parentheses: `ht.js<span>recommended</span>` is "ht.js
+   * (recommended)".
+   *
+   * @param {Element} tab
    */
-  function codeTabs(node) {
+  function tabLabel(tab) {
+    let label = ''
+    for (const child of tab.children) {
+      if (typeof child === 'string') {
+        label += child
+        continue
+      }
+      if (isSkipped(child)) continue
+      const text = textOf(child).trim()
+      if (text) label += label.trim() ? ` (${text})` : text
+    }
+    return label.replace(/\s+/g, ' ').trim()
+  }
+
+  /**
+   * An ARIA tab set: `role="tablist"` buttons for `role="tabpanel"`
+   * panels, such as the docs' template / ht.js / JSX code tabs. Every panel
+   * is kept, each named by its tab, since a reader who writes JSX wants
+   * the JSX one and a hidden panel is no less content. The tab strip
+   * itself is a control and goes.
+   *
+   * @param {Element} node
+   */
+  function tabSet(node, depth) {
     const tabs = new Map()
+    /** @type {Element[]} */
     const panels = []
 
     const walk = (current) => {
       if (typeof current === 'string') return
-      if (current.attrs.role === 'tab') {
-        const label = current.children
-          .map((child) =>
-            typeof child !== 'string' && classes(child).includes('code-tabs-badge')
-              ? ` (${textOf(child).trim()})`
-              : textOf(child),
-          )
-          .join('')
-          .trim()
-        tabs.set(current.attrs['aria-controls'], label)
-      }
+      if (current.attrs.role === 'tab') tabs.set(current.attrs['aria-controls'], tabLabel(current))
       if (current.attrs.role === 'tabpanel') panels.push(current)
       current.children.forEach(walk)
     }
@@ -250,6 +277,8 @@ function createRenderer({ pageUrl, siteUrl }) {
 
     return panels
       .map((panel) => {
+        const label = tabs.get(panel.attrs.id)
+        /** @type {Element | undefined} */
         let pre
         const find = (current) => {
           if (pre || typeof current === 'string') return
@@ -257,11 +286,20 @@ function createRenderer({ pageUrl, siteUrl }) {
           else current.children.forEach(find)
         }
         find(panel)
-        return pre ? codeBlock(pre, tabs.get(panel.attrs.id)) : ''
+
+        // A code sample's tab joins the label above its fence; any other
+        // panel is headed by its tab's name.
+        if (pre) return codeBlock(pre, label)
+        const body = blocks(panel.children, depth)
+        return [label ? `**${label}**` : '', body].filter(Boolean).join('\n\n')
       })
       .filter(Boolean)
       .join('\n\n')
   }
+
+  /** @param {Element} node */
+  const isTabSet = (node) =>
+    node.children.some((child) => typeof child !== 'string' && child.attrs.role === 'tablist')
 
   function list(node, depth) {
     const ordered = node.tag === 'ol'
@@ -318,7 +356,7 @@ function createRenderer({ pageUrl, siteUrl }) {
       return text ? `${'#'.repeat(Number(heading[1]))} ${text}` : ''
     }
 
-    if (classes(node).includes('code-tabs')) return codeTabs(node)
+    if (isTabSet(node)) return tabSet(node, depth)
 
     switch (node.tag) {
       case 'p':
@@ -380,20 +418,105 @@ function createRenderer({ pageUrl, siteUrl }) {
   return blocks
 }
 
+/** A page's chrome, when there is no `<main>` to say what is content. */
+const CHROME = new Set(['header', 'footer', 'aside', 'nav'])
+
 /**
- * The page's `<main>` as Markdown.
+ * The element `tag` and everything in it, cut out of `html`, or undefined
+ * when the page has none.
+ *
+ * @param {string} html
+ * @param {string} tag
+ */
+function slice(html, tag) {
+  const start = html.search(new RegExp(`<${tag}[\\s>]`, 'i'))
+  const end = html.toLowerCase().lastIndexOf(`</${tag}>`)
+  if (start === -1 || end === -1 || end < start) return undefined
+  return html.slice(start, end + tag.length + 3)
+}
+
+/**
+ * The page's content as Markdown: its `<main>`, or failing that its
+ * `<body>` without the header, footer, sidebar and navigation around it.
  *
  * @param {string} html a whole rendered page
- * @param {{ pageUrl: string, siteUrl: string }} context absolute URLs for
- *   the links: in-page anchors resolve against `pageUrl`, root-relative ones
- *   against `siteUrl`
- * @returns {string | undefined} undefined when the page has no `<main>`
+ * @param {{ pageUrl: string, siteUrl?: string }} context the page's own
+ *   absolute URL, which every relative link and image resolves against.
+ *   (`siteUrl` is accepted and unused: a root-relative link resolves
+ *   against the page's origin, as the browser's does.)
+ * @returns {string | undefined} undefined when the page has neither
  */
 export function pageToMarkdown(html, context) {
-  const start = html.search(/<main[\s>]/)
-  const end = html.lastIndexOf('</main>')
-  if (start === -1 || end === -1) return undefined
+  const main = slice(html, 'main')
+  const body = main ? undefined : slice(html, 'body')
+  if (!main && !body) return undefined
 
-  const markdown = createRenderer(context)(parse(html.slice(start, end + '</main>'.length)).children)
+  const root = parse(/** @type {string} */ (main ?? body))
+  let nodes = root.children
+
+  if (body) {
+    const element = nodes.find((node) => typeof node !== 'string' && node.tag === 'body')
+    nodes = (typeof element === 'object' ? element.children : nodes).filter(
+      (node) => typeof node === 'string' || !CHROME.has(node.tag),
+    )
+  }
+
+  const markdown = createRenderer(context)(nodes)
   return `${markdown.replace(/\n{3,}/g, '\n\n').trim()}\n`
+}
+
+/**
+ * @typedef {{
+ *   title?: string,
+ *   description?: string,
+ *   noindex: boolean,
+ *   canonical?: string,
+ *   modified?: string,
+ *   published?: string,
+ * }} PageInfo
+ */
+
+/**
+ * What a page's head says about it, as far as the sitemap and the llms
+ * files need: its `<title>` and description, whether it asks not to be
+ * indexed, its canonical URL, and when it was published and last changed
+ * (`article:published_time` / `article:modified_time`). Read with the same
+ * parser as the content, so an attribute value with a `>` in it is no
+ * trouble and attribute order does not matter.
+ *
+ * @param {string} html a whole rendered page
+ * @returns {PageInfo}
+ */
+export function pageInfo(html) {
+  const end = html.search(/<\/head>|<body[\s>]/i)
+  const root = parse(end === -1 ? html : html.slice(0, end))
+
+  /** @type {PageInfo} */
+  const info = { noindex: false }
+  /** Keep the first of each, as a browser does. */
+  const first = (key, value) => {
+    if (value && info[key] === undefined) info[key] = value
+  }
+
+  const walk = (node) => {
+    if (typeof node === 'string') return
+    if (node.tag === 'title') first('title', textOf(node).replace(/\s+/g, ' ').trim())
+    if (node.tag === 'link' && /(?:^|\s)canonical(?:\s|$)/i.test(node.attrs.rel ?? '')) {
+      first('canonical', (node.attrs.href ?? '').trim())
+    }
+    if (node.tag === 'meta') {
+      const name = (node.attrs.name ?? '').toLowerCase()
+      const property = (node.attrs.property ?? '').toLowerCase()
+      // One line, as the llms files quote it after a link or a `>`.
+      const content = (node.attrs.content ?? '').replace(/\s+/g, ' ').trim()
+      if (name === 'description') first('description', content)
+      if (name === 'robots' && /\bnoindex\b/i.test(content)) info.noindex = true
+      if (property === 'article:modified_time') first('modified', content)
+      if (property === 'article:published_time') first('published', content)
+    }
+    node.children.forEach(walk)
+  }
+  walk(root)
+
+  return info
 }

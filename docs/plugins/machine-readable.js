@@ -2,27 +2,33 @@ import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 
-import { pageDates } from '../src/lib/last-modified.js'
 import { docNav, exampleNav, uiExtrasNav, uiNav } from '../src/lib/nav.js'
 import { SITE_URL } from '../src/lib/seo.js'
-import { pageToMarkdown } from './html-to-markdown.js'
+import { pageToMarkdown } from '../../src/markdown.js'
 
 const require = createRequire(import.meta.url)
 const pkg = require('../../package.json')
 
 /**
- * The files the docs write for machines rather than readers: the sitemap,
- * a Markdown copy of each English page, and the two `llms` files that point
- * answer engines at them.
+ * The files the docs write for answer engines rather than readers: a
+ * Markdown copy of each English page, and the two `llms` files that point
+ * at them.
  *
  * All of it is read back out of the rendered pages, so the page head stays
  * the one place a page says what it is. A page with
- * `<meta name="robots" content="noindex">` is left out of the sitemap; one
- * with `<link rel="alternate" type="text/markdown">` gets a Markdown copy at
- * that address. `pageShell()` in `src/lib/layout.js` decides both.
+ * `<link rel="alternate" type="text/markdown">` gets a Markdown copy at
+ * that address, and one with `<meta name="robots" content="noindex">` gets
+ * none. `pageShell()` in `src/lib/layout.js` decides both.
  *
- * Runs after vite-plugin-html-pages has emitted the pages and its own
- * sitemap, which this one replaces.
+ * The sitemap is sitelo's own (`src/sitemap.js`), which reads the same
+ * heads: canonical URLs, noindex pages left out, and `<lastmod>` from the
+ * `article:modified_time` the layout writes from `src/lib/last-modified.js`.
+ *
+ * sitelo's `llms` option writes the same three kinds of file for any site,
+ * with the same converter (`src/markdown.js`). The docs keep this plugin
+ * for what that option does not do: list pages in sidebar order under the
+ * site's own sections, and copy only the pages that advertise a Markdown
+ * twin.
  *
  * @returns {import('vite').Plugin}
  */
@@ -43,11 +49,6 @@ export function machineReadable() {
       order: 'post',
       handler(_, bundle) {
         const pages = readPages(bundle)
-
-        const sitemapXml = sitemap(pages)
-        const existing = bundle['sitemap.xml']
-        if (existing?.type === 'asset') existing.source = sitemapXml
-        else this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: sitemapXml })
 
         const twins = markdownTwins(pages)
         for (const twin of twins) {
@@ -122,35 +123,6 @@ function readPages(bundle) {
   }
 
   return pages
-}
-
-const escapeXml = (value) =>
-  value.replace(/[<>&'"]/g, (char) => `&#${char.charCodeAt(0)};`)
-
-/**
- * Every indexable page, at its canonical address, with the date it last
- * changed where git can say. Sorted, so a rebuild with nothing changed writes
- * the same file.
- *
- * @param {Page[]} pages
- */
-function sitemap(pages) {
-  const entries = pages
-    .filter((page) => !page.noindex)
-    .sort((a, b) => a.url.localeCompare(b.url))
-    .map((page) => {
-      const modified = pageDates(page.route)?.modified
-      const lastmod = modified ? `<lastmod>${modified}</lastmod>` : ''
-      return `  <url><loc>${escapeXml(page.url)}</loc>${lastmod}</url>`
-    })
-
-  return [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    ...entries,
-    '</urlset>',
-    '',
-  ].join('\n')
 }
 
 /**

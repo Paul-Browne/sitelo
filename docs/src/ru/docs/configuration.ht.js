@@ -48,6 +48,8 @@ export default () =>
         ),
         li(code('site'), ' — базовый URL; включает ', code('sitemap.xml')),
         li(code('rss'), ' — настройки RSS-ленты'),
+        li(code('robots'), ' — по умолчанию ', code('true'), '; пишет ', code('robots.txt'), ' со ссылкой на sitemap, если в ', code('public/'), ' или ', code('src/'), ' нет своего'),
+        li(code('llms'), ' — по умолчанию ', code('false'), '; ', code('true'), ' пишет ', code('llms.txt'), ', Markdown-копию каждой страницы и ', code('llms-full.txt'), ' (нужен ', code('site'), ')'),
         li(
           code('pagefind'),
           ' — ',
@@ -187,6 +189,7 @@ export default () =>
         code('dist/sitemap.xml'),
         '.',
       ),
+      p('В неё попадает каждая страница по адресу, по которому она отдаётся (', code('/about/'), ', а не ', code('/about'), '), кроме страниц 404 и страниц с ', code('<meta name="robots" content="noindex">'), '; дата каждой записи берётся из ', code('article:modified_time'), ' или ', code('dateModified'), ' в JSON-LD страницы. Собственный ', code('public/sitemap.xml'), ' публикуется вместо неё.'),
       p('RSS:'),
       codeBlock('sitelo.config.js', s.rss, 'javascript'),
       p(

@@ -48,6 +48,8 @@ export default () =>
         ),
         li(code('site'), ' — URL base; habilita el ', code('sitemap.xml')),
         li(code('rss'), ' — configuración del feed RSS'),
+        li(code('robots'), ' — por defecto ', code('true'), '; escribe un ', code('robots.txt'), ' que apunta al sitemap, salvo que ', code('public/'), ' o ', code('src/'), ' ya tenga uno'),
+        li(code('llms'), ' — por defecto ', code('false'), '; ', code('true'), ' escribe ', code('llms.txt'), ', una copia en Markdown de cada página y ', code('llms-full.txt'), ' (requiere ', code('site'), ')'),
         li(
           code('pagefind'),
           ' — ',
@@ -197,6 +199,7 @@ export default () =>
         code('dist/sitemap.xml'),
         '.',
       ),
+      p('Incluye cada página con la URL en la que se sirve (', code('/about/'), ', no ', code('/about'), '), omite las páginas 404 y cualquier página con ', code('<meta name="robots" content="noindex">'), ', y fecha cada entrada con el ', code('article:modified_time'), ' o el ', code('dateModified'), ' del JSON-LD de la página. Si tienes tu propio ', code('public/sitemap.xml'), ', se publica ese.'),
       p('RSS:'),
       codeBlock('sitelo.config.js', s.rss, 'javascript'),
       p(

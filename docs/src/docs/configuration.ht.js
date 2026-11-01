@@ -41,6 +41,8 @@ export default () =>
         li(code('cleanUrls'), ' — default ', code('true'), ' (', code('/about/index.html'), ')'),
         li(code('site'), ' — base URL; enables ', code('sitemap.xml')),
         li(code('rss'), ' — RSS feed config'),
+        li(code('robots'), ' — default ', code('true'), '; writes a ', code('robots.txt'), ' that names the sitemap, unless ', code('public/'), ' or ', code('src/'), ' has one'),
+        li(code('llms'), ' — default ', code('false'), '; ', code('true'), ' writes ', code('llms.txt'), ', a Markdown copy of each page and ', code('llms-full.txt'), ' (needs ', code('site'), ')'),
         li(
           code('pagefind'),
           ' — ',
@@ -167,6 +169,7 @@ export default () =>
       ),
       h2('Sitemap & RSS'),
       p('Set ', code('site'), ' to emit ', code('dist/sitemap.xml'), '.'),
+      p('It lists every page at the URL it is served at (', code('/about/'), ', not ', code('/about'), '), leaves out 404 pages and any page with ', code('<meta name="robots" content="noindex">'), ', and dates each entry from the page’s ', code('article:modified_time'), ' or JSON-LD ', code('dateModified'), '. A ', code('public/sitemap.xml'), ' of your own ships instead.'),
       p('RSS:'),
       codeBlock('sitelo.config.js', s.rss, 'javascript'),
       p(

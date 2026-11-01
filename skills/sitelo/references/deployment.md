@@ -67,7 +67,8 @@ or server. See [islands.md](islands.md).
 
 ## Before you ship
 
-- Set `site` in `sitelo.config.js` so `sitemap.xml` is written.
+- Set `site` in `sitelo.config.js` so `sitemap.xml` is written and
+  `robots.txt` points at it.
 - Add `src/404.ht.js` for a branded not-found page.
 - Run `sitelo build`, then `sitelo preview`, and click through.
   `linkCheck: 'error'` and `sitelo lighthouse` catch the rest.

@@ -48,6 +48,8 @@ export default () =>
         ),
         li(code('site'), ' — Basis-URL; aktiviert die ', code('sitemap.xml')),
         li(code('rss'), ' — Konfiguration des RSS-Feeds'),
+        li(code('robots'), ' — Standard ', code('true'), '; schreibt eine ', code('robots.txt'), ' mit Verweis auf die Sitemap, sofern ', code('public/'), ' oder ', code('src/'), ' keine eigene enthält'),
+        li(code('llms'), ' — Standard ', code('false'), '; ', code('true'), ' schreibt ', code('llms.txt'), ', eine Markdown-Kopie jeder Seite und ', code('llms-full.txt'), ' (braucht ', code('site'), ')'),
         li(
           code('pagefind'),
           ' — ',
@@ -187,6 +189,7 @@ export default () =>
         code('dist/sitemap.xml'),
         ' zu erzeugen.',
       ),
+      p('Sie listet jede Seite unter der URL, unter der sie ausgeliefert wird (', code('/about/'), ', nicht ', code('/about'), '), lässt 404-Seiten und jede Seite mit ', code('<meta name="robots" content="noindex">'), ' weg und datiert jeden Eintrag aus ', code('article:modified_time'), ' oder dem JSON-LD-Feld ', code('dateModified'), ' der Seite. Eine eigene ', code('public/sitemap.xml'), ' wird stattdessen ausgeliefert.'),
       p('RSS:'),
       codeBlock('sitelo.config.js', s.rss, 'javascript'),
       p(

@@ -42,6 +42,8 @@ register them. Features marked *CLI only* below run in `sitelo build`, not
 | `cleanUrls` | `true` | `about/index.html` rather than `about.html` |
 | `site` | none | Base URL. Turns on `sitemap.xml` |
 | `rss` | none | `{ site, title, description, routePrefix }` writes `rss.xml` with every page under `routePrefix` |
+| `robots` | `true` | Writes `robots.txt` (allow all, plus the sitemap URL when `site` is set). A `public/robots.txt` or `src/robots.txt` wins. `false` to disable |
+| `llms` | `false` | `true` or `{ exclude, full }`. On a build, writes a Markdown copy of each page (`/blog/hello.md` for `/blog/hello/`), `llms.txt` and `llms-full.txt`. Needs `site` |
 | `pagefind` | none | `true` or options. Indexes the build (*CLI only*, needs `pagefind`) |
 | `images` | none | `true` or options. See [images.md](images.md) (*CLI only* for the build, needs `sharp`) |
 | `missingAssets` | `'error'` | `'warn'` to log broken script and stylesheet references instead of failing |
@@ -61,8 +63,13 @@ register them. Features marked *CLI only* below run in `sitelo build`, not
 
 ## Sitemap and RSS
 
-Set `site` and `dist/sitemap.xml` lists every static route. `rss` writes
-`dist/rss.xml`:
+Set `site` and `dist/sitemap.xml` lists every built page at the URL it is
+served at (`/about/`, or the page's canonical), leaving out 404 and
+`noindex` pages, and the generated `dist/robots.txt` names it. To date
+entries, give pages `<meta property="article:modified_time">` or a JSON-LD
+`dateModified`. Do not write a sitemap plugin. Do not write a `robots.txt` just to
+allow crawling or announce the sitemap. Add one to `public/` only for
+real rules, such as a `Disallow`. `rss` writes `dist/rss.xml`:
 
 ```js
 export default {
@@ -70,6 +77,21 @@ export default {
   rss: { site: 'https://example.com', title: 'My Blog', description: 'Latest posts', routePrefix: '/blog' },
 }
 ```
+
+## llms.txt
+
+`llms: true` (with `site` set) makes a build write a Markdown copy of each
+page beside it, `llms.txt` linking them, and `llms-full.txt` with all of
+them. Do not write a plugin or script for this.
+
+- A copy is the page's `<main>`, or its `<body>` minus header, footer and
+  nav, so put content in `<main>` for the cleanest result. Anything
+  marked `data-pagefind-ignore` or `aria-hidden="true"` is left out.
+- 404 pages and pages with `<meta name="robots" content="noindex">` are
+  skipped. `exclude` takes globs of built files: `{ exclude: ['drafts/**'] }`.
+- To write the title, summary and notes at the top of `llms.txt`, put them
+  in `public/llms.txt`. The build appends the page list. `full: false`
+  skips `llms-full.txt`.
 
 ## Link checking
 

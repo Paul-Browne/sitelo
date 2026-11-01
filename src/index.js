@@ -1,5 +1,8 @@
 import htmlPages from 'vite-plugin-html-pages';
 
+import { llmsTxt, normalizeLlmsOptions } from './llms.js';
+import { robotsTxt } from './robots.js';
+import { sitemap } from './sitemap.js';
 import { uiClientPrefix, uiRuntime } from './ui/plugin.js';
 
 export * from 'vite-plugin-html-pages';
@@ -28,11 +31,18 @@ function toArray(value) {
  *   the built pages can match, rather than the whole sheet. `keep` names
  *   classes to keep regardless — for markup that arrives at request
  *   time, say — with a trailing `*` for a prefix.
+ * - `robots` — `false` to stop writing a `robots.txt` for a site that
+ *   has none of its own.
+ * - `llms` — `true`, or `{ exclude, full }`, to write `llms.txt`, a
+ *   Markdown copy of each page and `llms-full.txt` on a build. Off by
+ *   default, and needs `site`.
  *
  * @param {import('./index.js').SiteloPluginOptions} [options]
  */
 export default function sitelo(options = {}) {
-  const { uiClient, pruneCss, externalAssets, ...pluginOptions } = options;
+  const { uiClient, pruneCss, robots = true, llms, externalAssets, ...pluginOptions } = options;
+  // Checked here, so a mistyped option fails before anything is built.
+  const llmsOptions = normalizeLlmsOptions(llms);
 
   return [
     htmlPages({
@@ -60,6 +70,12 @@ export default function sitelo(options = {}) {
       generatedTypesDir: options.generatedTypesDir ?? '.sitelo/types',
       displayName: options.displayName ?? 'sitelo',
     }),
+    // Before robots.txt, which names the sitemap only if there is one.
+    sitemap({ site: options.site }),
+    ...(robots === false
+      ? []
+      : [robotsTxt({ site: options.site, root: options.root, pagesDir: options.pagesDir })]),
+    ...(llmsOptions ? [llmsTxt({ site: options.site, ...llmsOptions })] : []),
     uiRuntime({ ...uiClient, prune: pruneCss }),
   ];
 }

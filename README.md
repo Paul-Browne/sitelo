@@ -75,7 +75,8 @@ That's the whole mental model. Everything else is convenience on top.
   request time, loaded eagerly, on idle, or on scroll, with optional
   signed props
 - **Parallel static generation** — renders large sites concurrently
-- **`404.html`, `sitemap.xml`, RSS, Pagefind** — generated for you
+- **`404.html`, `sitemap.xml`, `robots.txt`, RSS, Pagefind** — generated for you,
+  and `llms.txt` with a Markdown copy of every page when you opt in
 
 ---
 
@@ -1511,13 +1512,92 @@ default, with a 404 status.
 
 ### Sitemap
 
-Set your site URL and `dist/sitemap.xml` is generated from all static
-routes, correctly escaped:
+Set your site URL and `dist/sitemap.xml` is generated from the pages as
+built:
 
 ```js
 // sitelo.config.js
 export default {
   site: 'https://example.com',
+}
+```
+
+- **Each page at the URL it is served at.** `about/index.html` is listed
+  as `/about/`, not `/about`, which a static host answers with a
+  redirect. A page's own `<link rel="canonical">` wins when it is on the
+  site, and pages naming the same canonical are listed once.
+- **Indexable pages only.** 404 pages and any page with
+  `<meta name="robots" content="noindex">` are left out.
+- **Dated from the page.** `<lastmod>` comes from the page's
+  `article:modified_time`, or the `dateModified` in its JSON-LD, falling
+  back to the published date. A page that states no valid date gets no
+  `<lastmod>`; a guessed one would teach search engines to ignore the
+  rest.
+- **Sorted**, so an unchanged site rebuilds to the same file, and past
+  50,000 URLs split into `sitemap-1.xml`, `sitemap-2.xml`, … under a
+  sitemap index at `sitemap.xml`.
+
+A `public/sitemap.xml` of your own is shipped instead, untouched.
+
+### robots.txt
+
+Every build gets a `dist/robots.txt` that lets crawlers in and, when
+`site` is set, points them at the sitemap:
+
+```
+User-agent: *
+Allow: /
+
+Sitemap: https://example.com/sitemap.xml
+```
+
+Ship your own, in `public/robots.txt` or `src/robots.txt`, and it is
+used instead, untouched. The dev server answers `/robots.txt` the same
+way. To have none at all:
+
+```js
+// sitelo.config.js
+export default {
+  robots: false,
+}
+```
+
+Crawlers only read `robots.txt` from the root of a host, so on a
+sub-path deploy (`--base /repo/`) the generated file has no effect.
+
+### llms.txt
+
+Opt in and a build also writes what the [llms.txt](https://llmstxt.org)
+convention asks for, so AI tools can read the site as clean Markdown
+rather than scraping its HTML:
+
+```js
+// sitelo.config.js
+export default {
+  site: 'https://example.com',   // required: every link in them is absolute
+  llms: true,
+}
+```
+
+- **A Markdown copy of each page**, beside it and named for its URL:
+  `/blog/hello/` gets `/blog/hello.md`, and the home page `/index.md`.
+  Each copy is the page's `<main>`, or its `<body>` without the header,
+  footer and navigation, with its description quoted under the heading.
+- **`llms.txt`**, linking every copy with its description, grouped by
+  the first part of the URL (`/blog/…` under "Blog").
+- **`llms-full.txt`**, every copy in one file.
+
+A page is left out if it is a 404 page, if it says
+`<meta name="robots" content="noindex">`, or if it matches `exclude`.
+To write the top of `llms.txt` yourself (a title, a summary, notes for
+the reader), put it in `public/llms.txt`. The build keeps it and adds the
+list of pages after it. Without one, the title and summary come from the
+home page.
+
+```js
+llms: {
+  exclude: ['drafts/**', 'search/index.html'],  // built files, as globs
+  full: false,                                  // no llms-full.txt
 }
 ```
 
@@ -1958,6 +2038,8 @@ export default {
 | `cleanUrls` | `true` | `/about/index.html` (`/about`) instead of `/about.html` |
 | `site` | — | Base URL; enables `sitemap.xml` |
 | `rss` | — | RSS config (`site`, `title`, `description`, `routePrefix`) |
+| `robots` | `true` | Writes `robots.txt`, naming the sitemap when `site` is set, unless `public/` or `src/` has one. `false` to disable |
+| `llms` | `false` | `true` or `{ exclude, full }`; writes `llms.txt`, a Markdown copy of each page and `llms-full.txt` on a build. Needs `site` |
 | `pagefind` | — | `true` or options object; indexes after `sitelo build` (CLI only). Requires the `pagefind` peer dependency |
 | `images` | — | `true` or options object; optimizes images in dev and after `sitelo build` (CLI only). Requires the `sharp` peer dependency |
 | `missingAssets` | `'error'` | `'error'` or `'warn'` for broken asset references |

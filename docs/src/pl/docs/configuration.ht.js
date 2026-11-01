@@ -48,6 +48,8 @@ export default () =>
         ),
         li(code('site'), ' — bazowy URL; włącza ', code('sitemap.xml')),
         li(code('rss'), ' — konfiguracja kanału RSS'),
+        li(code('robots'), ' — domyślnie ', code('true'), '; zapisuje ', code('robots.txt'), ' wskazujący sitemapę, chyba że ', code('public/'), ' lub ', code('src/'), ' ma już własny'),
+        li(code('llms'), ' — domyślnie ', code('false'), '; ', code('true'), ' zapisuje ', code('llms.txt'), ', kopię każdej strony w Markdownie i ', code('llms-full.txt'), ' (wymaga ', code('site'), ')'),
         li(
           code('pagefind'),
           ' — ',
@@ -187,6 +189,7 @@ export default () =>
         code('dist/sitemap.xml'),
         '.',
       ),
+      p('Zawiera każdą stronę pod adresem, pod którym jest serwowana (', code('/about/'), ', nie ', code('/about'), '), pomija strony 404 i każdą stronę z ', code('<meta name="robots" content="noindex">'), ', a datę wpisu bierze z ', code('article:modified_time'), ' lub pola ', code('dateModified'), ' w JSON-LD strony. Własny ', code('public/sitemap.xml'), ' trafia do builda zamiast niej.'),
       p('RSS:'),
       codeBlock('sitelo.config.js', s.rss, 'javascript'),
       p(

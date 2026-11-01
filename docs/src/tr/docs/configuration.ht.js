@@ -40,6 +40,8 @@ export default () =>
         li(code('cleanUrls'), ' — varsayılan ', code('true'), ' (', code('/about/index.html'), ')'),
         li(code('site'), ' — temel URL; ', code('sitemap.xml'), ' üretimini açar'),
         li(code('rss'), ' — RSS akışı yapılandırması'),
+        li(code('robots'), ' — varsayılan ', code('true'), '; ', code('public/'), ' veya ', code('src/'), ' içinde yoksa site haritasını gösteren bir ', code('robots.txt'), ' yazar'),
+        li(code('llms'), ' — varsayılan ', code('false'), '; ', code('true'), ' ile ', code('llms.txt'), ', her sayfanın Markdown kopyası ve ', code('llms-full.txt'), ' yazılır (', code('site'), ' gerekir)'),
         li(
           code('pagefind'),
           ' — ',
@@ -163,6 +165,7 @@ export default () =>
       ),
       h2('Site haritası ve RSS'),
       p(code('dist/sitemap.xml'), ' üretmek için ', code('site'), ' değerini ayarlayın.'),
+      p('Her sayfayı sunulduğu URL ile listeler (', code('/about'), ' değil ', code('/about/'), '), 404 sayfalarını ve ', code('<meta name="robots" content="noindex">'), ' içeren sayfaları dışarıda bırakır, her girdinin tarihini sayfanın ', code('article:modified_time'), ' ya da JSON-LD ', code('dateModified'), ' değerinden alır. Kendi ', code('public/sitemap.xml'), ' dosyanız varsa onun yerine o yayımlanır.'),
       p('RSS:'),
       codeBlock('sitelo.config.js', s.rss, 'javascript'),
       p(

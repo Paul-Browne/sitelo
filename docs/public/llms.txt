@@ -114,7 +114,9 @@ Component library shipped with sitelo, at the `sitelo/ui` entry point. Component
 ## Generated extras
 
 - `404.html` from `src/404.ht.js` or a default
-- `sitemap.xml` when `site` is set in config
+- `sitemap.xml` when `site` is set in config: every built page at its served URL (or its on-site canonical), without 404 and `noindex` pages, `<lastmod>` from `article:modified_time` or JSON-LD `dateModified`; a `public/sitemap.xml` wins
+- `robots.txt` (allow all, plus the sitemap URL when `site` is set) unless `public/` or `src/` has one; `robots: false` turns it off
+- With `llms: true` (and `site`): a Markdown copy of each page (`/blog/hello.md` for `/blog/hello/`), `llms.txt` linking them, and `llms-full.txt`. A hand-written `public/llms.txt` is kept as the intro, with the page list appended. Options: `{ exclude: ['drafts/**'], full: false }`
 - `rss.xml` when `rss` is configured
 - Pagefind search index (`dist/pagefind/`) when `pagefind: true` (or an options object) is set; requires `npm install -D pagefind`. By default also synced to `public/pagefind/` for `sitelo` / `sitelo preview`. Mark content with `data-pagefind-body`.
 - Image optimization when `images: true` (or an options object) is set; requires `npm install -D sharp`. See https://sitelo.dev/docs/images
