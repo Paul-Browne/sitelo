@@ -48,6 +48,7 @@ export default () =>
         li(code('site'), ' —— 基础 URL；启用 ', code('sitemap.xml')),
         li(code('rss'), ' —— RSS 订阅配置'),
         li(code('robots'), ' —— 默认 ', code('true'), '；若 ', code('public/'), ' 或 ', code('src/'), ' 中没有自己的 ', code('robots.txt'), '，就生成一个并指向 sitemap'),
+        li(code('llms'), ' —— 默认 ', code('false'), '；设为 ', code('true'), ' 时写出 ', code('llms.txt'), '、每个页面的 Markdown 副本和 ', code('llms-full.txt'), '（需要 ', code('site'), '）'),
         li(
           code('pagefind'),
           ' —— ',

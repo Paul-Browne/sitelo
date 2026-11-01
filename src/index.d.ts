@@ -40,6 +40,29 @@ export interface SiteloPluginOptions extends HtPagesPluginOptions {
    * always used instead, so this only fills the gap.
    */
   robots?: boolean;
+  /**
+   * Write what the llms.txt convention (https://llmstxt.org) asks for on
+   * a build: a Markdown copy of each page beside it (`/blog/hello.md` for
+   * `/blog/hello/`), `llms.txt` linking them, and `llms-full.txt` with
+   * all of them in one file. Off by default. Needs `site`, as every link
+   * in them is absolute.
+   *
+   * A page is left out for being a 404 page, for
+   * `<meta name="robots" content="noindex">`, or for matching `exclude`.
+   * A `llms.txt` of your own, in `public/` or the pages directory, is kept
+   * as the top of the file, with the list of pages written after it.
+   */
+  llms?: boolean | SiteloLlmsOptions;
+}
+
+export interface SiteloLlmsOptions {
+  /**
+   * Built files to leave out, as globs against their path in the output
+   * directory: `'drafts/**'`, or `['admin/**', 'search.html']`.
+   */
+  exclude?: string | string[];
+  /** Write `llms-full.txt`, every page in one file. Defaults to `true`. */
+  full?: boolean;
 }
 
 declare function sitelo(options?: SiteloPluginOptions): Plugin[];

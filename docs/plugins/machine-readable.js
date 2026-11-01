@@ -5,7 +5,7 @@ import path from 'node:path'
 import { pageDates } from '../src/lib/last-modified.js'
 import { docNav, exampleNav, uiExtrasNav, uiNav } from '../src/lib/nav.js'
 import { SITE_URL } from '../src/lib/seo.js'
-import { pageToMarkdown } from './html-to-markdown.js'
+import { pageToMarkdown } from '../../src/markdown.js'
 
 const require = createRequire(import.meta.url)
 const pkg = require('../../package.json')
@@ -23,6 +23,12 @@ const pkg = require('../../package.json')
  *
  * Runs after vite-plugin-html-pages has emitted the pages and its own
  * sitemap, which this one replaces.
+ *
+ * sitelo's own `llms` option writes the same three kinds of file for any
+ * site, with the same converter (`src/markdown.js`). The docs keep this
+ * plugin for what that option does not do: list pages in sidebar order
+ * under the site's own sections, copy only the pages that advertise a
+ * Markdown twin, and date the sitemap.
  *
  * @returns {import('vite').Plugin}
  */

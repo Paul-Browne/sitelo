@@ -49,6 +49,7 @@ export default () =>
         li(code('site'), ' — URL base; ativa o ', code('sitemap.xml')),
         li(code('rss'), ' — configuração do feed RSS'),
         li(code('robots'), ' — por omissão ', code('true'), '; escreve um ', code('robots.txt'), ' que aponta para o sitemap, a menos que ', code('public/'), ' ou ', code('src/'), ' já tenha um'),
+        li(code('llms'), ' — por omissão ', code('false'), '; ', code('true'), ' escreve ', code('llms.txt'), ', uma cópia em Markdown de cada página e ', code('llms-full.txt'), ' (requer ', code('site'), ')'),
         li(
           code('pagefind'),
           ' — ',

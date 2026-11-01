@@ -41,6 +41,7 @@ export default () =>
         li(code('site'), ' — URL dasar; mengaktifkan ', code('sitemap.xml')),
         li(code('rss'), ' — konfigurasi umpan RSS'),
         li(code('robots'), ' — bawaan ', code('true'), '; menulis ', code('robots.txt'), ' yang menunjuk ke peta situs, kecuali ', code('public/'), ' atau ', code('src/'), ' sudah memilikinya'),
+        li(code('llms'), ' — bawaan ', code('false'), '; ', code('true'), ' menulis ', code('llms.txt'), ', salinan Markdown setiap halaman, dan ', code('llms-full.txt'), ' (memerlukan ', code('site'), ')'),
         li(
           code('pagefind'),
           ' — ',

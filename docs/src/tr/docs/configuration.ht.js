@@ -41,6 +41,7 @@ export default () =>
         li(code('site'), ' — temel URL; ', code('sitemap.xml'), ' üretimini açar'),
         li(code('rss'), ' — RSS akışı yapılandırması'),
         li(code('robots'), ' — varsayılan ', code('true'), '; ', code('public/'), ' veya ', code('src/'), ' içinde yoksa site haritasını gösteren bir ', code('robots.txt'), ' yazar'),
+        li(code('llms'), ' — varsayılan ', code('false'), '; ', code('true'), ' ile ', code('llms.txt'), ', her sayfanın Markdown kopyası ve ', code('llms-full.txt'), ' yazılır (', code('site'), ' gerekir)'),
         li(
           code('pagefind'),
           ' — ',

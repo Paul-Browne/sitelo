@@ -49,6 +49,7 @@ export default () =>
         li(code('site'), ' — Basis-URL; aktiviert die ', code('sitemap.xml')),
         li(code('rss'), ' — Konfiguration des RSS-Feeds'),
         li(code('robots'), ' — Standard ', code('true'), '; schreibt eine ', code('robots.txt'), ' mit Verweis auf die Sitemap, sofern ', code('public/'), ' oder ', code('src/'), ' keine eigene enthält'),
+        li(code('llms'), ' — Standard ', code('false'), '; ', code('true'), ' schreibt ', code('llms.txt'), ', eine Markdown-Kopie jeder Seite und ', code('llms-full.txt'), ' (braucht ', code('site'), ')'),
         li(
           code('pagefind'),
           ' — ',

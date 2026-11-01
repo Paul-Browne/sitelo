@@ -15,7 +15,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
 
-import { pageToMarkdown } from '../docs/plugins/html-to-markdown.js';
+import { pageToMarkdown } from '../src/markdown.js';
 import { machineReadable } from '../docs/plugins/machine-readable.js';
 import { pageDates } from '../docs/src/lib/last-modified.js';
 import { structuredData } from '../docs/src/lib/seo.js';
@@ -91,8 +91,32 @@ test('markdown reads an attribute value with a ">" in it', () => {
   assert.equal(markdown, 'After\n');
 });
 
-test('markdown is undefined for a page with no <main>', () => {
-  assert.equal(pageToMarkdown('<html><body><p>x</p></body></html>', context), undefined);
+test('markdown falls back to <body>, without the chrome around the content', () => {
+  assert.equal(
+    pageToMarkdown(
+      '<html><body><header><a href="/">Home</a></header><h1>Post</h1><p>x</p>' +
+        '<aside>Related</aside><footer>© me</footer></body></html>',
+      context,
+    ),
+    '# Post\n\nx\n',
+  );
+});
+
+test('markdown is undefined for a page with neither <main> nor <body>', () => {
+  assert.equal(pageToMarkdown('<p>x</p>', context), undefined);
+});
+
+test('markdown resolves relative links against the page, not the site root', () => {
+  const markdown = pageToMarkdown(
+    '<main><p><a href="../data">Data</a>, <a href="/docs/cli">CLI</a>, ' +
+      '<a href="https://pagefind.app">Pagefind</a>, <img src="shot.png" alt="Shot"></p></main>',
+    { pageUrl: 'https://example.com/repo/docs/routing/' },
+  );
+  assert.equal(
+    markdown,
+    '[Data](https://example.com/repo/docs/data), [CLI](https://example.com/docs/cli), ' +
+      '[Pagefind](https://pagefind.app), ![Shot](https://example.com/repo/docs/routing/shot.png)\n',
+  );
 });
 
 test('structured data parses, and cannot close its own script', () => {

@@ -251,7 +251,7 @@ Read the reference before you work on that feature:
 | Task | Read |
 | --- | --- |
 | `data()`, `fetchWithCache`, `readJson`, `readJsonCollection` | [references/data.md](references/data.md) |
-| Every config option; sitemap, RSS, Pagefind, link checking, build report, dev toolbar, knip | [references/configuration.md](references/configuration.md) |
+| Every config option; sitemap, robots.txt, llms.txt, RSS, Pagefind, link checking, build report, dev toolbar, knip | [references/configuration.md](references/configuration.md) |
 | `images: true`, `srcset`, `?w=400&h=400` thumbnails, `data-no-optimize` | [references/images.md](references/images.md) |
 | Server islands: request-time regions, `island()`, `mountIslands()`, production handlers, signed props | [references/islands.md](references/islands.md) |
 | `sitelo lighthouse`, score thresholds, CI | [references/lighthouse.md](references/lighthouse.md) |

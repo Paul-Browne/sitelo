@@ -1,5 +1,6 @@
 import htmlPages from 'vite-plugin-html-pages';
 
+import { llmsTxt, normalizeLlmsOptions } from './llms.js';
 import { robotsTxt } from './robots.js';
 import { uiClientPrefix, uiRuntime } from './ui/plugin.js';
 
@@ -31,11 +32,16 @@ function toArray(value) {
  *   time, say — with a trailing `*` for a prefix.
  * - `robots` — `false` to stop writing a `robots.txt` for a site that
  *   has none of its own.
+ * - `llms` — `true`, or `{ exclude, full }`, to write `llms.txt`, a
+ *   Markdown copy of each page and `llms-full.txt` on a build. Off by
+ *   default, and needs `site`.
  *
  * @param {import('./index.js').SiteloPluginOptions} [options]
  */
 export default function sitelo(options = {}) {
-  const { uiClient, pruneCss, robots = true, externalAssets, ...pluginOptions } = options;
+  const { uiClient, pruneCss, robots = true, llms, externalAssets, ...pluginOptions } = options;
+  // Checked here, so a mistyped option fails before anything is built.
+  const llmsOptions = normalizeLlmsOptions(llms);
 
   return [
     htmlPages({
@@ -66,6 +72,7 @@ export default function sitelo(options = {}) {
     ...(robots === false
       ? []
       : [robotsTxt({ site: options.site, root: options.root, pagesDir: options.pagesDir })]),
+    ...(llmsOptions ? [llmsTxt({ site: options.site, ...llmsOptions })] : []),
     uiRuntime({ ...uiClient, prune: pruneCss }),
   ];
 }
