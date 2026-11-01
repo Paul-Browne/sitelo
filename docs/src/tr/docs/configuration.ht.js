@@ -40,6 +40,7 @@ export default () =>
         li(code('cleanUrls'), ' — varsayılan ', code('true'), ' (', code('/about/index.html'), ')'),
         li(code('site'), ' — temel URL; ', code('sitemap.xml'), ' üretimini açar'),
         li(code('rss'), ' — RSS akışı yapılandırması'),
+        li(code('robots'), ' — varsayılan ', code('true'), '; ', code('public/'), ' veya ', code('src/'), ' içinde yoksa site haritasını gösteren bir ', code('robots.txt'), ' yazar'),
         li(
           code('pagefind'),
           ' — ',

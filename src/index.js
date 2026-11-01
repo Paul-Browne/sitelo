@@ -1,5 +1,6 @@
 import htmlPages from 'vite-plugin-html-pages';
 
+import { robotsTxt } from './robots.js';
 import { uiClientPrefix, uiRuntime } from './ui/plugin.js';
 
 export * from 'vite-plugin-html-pages';
@@ -28,11 +29,13 @@ function toArray(value) {
  *   the built pages can match, rather than the whole sheet. `keep` names
  *   classes to keep regardless — for markup that arrives at request
  *   time, say — with a trailing `*` for a prefix.
+ * - `robots` — `false` to stop writing a `robots.txt` for a site that
+ *   has none of its own.
  *
  * @param {import('./index.js').SiteloPluginOptions} [options]
  */
 export default function sitelo(options = {}) {
-  const { uiClient, pruneCss, externalAssets, ...pluginOptions } = options;
+  const { uiClient, pruneCss, robots = true, externalAssets, ...pluginOptions } = options;
 
   return [
     htmlPages({
@@ -60,6 +63,9 @@ export default function sitelo(options = {}) {
       generatedTypesDir: options.generatedTypesDir ?? '.sitelo/types',
       displayName: options.displayName ?? 'sitelo',
     }),
+    ...(robots === false
+      ? []
+      : [robotsTxt({ site: options.site, root: options.root, pagesDir: options.pagesDir })]),
     uiRuntime({ ...uiClient, prune: pruneCss }),
   ];
 }

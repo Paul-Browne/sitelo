@@ -32,6 +32,14 @@ export interface SiteloPluginOptions extends HtPagesPluginOptions {
    * for a prefix: `['su-card', 'su-btn*']`.
    */
   pruneCss?: boolean | { keep?: string[] };
+  /**
+   * Write a `robots.txt` that lets every crawler in and, when `site` is
+   * set, names the sitemap. On by default; `false` turns it off.
+   *
+   * A `robots.txt` of your own, in `public/` or the pages directory, is
+   * always used instead, so this only fills the gap.
+   */
+  robots?: boolean;
 }
 
 declare function sitelo(options?: SiteloPluginOptions): Plugin[];

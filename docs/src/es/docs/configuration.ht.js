@@ -48,6 +48,7 @@ export default () =>
         ),
         li(code('site'), ' — URL base; habilita el ', code('sitemap.xml')),
         li(code('rss'), ' — configuración del feed RSS'),
+        li(code('robots'), ' — por defecto ', code('true'), '; escribe un ', code('robots.txt'), ' que apunta al sitemap, salvo que ', code('public/'), ' o ', code('src/'), ' ya tenga uno'),
         li(
           code('pagefind'),
           ' — ',

@@ -40,6 +40,7 @@ export default () =>
         li(code('cleanUrls'), ' — bawaan ', code('true'), ' (', code('/about/index.html'), ')'),
         li(code('site'), ' — URL dasar; mengaktifkan ', code('sitemap.xml')),
         li(code('rss'), ' — konfigurasi umpan RSS'),
+        li(code('robots'), ' — bawaan ', code('true'), '; menulis ', code('robots.txt'), ' yang menunjuk ke peta situs, kecuali ', code('public/'), ' atau ', code('src/'), ' sudah memilikinya'),
         li(
           code('pagefind'),
           ' — ',

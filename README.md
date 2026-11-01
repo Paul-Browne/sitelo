@@ -75,7 +75,7 @@ That's the whole mental model. Everything else is convenience on top.
   request time, loaded eagerly, on idle, or on scroll, with optional
   signed props
 - **Parallel static generation** — renders large sites concurrently
-- **`404.html`, `sitemap.xml`, RSS, Pagefind** — generated for you
+- **`404.html`, `sitemap.xml`, `robots.txt`, RSS, Pagefind** — generated for you
 
 ---
 
@@ -1488,6 +1488,32 @@ export default {
 }
 ```
 
+### robots.txt
+
+Every build gets a `dist/robots.txt` that lets crawlers in and, when
+`site` is set, points them at the sitemap:
+
+```
+User-agent: *
+Allow: /
+
+Sitemap: https://example.com/sitemap.xml
+```
+
+Ship your own, in `public/robots.txt` or `src/robots.txt`, and it is
+used instead, untouched. The dev server answers `/robots.txt` the same
+way. To have none at all:
+
+```js
+// sitelo.config.js
+export default {
+  robots: false,
+}
+```
+
+Crawlers only read `robots.txt` from the root of a host, so on a
+sub-path deploy (`--base /repo/`) the generated file has no effect.
+
 ### RSS feed
 
 ```js
@@ -1925,6 +1951,7 @@ export default {
 | `cleanUrls` | `true` | `/about/index.html` (`/about`) instead of `/about.html` |
 | `site` | — | Base URL; enables `sitemap.xml` |
 | `rss` | — | RSS config (`site`, `title`, `description`, `routePrefix`) |
+| `robots` | `true` | Writes `robots.txt`, naming the sitemap when `site` is set, unless `public/` or `src/` has one. `false` to disable |
 | `pagefind` | — | `true` or options object; indexes after `sitelo build` (CLI only). Requires the `pagefind` peer dependency |
 | `images` | — | `true` or options object; optimizes images in dev and after `sitelo build` (CLI only). Requires the `sharp` peer dependency |
 | `missingAssets` | `'error'` | `'error'` or `'warn'` for broken asset references |

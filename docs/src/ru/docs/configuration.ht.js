@@ -48,6 +48,7 @@ export default () =>
         ),
         li(code('site'), ' — базовый URL; включает ', code('sitemap.xml')),
         li(code('rss'), ' — настройки RSS-ленты'),
+        li(code('robots'), ' — по умолчанию ', code('true'), '; пишет ', code('robots.txt'), ' со ссылкой на sitemap, если в ', code('public/'), ' или ', code('src/'), ' нет своего'),
         li(
           code('pagefind'),
           ' — ',

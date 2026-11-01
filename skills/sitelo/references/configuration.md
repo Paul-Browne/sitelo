@@ -42,6 +42,7 @@ register them. Features marked *CLI only* below run in `sitelo build`, not
 | `cleanUrls` | `true` | `about/index.html` rather than `about.html` |
 | `site` | none | Base URL. Turns on `sitemap.xml` |
 | `rss` | none | `{ site, title, description, routePrefix }` writes `rss.xml` with every page under `routePrefix` |
+| `robots` | `true` | Writes `robots.txt` (allow all, plus the sitemap URL when `site` is set). A `public/robots.txt` or `src/robots.txt` wins. `false` to disable |
 | `pagefind` | none | `true` or options. Indexes the build (*CLI only*, needs `pagefind`) |
 | `images` | none | `true` or options. See [images.md](images.md) (*CLI only* for the build, needs `sharp`) |
 | `missingAssets` | `'error'` | `'warn'` to log broken script and stylesheet references instead of failing |
@@ -61,8 +62,10 @@ register them. Features marked *CLI only* below run in `sitelo build`, not
 
 ## Sitemap and RSS
 
-Set `site` and `dist/sitemap.xml` lists every static route. `rss` writes
-`dist/rss.xml`:
+Set `site` and `dist/sitemap.xml` lists every static route, and the
+generated `dist/robots.txt` names it. Do not write a `robots.txt` just to
+allow crawling or announce the sitemap. Add one to `public/` only for
+real rules, such as a `Disallow`. `rss` writes `dist/rss.xml`:
 
 ```js
 export default {

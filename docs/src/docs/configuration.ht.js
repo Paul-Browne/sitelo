@@ -41,6 +41,7 @@ export default () =>
         li(code('cleanUrls'), ' — default ', code('true'), ' (', code('/about/index.html'), ')'),
         li(code('site'), ' — base URL; enables ', code('sitemap.xml')),
         li(code('rss'), ' — RSS feed config'),
+        li(code('robots'), ' — default ', code('true'), '; writes a ', code('robots.txt'), ' that names the sitemap, unless ', code('public/'), ' or ', code('src/'), ' has one'),
         li(
           code('pagefind'),
           ' — ',
