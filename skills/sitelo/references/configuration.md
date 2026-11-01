@@ -63,8 +63,11 @@ register them. Features marked *CLI only* below run in `sitelo build`, not
 
 ## Sitemap and RSS
 
-Set `site` and `dist/sitemap.xml` lists every static route, and the
-generated `dist/robots.txt` names it. Do not write a `robots.txt` just to
+Set `site` and `dist/sitemap.xml` lists every built page at the URL it is
+served at (`/about/`, or the page's canonical), leaving out 404 and
+`noindex` pages, and the generated `dist/robots.txt` names it. To date
+entries, give pages `<meta property="article:modified_time">` or a JSON-LD
+`dateModified`. Do not write a sitemap plugin. Do not write a `robots.txt` just to
 allow crawling or announce the sitemap. Add one to `public/` only for
 real rules, such as a `Disallow`. `rss` writes `dist/rss.xml`:
 

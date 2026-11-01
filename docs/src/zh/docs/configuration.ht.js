@@ -177,6 +177,7 @@ export default () =>
       ),
       h2('Sitemap 与 RSS'),
       p('设置 ', code('site'), ' 即可产出 ', code('dist/sitemap.xml'), '。'),
+      p('站点地图按页面实际提供的 URL 列出每个页面（是 ', code('/about/'), '，而不是 ', code('/about'), '），略过 404 页面和带有 ', code('<meta name="robots" content="noindex">'), ' 的页面，并用页面的 ', code('article:modified_time'), ' 或 JSON-LD 中的 ', code('dateModified'), ' 标注日期。若有自己的 ', code('public/sitemap.xml'), '，则改为发布它。'),
       p('RSS：'),
       codeBlock('sitelo.config.js', s.rss, 'javascript'),
       p(

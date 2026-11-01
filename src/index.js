@@ -2,6 +2,7 @@ import htmlPages from 'vite-plugin-html-pages';
 
 import { llmsTxt, normalizeLlmsOptions } from './llms.js';
 import { robotsTxt } from './robots.js';
+import { sitemap } from './sitemap.js';
 import { uiClientPrefix, uiRuntime } from './ui/plugin.js';
 
 export * from 'vite-plugin-html-pages';
@@ -69,6 +70,8 @@ export default function sitelo(options = {}) {
       generatedTypesDir: options.generatedTypesDir ?? '.sitelo/types',
       displayName: options.displayName ?? 'sitelo',
     }),
+    // Before robots.txt, which names the sitemap only if there is one.
+    sitemap({ site: options.site }),
     ...(robots === false
       ? []
       : [robotsTxt({ site: options.site, root: options.root, pagesDir: options.pagesDir })]),

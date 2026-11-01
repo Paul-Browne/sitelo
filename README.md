@@ -1512,8 +1512,8 @@ default, with a 404 status.
 
 ### Sitemap
 
-Set your site URL and `dist/sitemap.xml` is generated from all static
-routes, correctly escaped:
+Set your site URL and `dist/sitemap.xml` is generated from the pages as
+built:
 
 ```js
 // sitelo.config.js
@@ -1521,6 +1521,23 @@ export default {
   site: 'https://example.com',
 }
 ```
+
+- **Each page at the URL it is served at.** `about/index.html` is listed
+  as `/about/`, not `/about`, which a static host answers with a
+  redirect. A page's own `<link rel="canonical">` wins when it is on the
+  site, and pages naming the same canonical are listed once.
+- **Indexable pages only.** 404 pages and any page with
+  `<meta name="robots" content="noindex">` are left out.
+- **Dated from the page.** `<lastmod>` comes from the page's
+  `article:modified_time`, or the `dateModified` in its JSON-LD, falling
+  back to the published date. A page that states no valid date gets no
+  `<lastmod>`; a guessed one would teach search engines to ignore the
+  rest.
+- **Sorted**, so an unchanged site rebuilds to the same file, and past
+  50,000 URLs split into `sitemap-1.xml`, `sitemap-2.xml`, … under a
+  sitemap index at `sitemap.xml`.
+
+A `public/sitemap.xml` of your own is shipped instead, untouched.
 
 ### robots.txt
 

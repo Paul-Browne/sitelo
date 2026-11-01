@@ -189,6 +189,7 @@ export default () =>
         code('dist/sitemap.xml'),
         ' zu erzeugen.',
       ),
+      p('Sie listet jede Seite unter der URL, unter der sie ausgeliefert wird (', code('/about/'), ', nicht ', code('/about'), '), lässt 404-Seiten und jede Seite mit ', code('<meta name="robots" content="noindex">'), ' weg und datiert jeden Eintrag aus ', code('article:modified_time'), ' oder dem JSON-LD-Feld ', code('dateModified'), ' der Seite. Eine eigene ', code('public/sitemap.xml'), ' wird stattdessen ausgeliefert.'),
       p('RSS:'),
       codeBlock('sitelo.config.js', s.rss, 'javascript'),
       p(

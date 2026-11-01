@@ -466,30 +466,53 @@ export function pageToMarkdown(html, context) {
 }
 
 /**
- * What a page's head says about it, as far as the llms files need: its
- * `<title>`, its description, and whether it asks not to be indexed.
+ * @typedef {{
+ *   title?: string,
+ *   description?: string,
+ *   noindex: boolean,
+ *   canonical?: string,
+ *   modified?: string,
+ *   published?: string,
+ * }} PageInfo
+ */
+
+/**
+ * What a page's head says about it, as far as the sitemap and the llms
+ * files need: its `<title>` and description, whether it asks not to be
+ * indexed, its canonical URL, and when it was published and last changed
+ * (`article:published_time` / `article:modified_time`). Read with the same
+ * parser as the content, so an attribute value with a `>` in it is no
+ * trouble and attribute order does not matter.
  *
  * @param {string} html a whole rendered page
- * @returns {{ title?: string, description?: string, noindex: boolean }}
+ * @returns {PageInfo}
  */
 export function pageInfo(html) {
   const end = html.search(/<\/head>|<body[\s>]/i)
   const root = parse(end === -1 ? html : html.slice(0, end))
 
-  /** @type {{ title?: string, description?: string, noindex: boolean }} */
+  /** @type {PageInfo} */
   const info = { noindex: false }
+  /** Keep the first of each, as a browser does. */
+  const first = (key, value) => {
+    if (value && info[key] === undefined) info[key] = value
+  }
 
   const walk = (node) => {
     if (typeof node === 'string') return
-    if (node.tag === 'title' && info.title === undefined) {
-      info.title = textOf(node).replace(/\s+/g, ' ').trim() || undefined
+    if (node.tag === 'title') first('title', textOf(node).replace(/\s+/g, ' ').trim())
+    if (node.tag === 'link' && /(?:^|\s)canonical(?:\s|$)/i.test(node.attrs.rel ?? '')) {
+      first('canonical', (node.attrs.href ?? '').trim())
     }
     if (node.tag === 'meta') {
       const name = (node.attrs.name ?? '').toLowerCase()
+      const property = (node.attrs.property ?? '').toLowerCase()
       // One line, as the llms files quote it after a link or a `>`.
       const content = (node.attrs.content ?? '').replace(/\s+/g, ' ').trim()
-      if (name === 'description' && content && info.description === undefined) info.description = content
+      if (name === 'description') first('description', content)
       if (name === 'robots' && /\bnoindex\b/i.test(content)) info.noindex = true
+      if (property === 'article:modified_time') first('modified', content)
+      if (property === 'article:published_time') first('published', content)
     }
     node.children.forEach(walk)
   }

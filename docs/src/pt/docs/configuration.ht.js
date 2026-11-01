@@ -183,6 +183,7 @@ export default () =>
       ),
       h2('Sitemap e RSS'),
       p('Define ', code('site'), ' para emitir ', code('dist/sitemap.xml'), '.'),
+      p('Lista cada página no URL em que é servida (', code('/about/'), ', não ', code('/about'), '), deixa de fora as páginas 404 e qualquer página com ', code('<meta name="robots" content="noindex">'), ', e data cada entrada a partir do ', code('article:modified_time'), ' ou do ', code('dateModified'), ' em JSON-LD da página. Um ', code('public/sitemap.xml'), ' próprio é publicado em vez dele.'),
       p('RSS:'),
       codeBlock('sitelo.config.js', s.rss, 'javascript'),
       p(

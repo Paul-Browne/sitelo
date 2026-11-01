@@ -186,7 +186,7 @@ function page({ route, noindex = false, markdown = false, description, main }) {
   return { type: 'asset', source: `<html><head>${head}</head><body><main>${main}</main></body></html>` };
 }
 
-test('the build writes the sitemap, the markdown copies and both llms files', () => {
+test('the build writes the markdown copies and both llms files, and leaves the sitemap to sitelo', () => {
   const publicDir = mkdtempSync(path.join(os.tmpdir(), 'sitelo-docs-'));
   writeFileSync(path.join(publicDir, 'llms.txt'), '# sitelo\n\n> Static sites.\n');
 
@@ -227,15 +227,10 @@ test('the build writes the sitemap, the markdown copies and both llms files', ()
     bundle,
   );
 
-  const sitemap = bundle['sitemap.xml'].source;
-  assert.deepEqual(
-    [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, loc]) => loc),
-    [
-      'https://sitelo.dev/de/docs/routing',
-      'https://sitelo.dev/docs',
-      'https://sitelo.dev/docs/routing',
-    ],
-    'indexable pages only, sorted',
+  assert.equal(
+    bundle['sitemap.xml'].source,
+    'the plugin’s own',
+    'the sitemap is sitelo’s (src/sitemap.js), not rewritten here',
   );
 
   assert.deepEqual(

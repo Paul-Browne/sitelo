@@ -168,6 +168,7 @@ export default () =>
       ),
       h2('Peta situs dan RSS'),
       p('Setel ', code('site'), ' untuk menghasilkan ', code('dist/sitemap.xml'), '.'),
+      p('Peta situs mencantumkan setiap halaman pada URL tempat halaman itu disajikan (', code('/about/'), ', bukan ', code('/about'), '), melewatkan halaman 404 dan halaman apa pun dengan ', code('<meta name="robots" content="noindex">'), ', serta memberi tanggal setiap entri dari ', code('article:modified_time'), ' atau ', code('dateModified'), ' JSON-LD halaman itu. ', code('public/sitemap.xml'), ' milik Anda sendiri akan dipakai sebagai gantinya.'),
       p('RSS:'),
       codeBlock('sitelo.config.js', s.rss, 'javascript'),
       p(

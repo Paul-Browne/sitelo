@@ -189,6 +189,7 @@ export default () =>
         code('dist/sitemap.xml'),
         '.',
       ),
+      p('Zawiera każdą stronę pod adresem, pod którym jest serwowana (', code('/about/'), ', nie ', code('/about'), '), pomija strony 404 i każdą stronę z ', code('<meta name="robots" content="noindex">'), ', a datę wpisu bierze z ', code('article:modified_time'), ' lub pola ', code('dateModified'), ' w JSON-LD strony. Własny ', code('public/sitemap.xml'), ' trafia do builda zamiast niej.'),
       p('RSS:'),
       codeBlock('sitelo.config.js', s.rss, 'javascript'),
       p(

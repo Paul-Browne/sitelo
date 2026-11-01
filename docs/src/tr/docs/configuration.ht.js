@@ -165,6 +165,7 @@ export default () =>
       ),
       h2('Site haritası ve RSS'),
       p(code('dist/sitemap.xml'), ' üretmek için ', code('site'), ' değerini ayarlayın.'),
+      p('Her sayfayı sunulduğu URL ile listeler (', code('/about'), ' değil ', code('/about/'), '), 404 sayfalarını ve ', code('<meta name="robots" content="noindex">'), ' içeren sayfaları dışarıda bırakır, her girdinin tarihini sayfanın ', code('article:modified_time'), ' ya da JSON-LD ', code('dateModified'), ' değerinden alır. Kendi ', code('public/sitemap.xml'), ' dosyanız varsa onun yerine o yayımlanır.'),
       p('RSS:'),
       codeBlock('sitelo.config.js', s.rss, 'javascript'),
       p(

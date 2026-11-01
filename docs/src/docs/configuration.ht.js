@@ -169,6 +169,7 @@ export default () =>
       ),
       h2('Sitemap & RSS'),
       p('Set ', code('site'), ' to emit ', code('dist/sitemap.xml'), '.'),
+      p('It lists every page at the URL it is served at (', code('/about/'), ', not ', code('/about'), '), leaves out 404 pages and any page with ', code('<meta name="robots" content="noindex">'), ', and dates each entry from the page’s ', code('article:modified_time'), ' or JSON-LD ', code('dateModified'), '. A ', code('public/sitemap.xml'), ' of your own ships instead.'),
       p('RSS:'),
       codeBlock('sitelo.config.js', s.rss, 'javascript'),
       p(

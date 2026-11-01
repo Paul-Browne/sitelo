@@ -189,6 +189,7 @@ export default () =>
         code('dist/sitemap.xml'),
         '.',
       ),
+      p('В неё попадает каждая страница по адресу, по которому она отдаётся (', code('/about/'), ', а не ', code('/about'), '), кроме страниц 404 и страниц с ', code('<meta name="robots" content="noindex">'), '; дата каждой записи берётся из ', code('article:modified_time'), ' или ', code('dateModified'), ' в JSON-LD страницы. Собственный ', code('public/sitemap.xml'), ' публикуется вместо неё.'),
       p('RSS:'),
       codeBlock('sitelo.config.js', s.rss, 'javascript'),
       p(

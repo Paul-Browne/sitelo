@@ -99,7 +99,8 @@ export function robotsTxt({ site, root: pagesRoot, pagesDir = 'src' } = {}) {
 
     /*
      * After html-pages' own `generateBundle`, which emits the copy of a
-     * `robots.txt` from the pages directory, and `sitemap.xml`.
+     * `robots.txt` from the pages directory, and after sitelo's sitemap
+     * has settled what `sitemap.xml` is.
      */
     generateBundle: {
       order: 'post',
@@ -107,10 +108,15 @@ export function robotsTxt({ site, root: pagesRoot, pagesDir = 'src' } = {}) {
         if (bundle[FILE]) return
         if (copyPublicDir && publicDir && fs.existsSync(path.join(publicDir, FILE))) return
 
+        // The generated sitemap, or a site's own in `public/`.
+        const hasSitemap =
+          Boolean(bundle['sitemap.xml']) ||
+          (copyPublicDir && Boolean(publicDir) && fs.existsSync(path.join(publicDir, 'sitemap.xml')))
+
         this.emitFile({
           type: 'asset',
           fileName: FILE,
-          source: robotsTxtSource({ site, sitemap: Boolean(bundle['sitemap.xml']) }),
+          source: robotsTxtSource({ site, sitemap: hasSitemap }),
         })
       },
     },

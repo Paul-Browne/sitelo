@@ -6,7 +6,7 @@ export const data = ({ params }) => posts.find((post) => post.slug === params.sl
 
 export default ({ data: post }) =>
   layout(
-    { title: `${post.title} · Example`, description: post.description },
+    { title: `${post.title} · Example`, description: post.description, modified: post.modified },
     `<article>
       <h1>${post.title}</h1>
       <p>Back to <a href="../">the blog</a>.</p>
