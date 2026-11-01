@@ -12,7 +12,7 @@ fragments, so do **not** name them `.ht.js`. The default export receives
 
 ```js
 // src/islands/comments.js
-import { escapeHtml } from '../lib/escape.js'
+import { escapeHtml } from 'sitelo/page'
 
 export default async function comments({ props, request }) {
   const postId = typeof props.postId === 'string' ? props.postId : ''
