@@ -142,9 +142,11 @@ export function islandsSnippets(lang = 'en') {
   const t = T[lang] ?? T.en
 
   return {
-    islandModule: `export default async function comments({ props, request }) {
+    islandModule: `import { escapeHtml } from 'sitelo/page'
+
+export default async function comments({ props, request }) {
   const comments = await fetchComments(props.postId)
-  return \`<ul>\${comments.map((c) => \`<li>\${c.text}</li>\`).join('')}</ul>\`
+  return \`<ul>\${comments.map((c) => \`<li>\${escapeHtml(c.text)}</li>\`).join('')}</ul>\`
 }`,
 
     pageTemplate: `import { island } from 'sitelo/islands'

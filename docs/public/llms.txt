@@ -60,6 +60,8 @@ export default function render(ctx) { return `<html>…</html>` }
 
 Import helpers from `sitelo` (e.g. `fetchWithCache`) and `sitelo/page` for typed helpers.
 
+Template literals and element children are inserted as raw HTML. Escape text you did not write (API, CMS, JSON, query, island props) with `escapeHtml` from `sitelo/page`, which replaces `& < > " '`. Don't write your own.
+
 ## Local JSON data
 
 Content kept in the repo as JSON is read with `sitelo/data` — no API needed:
