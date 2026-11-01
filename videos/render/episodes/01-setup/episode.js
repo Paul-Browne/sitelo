@@ -10,6 +10,7 @@ export const meta = {
   title: 'Build a static site with plain JavaScript functions (sitelo, ep. 1)',
   description: `sitelo turns JavaScript functions that return HTML into a static site, with Vite underneath. In this first episode we install it, write two pages with javascript-to-html, share a layout between them, and build the site.
 
+Full series: https://www.youtube.com/playlist?list=PLPb4YDBLI-jQ
 Code for every episode: https://github.com/Paul-Browne/sitelo/tree/main/videos
 Docs: https://sitelo.js.org`,
 }

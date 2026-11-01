@@ -4,6 +4,8 @@ Seven videos that build one site, a recipe site called **Weeknight Kitchen**,
 from an empty folder to a deployed site with search, optimized images,
 server islands and a component library.
 
+Watch them on YouTube: [the full series](https://www.youtube.com/playlist?list=PLPb4YDBLI-jQ).
+
 Each folder is the finished code for that episode, so the change an episode
 makes is a plain diff:
 

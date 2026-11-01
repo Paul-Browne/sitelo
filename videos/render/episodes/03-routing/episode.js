@@ -7,6 +7,7 @@ export const meta = {
   title: 'File-based routing, from one page to 121 (sitelo, ep. 3)',
   description: `Dynamic routes, generateStaticParams, optional catch-all routes, route groups and a custom 404, all from file names. Then we turn on the sitemap and a link checker that fails the build on a dead link.
 
+Full series: https://www.youtube.com/playlist?list=PLPb4YDBLI-jQ
 Code for every episode: https://github.com/Paul-Browne/sitelo/tree/main/videos
 Docs: https://sitelo.js.org`,
 }

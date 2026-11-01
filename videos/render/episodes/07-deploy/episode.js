@@ -11,6 +11,7 @@ export const meta = {
   title: 'Deploy a static site with server islands to Netlify (sitelo, ep. 7)',
   description: `The last episode. We get the recipe site ready for Netlify (static pages plus one function for the server islands), sign island props, rebuild daily to keep the data fresh, and run the build, knip and Lighthouse in CI.
 
+Full series: https://www.youtube.com/playlist?list=PLPb4YDBLI-jQ
 Code for every episode: https://github.com/Paul-Browne/sitelo/tree/main/videos
 Docs: https://sitelo.js.org`,
 }
