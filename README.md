@@ -69,7 +69,7 @@ That's the whole mental model. Everything else is convenience on top.
 - **Link checking** — dead internal `<a href>` links reported against the real output
 - **Lighthouse audits** — score the real build against per-category thresholds, on demand or in CI
 - **Unused-code detection** — a one-line [knip](https://knip.dev) config that knows pages and islands are entry points
-- **Image optimization** — `<img>` tags get resized, converted, and turned into a `srcset`, in dev and in the build
+- **Image optimization** — `<img>` tags get resized, converted, and turned into a `srcset`, in dev and in the build, with optional blur-up placeholders
 - **Real dev server** — pages render on request (dynamic routes included, no `generateStaticParams` needed in dev) with full reload and readable error frames
 - **Server islands** — static pages with regions rendered on the server at
   request time, loaded eagerly, on idle, or on scroll, with optional
@@ -1197,6 +1197,7 @@ export default {
 | `sizes` | derived | `sizes` attribute; a `sizes` on the tag always wins |
 | `dimensions` | `true` | Add `width`/`height` (completes whichever you left off) |
 | `lazy` | `true` | Add `loading="lazy"` and `decoding="async"` |
+| `placeholder` | `false` | `true` or `{ blur, bytes }`: paint a blurred ~500-byte copy behind each image until it loads (see [Blur-up placeholders](#blur-up-placeholders)) |
 | `exclude` | `[]` | Glob(s) or RegExp(s) of image URLs to leave alone |
 | `assetsDir` | `'assets/img'` | Where variants are written inside `dist/`. Emptied before each build, so it must be a folder of its own there |
 | `cacheDir` | `'node_modules/.sitelo/images'` | Shared dev/build encode cache |
@@ -1274,6 +1275,50 @@ Both are plain heuristics — no model, no training — so treat them as a
 sensible default for many images rather than a guarantee for one. For a
 hero image you care about, name the edge. The choice depends only on the
 picture, so it is deterministic and caches like any other variant.
+
+### Blur-up placeholders
+
+Turn on `placeholder` and every rewritten image gets a tiny blurred copy
+of itself painted behind it. While the real file loads, the box shows the
+picture's colours and shapes instead of an empty gap, and when it arrives
+it simply covers the copy:
+
+```js
+// sitelo.config.js
+export default {
+  images: {
+    placeholder: true, // or { blur: 20, bytes: 500 }
+  },
+}
+```
+
+```html
+<img src="/assets/img/hero.a1b2c3d4-3000.webp" alt="Sunrise" ...
+     style="background-image:url(&quot;data:image/svg+xml,%3Csvg ...%3E
+              ...%3CfeGaussianBlur stdDeviation='20'/%3E...
+              href='data:image/webp;base64,UklGRhoB...'/%3E%3C/svg%3E&quot;);
+            background-origin:content-box;background-repeat:no-repeat">
+```
+
+- **About 500 bytes.** The copy is a WebP at most 64px on its longest
+  side, made smaller until its base64 fits `bytes`; most photos land at
+  32–48px. With the SVG around it that is about 1 kB of HTML per image,
+  and no extra request.
+- **A 20px blur.** `blur` is the radius `filter: blur(20px)` takes, but it
+  is applied by an SVG filter inside the background, so the photo itself
+  is never blurred and no script has to take the blur off again.
+- **The same framing.** A `?w=…&h=…` box gets a placeholder of what its
+  crop keeps, `position` and `background` included.
+- **Cached** beside the variants, so a rebuild never decodes a source
+  again for it.
+
+The copy stays behind the picture once it has loaded, so an image with
+any transparency gets none: it would show through. It fills the `<img>`'s
+box the way `object-fit: cover` does, so an image shown with
+`object-fit: contain` in a box of another shape would keep blurred bars
+beside it. Mark that one `data-no-placeholder` and it keeps everything
+else. A `background` in the tag's own `style` also wins over the
+placeholder.
 
 ### Opting out
 

@@ -162,6 +162,7 @@ export default () =>
           ' i ',
           code('decoding'),
         ),
+        li(code('placeholder'), ' — domyślnie ', code('false'), '; ', code('true'), ' lub ', code('{ blur, bytes }'), ' maluje pod każdym obrazem rozmytą kopię ~500 bajtów, dopóki się nie wczyta'),
         li(
           code('exclude'),
           ' — glob(y) albo wyrażenia regularne adresów obrazów, których nie ruszać',
@@ -319,6 +320,26 @@ export default () =>
       p(
         'Obie to zwykłe heurystyki — bez modelu i bez uczenia — więc traktuj je jak rozsądne ustawienie domyślne dla wielu obrazów, a nie gwarancję dla jednego. Dla obrazu otwierającego, na którym Ci zależy, wskaż krawędź sam. Wybór zależy wyłącznie od zdjęcia, więc jest deterministyczny i buforuje się jak każdy inny wariant.',
       ),
+      h2('Rozmyte zastępniki (blur-up)'),
+      p(
+        'Włącz ', code('placeholder'), ', a każdy przepisany obraz dostanie namalowaną pod spodem maleńką, rozmytą kopię samego siebie. Gdy prawdziwy plik się wczytuje, ramka pokazuje kolory i kształty obrazu zamiast pustej dziury, a kiedy plik dotrze, po prostu przykrywa kopię:',
+      ),
+      codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
+      codeBlock('dist/index.html', s.placeholderOutput, 'html'),
+      ul(
+        { class: 'docs-list' },
+        li(strong('Około 500 bajtów'), ' — kopia to WebP o najdłuższym boku najwyżej 64px, zmniejszany, dopóki jego base64 się nie zmieści; większość zdjęć kończy na 32–48px. Razem z otaczającym SVG to około 1 kB HTML na obraz, bez dodatkowych żądań.'),
+        li(strong('Rozmycie 20px'), ' — ten sam promień, który przyjmuje ', code('filter: blur(20px)'), ', nałożony filtrem SVG wewnątrz tła. Samo zdjęcie nigdy nie jest rozmyte i żaden skrypt nie musi potem zdejmować rozmycia.'),
+        li(strong('Ten sam kadr'), ' — ramka ', code('?w=…&h=…'), ' dostaje zastępnik tego, co zostawia jej przycięcie, łącznie z ', code('position'), ' i ', code('background'), '.'),
+        li(strong('W cache'), ' — obok wariantów, więc kolejny build nigdy nie dekoduje dla niego źródła ponownie.'),
+      ),
+      p(
+        'Podaj obiekt, żeby go dostroić: ', code('{ blur: 20, bytes: 500 }'), ' — ', code('blur'), ' to promień w pikselach CSS, ', code('bytes'), ' to najwięcej, ile może ważyć base64.',
+      ),
+      p(
+        'Kopia zostaje pod obrazem także po jego wczytaniu, więc obraz z jakąkolwiek przezroczystością jej nie dostaje — prześwitywałaby. Wypełnia ramkę ', code('<img>'), ' tak jak ', code('object-fit: cover'), ', więc obraz pokazany z ', code('object-fit: contain'), ' w ramce o innym kształcie zachowałby obok rozmyte pasy. Oznacz taki obraz ', code('data-no-placeholder'), ', a resztę zachowa:',
+      ),
+      codeBlock('src/index.ht.js', s.placeholderOptOut, 'html'),
       h2('Rezygnacja'),
       p(
         'Znaczniki, które już mają ',

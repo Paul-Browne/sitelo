@@ -13,6 +13,7 @@ import {
   normalizeImageOptions,
   parseAttributes,
   parseVariantHint,
+  placeholderStyle,
   resolveSizes,
   resolveWidths,
   rewriteHtmlImages,
@@ -842,4 +843,249 @@ test('runImages: variant URLs follow a full-URL or relative base', async (t) => 
   assert.match(relHome, /src="assets\/img\/a\.[a-f0-9]+-600\.webp"/)
   assert.match(relBlog, /src="\.\.\/assets\/img\/a\.[a-f0-9]+-600\.webp"/, 'relative to the page, one level down')
   assert.match(relBlog, /srcset="\.\.\/assets\/img\/a\.[a-f0-9]+-400\.webp 400w, \.\.\/assets/)
+})
+
+test('normalizeImageOptions: placeholder is off unless asked for', () => {
+  assert.equal(normalizeImageOptions(true).placeholder, null)
+  assert.equal(normalizeImageOptions({ placeholder: false }).placeholder, null)
+  assert.deepEqual(normalizeImageOptions({ placeholder: true }).placeholder, { blur: 20, bytes: 500 })
+  assert.deepEqual(normalizeImageOptions({ placeholder: { blur: 8 } }).placeholder, { blur: 8, bytes: 500 })
+  assert.deepEqual(normalizeImageOptions({ placeholder: { bytes: 300 } }).placeholder, { blur: 20, bytes: 300 })
+
+  assert.throws(() => normalizeImageOptions({ placeholder: 'blur' }), /"images\.placeholder" must be true or an object/)
+  assert.throws(() => normalizeImageOptions({ placeholder: [] }), /"images\.placeholder" must be true or an object/)
+  for (const blur of [0, -4, '20px', Infinity]) {
+    assert.throws(() => normalizeImageOptions({ placeholder: { blur } }), /placeholder\.blur/, `rejects blur ${String(blur)}`)
+  }
+  for (const bytes of [0, 12.5, '500']) {
+    assert.throws(() => normalizeImageOptions({ placeholder: { bytes } }), /placeholder\.bytes/, `rejects bytes ${bytes}`)
+  }
+})
+
+test('placeholderStyle: a blurred SVG background, safe in a URL and an attribute', () => {
+  const style = placeholderStyle('UklGRg+/=', 20)
+
+  assert.match(style, /^background-image:url\("data:image\/svg\+xml,/)
+  assert.ok(style.includes("stdDeviation='20'"), 'the blur is the radius asked for')
+  assert.ok(style.includes("href='data:image/webp;base64,UklGRg+/='"), 'the WebP rides inside as it is')
+  assert.ok(style.includes("filter='url(%23b)'"), 'a bare # would end the data URL')
+
+  const url = style.match(/url\("([^"]*)"\)/)[1]
+  assert.doesNotMatch(url, /[<>#"]/, 'nothing in it reads as markup or ends it early')
+  assert.match(
+    style,
+    /;background-origin:content-box;background-repeat:no-repeat$/,
+    'only the content box is painted, so padding keeps its own colour',
+  )
+})
+
+/** Wrap a stub generator so its result carries a placeholder. */
+const withPlaceholder = (generate, placeholder = 'UklGRg==') =>
+  async (...args) => ({ ...(await generate(...args)), placeholder })
+
+test('rewriteHtmlImages: placeholder paints a blurred background, last on the tag', async () => {
+  const { html } = await rewriteHtmlImages({
+    html: '<img src="/img/a.png" alt="A">',
+    options: normalizeImageOptions({ placeholder: true }),
+    resolve: resolveAll,
+    generate: withPlaceholder(stubGenerate()),
+  })
+
+  const style = placeholderStyle('UklGRg==', 20).replace(/"/g, '&quot;')
+  assert.equal(
+    html,
+    '<img src="/assets/img/a-800.webp" alt="A" sizes="100vw" width="800" height="400" loading="lazy" decoding="async" ' +
+      `srcset="/assets/img/a-400.webp 400w, /assets/img/a-800.webp 800w" style="${style}">`,
+  )
+})
+
+test('rewriteHtmlImages: an author style has the last word, and data-no-placeholder opts out', async () => {
+  const run = async (html, placeholder = true, formats = ['webp']) =>
+    (
+      await rewriteHtmlImages({
+        html,
+        options: normalizeImageOptions({ placeholder, formats }),
+        resolve: resolveAll,
+        generate: withPlaceholder(stubGenerate(formats)),
+      })
+    ).html
+
+  const styled = await run('<img src="/img/a.png" alt="A" style="border-radius:8px">', { blur: 12 })
+  const [, style] = styled.match(/style="([^"]*)"/)
+  assert.ok(style.startsWith('background-image:url(&quot;data:image/svg+xml,'))
+  assert.ok(style.includes("stdDeviation='12'"), 'blur is configurable')
+  assert.ok(style.endsWith(';border-radius:8px'), 'the author style comes after ours, so it wins')
+  assert.equal(styled.match(/style=/g).length, 1, 'one style attribute, merged')
+
+  const optedOut = await run('<img src="/img/a.png" alt="A" data-no-placeholder>')
+  assert.match(optedOut, /srcset=/, 'the tag is still optimized')
+  assert.doesNotMatch(optedOut, /style=|data-no-placeholder/, 'no placeholder, and the marker is stripped')
+
+  assert.doesNotMatch(await run('<img src="/img/a.png" alt="A">', false), /style=/, 'off means off')
+
+  const picture = await run('<img src="/img/a.png" alt="A">', true, ['avif', 'webp'])
+  assert.match(picture, /^<picture><source [^>]*><img [^>]*style="background-image:[^"]*"><\/picture>$/, 'it goes on the <img> inside <picture>')
+})
+
+/**
+ * A 640×400 picture of 20px blocks of seeded random colour: as busy as a
+ * picture gets at placeholder size, so the byte budget has work to do.
+ */
+const busy = () => {
+  const data = Buffer.alloc(32 * 20 * 3)
+  let state = 1
+  for (let i = 0; i < data.length; i += 1) {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0
+    data[i] = state >>> 24
+  }
+  return sharp(data, { raw: { width: 32, height: 20, channels: 3 } })
+    .resize(640, 400, { kernel: 'nearest' })
+    .png()
+}
+
+/** The placeholder WebP in a rewritten tag, or null when it has none. */
+const placeholderIn = async (html) => {
+  const base64 = html.match(/;base64,([A-Za-z0-9+/=]+)'/)?.[1]
+  if (!base64) return null
+  const buffer = Buffer.from(base64, 'base64')
+  return { base64, buffer, meta: await sharp(buffer).metadata() }
+}
+
+test('dev pipeline: a placeholder is the largest WebP whose base64 fits the budget', async (t) => {
+  const root = remoteProject(t)
+  await busy().toFile(path.join(root, 'public', 'busy.png'))
+
+  const placeholderFor = async (placeholder) => {
+    const pipeline = createDevImagePipeline({
+      root,
+      options: normalizeImageOptions({ cacheDir: '.cache', placeholder }),
+      warn: (message) => assert.fail(message),
+    })
+    return placeholderIn(await pipeline.transform('<img src="/busy.png" alt="">'))
+  }
+
+  const fitted = await placeholderFor(true)
+  assert.equal(fitted.meta.format, 'webp')
+  assert.ok(fitted.base64.length <= 500, `fits 500 bytes of base64, got ${fitted.base64.length}`)
+  assert.ok(fitted.meta.width < 64, `a busy picture steps down from 64px to fit, got ${fitted.meta.width}px`)
+  assert.ok(Math.abs(fitted.meta.width / fitted.meta.height - 1.6) < 0.15, 'the picture keeps its shape')
+
+  const roomy = await placeholderFor({ bytes: 100_000 })
+  assert.equal(roomy.meta.width, 64, 'the longest side never needs more than 64px')
+  assert.ok(roomy.base64.length > 500, 'which is more than the default budget would allow')
+
+  const tight = await placeholderFor({ bytes: 1 })
+  assert.equal(tight.meta.width, 8, 'a budget nothing fits gets the smallest')
+})
+
+test('dev pipeline: no placeholder for a see-through picture, one for an opaque picture with alpha', async (t) => {
+  const root = remoteProject(t)
+  const red = { r: 200, g: 30, b: 30, alpha: 1 }
+  await sharp({ create: { width: 600, height: 400, channels: 4, background: red } })
+    .png()
+    .toFile(path.join(root, 'public', 'opaque.png'))
+  // The same, with its top-left corner cut out.
+  await sharp({ create: { width: 600, height: 400, channels: 4, background: red } })
+    .composite([
+      {
+        input: { create: { width: 60, height: 60, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } },
+        left: 0,
+        top: 0,
+        blend: 'dest-in',
+      },
+    ])
+    .png()
+    .toFile(path.join(root, 'public', 'cutout.png'))
+
+  const pipeline = createDevImagePipeline({
+    root,
+    options: normalizeImageOptions({ cacheDir: '.cache', placeholder: true }),
+    warn: (message) => assert.fail(message),
+  })
+  const transform = (src) => pipeline.transform(`<img src="${src}" alt="">`)
+
+  const opaque = await transform('/opaque.png')
+  assert.ok(await placeholderIn(opaque), 'an alpha channel alone is not a reason to skip it')
+
+  const cutout = await transform('/cutout.png')
+  assert.match(cutout, /srcset=/, 'the see-through picture is still optimized')
+  assert.equal(await placeholderIn(cutout), null, 'but the placeholder would show through it')
+
+  assert.equal(
+    await placeholderIn(await transform('/opaque.png?w=300&h=300&background=transparent')),
+    null,
+    'see-through padding counts too',
+  )
+  assert.ok(await placeholderIn(await transform('/opaque.png?w=300&h=300&background=fff')), 'opaque padding does not')
+})
+
+test('dev pipeline: a cropped box gets a placeholder of what the crop keeps', async (t) => {
+  const root = remoteProject(t)
+  // Blue, with a red band across the top ninth.
+  await sharp({ create: { width: 1600, height: 900, channels: 3, background: { r: 90, g: 140, b: 210 } } })
+    .composite([
+      { input: { create: { width: 1600, height: 100, channels: 3, background: { r: 220, g: 40, b: 40 } } }, top: 0, left: 0 },
+    ])
+    .png()
+    .toFile(path.join(root, 'public', 'banded.png'))
+
+  const pipeline = createDevImagePipeline({
+    root,
+    options: normalizeImageOptions({ cacheDir: '.cache', placeholder: true }),
+    warn: (message) => assert.fail(message),
+  })
+  const topRow = async (src) => {
+    const { buffer, meta } = await placeholderIn(await pipeline.transform(`<img src="${src}" alt="">`))
+    const { data, info } = await sharp(buffer).raw().toBuffer({ resolveWithObject: true })
+    const offset = Math.floor(info.width / 2) * info.channels
+    return { pixel: [...data.slice(offset, offset + 3)], meta }
+  }
+
+  // A 400×100 box keeps a quarter of the band with position=top, none centred.
+  const top = await topRow('/banded.png?w=400&h=100&position=top')
+  assert.deepEqual([top.meta.width, top.meta.height], [64, 16], 'the placeholder has the box’s shape')
+  assert.ok(top.pixel[0] > top.pixel[2], `position=top keeps the red band, got ${top.pixel}`)
+
+  const centred = await topRow('/banded.png?w=400&h=100')
+  assert.ok(centred.pixel[2] > centred.pixel[0], `a centred crop drops it, got ${centred.pixel}`)
+})
+
+test('dev pipeline: placeholders are cached on disk and shared by the ladder and a pinned width', async (t) => {
+  const root = remoteProject(t)
+  await solid(800).toFile(path.join(root, 'public', 'photo.png'))
+  const options = normalizeImageOptions({ cacheDir: '.cache', placeholder: true })
+  const cacheDir = path.join(root, '.cache')
+  const cached = () => fs.readdirSync(cacheDir).filter((file) => file.endsWith('-placeholder.txt'))
+  const html = '<img src="/photo.png" alt=""><img src="/photo.png?w=200" alt="">'
+
+  const first = await createDevImagePipeline({ root, options, warn: assert.fail }).transform(html)
+  const styles = first.match(/style="[^"]*"/g)
+  assert.equal(styles.length, 2)
+  assert.equal(styles[0], styles[1], 'the ladder and ?w=200 show the same picture, so the same placeholder')
+  assert.equal(cached().length, 1, 'made once')
+
+  // A fresh process reads the cache rather than decoding the source again.
+  fs.writeFileSync(path.join(cacheDir, cached()[0]), 'Q0FDSEVE')
+  const second = await createDevImagePipeline({ root, options, warn: assert.fail }).transform(html)
+  assert.equal(second.match(/;base64,Q0FDSEVE'/g)?.length, 2, 'both tags come from the cache')
+})
+
+test('runImages: the build log counts placeholders', async (t) => {
+  const root = remoteProject(t)
+  const dist = path.join(root, 'dist')
+  fs.mkdirSync(dist, { recursive: true })
+  await solid(600).toFile(path.join(dist, 'a.png'))
+  fs.writeFileSync(path.join(dist, 'index.html'), '<img src="/a.png" alt="">')
+
+  const lines = []
+  await runImages({
+    root,
+    outDir: 'dist',
+    options: normalizeImageOptions({ cacheDir: '.cache', placeholder: true }),
+    log: (message) => lines.push(message),
+    warn: (message) => assert.fail(message),
+  })
+
+  assert.match(lines.join('\n'), /images optimized 1 source → 2 variants, 1 placeholder across 1 tag/)
+  assert.match(fs.readFileSync(path.join(dist, 'index.html'), 'utf8'), /style="background-image:url\(&quot;data:image\/svg\+xml,/)
 })

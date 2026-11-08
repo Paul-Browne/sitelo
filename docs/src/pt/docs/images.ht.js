@@ -160,6 +160,7 @@ export default () =>
           ' e ',
           code('decoding'),
         ),
+        li(code('placeholder'), ' — por omissão ', code('false'), '; ', code('true'), ' ou ', code('{ blur, bytes }'), ' pinta uma cópia desfocada de ~500 bytes por trás de cada imagem até esta carregar'),
         li(code('exclude'), ' — globs ou RegExp de URLs de imagem a não tocar'),
         li(code('assetsDir'), ' — por omissão ', code("'assets/img'")),
         li(code('cacheDir'), ' — por omissão ', code("'node_modules/.sitelo/images'")),
@@ -266,6 +267,26 @@ export default () =>
       p(
         'Ambas são heurísticas simples — sem modelo, sem treino — por isso encara-as como um bom valor por omissão para muitas imagens e não como garantia para uma. Para uma imagem principal que te importe, indica a margem. A escolha depende só da imagem, por isso é determinista e fica em cache como qualquer outra variante.',
       ),
+      h2('Marcadores desfocados (blur-up)'),
+      p(
+        'Ativa ', code('placeholder'), ' e cada imagem reescrita recebe uma cópia minúscula e desfocada de si própria pintada por trás. Enquanto o ficheiro verdadeiro carrega, a caixa mostra as cores e as formas da imagem em vez de um espaço vazio, e quando chega simplesmente tapa a cópia:',
+      ),
+      codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
+      codeBlock('dist/index.html', s.placeholderOutput, 'html'),
+      ul(
+        { class: 'docs-list' },
+        li(strong('Cerca de 500 bytes'), ' — a cópia é um WebP com no máximo 64px no lado maior, reduzido até o seu base64 caber; a maioria das fotos fica nos 32–48px. Com o SVG à volta, são cerca de 1 kB de HTML por imagem, sem pedidos extra.'),
+        li(strong('Um desfoque de 20px'), ' — o mesmo raio que ', code('filter: blur(20px)'), ' recebe, aplicado por um filtro SVG dentro do fundo. A foto em si nunca é desfocada, e nenhum script tem de tirar o desfoque depois.'),
+        li(strong('O mesmo enquadramento'), ' — uma caixa ', code('?w=…&h=…'), ' recebe um marcador daquilo que o seu recorte mantém, ', code('position'), ' e ', code('background'), ' incluídos.'),
+        li(strong('Em cache'), ' — ao lado das variantes, por isso uma nova build nunca volta a descodificar uma fonte para ele.'),
+      ),
+      p(
+        'Passa um objeto para o afinar: ', code('{ blur: 20, bytes: 500 }'), ' — ', code('blur'), ' é o raio em píxeis CSS, ', code('bytes'), ' o máximo que o base64 pode pesar.',
+      ),
+      p(
+        'A cópia fica por trás da imagem depois de esta carregar, por isso uma imagem com qualquer transparência não recebe nenhuma: ver-se-ia através dela. Preenche a caixa do ', code('<img>'), ' como faz ', code('object-fit: cover'), ', pelo que uma imagem mostrada com ', code('object-fit: contain'), ' numa caixa de outra forma ficaria com faixas desfocadas ao lado. Marca essa com ', code('data-no-placeholder'), ' e mantém tudo o resto:',
+      ),
+      codeBlock('src/index.ht.js', s.placeholderOptOut, 'html'),
       h2('Como excluir imagens'),
       p(
         'As etiquetas que já têm ',

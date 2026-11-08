@@ -162,6 +162,7 @@ export default () =>
           ' und ',
           code('decoding'),
         ),
+        li(code('placeholder'), ' — Standard ', code('false'), '; ', code('true'), ' oder ', code('{ blur, bytes }'), ' malt eine weichgezeichnete Kopie von ~500 Bytes hinter jedes Bild, bis es geladen ist'),
         li(
           code('exclude'),
           ' — Glob(s) oder RegExp(s) von Bild-URLs, die unangetastet bleiben',
@@ -275,6 +276,26 @@ export default () =>
       p(
         'Beides sind einfache Heuristiken — kein Modell, kein Training —, also eher ein sinnvoller Standard für viele Bilder als eine Garantie für eines. Bei einem Hero-Bild, das dir wichtig ist, nenne die Kante. Die Wahl hängt nur vom Bild ab, ist also deterministisch und wird wie jede andere Variante gecacht.',
       ),
+      h2('Blur-up-Platzhalter'),
+      p(
+        'Schalte ', code('placeholder'), ' ein, und jedes umgeschriebene Bild bekommt eine winzige, weichgezeichnete Kopie seiner selbst hinter sich gemalt. Solange die echte Datei lädt, zeigt die Box die Farben und Formen des Bildes statt einer leeren Lücke — und sobald sie da ist, deckt sie die Kopie einfach zu:',
+      ),
+      codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
+      codeBlock('dist/index.html', s.placeholderOutput, 'html'),
+      ul(
+        { class: 'docs-list' },
+        li(strong('Rund 500 Bytes'), ' — die Kopie ist ein WebP von höchstens 64px an der längsten Seite und wird so lange verkleinert, bis ihr Base64 hineinpasst; die meisten Fotos landen bei 32–48px. Mit dem SVG drumherum sind das etwa 1 kB HTML pro Bild, ohne zusätzlichen Request.'),
+        li(strong('20px Weichzeichnung'), ' — derselbe Radius wie bei ', code('filter: blur(20px)'), ', angewendet von einem SVG-Filter im Hintergrund. Das Foto selbst wird nie weichgezeichnet, und kein Skript muss die Unschärfe wieder entfernen.'),
+        li(strong('Derselbe Ausschnitt'), ' — eine ', code('?w=…&h=…'), '-Box bekommt einen Platzhalter von dem, was ihr Zuschnitt behält, ', code('position'), ' und ', code('background'), ' inklusive.'),
+        li(strong('Gecacht'), ' — neben den Varianten, sodass ein erneuter Build dafür nie wieder eine Quelle dekodiert.'),
+      ),
+      p(
+        'Mit einem Objekt stellst du es ein: ', code('{ blur: 20, bytes: 500 }'), ' — ', code('blur'), ' ist der Radius in CSS-Pixeln, ', code('bytes'), ' das Höchstgewicht des Base64.',
+      ),
+      p(
+        'Die Kopie bleibt hinter dem Bild, wenn es geladen ist — ein Bild mit irgendeiner Transparenz bekommt deshalb keine, sie würde durchscheinen. Sie füllt die Box des ', code('<img>'), ' so wie ', code('object-fit: cover'), '; ein Bild, das mit ', code('object-fit: contain'), ' in einer Box anderer Form steht, behielte unscharfe Balken daneben. Markiere es mit ', code('data-no-placeholder'), ', und alles andere bleibt:',
+      ),
+      codeBlock('src/index.ht.js', s.placeholderOptOut, 'html'),
       h2('Ausnahmen'),
       p(
         'Tags, die bereits ein ',

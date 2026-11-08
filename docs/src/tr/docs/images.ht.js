@@ -115,6 +115,7 @@ export default () =>
         li(code('sizes'), ' — ', code('sizes'), ' özniteliği; etiketteki bir ', code('sizes'), ' her zaman kazanır'),
         li(code('dimensions'), ' — varsayılan ', code('true'), '; ', code('width'), ' / ', code('height'), ' ekler'),
         li(code('lazy'), ' — varsayılan ', code('true'), '; ', code('loading'), ' ve ', code('decoding'), ' ekler'),
+        li(code('placeholder'), ' — varsayılan ', code('false'), '; ', code('true'), ' ya da ', code('{ blur, bytes }'), ' her görselin arkasına, yüklenene kadar ~500 baytlık bulanık bir kopya boyar'),
         li(code('exclude'), ' — dokunulmayacak görsel URL’lerinin glob ya da RegExp deseni'),
         li(code('assetsDir'), ' — varsayılan ', code("'assets/img'")),
         li(code('cacheDir'), ' — varsayılan ', code("'node_modules/.sitelo/images'")),
@@ -199,6 +200,26 @@ export default () =>
       p(
         'İkisi de düz sezgisel yöntemlerdir — model yok, eğitim yok — bu yüzden onları tek bir görsel için güvence değil, pek çok görsel için makul bir varsayılan sayın. Önemsediğiniz bir kapak görseli için kenarı siz adlandırın. Seçim yalnızca resme bağlıdır, dolayısıyla belirlenimcidir ve diğer türevler gibi önbelleğe alınır.',
       ),
+      h2('Bulanık yer tutucular (blur-up)'),
+      p(
+        code('placeholder'), ' seçeneğini açın; yeniden yazılan her görselin arkasına kendisinin minicik, bulanık bir kopyası boyanır. Asıl dosya yüklenirken kutu boş bir boşluk yerine resmin renklerini ve şekillerini gösterir; dosya geldiğinde de kopyanın üstünü basitçe örter:',
+      ),
+      codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
+      codeBlock('dist/index.html', s.placeholderOutput, 'html'),
+      ul(
+        { class: 'docs-list' },
+        li(strong('Yaklaşık 500 bayt'), ' — kopya, uzun kenarı en fazla 64px olan bir WebP’dir ve base64’ü sığana kadar küçültülür; çoğu fotoğraf 32–48px’te kalır. Çevresindeki SVG ile birlikte görsel başına yaklaşık 1 kB HTML eder, ek istek yoktur.'),
+        li(strong('20px bulanıklık'), ' — ', code('filter: blur(20px)'), ' ile aynı yarıçap, ama arka planın içindeki bir SVG filtresiyle uygulanır. Fotoğrafın kendisi asla bulanıklaşmaz ve bulanıklığı sonradan kaldıracak bir betiğe gerek kalmaz.'),
+        li(strong('Aynı kadraj'), ' — bir ', code('?w=…&h=…'), ' kutusu, kırpmasının tuttuğu kısmın yer tutucusunu alır; ', code('position'), ' ve ', code('background'), ' dahil.'),
+        li(strong('Önbellekte'), ' — varyantların yanında; böylece yeniden derleme bunun için bir kaynağı asla tekrar çözmez.'),
+      ),
+      p(
+        'Ayarlamak için bir nesne verin: ', code('{ blur: 20, bytes: 500 }'), ' — ', code('blur'), ' CSS pikseli cinsinden yarıçap, ', code('bytes'), ' base64’ün en fazla ağırlığıdır.',
+      ),
+      p(
+        'Kopya, görsel yüklendikten sonra da arkasında kalır; bu yüzden herhangi bir saydamlığı olan görsel kopya almaz, yoksa içinden görünürdü. Kopya ', code('<img>'), ' kutusunu ', code('object-fit: cover'), ' gibi doldurur; dolayısıyla başka biçimde bir kutuda ', code('object-fit: contain'), ' ile gösterilen bir görselin yanında bulanık şeritler kalırdı. O görseli ', code('data-no-placeholder'), ' ile işaretleyin, gerisini korur:',
+      ),
+      codeBlock('src/index.ht.js', s.placeholderOptOut, 'html'),
       h2('Devre dışı bırakmak'),
       p(
         'Zaten bir ',

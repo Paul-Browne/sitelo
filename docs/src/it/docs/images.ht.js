@@ -162,6 +162,7 @@ export default () =>
           ' e ',
           code('decoding'),
         ),
+        li(code('placeholder'), ' — predefinito ', code('false'), '; ', code('true'), ' o ', code('{ blur, bytes }'), ' dipinge una copia sfocata di ~500 byte dietro ogni immagine finché non si carica'),
         li(
           code('exclude'),
           ' — glob o RegExp di URL di immagini da lasciare stare',
@@ -319,6 +320,26 @@ export default () =>
       p(
         'Sono entrambe semplici euristiche — nessun modello, nessun addestramento — quindi trattale come un default ragionevole per molte immagini più che come una garanzia per una sola. Per un’immagine di apertura a cui tieni, indica tu il bordo. La scelta dipende solo dall’immagine, quindi è deterministica e va in cache come qualunque altra variante.',
       ),
+      h2('Segnaposto sfocati (blur-up)'),
+      p(
+        'Attiva ', code('placeholder'), ' e ogni immagine riscritta riceve, dipinta dietro di sé, una minuscola copia sfocata di se stessa. Mentre il file vero si carica, il riquadro mostra i colori e le forme dell’immagine invece di un vuoto, e quando arriva copre semplicemente la copia:',
+      ),
+      codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
+      codeBlock('dist/index.html', s.placeholderOutput, 'html'),
+      ul(
+        { class: 'docs-list' },
+        li(strong('Circa 500 byte'), ' — la copia è un WebP di al massimo 64px sul lato più lungo, rimpicciolito finché il suo base64 non ci sta; la maggior parte delle foto si ferma a 32–48px. Con l’SVG intorno sono circa 1 kB di HTML per immagine, senza richieste in più.'),
+        li(strong('Una sfocatura di 20px'), ' — il raggio che prende ', code('filter: blur(20px)'), ', applicato da un filtro SVG dentro lo sfondo. La foto in sé non viene mai sfocata, e nessuno script deve togliere la sfocatura dopo.'),
+        li(strong('La stessa inquadratura'), ' — un riquadro ', code('?w=…&h=…'), ' riceve un segnaposto di ciò che il suo ritaglio tiene, ', code('position'), ' e ', code('background'), ' compresi.'),
+        li(strong('In cache'), ' — accanto alle varianti, così una nuova build non decodifica mai più una sorgente per lui.'),
+      ),
+      p(
+        'Passa un oggetto per regolarlo: ', code('{ blur: 20, bytes: 500 }'), ' — ', code('blur'), ' è il raggio in pixel CSS, ', code('bytes'), ' il peso massimo del base64.',
+      ),
+      p(
+        'La copia resta dietro l’immagine anche dopo il caricamento, quindi un’immagine con qualsiasi trasparenza non ne riceve: si vedrebbe attraverso. Riempie il riquadro dell’', code('<img>'), ' come fa ', code('object-fit: cover'), ', perciò un’immagine mostrata con ', code('object-fit: contain'), ' in un riquadro di altra forma terrebbe delle bande sfocate ai lati. Segna quella con ', code('data-no-placeholder'), ' e conserva tutto il resto:',
+      ),
+      codeBlock('src/index.ht.js', s.placeholderOptOut, 'html'),
       h2('Tirarsi fuori'),
       p(
         'I tag che hanno già un ',

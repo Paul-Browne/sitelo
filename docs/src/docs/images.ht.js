@@ -116,6 +116,7 @@ export default () =>
         li(code('sizes'), ' — the ', code('sizes'), ' attribute; a ', code('sizes'), ' on the tag always wins'),
         li(code('dimensions'), ' — default ', code('true'), '; adds ', code('width'), ' / ', code('height')),
         li(code('lazy'), ' — default ', code('true'), '; adds ', code('loading'), ' and ', code('decoding')),
+        li(code('placeholder'), ' — default ', code('false'), '; ', code('true'), ' or ', code('{ blur, bytes }'), ' paints a blurred ~500-byte copy behind each image until it loads'),
         li(code('exclude'), ' — glob(s) or RegExp(s) of image URLs to leave alone'),
         li(code('assetsDir'), ' — default ', code("'assets/img'")),
         li(code('cacheDir'), ' — default ', code("'node_modules/.sitelo/images'")),
@@ -200,6 +201,26 @@ export default () =>
       p(
         'Both are plain heuristics — no model, no training — so treat them as a sensible default for many images rather than a guarantee for one. For a hero image you care about, name the edge. The choice depends only on the picture, so it is deterministic and caches like any other variant.',
       ),
+      h2('Blur-up placeholders'),
+      p(
+        'Turn on ', code('placeholder'), ' and every rewritten image gets a tiny blurred copy of itself painted behind it. While the real file loads, the box shows the picture’s colours and shapes instead of an empty gap, and when it arrives it simply covers the copy:',
+      ),
+      codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
+      codeBlock('dist/index.html', s.placeholderOutput, 'html'),
+      ul(
+        { class: 'docs-list' },
+        li(strong('About 500 bytes'), ' — the copy is a WebP at most 64px on its longest side, made smaller until its base64 fits; most photos land at 32–48px. With the SVG around it that is about 1 kB of HTML per image, and no extra request.'),
+        li(strong('A 20px blur'), ' — the radius ', code('filter: blur(20px)'), ' takes, applied by an SVG filter inside the background. The photo itself is never blurred, and no script has to take the blur off again.'),
+        li(strong('The same framing'), ' — a ', code('?w=…&h=…'), ' box gets a placeholder of what its crop keeps, ', code('position'), ' and ', code('background'), ' included.'),
+        li(strong('Cached'), ' — beside the variants, so a rebuild never decodes a source again for it.'),
+      ),
+      p(
+        'Pass an object to tune it: ', code('{ blur: 20, bytes: 500 }'), ' — ', code('blur'), ' is the radius in CSS pixels, ', code('bytes'), ' the most the base64 may weigh.',
+      ),
+      p(
+        'The copy stays behind the picture once it has loaded, so an image with any transparency gets none: it would show through. It fills the ', code('<img>'), '’s box the way ', code('object-fit: cover'), ' does, so an image shown with ', code('object-fit: contain'), ' in a box of another shape would keep blurred bars beside it. Mark that one ', code('data-no-placeholder'), ' and it keeps everything else:',
+      ),
+      codeBlock('src/index.ht.js', s.placeholderOptOut, 'html'),
       h2('Opting out'),
       p(
         'Tags that already have a ',
