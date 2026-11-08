@@ -1294,8 +1294,7 @@ export default {
 
 ```html
 <img src="/assets/img/hero.a1b2c3d4-3000.webp" alt="Sunrise" ...
-     onload="var s=this.style;this.decode().catch(function(){})
-             .then(function(){s.backgroundImage=''})"
+     onload="var s=this.style,c=function(){s.backgroundImage=''};this.decode().then(c,c)"
      style="background-image:url(&quot;data:image/svg+xml,%3Csvg ...%3E
               ...%3CfeGaussianBlur stdDeviation='20'/%3E...
               href='data:image/webp;base64,UklGRhoB...'/%3E%3C/svg%3E&quot;);

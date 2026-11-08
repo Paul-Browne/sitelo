@@ -892,7 +892,7 @@ test('rewriteHtmlImages: placeholder paints a blurred background, last on the ta
   })
 
   const style = placeholderStyle('UklGRg==', 20).replace(/"/g, '&quot;')
-  const onload = "var s=this.style;this.decode().catch(function(){}).then(function(){s.backgroundImage=''})"
+  const onload = "var s=this.style,c=function(){s.backgroundImage=''};this.decode().then(c,c)"
   assert.equal(
     html,
     '<img src="/assets/img/a-800.webp" alt="A" sizes="100vw" width="800" height="400" loading="lazy" decoding="async" ' +
@@ -921,7 +921,7 @@ test('rewriteHtmlImages: an author style has the last word, and data-no-placehol
   assert.equal(styled.match(/style=/g).length, 1, 'one style attribute, merged')
 
   const handled = await run('<img src="/img/a.png" alt="A" onload="track(this)">')
-  assert.match(handled, / onload="var s=this\.style;[^"]*\}\);track\(this\)"/, 'an author onload still runs, after ours')
+  assert.match(handled, / onload="var s=this\.style,[^"]*\.then\(c,c\);track\(this\)"/, 'an author onload still runs, after ours')
 
   for (const own of ['background:url(/texture.png)', 'color:red; Background-Image: none']) {
     const kept = await run(`<img src="/img/a.png" alt="A" style="${own}">`)

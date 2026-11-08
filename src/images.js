@@ -301,16 +301,22 @@ export function placeholderStyle(base64, blur) {
  *
  * It waits for `decode()`: with `decoding="async"` the load event can come
  * a frame before the picture is painted, and clearing the background then
- * flashes an empty box. Only `background-image` is cleared, so a
- * background colour in the tag's style stays. `function` rather than `=>`
- * keeps `>` out of the attribute, as the SVG's escaping does.
+ * flashes an empty box. It clears either way, `.then(c,c)`: after a load,
+ * `decode()` only rejects when the browser has moved on to another
+ * `srcset` candidate, and the old picture is still showing until that one
+ * arrives. Leaving the rejection unhandled would log an error on the page.
+ *
+ * Only `background-image` is cleared, so a background colour in the tag's
+ * style stays. `function` rather than `=>` keeps `>` out of the attribute,
+ * as the SVG's escaping does. The browser compiles the attribute into a
+ * function of its own, so `s` and `c` stay local without a wrapper.
  *
  * Where a Content-Security-Policy blocks inline handlers it does not run,
  * and the placeholder stays behind the picture: harmless for an opaque
  * one, which is why see-through pictures get none.
  */
 const PLACEHOLDER_ONLOAD =
-  "var s=this.style;this.decode().catch(function(){}).then(function(){s.backgroundImage=''})"
+  "var s=this.style,c=function(){s.backgroundImage=''};this.decode().then(c,c)"
 
 /**
  * A declaration in an inline style that sets the background image. The

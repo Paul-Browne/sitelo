@@ -145,8 +145,7 @@ export default () =>
      width="3000" height="2000"
      loading="lazy" decoding="async"
      srcset="..."
-     onload="var s=this.style;this.decode().catch(function(){})
-             .then(function(){s.backgroundImage=''})"
+     onload="var s=this.style,c=function(){s.backgroundImage=''};this.decode().then(c,c)"
      style="background-image:url(&quot;data:image/svg+xml,%3Csvg ...%3E
               ...%3CfeGaussianBlur stdDeviation='20'/%3E...
               href='data:image/webp;base64,UklGRhoB...'/%3E%3C/svg%3E&quot;);
