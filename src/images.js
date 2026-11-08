@@ -258,10 +258,9 @@ function normalizePlaceholder(placeholder) {
  * The CSS that paints a blur-up placeholder behind an `<img>`: `base64` is
  * the tiny WebP, `blur` the radius in CSS pixels.
  *
- * Not `filter: blur()` on the tag: that would blur the photo too once it
- * arrives, and taking it off again needs a script. The blur is inside the
- * background instead — an SVG that draws the WebP over the box and blurs
- * it there. The SVG has no size of its own, so it is drawn at the box's
+ * Not `filter: blur()` on the tag: that would blur the photo too until a
+ * script took it off. The blur is inside the background instead — an SVG
+ * that draws the WebP over the box and blurs it there. The SVG has no size of its own, so it is drawn at the box's
  * size, one unit to a CSS pixel, and `stdDeviation` is the radius
  * `filter: blur()` would take. `slice` crops it the way `object-fit: cover`
  * does, which for the usual box is no crop at all.
@@ -270,10 +269,9 @@ function normalizePlaceholder(placeholder) {
  * 1, and since it works on un-premultiplied colour the edges keep the
  * picture's colour instead of darkening.
  *
- * The background stays behind the picture once it has loaded — the reason
- * see-through images get no placeholder. Only `background-image` is set,
- * on the content box, so a frame made of padding and a background colour
- * keeps its colour.
+ * {@link PLACEHOLDER_ONLOAD} takes it away once the picture is showing.
+ * Only `background-image` is set, on the content box, so a frame made of
+ * padding and a background colour keeps its colour meanwhile.
  *
  * @param {string} base64
  * @param {number} blur
@@ -295,6 +293,31 @@ export function placeholderStyle(base64, blur) {
 
   return `background-image:url("${url}");background-origin:content-box;background-repeat:no-repeat`
 }
+
+/**
+ * The `onload` that takes a placeholder away once its picture is showing,
+ * so nothing is left where the picture does not cover the box, such as
+ * beside `object-fit: contain`.
+ *
+ * It waits for `decode()`: with `decoding="async"` the load event can come
+ * a frame before the picture is painted, and clearing the background then
+ * flashes an empty box. Only `background-image` is cleared, so a
+ * background colour in the tag's style stays. `function` rather than `=>`
+ * keeps `>` out of the attribute, as the SVG's escaping does.
+ *
+ * Where a Content-Security-Policy blocks inline handlers it does not run,
+ * and the placeholder stays behind the picture: harmless for an opaque
+ * one, which is why see-through pictures get none.
+ */
+const PLACEHOLDER_ONLOAD =
+  "var s=this.style;this.decode().catch(function(){}).then(function(){s.backgroundImage=''})"
+
+/**
+ * A declaration in an inline style that sets the background image. The
+ * author's own background wins over a placeholder, and the onload would
+ * clear it, so such a tag gets none.
+ */
+const STYLE_BACKGROUND_IMAGE = /(?:^|;)\s*background(?:-image)?\s*:/i
 
 /**
  * Lazily load sharp with an actionable error when it is not installed.
@@ -1344,10 +1367,17 @@ export async function rewriteHtmlImages({ html, options, resolve, generate, onWa
 
       // Last, so the kilobyte of it does not sit between the tag's src and
       // its srcset.
-      if (options.placeholder && result.placeholder && !noPlaceholder) {
+      const style = imgAttributes.get('style')
+      if (
+        options.placeholder &&
+        result.placeholder &&
+        !noPlaceholder &&
+        !STYLE_BACKGROUND_IMAGE.test(style ?? '')
+      ) {
+        const onload = imgAttributes.get('onload')
+        imgAttributes.set('onload', onload ? `${PLACEHOLDER_ONLOAD};${onload}` : PLACEHOLDER_ONLOAD)
+
         const placeholder = placeholderStyle(result.placeholder, options.placeholder.blur)
-        const style = imgAttributes.get('style')
-        // Ours first, so a background the author's own style sets wins.
         imgAttributes.set('style', style ? `${placeholder};${style}` : placeholder)
       }
 

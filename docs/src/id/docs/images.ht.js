@@ -209,7 +209,7 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li(strong('Sekitar 500 byte'), ' — salinannya adalah WebP dengan sisi terpanjang paling besar 64px, diperkecil sampai base64-nya muat; kebanyakan foto berakhir di 32–48px. Dengan SVG di sekelilingnya, totalnya sekitar 1 kB HTML per gambar, tanpa request tambahan.'),
-        li(strong('Buram 20px'), ' — radius yang sama dengan ', code('filter: blur(20px)'), ', diterapkan oleh filter SVG di dalam latar belakang. Fotonya sendiri tidak pernah diburamkan, dan tidak perlu skrip untuk melepas buramnya lagi.'),
+        li(strong('Buram 20px'), ' — radius yang sama dengan ', code('filter: blur(20px)'), ', diterapkan oleh filter SVG di dalam latar belakang, jadi fotonya sendiri tidak pernah diburamkan.'),
         li(strong('Bingkai yang sama'), ' — kotak ', code('?w=…&h=…'), ' mendapat placeholder dari bagian yang dipertahankan oleh potongannya, termasuk ', code('position'), ' dan ', code('background'), '.'),
         li(strong('Di-cache'), ' — di samping varian, jadi build ulang tidak pernah mendekode sumber lagi untuknya.'),
       ),
@@ -217,7 +217,7 @@ export default () =>
         'Berikan objek untuk menyetelnya: ', code('{ blur: 20, bytes: 500 }'), ' — ', code('blur'), ' adalah radius dalam piksel CSS, ', code('bytes'), ' batas berat base64.',
       ),
       p(
-        'Salinannya tetap di belakang gambar setelah gambar dimuat, jadi gambar yang punya transparansi sedikit pun tidak mendapatkannya — ia akan tembus terlihat. Salinan itu mengisi kotak ', code('<img>'), ' seperti ', code('object-fit: cover'), ', sehingga gambar yang ditampilkan dengan ', code('object-fit: contain'), ' di kotak berbentuk lain akan menyisakan pita buram di sampingnya. Tandai gambar itu dengan ', code('data-no-placeholder'), ' dan sisanya tetap berlaku:',
+        'Begitu gambar selesai dimuat dan didekode, sebuah ', code('onload'), ' satu baris menghapus salinannya, jadi tidak ada yang tersisa di samping gambar yang ditampilkan dengan ', code('object-fit: contain'), '. Di tempat Content-Security-Policy memblokir handler inline, salinan itu tetap di belakang gambar — itu sebabnya gambar yang punya transparansi sedikit pun tidak mendapatkannya: ia akan tembus terlihat. Untuk mengecualikan satu tag saja, tandai dengan ', code('data-no-placeholder'), ':',
       ),
       codeBlock('src/index.ht.js', s.placeholderOptOut, 'html'),
       h2('Menonaktifkannya'),

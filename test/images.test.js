@@ -892,11 +892,14 @@ test('rewriteHtmlImages: placeholder paints a blurred background, last on the ta
   })
 
   const style = placeholderStyle('UklGRg==', 20).replace(/"/g, '&quot;')
+  const onload = "var s=this.style;this.decode().catch(function(){}).then(function(){s.backgroundImage=''})"
   assert.equal(
     html,
     '<img src="/assets/img/a-800.webp" alt="A" sizes="100vw" width="800" height="400" loading="lazy" decoding="async" ' +
-      `srcset="/assets/img/a-400.webp 400w, /assets/img/a-800.webp 800w" style="${style}">`,
+      `srcset="/assets/img/a-400.webp 400w, /assets/img/a-800.webp 800w" onload="${onload}" style="${style}">`,
+    'once the picture is decoded, onload clears the background image and nothing else',
   )
+  assert.doesNotMatch(html.replace(/^<img|>$/g, ''), /[<>]/, 'no < or > inside the tag for a regex to trip on')
 })
 
 test('rewriteHtmlImages: an author style has the last word, and data-no-placeholder opts out', async () => {
@@ -916,6 +919,18 @@ test('rewriteHtmlImages: an author style has the last word, and data-no-placehol
   assert.ok(style.includes("stdDeviation='12'"), 'blur is configurable')
   assert.ok(style.endsWith(';border-radius:8px'), 'the author style comes after ours, so it wins')
   assert.equal(styled.match(/style=/g).length, 1, 'one style attribute, merged')
+
+  const handled = await run('<img src="/img/a.png" alt="A" onload="track(this)">')
+  assert.match(handled, / onload="var s=this\.style;[^"]*\}\);track\(this\)"/, 'an author onload still runs, after ours')
+
+  for (const own of ['background:url(/texture.png)', 'color:red; Background-Image: none']) {
+    const kept = await run(`<img src="/img/a.png" alt="A" style="${own}">`)
+    assert.match(kept, new RegExp(` style="${own.replace(/[()]/g, '\\$&')}"`), `${own}: the author's background is left alone`)
+    assert.doesNotMatch(kept, /onload=|data:image\/svg/, `${own}: no placeholder for onload to clear it with`)
+  }
+
+  const colour = await run('<img src="/img/a.png" alt="A" style="background-color:#fff;padding:8px">')
+  assert.match(colour, /style="background-image:[^"]*;background-color:#fff;padding:8px"/, 'a background colour is no reason to skip it')
 
   const optedOut = await run('<img src="/img/a.png" alt="A" data-no-placeholder>')
   assert.match(optedOut, /srcset=/, 'the tag is still optimized')

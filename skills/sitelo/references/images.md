@@ -85,8 +85,9 @@ export default { images: { placeholder: true } } // or { blur: 20, bytes: 500 }
 
 Each rewritten `<img>` gets a `style` with a `background-image`: an SVG
 data URL that draws a tiny WebP of the picture and blurs it with
-`feGaussianBlur`. The photo paints over it when it loads. No script and no
-extra request are involved.
+`feGaussianBlur`. It also gets an `onload` that waits for `decode()` and
+then clears that `background-image`, so nothing is left once the photo is
+showing. A tag's own `onload` runs after it. No extra request is made.
 
 - The WebP is at most 64px on its longest side. It steps down to 8px
   until its base64 fits `bytes` (default 500). Expect about 1 kB of HTML
@@ -94,12 +95,12 @@ extra request are involved.
 - `blur` is the radius in CSS pixels (default 20). It is the same radius
   as `filter: blur()`, but only the placeholder is blurred, never the photo.
 - A `?w=&h=` box gets a placeholder of its own crop.
-- Images with any transparency get none, because it would show through.
-- It fills the box like `object-fit: cover`. A tag shown with
-  `object-fit: contain` in a box of another shape would keep blurred bars,
-  so mark it `data-no-placeholder`. That opts out of the placeholder only,
-  and the attribute is stripped. A `background` in the tag's own `style`
-  also wins.
+- Images with any transparency get none. Under a Content-Security-Policy
+  that blocks inline handlers the copy stays, and it would show through.
+- A tag whose own `style` sets `background` or `background-image` gets
+  none, so its background is left alone.
+- `data-no-placeholder` opts a tag out of the placeholder only. The
+  attribute is stripped.
 
 ## Left alone
 

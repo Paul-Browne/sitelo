@@ -285,7 +285,7 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li(strong('Rund 500 Bytes'), ' — die Kopie ist ein WebP von höchstens 64px an der längsten Seite und wird so lange verkleinert, bis ihr Base64 hineinpasst; die meisten Fotos landen bei 32–48px. Mit dem SVG drumherum sind das etwa 1 kB HTML pro Bild, ohne zusätzlichen Request.'),
-        li(strong('20px Weichzeichnung'), ' — derselbe Radius wie bei ', code('filter: blur(20px)'), ', angewendet von einem SVG-Filter im Hintergrund. Das Foto selbst wird nie weichgezeichnet, und kein Skript muss die Unschärfe wieder entfernen.'),
+        li(strong('20px Weichzeichnung'), ' — derselbe Radius wie bei ', code('filter: blur(20px)'), ', angewendet von einem SVG-Filter im Hintergrund, sodass das Foto selbst nie weichgezeichnet wird.'),
         li(strong('Derselbe Ausschnitt'), ' — eine ', code('?w=…&h=…'), '-Box bekommt einen Platzhalter von dem, was ihr Zuschnitt behält, ', code('position'), ' und ', code('background'), ' inklusive.'),
         li(strong('Gecacht'), ' — neben den Varianten, sodass ein erneuter Build dafür nie wieder eine Quelle dekodiert.'),
       ),
@@ -293,7 +293,7 @@ export default () =>
         'Mit einem Objekt stellst du es ein: ', code('{ blur: 20, bytes: 500 }'), ' — ', code('blur'), ' ist der Radius in CSS-Pixeln, ', code('bytes'), ' das Höchstgewicht des Base64.',
       ),
       p(
-        'Die Kopie bleibt hinter dem Bild, wenn es geladen ist — ein Bild mit irgendeiner Transparenz bekommt deshalb keine, sie würde durchscheinen. Sie füllt die Box des ', code('<img>'), ' so wie ', code('object-fit: cover'), '; ein Bild, das mit ', code('object-fit: contain'), ' in einer Box anderer Form steht, behielte unscharfe Balken daneben. Markiere es mit ', code('data-no-placeholder'), ', und alles andere bleibt:',
+        'Sobald das Bild geladen und dekodiert ist, nimmt ein einzeiliges ', code('onload'), ' die Kopie weg — neben einem Bild mit ', code('object-fit: contain'), ' bleibt also nichts zurück. Wo eine Content-Security-Policy Inline-Handler blockiert, bleibt die Kopie einfach hinter dem Bild; deshalb bekommt ein Bild mit irgendeiner Transparenz keine, sie würde durchscheinen. Um ein einzelnes Tag auszulassen, markiere es mit ', code('data-no-placeholder'), ':',
       ),
       codeBlock('src/index.ht.js', s.placeholderOptOut, 'html'),
       h2('Ausnahmen'),

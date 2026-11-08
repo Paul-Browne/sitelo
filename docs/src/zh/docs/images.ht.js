@@ -266,7 +266,7 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li(strong('约 500 字节'), ' —— 副本是一张最长边不超过 64px 的 WebP，一直缩小到 base64 放得下为止；大多数照片落在 32–48px。加上外面那层 SVG，每张图大约多 1 kB HTML，不多发任何请求。'),
-        li(strong('20px 模糊'), ' —— 与 ', code('filter: blur(20px)'), ' 相同的半径，由背景里的 SVG 滤镜施加。照片本身从不会被模糊，也不需要脚本事后去掉模糊。'),
+        li(strong('20px 模糊'), ' —— 与 ', code('filter: blur(20px)'), ' 相同的半径，由背景里的 SVG 滤镜施加，照片本身从不会被模糊。'),
         li(strong('相同的取景'), ' —— ', code('?w=…&h=…'), ' 的方框得到的是其裁切所保留部分的占位图，', code('position'), ' 和 ', code('background'), ' 都算在内。'),
         li(strong('有缓存'), ' —— 和变体放在一起，所以重新构建时不会为它再解码一次源图。'),
       ),
@@ -274,7 +274,7 @@ export default () =>
         '传一个对象来调整：', code('{ blur: 20, bytes: 500 }'), ' —— ', code('blur'), ' 是以 CSS 像素计的半径，', code('bytes'), ' 是 base64 的最大体积。',
       ),
       p(
-        '图片加载完成后副本仍留在它背后，所以带有任何透明区域的图片不会得到占位图——否则会透出来。副本像 ', code('object-fit: cover'), ' 那样铺满 ', code('<img>'), ' 的框，因此在另一种形状的框里用 ', code('object-fit: contain'), ' 显示的图片旁边会留下模糊的条带。给这样的图片加上 ', code('data-no-placeholder'), '，其他优化照旧：',
+        '图片加载并解码完成后，一行 ', code('onload'), ' 会把副本移除，因此用 ', code('object-fit: contain'), ' 显示的图片旁边不会残留任何东西。在 Content-Security-Policy 禁止内联事件处理器的地方，副本会一直留在图片背后——所以带有任何透明区域的图片不会得到占位图，否则会透出来。要排除单个标签，给它加上 ', code('data-no-placeholder'), '：',
       ),
       codeBlock('src/index.ht.js', s.placeholderOptOut, 'html'),
       h2('如何排除'),

@@ -285,7 +285,7 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li(strong('Unos 500 bytes'), ' — la copia es un WebP de 64px como máximo en su lado más largo, que se reduce hasta que su base64 cabe; la mayoría de las fotos quedan en 32–48px. Con el SVG que la envuelve, viene a ser 1 kB de HTML por imagen, sin peticiones extra.'),
-        li(strong('Un desenfoque de 20px'), ' — el mismo radio que toma ', code('filter: blur(20px)'), ', aplicado por un filtro SVG dentro del fondo. La foto en sí nunca se desenfoca, y ningún script tiene que quitar el desenfoque después.'),
+        li(strong('Un desenfoque de 20px'), ' — el mismo radio que toma ', code('filter: blur(20px)'), ', aplicado por un filtro SVG dentro del fondo, así que la foto en sí nunca se desenfoca.'),
         li(strong('El mismo encuadre'), ' — una caja ', code('?w=…&h=…'), ' recibe un marcador de lo que conserva su recorte, ', code('position'), ' y ', code('background'), ' incluidos.'),
         li(strong('En caché'), ' — junto a las variantes, así que una nueva build nunca vuelve a decodificar una fuente para él.'),
       ),
@@ -293,7 +293,7 @@ export default () =>
         'Pasa un objeto para ajustarlo: ', code('{ blur: 20, bytes: 500 }'), ' — ', code('blur'), ' es el radio en píxeles CSS, ', code('bytes'), ' lo máximo que puede pesar el base64.',
       ),
       p(
-        'La copia sigue detrás de la imagen una vez cargada, así que una imagen con cualquier transparencia no recibe ninguna: se vería a través. Llena la caja del ', code('<img>'), ' como lo hace ', code('object-fit: cover'), ', de modo que una imagen mostrada con ', code('object-fit: contain'), ' en una caja de otra forma conservaría franjas difuminadas a los lados. Marca esa con ', code('data-no-placeholder'), ' y conserva todo lo demás:',
+        'Cuando la imagen ha cargado y se ha decodificado, un ', code('onload'), ' de una línea quita la copia, así que no queda nada junto a una imagen mostrada con ', code('object-fit: contain'), '. Donde una Content-Security-Policy bloquea los manejadores en línea, la copia simplemente se queda detrás de la imagen; por eso una imagen con cualquier transparencia no recibe ninguna: se vería a través. Para dejar fuera una sola etiqueta, márcala con ', code('data-no-placeholder'), ':',
       ),
       codeBlock('src/index.ht.js', s.placeholderOptOut, 'html'),
       h2('Cómo excluir imágenes'),

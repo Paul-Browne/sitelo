@@ -283,7 +283,7 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li(strong('Environ 500 octets'), ' — la copie est un WebP d’au plus 64px sur son plus grand côté, réduit jusqu’à ce que son base64 tienne ; la plupart des photos finissent à 32–48px. Avec le SVG autour, cela fait environ 1 ko de HTML par image, sans requête supplémentaire.'),
-        li(strong('Un flou de 20px'), ' — le rayon que prend ', code('filter: blur(20px)'), ', appliqué par un filtre SVG à l’intérieur de l’arrière-plan. La photo elle-même n’est jamais floutée, et aucun script n’a besoin de retirer le flou ensuite.'),
+        li(strong('Un flou de 20px'), ' — le rayon que prend ', code('filter: blur(20px)'), ', appliqué par un filtre SVG à l’intérieur de l’arrière-plan : la photo elle-même n’est jamais floutée.'),
         li(strong('Le même cadrage'), ' — une boîte ', code('?w=…&h=…'), ' reçoit un aperçu de ce que garde son recadrage, ', code('position'), ' et ', code('background'), ' compris.'),
         li(strong('Mis en cache'), ' — à côté des variantes, si bien qu’un nouveau build ne redécode jamais une source pour lui.'),
       ),
@@ -291,7 +291,7 @@ export default () =>
         'Passez un objet pour le régler : ', code('{ blur: 20, bytes: 500 }'), ' — ', code('blur'), ' est le rayon en pixels CSS, ', code('bytes'), ' le poids maximal du base64.',
       ),
       p(
-        'La copie reste derrière l’image une fois celle-ci chargée : une image comportant la moindre transparence n’en reçoit donc pas, elle se verrait au travers. Elle remplit la boîte du ', code('<img>'), ' comme le fait ', code('object-fit: cover'), ' ; une image affichée avec ', code('object-fit: contain'), ' dans une boîte d’une autre forme garderait des bandes floues à côté. Marquez celle-là avec ', code('data-no-placeholder'), ' et elle garde tout le reste :',
+        'Une fois l’image chargée et décodée, un ', code('onload'), ' d’une ligne retire la copie : rien ne reste donc à côté d’une image affichée avec ', code('object-fit: contain'), '. Là où une Content-Security-Policy bloque les gestionnaires en ligne, la copie reste simplement derrière l’image — c’est pourquoi une image comportant la moindre transparence n’en reçoit pas : elle se verrait au travers. Pour exclure une seule balise, marquez-la avec ', code('data-no-placeholder'), ' :',
       ),
       codeBlock('src/index.ht.js', s.placeholderOptOut, 'html'),
       h2('Exclure des images'),

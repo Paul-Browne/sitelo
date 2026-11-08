@@ -1280,8 +1280,8 @@ picture, so it is deterministic and caches like any other variant.
 
 Turn on `placeholder` and every rewritten image gets a tiny blurred copy
 of itself painted behind it. While the real file loads, the box shows the
-picture's colours and shapes instead of an empty gap, and when it arrives
-it simply covers the copy:
+picture's colours and shapes instead of an empty gap; once it has loaded,
+the copy is taken away:
 
 ```js
 // sitelo.config.js
@@ -1294,6 +1294,8 @@ export default {
 
 ```html
 <img src="/assets/img/hero.a1b2c3d4-3000.webp" alt="Sunrise" ...
+     onload="var s=this.style;this.decode().catch(function(){})
+             .then(function(){s.backgroundImage=''})"
      style="background-image:url(&quot;data:image/svg+xml,%3Csvg ...%3E
               ...%3CfeGaussianBlur stdDeviation='20'/%3E...
               href='data:image/webp;base64,UklGRhoB...'/%3E%3C/svg%3E&quot;);
@@ -1306,19 +1308,23 @@ export default {
   and no extra request.
 - **A 20px blur.** `blur` is the radius `filter: blur(20px)` takes, but it
   is applied by an SVG filter inside the background, so the photo itself
-  is never blurred and no script has to take the blur off again.
+  is never blurred.
+- **Gone once it's showing.** The `onload` waits for `decode()`, so the
+  box never flashes empty between the two, then clears the inline
+  `background-image`, and nothing else. Nothing is left beside an image
+  shown with `object-fit: contain`. A tag's own `onload` still runs, after
+  it.
 - **The same framing.** A `?w=…&h=…` box gets a placeholder of what its
   crop keeps, `position` and `background` included.
 - **Cached** beside the variants, so a rebuild never decodes a source
   again for it.
 
-The copy stays behind the picture once it has loaded, so an image with
-any transparency gets none: it would show through. It fills the `<img>`'s
-box the way `object-fit: cover` does, so an image shown with
-`object-fit: contain` in a box of another shape would keep blurred bars
-beside it. Mark that one `data-no-placeholder` and it keeps everything
-else. A `background` in the tag's own `style` also wins over the
-placeholder.
+Under a Content-Security-Policy that blocks inline handlers, the `onload`
+doesn't run and the copy stays behind the picture. That is harmless for
+an opaque picture, and it is why an image with any transparency gets no
+placeholder: it would show through. A tag whose own `style` sets a
+`background` or `background-image` gets none either, so its background
+is left alone. Mark any other tag `data-no-placeholder` to leave it out.
 
 ### Opting out
 
