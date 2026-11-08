@@ -160,6 +160,7 @@ export default () =>
           ' et ',
           code('decoding'),
         ),
+        li(code('placeholder'), ' — par défaut ', code('false'), ' ; ', code('true'), ' ou ', code('{ blur, bytes }'), ' peint une copie floue d’environ 500 octets derrière chaque image jusqu’à son chargement'),
         li(
           code('exclude'),
           ' — glob(s) ou RegExp d’URL d’images à laisser intactes',
@@ -273,6 +274,26 @@ export default () =>
       p(
         'Ce sont deux simples heuristiques — pas de modèle, pas d’entraînement — donc un bon défaut pour beaucoup d’images plutôt qu’une garantie pour une seule. Pour une image de une qui vous tient à cœur, nommez le bord. Le choix ne dépend que de l’image : il est déterministe et se met en cache comme toute autre variante.',
       ),
+      h2('Aperçus flous (blur-up)'),
+      p(
+        'Activez ', code('placeholder'), ' et chaque image réécrite reçoit, peinte derrière elle, une minuscule copie floue d’elle-même. Pendant que le vrai fichier se charge, la boîte montre les couleurs et les formes de l’image au lieu d’un vide, et quand il arrive il recouvre simplement la copie :',
+      ),
+      codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
+      codeBlock('dist/index.html', s.placeholderOutput, 'html'),
+      ul(
+        { class: 'docs-list' },
+        li(strong('Environ 500 octets'), ' — la copie est un WebP d’au plus 64px sur son plus grand côté, réduit jusqu’à ce que son base64 tienne ; la plupart des photos finissent à 32–48px. Avec le SVG autour, cela fait environ 1 ko de HTML par image, sans requête supplémentaire.'),
+        li(strong('Un flou de 20px'), ' — le rayon que prend ', code('filter: blur(20px)'), ', appliqué par un filtre SVG à l’intérieur de l’arrière-plan : la photo elle-même n’est jamais floutée.'),
+        li(strong('Le même cadrage'), ' — une boîte ', code('?w=…&h=…'), ' reçoit un aperçu de ce que garde son recadrage, ', code('position'), ' et ', code('background'), ' compris.'),
+        li(strong('Mis en cache'), ' — à côté des variantes, si bien qu’un nouveau build ne redécode jamais une source pour lui.'),
+      ),
+      p(
+        'Passez un objet pour le régler : ', code('{ blur: 20, bytes: 500 }'), ' — ', code('blur'), ' est le rayon en pixels CSS, ', code('bytes'), ' le poids maximal du base64.',
+      ),
+      p(
+        'Une fois l’image chargée et décodée, un ', code('onload'), ' d’une ligne retire la copie : rien ne reste donc à côté d’une image affichée avec ', code('object-fit: contain'), '. Là où une Content-Security-Policy bloque les gestionnaires en ligne, la copie reste simplement derrière l’image — c’est pourquoi une image comportant la moindre transparence n’en reçoit pas : elle se verrait au travers. Pour exclure une seule balise, marquez-la avec ', code('data-no-placeholder'), ' :',
+      ),
+      codeBlock('src/index.ht.js', s.placeholderOptOut, 'html'),
       h2('Exclure des images'),
       p(
         'Les balises qui ont déjà un ',

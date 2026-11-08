@@ -36,6 +36,22 @@ const DEFAULT_ASSETS_DIR = 'assets/img'
 const DEFAULT_CACHE_DIR = 'node_modules/.sitelo/images'
 const DEV_URL_PREFIX = '/_sitelo/images'
 
+/** `placeholder: true` — a 20px blur over about 500 bytes of base64. */
+const DEFAULT_PLACEHOLDER = { blur: 20, bytes: 500 }
+
+/**
+ * Longest sides a placeholder is tried at, largest first: the first whose
+ * base64 fits the byte budget is used, and the last whatever it weighs.
+ * Under the blur, anything above 64px is detail nobody sees.
+ */
+const PLACEHOLDER_EDGES = [64, 48, 40, 32, 24, 16, 12, 8]
+
+/**
+ * Part of every placeholder's cache key, so a change to how they are made
+ * reaches caches written before it.
+ */
+const PLACEHOLDER_REVISION = 1
+
 /** Passed to every sharp() call — buffers avoid libvips mmap SIGBUS on macOS. */
 const SHARP_INPUT = {
   failOn: 'error',
@@ -51,6 +67,8 @@ const SHARP_INPUT = {
  * @property {string | undefined} sizes
  * @property {boolean} dimensions
  * @property {boolean} lazy
+ * @property {null | { blur: number, bytes: number }} placeholder a blurred
+ *   copy painted behind each image until it loads; null when off
  * @property {RegExp[]} exclude
  * @property {string} assetsDir
  * @property {string} cacheDir
@@ -198,6 +216,7 @@ export function normalizeImageOptions(images) {
     sizes,
     dimensions: options.dimensions !== false,
     lazy: options.lazy !== false,
+    placeholder: normalizePlaceholder(options.placeholder),
     exclude,
     assetsDir: assetsPath,
     cacheDir,
@@ -207,6 +226,104 @@ export function normalizeImageOptions(images) {
     concurrency,
   }
 }
+
+/**
+ * Normalize `images.placeholder`: off unless asked for, since each one adds
+ * close to a kilobyte to the page it sits on.
+ * @param {unknown} placeholder
+ * @returns {ImageOptions['placeholder']}
+ */
+function normalizePlaceholder(placeholder) {
+  if (placeholder == null || placeholder === false) return null
+
+  if (placeholder !== true && (typeof placeholder !== 'object' || Array.isArray(placeholder))) {
+    throw new Error('"images.placeholder" must be true or an object')
+  }
+
+  const options = /** @type {Record<string, unknown>} */ (placeholder === true ? {} : placeholder)
+  const blur = options.blur ?? DEFAULT_PLACEHOLDER.blur
+  const bytes = options.bytes ?? DEFAULT_PLACEHOLDER.bytes
+
+  if (typeof blur !== 'number' || !Number.isFinite(blur) || blur <= 0) {
+    throw new Error('"images.placeholder.blur" must be a positive number of pixels')
+  }
+  if (typeof bytes !== 'number' || !Number.isInteger(bytes) || bytes <= 0) {
+    throw new Error('"images.placeholder.bytes" must be a positive integer')
+  }
+
+  return { blur, bytes }
+}
+
+/**
+ * The CSS that paints a blur-up placeholder behind an `<img>`: `base64` is
+ * the tiny WebP, `blur` the radius in CSS pixels.
+ *
+ * Not `filter: blur()` on the tag: that would blur the photo too until a
+ * script took it off. The blur is inside the background instead — an SVG
+ * that draws the WebP over the box and blurs it there. The SVG has no size of its own, so it is drawn at the box's
+ * size, one unit to a CSS pixel, and `stdDeviation` is the radius
+ * `filter: blur()` would take. `slice` crops it the way `object-fit: cover`
+ * does, which for the usual box is no crop at all.
+ *
+ * A blur fades the edges towards transparent. `feFuncA` puts alpha back to
+ * 1, and since it works on un-premultiplied colour the edges keep the
+ * picture's colour instead of darkening.
+ *
+ * {@link PLACEHOLDER_ONLOAD} takes it away once the picture is showing.
+ * Only `background-image` is set, on the content box, so a frame made of
+ * padding and a background colour keeps its colour meanwhile.
+ *
+ * @param {string} base64
+ * @param {number} blur
+ */
+export function placeholderStyle(base64, blur) {
+  const svg =
+    "<svg xmlns='http://www.w3.org/2000/svg'>" +
+    "<filter id='b' color-interpolation-filters='sRGB'>" +
+    `<feGaussianBlur stdDeviation='${blur}'/>` +
+    "<feComponentTransfer><feFuncA type='discrete' tableValues='1 1'/></feComponentTransfer>" +
+    '</filter>' +
+    "<image width='100%' height='100%' preserveAspectRatio='xMidYMid slice' filter='url(#b)' " +
+    `href='data:image/webp;base64,${base64}'/>` +
+    '</svg>'
+
+  // An unescaped `#` would end the URL there. `<`, `>` and `%` are escaped
+  // too, so nothing that reads the page with a regex takes it for markup.
+  const url = `data:image/svg+xml,${svg.replace(/[<>#%]/g, (char) => encodeURIComponent(char))}`
+
+  return `background-image:url("${url}");background-origin:content-box;background-repeat:no-repeat`
+}
+
+/**
+ * The `onload` that takes a placeholder away once its picture is showing,
+ * so nothing is left where the picture does not cover the box, such as
+ * beside `object-fit: contain`.
+ *
+ * It waits for `decode()`: with `decoding="async"` the load event can come
+ * a frame before the picture is painted, and clearing the background then
+ * flashes an empty box. It clears either way, `.then(c,c)`: after a load,
+ * `decode()` only rejects when the browser has moved on to another
+ * `srcset` candidate, and the old picture is still showing until that one
+ * arrives. Leaving the rejection unhandled would log an error on the page.
+ *
+ * Only `background-image` is cleared, so a background colour in the tag's
+ * style stays. `function` rather than `=>` keeps `>` out of the attribute,
+ * as the SVG's escaping does. The browser compiles the attribute into a
+ * function of its own, so `s` and `c` stay local without a wrapper.
+ *
+ * Where a Content-Security-Policy blocks inline handlers it does not run,
+ * and the placeholder stays behind the picture: harmless for an opaque
+ * one, which is why see-through pictures get none.
+ */
+const PLACEHOLDER_ONLOAD =
+  "var s=this.style,c=function(){s.backgroundImage=''};this.decode().then(c,c)"
+
+/**
+ * A declaration in an inline style that sets the background image. The
+ * author's own background wins over a placeholder, and the onload would
+ * clear it, so such a tag gets none.
+ */
+const STYLE_BACKGROUND_IMAGE = /(?:^|;)\s*background(?:-image)?\s*:/i
 
 /**
  * Lazily load sharp with an actionable error when it is not installed.
@@ -686,9 +803,14 @@ function createImageProcessor({ sharp, options, cacheDir, outputDir, urlPrefix }
   const inFlight = new Map()
   /** Where {@link fetchRemoteImage} keeps downloads: the only files this may delete. */
   const remoteDir = path.join(cacheDir, 'remote')
-  const stats = { sources: 0, variants: 0, originalBytes: 0, variantBytes: 0 }
+  const stats = { sources: 0, variants: 0, placeholders: 0, originalBytes: 0, variantBytes: 0 }
   const sourceLimit = createLimiter(options.concurrency)
   const encodeLimit = createLimiter(options.concurrency)
+  /**
+   * Placeholder cache file → its base64, or '' for a see-through picture.
+   * @type {Map<string, Promise<string>>}
+   */
+  const placeholders = new Map()
 
   // Cap libvips' own thread pool — high parallel sharp() calls can SIGBUS on macOS.
   if (typeof sharp.concurrency === 'function') {
@@ -696,32 +818,43 @@ function createImageProcessor({ sharp, options, cacheDir, outputDir, urlPrefix }
   }
 
   /**
+   * The source scaled, cropped and padded to `size`, ready for an encoder.
    * @param {Buffer} sourceBuffer
    * @param {ReturnType<typeof resolveSizes>[number]} size a width to scale
    *   to, or an exact box to fill and crop — both already clamped to the
    *   source — optionally around a smaller `inner` picture on a `background`
+   */
+  function frame(sourceBuffer, size) {
+    const picture = size.inner ?? size
+    let pipeline = sharp(sourceBuffer, SHARP_INPUT).resize(
+      size.height
+        ? { width: picture.width, height: picture.height, fit: 'cover', position: size.position ?? 'centre' }
+        : { width: size.width, withoutEnlargement: true },
+    )
+
+    if (size.inner) {
+      const top = Math.floor((size.height - size.inner.height) / 2)
+      const left = Math.floor((size.width - size.inner.width) / 2)
+      pipeline = pipeline.extend({
+        top,
+        left,
+        bottom: size.height - size.inner.height - top,
+        right: size.width - size.inner.width - left,
+        background: size.background,
+      })
+    }
+
+    return pipeline
+  }
+
+  /**
+   * @param {Buffer} sourceBuffer
+   * @param {ReturnType<typeof resolveSizes>[number]} size see {@link frame}
    * @param {string} format
    */
   function encode(sourceBuffer, size, format) {
     return encodeLimit(() => {
-      const picture = size.inner ?? size
-      let pipeline = sharp(sourceBuffer, SHARP_INPUT).resize(
-        size.height
-          ? { width: picture.width, height: picture.height, fit: 'cover', position: size.position ?? 'centre' }
-          : { width: size.width, withoutEnlargement: true },
-      )
-
-      if (size.inner) {
-        const top = Math.floor((size.height - size.inner.height) / 2)
-        const left = Math.floor((size.width - size.inner.width) / 2)
-        pipeline = pipeline.extend({
-          top,
-          left,
-          bottom: size.height - size.inner.height - top,
-          right: size.width - size.inner.width - left,
-          background: size.background,
-        })
-      }
+      const pipeline = frame(sourceBuffer, size)
 
       if (format === 'png') {
         return pipeline.png({ compressionLevel: 9, palette: true }).toBuffer()
@@ -781,6 +914,100 @@ function createImageProcessor({ sharp, options, cacheDir, outputDir, urlPrefix }
     })()
 
     variants.set(fileName, promise)
+    return promise
+  }
+
+  /**
+   * Make a placeholder: the picture `size` frames, as a WebP small enough
+   * that its base64 fits `options.placeholder.bytes`. '' when the picture
+   * is see-through anywhere, as the placeholder would show through it.
+   *
+   * A box is framed at its own size first and shrunk after, so the
+   * placeholder keeps what the variant's crop keeps. `entropy` and
+   * `attention` would choose a different crop at 64px. A ladder or pinned
+   * width only scales the picture, so the source is shrunk directly.
+   *
+   * @param {Buffer} sourceBuffer
+   * @param {ReturnType<typeof resolveSizes>[number]} size
+   */
+  function encodePlaceholder(sourceBuffer, size) {
+    return encodeLimit(async () => {
+      let input = sharp(sourceBuffer, SHARP_INPUT)
+
+      if (size.height) {
+        const framed = await frame(sourceBuffer, size).raw().toBuffer({ resolveWithObject: true })
+        const { width, height, channels } = framed.info
+        input = sharp(framed.data, { raw: { width, height, channels } })
+      }
+
+      const largest = PLACEHOLDER_EDGES[0]
+      const { data, info } = await input
+        .resize({ width: largest, height: largest, fit: 'inside', withoutEnlargement: true })
+        .toColourspace('srgb')
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true })
+
+      for (let i = 3; i < data.length; i += 4) {
+        if (data[i] < 255) return ''
+      }
+
+      const raw = { raw: { width: info.width, height: info.height, channels: 4 } }
+      let base64 = ''
+
+      for (const edge of PLACEHOLDER_EDGES) {
+        const buffer = await sharp(data, raw)
+          .removeAlpha()
+          .resize({ width: edge, height: edge, fit: 'inside', withoutEnlargement: true })
+          .webp({ quality: 50, effort: 6 })
+          .toBuffer()
+
+        base64 = buffer.toString('base64')
+        if (base64.length <= options.placeholder.bytes) break
+      }
+
+      return base64
+    })
+  }
+
+  /**
+   * The placeholder for a picture, or '' for none, from the cache or made
+   * now. Cached like a variant: otherwise every rebuild would decode every
+   * source again just for these. Memoized, so the ladder and a `?w=` tag
+   * on the same picture make it once between them.
+   */
+  function buildPlaceholder({ sourceBuffer, sourceHash, name, size }) {
+    // Scaling leaves the picture as it is; only a box frames another one.
+    const framing = size.height
+      ? `${size.width}x${size.height}` +
+        (size.background ? `:${size.background}` : '') +
+        (size.position ? `@${size.position}` : '')
+      : ''
+    const key = hash(
+      `${sourceHash}:${framing}:placeholder:${PLACEHOLDER_REVISION}:${options.placeholder.bytes}`,
+    )
+    const fileName = `${name}.${key}-placeholder.txt`
+
+    const existing = placeholders.get(fileName)
+    if (existing) return existing
+
+    const promise = (async () => {
+      const cachePath = path.join(cacheDir, fileName)
+
+      let base64
+      try {
+        base64 = await fs.readFile(cachePath, 'utf8')
+      } catch {
+        base64 = await encodePlaceholder(sourceBuffer, size)
+        await fs.mkdir(path.dirname(cachePath), { recursive: true })
+        await writeFileAtomic(cachePath, base64)
+      }
+
+      if (base64) stats.placeholders += 1
+      return base64
+    })()
+
+    placeholders.set(fileName, promise)
     return promise
   }
 
@@ -854,7 +1081,9 @@ function createImageProcessor({ sharp, options, cacheDir, outputDir, urlPrefix }
    *   fallback: { url: string, width: number, format: string }
    *   width: number
    *   height: number
-   * }>}
+   *   placeholder: string | null
+   * }>} `placeholder` is the blur-up WebP as base64, when one was asked for
+   *   and the picture is opaque
    */
   async function generate(sourcePath, hint = NO_HINT) {
     const stamp = await revisionOf(sourcePath)
@@ -892,7 +1121,13 @@ function createImageProcessor({ sharp, options, cacheDir, outputDir, urlPrefix }
         }
       }
 
-      const built = await Promise.all(jobs.map(buildVariant))
+      const largest = sizes[sizes.length - 1]
+      const [built, placeholder] = await Promise.all([
+        Promise.all(jobs.map(buildVariant)),
+        options.placeholder
+          ? buildPlaceholder({ sourceBuffer: source, sourceHash, name, size: largest })
+          : '',
+      ])
 
       const ladders = formats.map((format) => ({
         format,
@@ -903,13 +1138,13 @@ function createImageProcessor({ sharp, options, cacheDir, outputDir, urlPrefix }
 
       const fallbackLadder = ladders[ladders.length - 1]
       const fallback = fallbackLadder.variants[fallbackLadder.variants.length - 1]
-      const largest = sizes[sizes.length - 1]
 
       return {
         ladders,
         fallback,
         width: largest.width,
         height: largest.height ?? Math.round((metadata.height / metadata.width) * largest.width),
+        placeholder: placeholder || null,
       }
     }).catch(async (error) => {
       /*
@@ -1127,8 +1362,32 @@ export async function rewriteHtmlImages({ html, options, resolve, generate, onWa
         if (!imgAttributes.has('decoding')) imgAttributes.set('decoding', 'async')
       }
 
+      // The <img>'s own ladder is the last one: the only one when there is
+      // one format, the fallback after the <source>s when there are more.
+      if (!pinned) {
+        imgAttributes.set('srcset', srcsetFor(result.ladders[result.ladders.length - 1].variants, mapUrl))
+      }
+
+      // Stripped either way, like data-no-optimize.
+      const noPlaceholder = imgAttributes.delete('data-no-placeholder')
+
+      // Last, so the kilobyte of it does not sit between the tag's src and
+      // its srcset.
+      const style = imgAttributes.get('style')
+      if (
+        options.placeholder &&
+        result.placeholder &&
+        !noPlaceholder &&
+        !STYLE_BACKGROUND_IMAGE.test(style ?? '')
+      ) {
+        const onload = imgAttributes.get('onload')
+        imgAttributes.set('onload', onload ? `${PLACEHOLDER_ONLOAD};${onload}` : PLACEHOLDER_ONLOAD)
+
+        const placeholder = placeholderStyle(result.placeholder, options.placeholder.blur)
+        imgAttributes.set('style', style ? `${placeholder};${style}` : placeholder)
+      }
+
       if (result.ladders.length === 1) {
-        if (!pinned) imgAttributes.set('srcset', srcsetFor(result.ladders[0].variants, mapUrl))
         return {
           index: match.index,
           length: tag.length,
@@ -1146,10 +1405,6 @@ export async function rewriteHtmlImages({ html, options, resolve, generate, onWa
             : `<source type="${MIME_BY_FORMAT[ladder.format]}" srcset="${srcsetFor(ladder.variants, mapUrl)}" sizes="${String(sizes).replace(/"/g, '&quot;')}">`,
         )
         .join('')
-
-      if (!pinned) {
-        imgAttributes.set('srcset', srcsetFor(result.ladders[result.ladders.length - 1].variants, mapUrl))
-      }
 
       return {
         index: match.index,
@@ -1660,9 +1915,13 @@ export async function runImages({
     return
   }
 
+  const placeholders = options.placeholder
+    ? `, ${stats.placeholders} placeholder${stats.placeholders === 1 ? '' : 's'}`
+    : ''
+
   log(
     `[sitelo] images optimized ${stats.sources} source${stats.sources === 1 ? '' : 's'} ` +
-      `→ ${stats.variants} variants across ${rewrittenTags} tag${rewrittenTags === 1 ? '' : 's'} ` +
+      `→ ${stats.variants} variants${placeholders} across ${rewrittenTags} tag${rewrittenTags === 1 ? '' : 's'} ` +
       `(${formatBytes(stats.originalBytes)} → ${formatBytes(stats.variantBytes)})`,
   )
 

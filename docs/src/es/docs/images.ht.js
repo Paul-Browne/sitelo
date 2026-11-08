@@ -162,6 +162,7 @@ export default () =>
           ' y ',
           code('decoding'),
         ),
+        li(code('placeholder'), ' — por defecto ', code('false'), '; ', code('true'), ' o ', code('{ blur, bytes }'), ' pinta una copia difuminada de ~500 bytes detrás de cada imagen hasta que carga'),
         li(
           code('exclude'),
           ' — glob(s) o RegExp(s) de URLs de imagen que no hay que tocar',
@@ -275,6 +276,26 @@ export default () =>
       p(
         'Ambas son heurísticas simples, sin modelo ni entrenamiento, así que tómalas como un buen valor por defecto para muchas imágenes y no como una garantía para una. Para una imagen principal que te importe, indica el borde. La elección depende solo de la imagen, así que es determinista y se cachea como cualquier otra variante.',
       ),
+      h2('Marcadores difuminados (blur-up)'),
+      p(
+        'Activa ', code('placeholder'), ' y cada imagen reescrita recibe una copia diminuta y difuminada de sí misma pintada detrás. Mientras carga el archivo real, la caja muestra los colores y las formas de la imagen en lugar de un hueco vacío, y cuando llega simplemente tapa la copia:',
+      ),
+      codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
+      codeBlock('dist/index.html', s.placeholderOutput, 'html'),
+      ul(
+        { class: 'docs-list' },
+        li(strong('Unos 500 bytes'), ' — la copia es un WebP de 64px como máximo en su lado más largo, que se reduce hasta que su base64 cabe; la mayoría de las fotos quedan en 32–48px. Con el SVG que la envuelve, viene a ser 1 kB de HTML por imagen, sin peticiones extra.'),
+        li(strong('Un desenfoque de 20px'), ' — el mismo radio que toma ', code('filter: blur(20px)'), ', aplicado por un filtro SVG dentro del fondo, así que la foto en sí nunca se desenfoca.'),
+        li(strong('El mismo encuadre'), ' — una caja ', code('?w=…&h=…'), ' recibe un marcador de lo que conserva su recorte, ', code('position'), ' y ', code('background'), ' incluidos.'),
+        li(strong('En caché'), ' — junto a las variantes, así que una nueva build nunca vuelve a decodificar una fuente para él.'),
+      ),
+      p(
+        'Pasa un objeto para ajustarlo: ', code('{ blur: 20, bytes: 500 }'), ' — ', code('blur'), ' es el radio en píxeles CSS, ', code('bytes'), ' lo máximo que puede pesar el base64.',
+      ),
+      p(
+        'Cuando la imagen ha cargado y se ha decodificado, un ', code('onload'), ' de una línea quita la copia, así que no queda nada junto a una imagen mostrada con ', code('object-fit: contain'), '. Donde una Content-Security-Policy bloquea los manejadores en línea, la copia simplemente se queda detrás de la imagen; por eso una imagen con cualquier transparencia no recibe ninguna: se vería a través. Para dejar fuera una sola etiqueta, márcala con ', code('data-no-placeholder'), ':',
+      ),
+      codeBlock('src/index.ht.js', s.placeholderOptOut, 'html'),
       h2('Cómo excluir imágenes'),
       p(
         'Las etiquetas que ya tienen un ',

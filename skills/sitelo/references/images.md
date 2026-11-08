@@ -48,6 +48,7 @@ export default {
 | `sizes` | derived | The `sizes` attribute. One on the tag always wins |
 | `dimensions` | `true` | Add `width`/`height` |
 | `lazy` | `true` | Add `loading="lazy"` and `decoding="async"` |
+| `placeholder` | `false` | `true` or `{ blur, bytes }`. Paints a blurred ~500-byte copy behind each image until it loads |
 | `exclude` | `[]` | Globs or RegExps of image URLs to leave alone |
 | `assetsDir` | `'assets/img'` | Output folder in `dist/`. It is emptied before each build, so it must be a folder of its own |
 | `cacheDir` | `'node_modules/.sitelo/images'` | Encode cache |
@@ -75,6 +76,31 @@ URL. Hand-written variant filenames do not work because they carry hashes.
 | `background` | Pads a `contain` result to the exact box: hex without `#`, a CSS colour name, or `transparent`. Implies `fit=contain` |
 | `position` | The crop anchor: `top`, `left`, `right-bottom` and so on, or `entropy` (most detail) or `attention` (people and saturated colour) |
 | `format` | `avif`, `webp`, `jpeg` or `png`. On its own it keeps the full ladder in that one format |
+
+## Blur-up placeholders
+
+```js
+export default { images: { placeholder: true } } // or { blur: 20, bytes: 500 }
+```
+
+Each rewritten `<img>` gets a `style` with a `background-image`: an SVG
+data URL that draws a tiny WebP of the picture and blurs it with
+`feGaussianBlur`. It also gets an `onload` that waits for `decode()` and
+then clears that `background-image`, so nothing is left once the photo is
+showing. A tag's own `onload` runs after it. No extra request is made.
+
+- The WebP is at most 64px on its longest side. It steps down to 8px
+  until its base64 fits `bytes` (default 500). Expect about 1 kB of HTML
+  per image.
+- `blur` is the radius in CSS pixels (default 20). It is the same radius
+  as `filter: blur()`, but only the placeholder is blurred, never the photo.
+- A `?w=&h=` box gets a placeholder of its own crop.
+- Images with any transparency get none. Under a Content-Security-Policy
+  that blocks inline handlers the copy stays, and it would show through.
+- A tag whose own `style` sets `background` or `background-image` gets
+  none, so its background is left alone.
+- `data-no-placeholder` opts a tag out of the placeholder only. The
+  attribute is stripped.
 
 ## Left alone
 

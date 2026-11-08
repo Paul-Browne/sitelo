@@ -133,6 +133,26 @@ export default () =>
     smartCrop: `<img src="/images/hero.png?w=300&h=300&position=entropy" alt="${t.sunrise}">
 <img src="/images/team.jpg?w=300&h=300&position=attention" alt="${t.team}">`,
 
+    placeholder: `export default {
+  images: {
+    placeholder: true,
+  },
+}`,
+
+    placeholderOutput: `<img src="/assets/img/hero.a1b2c3d4-3000.webp"
+     alt="${t.sunrise}"
+     sizes="100vw"
+     width="3000" height="2000"
+     loading="lazy" decoding="async"
+     srcset="..."
+     onload="var s=this.style,c=function(){s.backgroundImage=''};this.decode().then(c,c)"
+     style="background-image:url(&quot;data:image/svg+xml,%3Csvg ...%3E
+              ...%3CfeGaussianBlur stdDeviation='20'/%3E...
+              href='data:image/webp;base64,UklGRhoB...'/%3E%3C/svg%3E&quot;);
+            background-origin:content-box;background-repeat:no-repeat">`,
+
+    placeholderOptOut: `<img src="/images/hero.png" alt="${t.sunrise}" data-no-placeholder>`,
+
     optOut: `<img src="/images/exact.png" alt="${t.pixelArt}" data-no-optimize>`,
 
     remote: `export default {

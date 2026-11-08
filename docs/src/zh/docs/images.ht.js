@@ -155,6 +155,7 @@ export default () =>
           ' 和 ',
           code('decoding'),
         ),
+        li(code('placeholder'), ' —— 默认 ', code('false'), '；', code('true'), ' 或 ', code('{ blur, bytes }'), ' 会在每张图片加载完成前，在其背后画一张约 500 字节的模糊副本'),
         li(code('exclude'), ' —— 要跳过的图片 URL 的 glob 或正则'),
         li(code('assetsDir'), ' —— 默认 ', code("'assets/img'")),
         li(code('cacheDir'), ' —— 默认 ', code("'node_modules/.sitelo/images'")),
@@ -256,6 +257,26 @@ export default () =>
       p(
         '两者都只是简单的启发式——没有模型，没有训练——所以把它们当作面向大量图片的合理默认值，而不是对某一张的保证。对你在意的主视觉图，请直接指定边。选择只取决于图片本身，因此是确定性的，会像其他变体一样被缓存。',
       ),
+      h2('模糊占位图（blur-up）'),
+      p(
+        '打开 ', code('placeholder'), '，每张被改写的图片背后都会画上一张它自己的极小模糊副本。真正的文件加载期间，图框里显示的是图片的颜色和轮廓，而不是一块空白；文件到达后，直接把副本盖住：',
+      ),
+      codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
+      codeBlock('dist/index.html', s.placeholderOutput, 'html'),
+      ul(
+        { class: 'docs-list' },
+        li(strong('约 500 字节'), ' —— 副本是一张最长边不超过 64px 的 WebP，一直缩小到 base64 放得下为止；大多数照片落在 32–48px。加上外面那层 SVG，每张图大约多 1 kB HTML，不多发任何请求。'),
+        li(strong('20px 模糊'), ' —— 与 ', code('filter: blur(20px)'), ' 相同的半径，由背景里的 SVG 滤镜施加，照片本身从不会被模糊。'),
+        li(strong('相同的取景'), ' —— ', code('?w=…&h=…'), ' 的方框得到的是其裁切所保留部分的占位图，', code('position'), ' 和 ', code('background'), ' 都算在内。'),
+        li(strong('有缓存'), ' —— 和变体放在一起，所以重新构建时不会为它再解码一次源图。'),
+      ),
+      p(
+        '传一个对象来调整：', code('{ blur: 20, bytes: 500 }'), ' —— ', code('blur'), ' 是以 CSS 像素计的半径，', code('bytes'), ' 是 base64 的最大体积。',
+      ),
+      p(
+        '图片加载并解码完成后，一行 ', code('onload'), ' 会把副本移除，因此用 ', code('object-fit: contain'), ' 显示的图片旁边不会残留任何东西。在 Content-Security-Policy 禁止内联事件处理器的地方，副本会一直留在图片背后——所以带有任何透明区域的图片不会得到占位图，否则会透出来。要排除单个标签，给它加上 ', code('data-no-placeholder'), '：',
+      ),
+      codeBlock('src/index.ht.js', s.placeholderOptOut, 'html'),
       h2('如何排除'),
       p(
         '已经带有 ',
