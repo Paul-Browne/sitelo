@@ -1280,8 +1280,8 @@ picture, so it is deterministic and caches like any other variant.
 
 Turn on `placeholder` and every rewritten image gets a tiny blurred copy
 of itself painted behind it. While the real file loads, the box shows the
-picture's colours and shapes instead of an empty gap; once it has loaded,
-the copy is taken away:
+picture's colours and shapes instead of an empty gap, and once the picture
+is showing it replaces the copy:
 
 ```js
 // sitelo.config.js

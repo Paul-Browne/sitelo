@@ -322,7 +322,7 @@ export default () =>
       ),
       h2('Segnaposto sfocati (blur-up)'),
       p(
-        'Attiva ', code('placeholder'), ' e ogni immagine riscritta riceve, dipinta dietro di sé, una minuscola copia sfocata di se stessa. Mentre il file vero si carica, il riquadro mostra i colori e le forme dell’immagine invece di un vuoto, e quando arriva copre semplicemente la copia:',
+        'Attiva ', code('placeholder'), ' e ogni immagine riscritta riceve, dipinta dietro di sé, una minuscola copia sfocata di se stessa. Mentre il file vero si carica, il riquadro mostra i colori e le forme dell’immagine invece di un vuoto, e appena l’immagine è visibile prende il posto della copia:',
       ),
       codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
       codeBlock('dist/index.html', s.placeholderOutput, 'html'),

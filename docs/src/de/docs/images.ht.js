@@ -278,7 +278,7 @@ export default () =>
       ),
       h2('Blur-up-Platzhalter'),
       p(
-        'Schalte ', code('placeholder'), ' ein, und jedes umgeschriebene Bild bekommt eine winzige, weichgezeichnete Kopie seiner selbst hinter sich gemalt. Solange die echte Datei lädt, zeigt die Box die Farben und Formen des Bildes statt einer leeren Lücke — und sobald sie da ist, deckt sie die Kopie einfach zu:',
+        'Schalte ', code('placeholder'), ' ein, und jedes umgeschriebene Bild bekommt eine winzige, weichgezeichnete Kopie seiner selbst hinter sich gemalt. Solange die echte Datei lädt, zeigt die Box die Farben und Formen des Bildes statt einer leeren Lücke — und sobald das Bild zu sehen ist, ersetzt es die Kopie:',
       ),
       codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
       codeBlock('dist/index.html', s.placeholderOutput, 'html'),

@@ -203,7 +203,7 @@ export default () =>
       ),
       h2('Blur-up placeholders'),
       p(
-        'Turn on ', code('placeholder'), ' and every rewritten image gets a tiny blurred copy of itself painted behind it. While the real file loads, the box shows the picture’s colours and shapes instead of an empty gap, and when it arrives it simply covers the copy:',
+        'Turn on ', code('placeholder'), ' and every rewritten image gets a tiny blurred copy of itself painted behind it. While the real file loads, the box shows the picture’s colours and shapes instead of an empty gap, and once the picture is showing it replaces the copy:',
       ),
       codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
       codeBlock('dist/index.html', s.placeholderOutput, 'html'),

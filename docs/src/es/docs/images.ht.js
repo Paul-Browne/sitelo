@@ -278,7 +278,7 @@ export default () =>
       ),
       h2('Marcadores difuminados (blur-up)'),
       p(
-        'Activa ', code('placeholder'), ' y cada imagen reescrita recibe una copia diminuta y difuminada de sí misma pintada detrás. Mientras carga el archivo real, la caja muestra los colores y las formas de la imagen en lugar de un hueco vacío, y cuando llega simplemente tapa la copia:',
+        'Activa ', code('placeholder'), ' y cada imagen reescrita recibe una copia diminuta y difuminada de sí misma pintada detrás. Mientras carga el archivo real, la caja muestra los colores y las formas de la imagen en lugar de un hueco vacío, y en cuanto la imagen se ve, sustituye a la copia:',
       ),
       codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
       codeBlock('dist/index.html', s.placeholderOutput, 'html'),

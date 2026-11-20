@@ -202,7 +202,7 @@ export default () =>
       ),
       h2('Bulanık yer tutucular (blur-up)'),
       p(
-        code('placeholder'), ' seçeneğini açın; yeniden yazılan her görselin arkasına kendisinin minicik, bulanık bir kopyası boyanır. Asıl dosya yüklenirken kutu boş bir boşluk yerine resmin renklerini ve şekillerini gösterir; dosya geldiğinde de kopyanın üstünü basitçe örter:',
+        code('placeholder'), ' seçeneğini açın; yeniden yazılan her görselin arkasına kendisinin minicik, bulanık bir kopyası boyanır. Asıl dosya yüklenirken kutu boş bir boşluk yerine resmin renklerini ve şekillerini gösterir; görsel göründüğü anda da kopyanın yerini alır:',
       ),
       codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
       codeBlock('dist/index.html', s.placeholderOutput, 'html'),

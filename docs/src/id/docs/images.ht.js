@@ -202,7 +202,7 @@ export default () =>
       ),
       h2('Placeholder buram (blur-up)'),
       p(
-        'Nyalakan ', code('placeholder'), ' dan setiap gambar yang ditulis ulang mendapat salinan dirinya yang mungil dan buram, dilukis di belakangnya. Selama berkas aslinya dimuat, kotaknya menampilkan warna dan bentuk gambar alih-alih ruang kosong, dan begitu berkasnya tiba, ia cukup menutupi salinan itu:',
+        'Nyalakan ', code('placeholder'), ' dan setiap gambar yang ditulis ulang mendapat salinan dirinya yang mungil dan buram, dilukis di belakangnya. Selama berkas aslinya dimuat, kotaknya menampilkan warna dan bentuk gambar alih-alih ruang kosong, dan begitu gambarnya tampil, ia menggantikan salinan itu:',
       ),
       codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
       codeBlock('dist/index.html', s.placeholderOutput, 'html'),

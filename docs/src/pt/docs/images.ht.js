@@ -269,7 +269,7 @@ export default () =>
       ),
       h2('Marcadores desfocados (blur-up)'),
       p(
-        'Ativa ', code('placeholder'), ' e cada imagem reescrita recebe uma cópia minúscula e desfocada de si própria pintada por trás. Enquanto o ficheiro verdadeiro carrega, a caixa mostra as cores e as formas da imagem em vez de um espaço vazio, e quando chega simplesmente tapa a cópia:',
+        'Ativa ', code('placeholder'), ' e cada imagem reescrita recebe uma cópia minúscula e desfocada de si própria pintada por trás. Enquanto o ficheiro verdadeiro carrega, a caixa mostra as cores e as formas da imagem em vez de um espaço vazio, e assim que a imagem aparece, substitui a cópia:',
       ),
       codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
       codeBlock('dist/index.html', s.placeholderOutput, 'html'),

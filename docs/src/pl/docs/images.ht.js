@@ -322,7 +322,7 @@ export default () =>
       ),
       h2('Rozmyte zastępniki (blur-up)'),
       p(
-        'Włącz ', code('placeholder'), ', a każdy przepisany obraz dostanie namalowaną pod spodem maleńką, rozmytą kopię samego siebie. Gdy prawdziwy plik się wczytuje, ramka pokazuje kolory i kształty obrazu zamiast pustej dziury, a kiedy plik dotrze, po prostu przykrywa kopię:',
+        'Włącz ', code('placeholder'), ', a każdy przepisany obraz dostanie namalowaną pod spodem maleńką, rozmytą kopię samego siebie. Gdy prawdziwy plik się wczytuje, ramka pokazuje kolory i kształty obrazu zamiast pustej dziury, a kiedy obraz jest już widoczny, zastępuje kopię:',
       ),
       codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
       codeBlock('dist/index.html', s.placeholderOutput, 'html'),

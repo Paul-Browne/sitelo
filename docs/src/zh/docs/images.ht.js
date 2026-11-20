@@ -259,7 +259,7 @@ export default () =>
       ),
       h2('模糊占位图（blur-up）'),
       p(
-        '打开 ', code('placeholder'), '，每张被改写的图片背后都会画上一张它自己的极小模糊副本。真正的文件加载期间，图框里显示的是图片的颜色和轮廓，而不是一块空白；文件到达后，直接把副本盖住：',
+        '打开 ', code('placeholder'), '，每张被改写的图片背后都会画上一张它自己的极小模糊副本。真正的文件加载期间，图框里显示的是图片的颜色和轮廓，而不是一块空白；图片一显示出来，就取代副本：',
       ),
       codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
       codeBlock('dist/index.html', s.placeholderOutput, 'html'),

@@ -276,7 +276,7 @@ export default () =>
       ),
       h2('Aperçus flous (blur-up)'),
       p(
-        'Activez ', code('placeholder'), ' et chaque image réécrite reçoit, peinte derrière elle, une minuscule copie floue d’elle-même. Pendant que le vrai fichier se charge, la boîte montre les couleurs et les formes de l’image au lieu d’un vide, et quand il arrive il recouvre simplement la copie :',
+        'Activez ', code('placeholder'), ' et chaque image réécrite reçoit, peinte derrière elle, une minuscule copie floue d’elle-même. Pendant que le vrai fichier se charge, la boîte montre les couleurs et les formes de l’image au lieu d’un vide, et dès que l’image s’affiche, elle remplace la copie :',
       ),
       codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
       codeBlock('dist/index.html', s.placeholderOutput, 'html'),
