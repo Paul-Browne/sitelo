@@ -1,5 +1,6 @@
 import { a, h2, h3, li, p, strong, ul } from 'javascript-to-html'
 import { code, codeBlock, docsLayout, pageCodeTabs } from '../../lib/pl.js'
+import { blurUpDemo } from '../../lib/blur-up-demo.js'
 import { imagesSnippets } from '../../lib/snippets/images.js'
 
 const s = imagesSnippets('pl')
@@ -321,8 +322,9 @@ export default () =>
         'Obie to zwykłe heurystyki — bez modelu i bez uczenia — więc traktuj je jak rozsądne ustawienie domyślne dla wielu obrazów, a nie gwarancję dla jednego. Dla obrazu otwierającego, na którym Ci zależy, wskaż krawędź sam. Wybór zależy wyłącznie od zdjęcia, więc jest deterministyczny i buforuje się jak każdy inny wariant.',
       ),
       h2('Rozmyte zastępniki (blur-up)'),
+      blurUpDemo('pl'),
       p(
-        'Włącz ', code('placeholder'), ', a każdy przepisany obraz dostanie namalowaną pod spodem maleńką, rozmytą kopię samego siebie. Gdy prawdziwy plik się wczytuje, ramka pokazuje kolory i kształty obrazu zamiast pustej dziury, a kiedy plik dotrze, po prostu przykrywa kopię:',
+        'Włącz ', code('placeholder'), ', a każdy przepisany obraz dostanie namalowaną pod spodem maleńką, rozmytą kopię samego siebie. Gdy prawdziwy plik się wczytuje, ramka pokazuje kolory i kształty obrazu zamiast pustej dziury, a kiedy obraz jest już widoczny, zastępuje kopię:',
       ),
       codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
       codeBlock('dist/index.html', s.placeholderOutput, 'html'),

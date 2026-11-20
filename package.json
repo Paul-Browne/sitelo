@@ -113,6 +113,7 @@
     "docs:icons": "node ./docs/scripts/icons.mjs",
     "docs:og": "node ./docs/scripts/og.mjs",
     "docs:fonts": "node ./docs/scripts/fonts.mjs",
+    "docs:blur-up": "node ./docs/scripts/blur-up.mjs",
     "update:all": "npm i && for d in examples/*/; do [ -f \"$d/package.json\" ] && (cd \"$d\" && echo \"--- $d\" && npm i); done"
   },
   "dependencies": {

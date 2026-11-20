@@ -1,5 +1,6 @@
 import { a, h2, h3, li, p, strong, ul } from 'javascript-to-html'
 import { code, codeBlock, pageCodeTabs, docsLayout } from '../../lib/tr.js'
+import { blurUpDemo } from '../../lib/blur-up-demo.js'
 import { imagesSnippets } from '../../lib/snippets/images.js'
 
 const s = imagesSnippets('tr')
@@ -201,8 +202,9 @@ export default () =>
         'İkisi de düz sezgisel yöntemlerdir — model yok, eğitim yok — bu yüzden onları tek bir görsel için güvence değil, pek çok görsel için makul bir varsayılan sayın. Önemsediğiniz bir kapak görseli için kenarı siz adlandırın. Seçim yalnızca resme bağlıdır, dolayısıyla belirlenimcidir ve diğer türevler gibi önbelleğe alınır.',
       ),
       h2('Bulanık yer tutucular (blur-up)'),
+      blurUpDemo('tr'),
       p(
-        code('placeholder'), ' seçeneğini açın; yeniden yazılan her görselin arkasına kendisinin minicik, bulanık bir kopyası boyanır. Asıl dosya yüklenirken kutu boş bir boşluk yerine resmin renklerini ve şekillerini gösterir; dosya geldiğinde de kopyanın üstünü basitçe örter:',
+        code('placeholder'), ' seçeneğini açın; yeniden yazılan her görselin arkasına kendisinin minicik, bulanık bir kopyası boyanır. Asıl dosya yüklenirken kutu boş bir boşluk yerine resmin renklerini ve şekillerini gösterir; görsel göründüğü anda da kopyanın yerini alır:',
       ),
       codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
       codeBlock('dist/index.html', s.placeholderOutput, 'html'),

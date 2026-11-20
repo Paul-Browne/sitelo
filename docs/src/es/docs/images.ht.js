@@ -1,5 +1,6 @@
 import { a, h2, h3, li, p, strong, ul } from 'javascript-to-html'
 import { code, codeBlock, docsLayout, pageCodeTabs } from '../../lib/es.js'
+import { blurUpDemo } from '../../lib/blur-up-demo.js'
 import { imagesSnippets } from '../../lib/snippets/images.js'
 
 const s = imagesSnippets('es')
@@ -277,8 +278,9 @@ export default () =>
         'Ambas son heurísticas simples, sin modelo ni entrenamiento, así que tómalas como un buen valor por defecto para muchas imágenes y no como una garantía para una. Para una imagen principal que te importe, indica el borde. La elección depende solo de la imagen, así que es determinista y se cachea como cualquier otra variante.',
       ),
       h2('Marcadores difuminados (blur-up)'),
+      blurUpDemo('es'),
       p(
-        'Activa ', code('placeholder'), ' y cada imagen reescrita recibe una copia diminuta y difuminada de sí misma pintada detrás. Mientras carga el archivo real, la caja muestra los colores y las formas de la imagen en lugar de un hueco vacío, y cuando llega simplemente tapa la copia:',
+        'Activa ', code('placeholder'), ' y cada imagen reescrita recibe una copia diminuta y difuminada de sí misma pintada detrás. Mientras carga el archivo real, la caja muestra los colores y las formas de la imagen en lugar de un hueco vacío, y en cuanto la imagen se ve, sustituye a la copia:',
       ),
       codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
       codeBlock('dist/index.html', s.placeholderOutput, 'html'),

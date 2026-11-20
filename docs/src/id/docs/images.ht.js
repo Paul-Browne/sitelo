@@ -1,5 +1,6 @@
 import { a, h2, h3, li, p, strong, ul } from 'javascript-to-html'
 import { code, codeBlock, pageCodeTabs, docsLayout } from '../../lib/id.js'
+import { blurUpDemo } from '../../lib/blur-up-demo.js'
 import { imagesSnippets } from '../../lib/snippets/images.js'
 
 const s = imagesSnippets('id')
@@ -201,8 +202,9 @@ export default () =>
         'Keduanya heuristik biasa — tanpa model, tanpa pelatihan — jadi anggaplah sebagai nilai bawaan yang masuk akal untuk banyak gambar, bukan jaminan untuk satu gambar. Untuk gambar utama yang Anda pedulikan, sebutkan tepinya sendiri. Pilihannya hanya bergantung pada gambarnya, jadi ia deterministik dan disinggahkan seperti varian lain.',
       ),
       h2('Placeholder buram (blur-up)'),
+      blurUpDemo('id'),
       p(
-        'Nyalakan ', code('placeholder'), ' dan setiap gambar yang ditulis ulang mendapat salinan dirinya yang mungil dan buram, dilukis di belakangnya. Selama berkas aslinya dimuat, kotaknya menampilkan warna dan bentuk gambar alih-alih ruang kosong, dan begitu berkasnya tiba, ia cukup menutupi salinan itu:',
+        'Nyalakan ', code('placeholder'), ' dan setiap gambar yang ditulis ulang mendapat salinan dirinya yang mungil dan buram, dilukis di belakangnya. Selama berkas aslinya dimuat, kotaknya menampilkan warna dan bentuk gambar alih-alih ruang kosong, dan begitu gambarnya tampil, ia menggantikan salinan itu:',
       ),
       codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
       codeBlock('dist/index.html', s.placeholderOutput, 'html'),

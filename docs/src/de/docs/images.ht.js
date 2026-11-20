@@ -1,5 +1,6 @@
 import { a, h2, h3, li, p, strong, ul } from 'javascript-to-html'
 import { code, codeBlock, docsLayout, pageCodeTabs } from '../../lib/de.js'
+import { blurUpDemo } from '../../lib/blur-up-demo.js'
 import { imagesSnippets } from '../../lib/snippets/images.js'
 
 const s = imagesSnippets('de')
@@ -277,8 +278,9 @@ export default () =>
         'Beides sind einfache Heuristiken — kein Modell, kein Training —, also eher ein sinnvoller Standard für viele Bilder als eine Garantie für eines. Bei einem Hero-Bild, das dir wichtig ist, nenne die Kante. Die Wahl hängt nur vom Bild ab, ist also deterministisch und wird wie jede andere Variante gecacht.',
       ),
       h2('Blur-up-Platzhalter'),
+      blurUpDemo('de'),
       p(
-        'Schalte ', code('placeholder'), ' ein, und jedes umgeschriebene Bild bekommt eine winzige, weichgezeichnete Kopie seiner selbst hinter sich gemalt. Solange die echte Datei lädt, zeigt die Box die Farben und Formen des Bildes statt einer leeren Lücke — und sobald sie da ist, deckt sie die Kopie einfach zu:',
+        'Schalte ', code('placeholder'), ' ein, und jedes umgeschriebene Bild bekommt eine winzige, weichgezeichnete Kopie seiner selbst hinter sich gemalt. Solange die echte Datei lädt, zeigt die Box die Farben und Formen des Bildes statt einer leeren Lücke — und sobald das Bild zu sehen ist, ersetzt es die Kopie:',
       ),
       codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
       codeBlock('dist/index.html', s.placeholderOutput, 'html'),

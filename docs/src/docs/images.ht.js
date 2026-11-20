@@ -1,6 +1,7 @@
 import { a, h2, h3, li, p, strong, ul } from 'javascript-to-html'
 import { code, codeBlock, pageCodeTabs } from '../lib/code.js'
 import { docsLayout } from '../lib/layout.js'
+import { blurUpDemo } from '../lib/blur-up-demo.js'
 import { imagesSnippets } from '../lib/snippets/images.js'
 
 const s = imagesSnippets('en')
@@ -202,8 +203,9 @@ export default () =>
         'Both are plain heuristics — no model, no training — so treat them as a sensible default for many images rather than a guarantee for one. For a hero image you care about, name the edge. The choice depends only on the picture, so it is deterministic and caches like any other variant.',
       ),
       h2('Blur-up placeholders'),
+      blurUpDemo('en'),
       p(
-        'Turn on ', code('placeholder'), ' and every rewritten image gets a tiny blurred copy of itself painted behind it. While the real file loads, the box shows the picture’s colours and shapes instead of an empty gap, and when it arrives it simply covers the copy:',
+        'Turn on ', code('placeholder'), ' and every rewritten image gets a tiny blurred copy of itself painted behind it. While the real file loads, the box shows the picture’s colours and shapes instead of an empty gap, and once the picture is showing it replaces the copy:',
       ),
       codeBlock('sitelo.config.js', s.placeholder, 'javascript'),
       codeBlock('dist/index.html', s.placeholderOutput, 'html'),
