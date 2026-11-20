@@ -1,5 +1,6 @@
 import { a, h2, h3, li, p, strong, ul } from 'javascript-to-html'
 import { code, codeBlock, docsLayout, pageCodeTabs } from '../../lib/fr.js'
+import { blurUpDemo } from '../../lib/blur-up-demo.js'
 import { imagesSnippets } from '../../lib/snippets/images.js'
 
 const s = imagesSnippets('fr')
@@ -275,6 +276,7 @@ export default () =>
         'Ce sont deux simples heuristiques — pas de modèle, pas d’entraînement — donc un bon défaut pour beaucoup d’images plutôt qu’une garantie pour une seule. Pour une image de une qui vous tient à cœur, nommez le bord. Le choix ne dépend que de l’image : il est déterministe et se met en cache comme toute autre variante.',
       ),
       h2('Aperçus flous (blur-up)'),
+      blurUpDemo('fr'),
       p(
         'Activez ', code('placeholder'), ' et chaque image réécrite reçoit, peinte derrière elle, une minuscule copie floue d’elle-même. Pendant que le vrai fichier se charge, la boîte montre les couleurs et les formes de l’image au lieu d’un vide, et dès que l’image s’affiche, elle remplace la copie :',
       ),

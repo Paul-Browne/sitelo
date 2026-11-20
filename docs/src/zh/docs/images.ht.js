@@ -1,5 +1,6 @@
 import { a, h2, h3, li, p, strong, ul } from 'javascript-to-html'
 import { code, codeBlock, docsLayout, pageCodeTabs } from '../../lib/zh.js'
+import { blurUpDemo } from '../../lib/blur-up-demo.js'
 import { imagesSnippets } from '../../lib/snippets/images.js'
 
 const s = imagesSnippets('zh')
@@ -258,6 +259,7 @@ export default () =>
         '两者都只是简单的启发式——没有模型，没有训练——所以把它们当作面向大量图片的合理默认值，而不是对某一张的保证。对你在意的主视觉图，请直接指定边。选择只取决于图片本身，因此是确定性的，会像其他变体一样被缓存。',
       ),
       h2('模糊占位图（blur-up）'),
+      blurUpDemo('zh'),
       p(
         '打开 ', code('placeholder'), '，每张被改写的图片背后都会画上一张它自己的极小模糊副本。真正的文件加载期间，图框里显示的是图片的颜色和轮廓，而不是一块空白；图片一显示出来，就取代副本：',
       ),

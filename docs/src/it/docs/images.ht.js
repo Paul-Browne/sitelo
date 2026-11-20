@@ -1,5 +1,6 @@
 import { a, h2, h3, li, p, strong, ul } from 'javascript-to-html'
 import { code, codeBlock, docsLayout, pageCodeTabs } from '../../lib/it.js'
+import { blurUpDemo } from '../../lib/blur-up-demo.js'
 import { imagesSnippets } from '../../lib/snippets/images.js'
 
 const s = imagesSnippets('it')
@@ -321,6 +322,7 @@ export default () =>
         'Sono entrambe semplici euristiche — nessun modello, nessun addestramento — quindi trattale come un default ragionevole per molte immagini più che come una garanzia per una sola. Per un’immagine di apertura a cui tieni, indica tu il bordo. La scelta dipende solo dall’immagine, quindi è deterministica e va in cache come qualunque altra variante.',
       ),
       h2('Segnaposto sfocati (blur-up)'),
+      blurUpDemo('it'),
       p(
         'Attiva ', code('placeholder'), ' e ogni immagine riscritta riceve, dipinta dietro di sé, una minuscola copia sfocata di se stessa. Mentre il file vero si carica, il riquadro mostra i colori e le forme dell’immagine invece di un vuoto, e appena l’immagine è visibile prende il posto della copia:',
       ),

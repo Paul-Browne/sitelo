@@ -126,12 +126,37 @@ for (const root of document.querySelectorAll('[data-code-tabs]')) {
   }
 }
 
+/*
+ * The blur-up demo on the images page. Each photo sits under the
+ * placeholder sitelo would paint behind it. A click shows the photo once
+ * it is decoded, the same wait the real `onload` makes, and another click
+ * puts the placeholder back.
+ */
+function initBlurUpDemo() {
+  for (const tile of document.querySelectorAll('[data-blur-up]')) {
+    const photo = tile.querySelector('img')
+
+    tile.addEventListener('click', () => {
+      if (tile.getAttribute('aria-pressed') === 'true') {
+        tile.setAttribute('aria-pressed', 'false')
+        return
+      }
+
+      const show = () => tile.setAttribute('aria-pressed', 'true')
+      // A lazy photo the reader clicked before it came into view.
+      photo.loading = 'eager'
+      photo.decode().then(show, show)
+    })
+  }
+}
+
 initTheme()
 startHeroTypewriter()
 initDocsSearch()
 closeMenusOnOutsideClick()
 initCookieConsent()
 initGrainSandbox()
+initBlurUpDemo()
 
 /** Whatever `--paper` currently resolves to, in the theme now applied. */
 function paperColor() {

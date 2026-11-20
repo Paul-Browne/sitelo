@@ -1,5 +1,6 @@
 import { a, h2, h3, li, p, strong, ul } from 'javascript-to-html'
 import { code, codeBlock, docsLayout, pageCodeTabs } from '../../lib/pt.js'
+import { blurUpDemo } from '../../lib/blur-up-demo.js'
 import { imagesSnippets } from '../../lib/snippets/images.js'
 
 const s = imagesSnippets('pt')
@@ -268,6 +269,7 @@ export default () =>
         'Ambas são heurísticas simples — sem modelo, sem treino — por isso encara-as como um bom valor por omissão para muitas imagens e não como garantia para uma. Para uma imagem principal que te importe, indica a margem. A escolha depende só da imagem, por isso é determinista e fica em cache como qualquer outra variante.',
       ),
       h2('Marcadores desfocados (blur-up)'),
+      blurUpDemo('pt'),
       p(
         'Ativa ', code('placeholder'), ' e cada imagem reescrita recebe uma cópia minúscula e desfocada de si própria pintada por trás. Enquanto o ficheiro verdadeiro carrega, a caixa mostra as cores e as formas da imagem em vez de um espaço vazio, e assim que a imagem aparece, substitui a cópia:',
       ),

@@ -1618,6 +1618,69 @@ a.feature-card:hover .feature-chip {
   color: var(--ink-faint);
 }
 
+/*
+ * The blur-up demo on the images page: each photo under the placeholder
+ * sitelo would paint behind it, two to a row, until a click swaps them.
+ * The swap is instant, as the real one is.
+ */
+.blur-up-demo {
+  margin: 0 0 1.5rem;
+}
+
+.blur-up-demo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.blur-up-demo-item {
+  margin: 0;
+}
+
+.blur-up-demo-tile {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: var(--su-border-width) solid var(--line);
+  background: none;
+  cursor: pointer;
+}
+
+.blur-up-demo-tile:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.blur-up-demo-tile img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.blur-up-demo-placeholder {
+  position: absolute;
+  inset: 0;
+}
+
+.blur-up-demo-tile[aria-pressed='true'] .blur-up-demo-placeholder {
+  visibility: hidden;
+}
+
+.blur-up-demo-size {
+  margin-top: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--tracking);
+  color: var(--ink-soft);
+}
+
+.blur-up-demo-hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
 /* On this page — a ruled frame, its entries numbered. */
 .docs-toc {
   position: relative;
