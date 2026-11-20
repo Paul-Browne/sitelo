@@ -211,12 +211,12 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li(strong('Yaklaşık 500 bayt'), ' — kopya, uzun kenarı en fazla 64px olan bir WebP’dir ve base64’ü sığana kadar küçültülür; çoğu fotoğraf 32–48px’te kalır. Çevresindeki SVG ile birlikte görsel başına yaklaşık 1 kB HTML eder, ek istek yoktur.'),
-        li(strong('20px bulanıklık'), ' — ', code('filter: blur(20px)'), ' ile aynı yarıçap, ama arka planın içindeki bir SVG filtresiyle uygulanır; fotoğrafın kendisi asla bulanıklaşmaz.'),
+        li(strong('10px bulanıklık'), ' — ', code('filter: blur(10px)'), ' ile aynı yarıçap, ama arka planın içindeki bir SVG filtresiyle uygulanır; fotoğrafın kendisi asla bulanıklaşmaz.'),
         li(strong('Aynı kadraj'), ' — bir ', code('?w=…&h=…'), ' kutusu, kırpmasının tuttuğu kısmın yer tutucusunu alır; ', code('position'), ' ve ', code('background'), ' dahil.'),
         li(strong('Önbellekte'), ' — varyantların yanında; böylece yeniden derleme bunun için bir kaynağı asla tekrar çözmez.'),
       ),
       p(
-        'Ayarlamak için bir nesne verin: ', code('{ blur: 20, bytes: 500 }'), ' — ', code('blur'), ' CSS pikseli cinsinden yarıçap, ', code('bytes'), ' base64’ün en fazla ağırlığıdır.',
+        'Ayarlamak için bir nesne verin: ', code('{ blur: 10, bytes: 500 }'), ' — ', code('blur'), ' CSS pikseli cinsinden yarıçap, ', code('bytes'), ' base64’ün en fazla ağırlığıdır.',
       ),
       p(
         'Görsel yüklenip çözüldüğünde tek satırlık bir ', code('onload'), ' kopyayı kaldırır; böylece ', code('object-fit: contain'), ' ile gösterilen bir görselin yanında hiçbir şey kalmaz. Bir Content-Security-Policy satır içi işleyicileri engellediğinde kopya görselin arkasında kalır; bu yüzden herhangi bir saydamlığı olan görsel kopya almaz, yoksa içinden görünürdü. Tek bir etiketi dışarıda bırakmak için onu ', code('data-no-placeholder'), ' ile işaretleyin:',

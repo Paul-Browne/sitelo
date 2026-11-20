@@ -278,12 +278,12 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li(strong('Cerca de 500 bytes'), ' — a cópia é um WebP com no máximo 64px no lado maior, reduzido até o seu base64 caber; a maioria das fotos fica nos 32–48px. Com o SVG à volta, são cerca de 1 kB de HTML por imagem, sem pedidos extra.'),
-        li(strong('Um desfoque de 20px'), ' — o mesmo raio que ', code('filter: blur(20px)'), ' recebe, aplicado por um filtro SVG dentro do fundo, por isso a foto em si nunca é desfocada.'),
+        li(strong('Um desfoque de 10px'), ' — o mesmo raio que ', code('filter: blur(10px)'), ' recebe, aplicado por um filtro SVG dentro do fundo, por isso a foto em si nunca é desfocada.'),
         li(strong('O mesmo enquadramento'), ' — uma caixa ', code('?w=…&h=…'), ' recebe um marcador daquilo que o seu recorte mantém, ', code('position'), ' e ', code('background'), ' incluídos.'),
         li(strong('Em cache'), ' — ao lado das variantes, por isso uma nova build nunca volta a descodificar uma fonte para ele.'),
       ),
       p(
-        'Passa um objeto para o afinar: ', code('{ blur: 20, bytes: 500 }'), ' — ', code('blur'), ' é o raio em píxeis CSS, ', code('bytes'), ' o máximo que o base64 pode pesar.',
+        'Passa um objeto para o afinar: ', code('{ blur: 10, bytes: 500 }'), ' — ', code('blur'), ' é o raio em píxeis CSS, ', code('bytes'), ' o máximo que o base64 pode pesar.',
       ),
       p(
         'Assim que a imagem carrega e é descodificada, um ', code('onload'), ' de uma linha retira a cópia, por isso nada fica ao lado de uma imagem mostrada com ', code('object-fit: contain'), '. Onde uma Content-Security-Policy bloqueia handlers inline, a cópia fica simplesmente por trás da imagem — é por isso que uma imagem com qualquer transparência não recebe nenhuma: ver-se-ia através dela. Para deixar de fora uma só etiqueta, marca-a com ', code('data-no-placeholder'), ':',

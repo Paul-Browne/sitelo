@@ -848,9 +848,9 @@ test('runImages: variant URLs follow a full-URL or relative base', async (t) => 
 test('normalizeImageOptions: placeholder is off unless asked for', () => {
   assert.equal(normalizeImageOptions(true).placeholder, null)
   assert.equal(normalizeImageOptions({ placeholder: false }).placeholder, null)
-  assert.deepEqual(normalizeImageOptions({ placeholder: true }).placeholder, { blur: 20, bytes: 500 })
+  assert.deepEqual(normalizeImageOptions({ placeholder: true }).placeholder, { blur: 10, bytes: 500 })
   assert.deepEqual(normalizeImageOptions({ placeholder: { blur: 8 } }).placeholder, { blur: 8, bytes: 500 })
-  assert.deepEqual(normalizeImageOptions({ placeholder: { bytes: 300 } }).placeholder, { blur: 20, bytes: 300 })
+  assert.deepEqual(normalizeImageOptions({ placeholder: { bytes: 300 } }).placeholder, { blur: 10, bytes: 300 })
 
   assert.throws(() => normalizeImageOptions({ placeholder: 'blur' }), /"images\.placeholder" must be true or an object/)
   assert.throws(() => normalizeImageOptions({ placeholder: [] }), /"images\.placeholder" must be true or an object/)
@@ -891,7 +891,7 @@ test('rewriteHtmlImages: placeholder paints a blurred background, last on the ta
     generate: withPlaceholder(stubGenerate()),
   })
 
-  const style = placeholderStyle('UklGRg==', 20).replace(/"/g, '&quot;')
+  const style = placeholderStyle('UklGRg==', 10).replace(/"/g, '&quot;')
   const onload = "var s=this.style,c=function(){s.backgroundImage=''};this.decode().then(c,c)"
   assert.equal(
     html,

@@ -1287,7 +1287,7 @@ is showing it replaces the copy:
 // sitelo.config.js
 export default {
   images: {
-    placeholder: true, // or { blur: 20, bytes: 500 }
+    placeholder: true, // or { blur: 10, bytes: 500 }
   },
 }
 ```
@@ -1296,7 +1296,7 @@ export default {
 <img src="/assets/img/hero.a1b2c3d4-3000.webp" alt="Sunrise" ...
      onload="var s=this.style,c=function(){s.backgroundImage=''};this.decode().then(c,c)"
      style="background-image:url(&quot;data:image/svg+xml,%3Csvg ...%3E
-              ...%3CfeGaussianBlur stdDeviation='20'/%3E...
+              ...%3CfeGaussianBlur stdDeviation='10'/%3E...
               href='data:image/webp;base64,UklGRhoB...'/%3E%3C/svg%3E&quot;);
             background-origin:content-box;background-repeat:no-repeat">
 ```
@@ -1305,7 +1305,7 @@ export default {
   side, made smaller until its base64 fits `bytes`; most photos land at
   32–48px. With the SVG around it that is about 1 kB of HTML per image,
   and no extra request.
-- **A 20px blur.** `blur` is the radius `filter: blur(20px)` takes, but it
+- **A 10px blur.** `blur` is the radius `filter: blur(10px)` takes, but it
   is applied by an SVG filter inside the background, so the photo itself
   is never blurred.
 - **Gone once it's showing.** The `onload` waits for `decode()`, so the

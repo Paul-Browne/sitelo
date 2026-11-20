@@ -331,12 +331,12 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li(strong('Circa 500 byte'), ' — la copia è un WebP di al massimo 64px sul lato più lungo, rimpicciolito finché il suo base64 non ci sta; la maggior parte delle foto si ferma a 32–48px. Con l’SVG intorno sono circa 1 kB di HTML per immagine, senza richieste in più.'),
-        li(strong('Una sfocatura di 20px'), ' — il raggio che prende ', code('filter: blur(20px)'), ', applicato da un filtro SVG dentro lo sfondo, così la foto in sé non viene mai sfocata.'),
+        li(strong('Una sfocatura di 10px'), ' — il raggio che prende ', code('filter: blur(10px)'), ', applicato da un filtro SVG dentro lo sfondo, così la foto in sé non viene mai sfocata.'),
         li(strong('La stessa inquadratura'), ' — un riquadro ', code('?w=…&h=…'), ' riceve un segnaposto di ciò che il suo ritaglio tiene, ', code('position'), ' e ', code('background'), ' compresi.'),
         li(strong('In cache'), ' — accanto alle varianti, così una nuova build non decodifica mai più una sorgente per lui.'),
       ),
       p(
-        'Passa un oggetto per regolarlo: ', code('{ blur: 20, bytes: 500 }'), ' — ', code('blur'), ' è il raggio in pixel CSS, ', code('bytes'), ' il peso massimo del base64.',
+        'Passa un oggetto per regolarlo: ', code('{ blur: 10, bytes: 500 }'), ' — ', code('blur'), ' è il raggio in pixel CSS, ', code('bytes'), ' il peso massimo del base64.',
       ),
       p(
         'Quando l’immagine è caricata e decodificata, un ', code('onload'), ' di una riga toglie la copia, quindi accanto a un’immagine mostrata con ', code('object-fit: contain'), ' non resta nulla. Dove una Content-Security-Policy blocca i gestori inline, la copia resta semplicemente dietro l’immagine; per questo un’immagine con qualsiasi trasparenza non ne riceve: si vedrebbe attraverso. Per escludere un solo tag, segnalo con ', code('data-no-placeholder'), ':',

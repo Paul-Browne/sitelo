@@ -36,8 +36,12 @@ const DEFAULT_ASSETS_DIR = 'assets/img'
 const DEFAULT_CACHE_DIR = 'node_modules/.sitelo/images'
 const DEV_URL_PREFIX = '/_sitelo/images'
 
-/** `placeholder: true` — a 20px blur over about 500 bytes of base64. */
-const DEFAULT_PLACEHOLDER = { blur: 20, bytes: 500 }
+/**
+ * `placeholder: true` — a 10px blur over about 500 bytes of base64. Enough
+ * to smooth the WebP's pixels away even across a 1080px box, while keeping
+ * the picture's shapes; 20px left a small one a smudge.
+ */
+const DEFAULT_PLACEHOLDER = { blur: 10, bytes: 500 }
 
 /**
  * Longest sides a placeholder is tried at, largest first: the first whose
