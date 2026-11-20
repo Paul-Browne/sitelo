@@ -212,12 +212,12 @@ export default () =>
       ul(
         { class: 'docs-list' },
         li(strong('About 500 bytes'), ' — the copy is a WebP at most 64px on its longest side, made smaller until its base64 fits; most photos land at 32–48px. With the SVG around it that is about 1 kB of HTML per image, and no extra request.'),
-        li(strong('A 20px blur'), ' — the radius ', code('filter: blur(20px)'), ' takes, applied by an SVG filter inside the background, so the photo itself is never blurred.'),
+        li(strong('A 10px blur'), ' — the radius ', code('filter: blur(10px)'), ' takes, applied by an SVG filter inside the background, so the photo itself is never blurred.'),
         li(strong('The same framing'), ' — a ', code('?w=…&h=…'), ' box gets a placeholder of what its crop keeps, ', code('position'), ' and ', code('background'), ' included.'),
         li(strong('Cached'), ' — beside the variants, so a rebuild never decodes a source again for it.'),
       ),
       p(
-        'Pass an object to tune it: ', code('{ blur: 20, bytes: 500 }'), ' — ', code('blur'), ' is the radius in CSS pixels, ', code('bytes'), ' the most the base64 may weigh.',
+        'Pass an object to tune it: ', code('{ blur: 10, bytes: 500 }'), ' — ', code('blur'), ' is the radius in CSS pixels, ', code('bytes'), ' the most the base64 may weigh.',
       ),
       p(
         'Once the picture has loaded and decoded, a one-line ', code('onload'), ' takes the copy away, so nothing lingers beside an image shown with ', code('object-fit: contain'), '. Where a Content-Security-Policy blocks inline handlers, the copy simply stays behind the picture — which is why an image with any transparency gets none: it would show through. To leave out a single tag, mark it ', code('data-no-placeholder'), ':',

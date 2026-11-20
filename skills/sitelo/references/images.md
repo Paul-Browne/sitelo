@@ -80,7 +80,7 @@ URL. Hand-written variant filenames do not work because they carry hashes.
 ## Blur-up placeholders
 
 ```js
-export default { images: { placeholder: true } } // or { blur: 20, bytes: 500 }
+export default { images: { placeholder: true } } // or { blur: 10, bytes: 500 }
 ```
 
 Each rewritten `<img>` gets a `style` with a `background-image`: an SVG
@@ -92,7 +92,7 @@ showing. A tag's own `onload` runs after it. No extra request is made.
 - The WebP is at most 64px on its longest side. It steps down to 8px
   until its base64 fits `bytes` (default 500). Expect about 1 kB of HTML
   per image.
-- `blur` is the radius in CSS pixels (default 20). It is the same radius
+- `blur` is the radius in CSS pixels (default 10). It is the same radius
   as `filter: blur()`, but only the placeholder is blurred, never the photo.
 - A `?w=&h=` box gets a placeholder of its own crop.
 - Images with any transparency get none. Under a Content-Security-Policy
