@@ -8,21 +8,18 @@
  * request fails.
  */
 
+import {
+  DEFAULT_ROOT_MARGIN,
+  ISLAND_LOAD_EVENT,
+  whenDue,
+} from './client-schedule.js'
+
+export { ISLAND_LOAD_EVENT }
+
 export const DEFAULT_ISLANDS_ENDPOINT = '/_sitelo/islands'
 
 /** Give up on an island that never responds. */
 const DEFAULT_TIMEOUT_MS = 10_000
-
-/** Start loading `when: 'visible'` islands slightly before they scroll in. */
-const DEFAULT_ROOT_MARGIN = '200px'
-
-function requestIdle(callback) {
-  if (typeof requestIdleCallback === 'function') {
-    return requestIdleCallback(callback, { timeout: 2000 })
-  }
-
-  return setTimeout(callback, 1)
-}
 
 /**
  * Abort signal that fires after `ms`, without assuming
@@ -70,6 +67,7 @@ async function loadIsland(element, { endpoint, onError, timeout }) {
 
     element.innerHTML = await response.text()
     element.setAttribute('data-sitelo-island-state', 'loaded')
+    announceLoad(element)
   } catch (error) {
     element.setAttribute('data-sitelo-island-state', 'error')
     if (onError) {
@@ -81,46 +79,14 @@ async function loadIsland(element, { endpoint, onError, timeout }) {
 }
 
 /**
- * Wire up one placeholder according to its `data-sitelo-when` strategy.
- *
- * Returns a promise for islands that load straight away, and `null` for
- * deferred ones — the caller should not wait on something that may not
- * happen until the reader scrolls.
+ * Tell the page an island's HTML is in, so code that wires up markup,
+ * `mountEnhancements()` included, can reach what just arrived.
  */
-function scheduleIsland(element, context) {
-  const when = element.getAttribute('data-sitelo-when') ?? 'load'
+function announceLoad(element) {
+  if (typeof CustomEvent !== 'function') return
+  if (typeof element.dispatchEvent !== 'function') return
 
-  if (when === 'idle') {
-    requestIdle(() => loadIsland(element, context))
-    return null
-  }
-
-  if (when === 'visible') {
-    // No IntersectionObserver (or no layout to observe): load it now
-    // rather than never.
-    if (typeof IntersectionObserver === 'undefined') {
-      return loadIsland(element, context)
-    }
-
-    const rootMargin =
-      element.getAttribute('data-sitelo-root-margin') ?? context.rootMargin
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue
-          observer.disconnect()
-          loadIsland(element, context)
-        }
-      },
-      { rootMargin },
-    )
-
-    observer.observe(element)
-    return null
-  }
-
-  return loadIsland(element, context)
+  element.dispatchEvent(new CustomEvent(ISLAND_LOAD_EVENT, { bubbles: true }))
 }
 
 /**
@@ -161,7 +127,9 @@ export async function mountIslands({
   const pending = []
 
   for (const element of elements) {
-    const promise = scheduleIsland(element, context)
+    const promise = whenDue(element, context.rootMargin, () =>
+      loadIsland(element, context),
+    )
     if (promise) pending.push(promise)
   }
 

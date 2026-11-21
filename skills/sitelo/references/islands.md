@@ -117,4 +117,50 @@ variable or `createIslandsHandler({ secret })`. You can also call
 import. Signing proves the props came from your build. It does not hide
 them.
 
+## Enhancements: browser code for a region
+
+An island runs on the server. When a region needs code in the browser
+instead (a counter, a copy button, live form checks), use `enhance()`. It
+takes the same arguments as `island()`. The page renders the markup, and
+the browser imports the module registered under that name and calls its
+default export with the wrapper element and props. There is no hydration
+and no framework runtime.
+
+```js
+// src/index.ht.js
+import { enhance } from 'sitelo/enhance'
+
+export default () => `
+  <html><body>
+    ${enhance('counter', { start: 0 }, '<button type="button">+1</button> <output>0</output>', { when: 'visible' })}
+    <script type="module" src="/enhance.js"></script>
+  </body></html>`
+```
+
+```js
+// src/enhance.js: list every enhancement module by hand
+import { mountEnhancements } from 'sitelo/enhance/client'
+
+mountEnhancements({
+  counter: () => import('./client/counter.js'),
+})
+```
+
+```js
+// src/client/counter.js
+export default (element, { start }) => {
+  const output = element.querySelector('output')
+  let count = start
+  element.querySelector('button').addEventListener('click', () => {
+    output.value = String(++count)
+  })
+}
+```
+
+Each `import()` becomes its own chunk, fetched only on pages that use it.
+The wrapper's `data-sitelo-enhance-state` goes `pending`, `loading`,
+`ready`, or `error` (the markup stays as rendered). Enhancements inside a
+server island are mounted when the island loads. Props are in the page
+source, so keep secrets out of them.
+
 Docs: https://sitelo.dev/docs/islands.md
