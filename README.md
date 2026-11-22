@@ -1561,16 +1561,16 @@ pages that use it, when you say. There is no hydration and no framework
 runtime: the server renders the HTML as usual, so it works before the
 module arrives, and the module adds behaviour to the DOM it finds.
 
-**1. Write the module.** Its default export gets the wrapper element and
-the props:
+**1. Write the module.** Its default export gets the element. Read what
+you need from the markup, which the server already rendered:
 
 ```ts
 // src/client/counter.ts
 import type { Enhancer } from 'sitelo/enhance/client'
 
-const counter: Enhancer<{ start: number }> = (element, { start }) => {
+const counter: Enhancer = (element) => {
   const output = element.querySelector('output')!
-  let count = start
+  let count = Number(output.value)
 
   element.querySelector('button')!.addEventListener('click', () => {
     output.value = String(++count)
@@ -1592,7 +1592,7 @@ export default () => `
     <body>
       ${enhance(
         'counter',
-        { start: 0 },
+        {},
         '<button type="button">Add one</button> <output>0</output>',
         { when: 'visible' },
       )}
@@ -1610,13 +1610,13 @@ import { mountEnhancements } from 'sitelo/enhance/client'
 
 mountEnhancements({
   counter: () => import('./client/counter.ts'),
-  copy: () => import('./client/copy.ts'),
+  search: () => import('./client/search.ts'),
 })
 ```
 
 You write the map out by hand, on purpose. Each `import()` is an
 ordinary dynamic import, so the build gives every module its own chunk,
-and a page downloads only the ones its wrappers name. In dev, Vite
+and a page downloads only the ones its elements name. In dev, Vite
 serves them as they are. Because it is plain code, TypeScript checks it,
 and knip follows it once `src/enhance.ts` is listed as an entry (see
 [Finding unused code](#finding-unused-code)).
@@ -1624,7 +1624,59 @@ and knip follows it once `src/enhance.ts` is listed as an entry (see
 `when` takes the same values as an island's: `'load'` (the default),
 `'idle'` and `'visible'`, with `rootMargin` for `'visible'`.
 
-Each wrapper's `data-sitelo-enhance-state` moves through `pending`
+### Your own element
+
+`enhance()` puts a `<div>` around the markup. When the element itself
+matters, like a `<form>` with its own `action`, put the attributes on it
+with `enhanceAttributes(name, props, options)` instead:
+
+```js
+import { enhanceAttributes } from 'sitelo/enhance'
+
+// A template literal
+`<form action="/search" ${enhanceAttributes('search', { minLength: 2 })}>…</form>`
+
+// javascript-to-html: attributes are an object, and this is one
+form({ action: '/search' }, enhanceAttributes('search', { minLength: 2 }), input({ name: 'q' }))
+```
+
+In JSX, spread it: `<form action="/search" {...enhanceAttributes('search')}>`.
+The module gets the `<form>`.
+
+### What to pass as props
+
+The second argument is JSON written into the page and handed to the
+module as its second argument. Every element on the page carries its
+own copy, so pass only what the markup does not already say: a setting
+with no natural place in the HTML, like `minLength` above. A value the
+page shows, like the counter's starting number, is better read from the
+DOM, so the two cannot disagree. Large data belongs in the HTML itself,
+or in a file the module fetches.
+
+Props never go back to a server, so there is nothing to sign, but they
+are in the page source, so keep secrets out of them.
+
+### Checked when you build
+
+The build reads the map out of your `mountEnhancements()` calls and
+fails on a page that names an enhancement the map does not have:
+
+```
+index.html uses enhancement "countr", which no mountEnhancements() call
+registers. Did you mean "counter"? Registered: counter, search.
+```
+
+`missingAssets: 'warn'` turns that into a warning, the same as it does
+for a missing script, and `sitelo dev` warns as each page renders. The
+map has to be written where the build can read it: an object literal in
+the call, or a `const` in the same file. A map put together at runtime,
+with a spread or imported from another module, cannot be read, so then
+nothing is checked. Enhancements inside server islands are rendered at
+request time, so the build never sees them either.
+
+### State and errors
+
+Each element's `data-sitelo-enhance-state` moves through `pending`
 (waiting for its moment), `loading` and `ready`. If the module fails to
 load or throws, the state is `error`, the server's markup stays as it
 was, and the error goes to `mountEnhancements(modules, { onError })`, or
@@ -1637,15 +1689,16 @@ the module is in:
 
 Notes:
 
+- The same enhancement can be on a page any number of times. The module
+  is downloaded once and runs once per element, so keep per-element
+  state inside the function, and look things up with
+  `element.querySelector()` rather than across the whole document.
 - An enhancement inside a server island is mounted when the island's
   HTML arrives. The islands loader dispatches `sitelo:island-load` on
   the island, and `mountEnhancements()` listens for it, so load both
   from the same script.
 - `mountEnhancements()` never runs a module twice on one element, so it
   is safe to call again after adding markup yourself.
-- Props are JSON in the page, like island props. They never go back to
-  a server, so there is nothing to sign, but they are in the page
-  source, so keep secrets out of them.
 - Want a framework in one box? Mount it from the module, as in
   `createRoot(element).render(<Chart {...props} />)`. Only pages with
   that box download it, and sitelo stays out of it.

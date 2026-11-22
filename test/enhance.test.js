@@ -54,3 +54,39 @@ test('enhance() never signs props, even with an islands secret set', (t) => {
 
   assert.doesNotMatch(enhance('a', { id: 1 }), /data-sitelo-sig/);
 });
+
+test('enhanceAttributes() is an object of attributes, and attribute text in a template literal', async () => {
+  const { enhanceAttributes } = await import('../src/enhance.js');
+  const attributes = enhanceAttributes('search', { q: 'a"b<c' }, { when: 'idle' });
+
+  assert.deepEqual({ ...attributes }, {
+    'data-sitelo-enhance': 'search',
+    'data-sitelo-props': '{"q":"a\\"b<c"}',
+    'data-sitelo-when': 'idle',
+  });
+
+  assert.equal(
+    `<form action="/s" ${attributes}>`,
+    '<form action="/s" data-sitelo-enhance="search" data-sitelo-props="{&quot;q&quot;:&quot;a\\&quot;b&lt;c&quot;}" data-sitelo-when="idle">',
+  );
+});
+
+test('enhanceAttributes() works as javascript-to-html attributes', async () => {
+  const { enhanceAttributes } = await import('../src/enhance.js');
+  const { form, input } = await import('javascript-to-html');
+
+  assert.equal(
+    form({ action: '/s' }, enhanceAttributes('search', { min: 2 }), input({ name: 'q' })),
+    '<form action="/s" data-sitelo-enhance="search" data-sitelo-props="{&#34;min&#34;:2}"><input name="q"></form>',
+  );
+});
+
+test('enhance() is enhanceAttributes() on a <div>', async () => {
+  const { enhanceAttributes } = await import('../src/enhance.js');
+
+  assert.equal(
+    enhance('a', { x: 1 }, '<p>hi</p>', { when: 'visible', rootMargin: '1px' }),
+    `<div ${enhanceAttributes('a', { x: 1 }, { when: 'visible', rootMargin: '1px' })}><p>hi</p></div>`,
+  );
+  assert.throws(() => enhanceAttributes('no spaces'), /Invalid enhancement name/);
+});
