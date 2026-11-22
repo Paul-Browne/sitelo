@@ -111,6 +111,8 @@ export default () =>
       p(
         'For clicks, forms, and other client behavior, link a normal script through the ',
         a({ href: '/docs/assets' }, 'asset pipeline'),
+        ', hand a region to a browser module with ',
+        a({ href: '/docs/enhance' }, 'enhancements'),
         ', or use ',
         a({ href: '/docs/islands' }, 'server islands'),
         ' for request-time HTML. Prefer ',

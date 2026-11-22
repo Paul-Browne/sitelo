@@ -118,6 +118,8 @@ export default () =>
       p(
         'Dla kliknięć, formularzy i innych zachowań po stronie klienta podlinkuj zwykły skrypt przez ',
         a({ href: '/pl/docs/assets' }, 'potok zasobów'),
+        ', przekaż fragment modułowi w przeglądarce przez ',
+        a({ href: '/pl/docs/enhance' }, 'ulepszenia'),
         ' albo użyj ',
         a({ href: '/pl/docs/islands' }, 'wysp serwerowych'),
         ' dla HTML-a tworzonego w chwili żądania. Gdy nie potrzebujesz składni JSX, wybieraj ',

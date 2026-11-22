@@ -1,0 +1,177 @@
+import { a, h2, li, p, ul } from 'javascript-to-html'
+import { code, codeBlock, docsLayout, pageCodeTabs } from '../../lib/zh.js'
+import { enhanceSnippets } from '../../lib/snippets/enhance.js'
+
+const s = enhanceSnippets('zh')
+
+export default () =>
+  docsLayout({
+    title: '渐进增强',
+    description: '把服务端渲染好的标记交给一个小小的浏览器模块，只在用到它的页面上加载。',
+    activeHref: '/zh/docs/enhance',
+    children: [
+      p(
+        '有些交互必须在浏览器里运行：计数器、复制按钮、边输入边校验的表单。',
+        code('enhance()'),
+        ' 标出一段应由某个模块接管的标记。服务端照常渲染 HTML，所以在 JavaScript 到达之前它就能用；浏览器只在用到该模块的页面上加载它。模块给它找到的 DOM 加上行为。没有 hydration，也没有框架运行时。',
+      ),
+      p(
+        a({ href: '/zh/docs/islands' }, '服务端区块'),
+        '在页面被访问时于服务器上渲染一块区域；渐进增强则在浏览器里为一块区域运行代码。两者接受相同的参数，也能一起使用。',
+      ),
+      h2('编写模块'),
+      p(
+        '一个增强就是一个普通模块，放在 ',
+        code('src/'),
+        ' 下任意位置。它的默认导出接收元素和 props。需要什么，就从服务端已经渲染好的标记里读：',
+      ),
+      codeBlock('src/client/counter.js', s.counterModule, 'javascript'),
+      p(
+        '也可以用 TypeScript。用 ',
+        code('sitelo/enhance/client'),
+        ' 里的 ',
+        code('Enhancer<Props>'),
+        ' 给函数标注类型。',
+      ),
+      h2('放进页面'),
+      p(
+        '从 ',
+        code('sitelo/enhance'),
+        ' 导入 ',
+        code('enhance()'),
+        '。它接受与 ',
+        code('island()'),
+        ' 相同的参数：名称、props、HTML 和选项。HTML 会放进一个 ',
+        code('<div>'),
+        '，模块拿到的就是这个元素。',
+      ),
+      pageCodeTabs({
+        file: 'src/index.ht.js',
+        template: s.pageTemplate,
+        ht: s.pageHt,
+        jsx: s.pageJsx,
+      }),
+      p(
+        'JSX 会转义函数返回的字符串，所以 JSX 标签页改为把 ',
+        code('enhanceAttributes()'),
+        ' 展开到元素上。下文会详细说明。',
+      ),
+      h2('注册模块'),
+      p(
+        '页面引入的脚本把名称到模块的映射传给 ',
+        code('mountEnhancements()'),
+        '：',
+      ),
+      codeBlock('src/enhance.js', s.registry, 'javascript'),
+      p(
+        '这个映射是有意手写的。每个 ',
+        code('import()'),
+        ' 都是普通的动态导入，所以构建会给每个模块单独一个 chunk，页面只下载其元素用到的那些。开发时 Vite 原样提供它们。因为这就是普通代码，TypeScript 会检查它，knip 也能跟踪它。',
+      ),
+      p(
+        '传入 ',
+        code('when'),
+        ' 决定模块何时导入。取值与区块相同：',
+      ),
+      codeBlock('enhance-when', s.strategy, 'js'),
+      ul(
+        { class: 'docs-list' },
+        li(code("'load'"), '（默认）—— 页面一加载就导入'),
+        li(code("'idle'"), ' —— 通过 ', code('requestIdleCallback'), '（不支持时退回到定时器）'),
+        li(
+          code("'visible'"),
+          ' —— 元素滚动进入视口时，借助 IntersectionObserver。',
+          code('rootMargin'),
+          ' 让它提前开始，默认 ',
+          code("'200px'"),
+        ),
+      ),
+      h2('使用你自己的元素'),
+      p(
+        code('enhance()'),
+        ' 会在标记外面包一个 ',
+        code('<div>'),
+        '。当元素本身很重要时，比如带有自己 ',
+        code('action'),
+        ' 的 ',
+        code('<form>'),
+        '，就用 ',
+        code('enhanceAttributes(name, props, options)'),
+        ' 把属性直接加在它上面。它是一个属性对象，所以 javascript-to-html 和 JSX 都能把它当作属性；在模板字符串里，它会变成属性文本：',
+      ),
+      pageCodeTabs({
+        file: 'src/search.ht.js',
+        template: s.formTemplate,
+        ht: s.formHt,
+        jsx: s.formJsx,
+      }),
+      p('模块拿到的就是这个表单本身：'),
+      codeBlock('src/client/search.js', s.searchModule, 'javascript'),
+      h2('props 里该放什么'),
+      p(
+        'props 是写进页面的 JSON，作为第二个参数交给模块。页面上每个元素都带着自己的一份，所以只传标记里还没有的东西：在 HTML 里没有自然位置的设置，比如上面的 ',
+        code('minLength'),
+        '。页面已经显示的值，比如计数器的初始数字，最好从 DOM 里读，这样两者就不会不一致。大量数据应该放在 HTML 本身里，或者放在模块去获取的文件里。',
+      ),
+      p(
+        '和区块的 props 不同，它们永远不会回到服务器，所以没有什么需要签名。不过它们出现在页面源码里，所以不要放机密信息。',
+      ),
+      h2('构建时检查'),
+      p(
+        '构建会从你的 ',
+        code('mountEnhancements()'),
+        ' 调用中读出映射；如果某个页面用了映射里没有的增强，构建就会失败：',
+      ),
+      codeBlock('sitelo build', s.buildError, 'text'),
+      p(
+        code("missingAssets: 'warn'"),
+        ' 会把它变成警告，和缺少脚本时一样；',
+        code('sitelo'),
+        '（开发模式）则在渲染每个页面时发出警告。构建必须能读懂这个映射，所以请把它写成调用里的对象字面量，或者同一文件中的 ',
+        code('const'),
+        '。在运行时拼出来的映射（用了展开运算符，或从其他模块导入）无法读取，这时什么都不会检查。服务端区块里的增强是在请求时渲染的，所以构建同样看不到它们。',
+      ),
+      h2('状态与错误'),
+      p(
+        '每个元素的 ',
+        code('data-sitelo-enhance-state'),
+        ' 会依次经过 ',
+        code('pending'),
+        '（等待时机）、',
+        code('loading'),
+        ' 和 ',
+        code('ready'),
+        '。如果模块加载失败或抛出异常，状态就是 ',
+        code('error'),
+        '，服务端的标记保持原样，错误交给 ',
+        code('mountEnhancements(modules, { onError })'),
+        '，没有的话就输出到控制台。模块就绪后页面需要变化时，可以在 CSS 里使用这个状态：',
+      ),
+      codeBlock('styles.css', s.stateCss, 'css'),
+      h2('值得了解'),
+      ul(
+        { class: 'docs-list' },
+        li(
+          '同一个增强可以在页面上出现任意多次。模块只下载一次，每个元素各运行一次，所以把每个元素自己的状态放在函数内部，并用 ',
+          code('element.querySelector()'),
+          ' 查找，而不是在整个文档里查找。',
+        ),
+        li(
+          '服务端区块里的增强会在区块的 HTML 到达时挂载：区块加载器会派发 ',
+          code('sitelo:island-load'),
+          '，',
+          code('mountEnhancements()'),
+          ' 会监听它。请在同一个脚本里加载两个加载器。',
+        ),
+        li(
+          code('mountEnhancements()'),
+          ' 绝不会在同一个元素上运行同一模块两次，所以你自己添加标记后再次调用它是安全的。',
+        ),
+        li(
+          '想在某一块里用框架？在模块里挂载它，例如 ',
+          code('createRoot(element).render(<Chart {...props} />)'),
+          '。只有包含这一块的页面才会下载它。',
+        ),
+      ),
+    ],
+  })

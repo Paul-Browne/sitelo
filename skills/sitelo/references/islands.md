@@ -123,44 +123,61 @@ An island runs on the server. When a region needs code in the browser
 instead (a counter, a copy button, live form checks), use `enhance()`. It
 takes the same arguments as `island()`. The page renders the markup, and
 the browser imports the module registered under that name and calls its
-default export with the wrapper element and props. There is no hydration
-and no framework runtime.
+default export with the element and props. There is no hydration and no
+framework runtime.
 
 ```js
 // src/index.ht.js
-import { enhance } from 'sitelo/enhance'
+import { enhance, enhanceAttributes } from 'sitelo/enhance'
 
 export default () => `
   <html><body>
-    ${enhance('counter', { start: 0 }, '<button type="button">+1</button> <output>0</output>', { when: 'visible' })}
+    ${enhance('counter', {}, '<button type="button">+1</button> <output>0</output>', { when: 'visible' })}
+    <form action="/search" ${enhanceAttributes('search', { minLength: 2 })}>…</form>
     <script type="module" src="/enhance.js"></script>
   </body></html>`
 ```
 
+`enhance()` wraps the markup in a `<div>`. `enhanceAttributes()` puts the
+same attributes on an element you write, like the `<form>` above. It is an
+object, so in javascript-to-html pass it as attributes
+(`form({ action: '/search' }, enhanceAttributes('search'), …)`), and in JSX
+spread it.
+
 ```js
-// src/enhance.js: list every enhancement module by hand
+// src/enhance.js: list every enhancement module by hand, as an object literal
 import { mountEnhancements } from 'sitelo/enhance/client'
 
 mountEnhancements({
   counter: () => import('./client/counter.js'),
+  search: () => import('./client/search.js'),
 })
 ```
 
 ```js
-// src/client/counter.js
-export default (element, { start }) => {
+// src/client/counter.js: read what the markup already says
+export default (element) => {
   const output = element.querySelector('output')
-  let count = start
+  let count = Number(output.value)
   element.querySelector('button').addEventListener('click', () => {
     output.value = String(++count)
   })
 }
 ```
 
-Each `import()` becomes its own chunk, fetched only on pages that use it.
-The wrapper's `data-sitelo-enhance-state` goes `pending`, `loading`,
-`ready`, or `error` (the markup stays as rendered). Enhancements inside a
-server island are mounted when the island loads. Props are in the page
-source, so keep secrets out of them.
+- Each `import()` becomes its own chunk, fetched only on pages that use it.
+- Pass props only for settings the markup does not show. Every element
+  carries its own copy, and they are in the page source, so keep secrets
+  out of them.
+- The build fails on a page that names an enhancement no
+  `mountEnhancements()` call registers (a warning with
+  `missingAssets: 'warn'`). It reads the map statically, so keep it an
+  object literal in the call or a `const` in the same file. A spread or an
+  imported map turns the check off.
+- The element's `data-sitelo-enhance-state` goes `pending`, `loading`,
+  `ready`, or `error` (the markup stays as rendered).
+- Enhancements inside a server island are mounted when the island loads.
+- One module can serve many elements on a page. Keep per-element state
+  inside the function and query within `element`.
 
 Docs: https://sitelo.dev/docs/islands.md

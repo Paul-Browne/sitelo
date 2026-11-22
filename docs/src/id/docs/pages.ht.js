@@ -110,6 +110,8 @@ export default () =>
       p(
         'Untuk klik, formulir, dan perilaku klien lain, tautkan skrip biasa lewat ',
         a({ href: '/id/docs/assets' }, 'jalur aset'),
+        ', serahkan sebuah area ke modul browser dengan ',
+        a({ href: '/id/docs/enhance' }, 'enhancement'),
         ', atau gunakan ',
         a({ href: '/id/docs/islands' }, 'island server'),
         ' untuk HTML saat permintaan. Pilih ',

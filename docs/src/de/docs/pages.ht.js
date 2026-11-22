@@ -118,7 +118,9 @@ export default () =>
       p(
         'Für Klicks, Formulare und sonstiges Client-Verhalten bindest du ein normales Skript über die ',
         a({ href: '/de/docs/assets' }, 'Asset-Pipeline'),
-        ' ein oder nutzt ',
+        ' ein, übergibst einen Bereich mit ',
+        a({ href: '/de/docs/enhance' }, 'Enhancements'),
+        ' an ein Browser-Modul oder nutzt ',
         a({ href: '/de/docs/islands' }, 'Server-Islands'),
         ' für HTML zur Anfragezeit. Wenn du die JSX-Syntax nicht brauchst, nimm lieber ',
         a({ href: 'https://ht.js.org', rel: 'noopener' }, 'ht.js'),

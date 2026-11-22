@@ -1,0 +1,180 @@
+import { a, h2, li, p, ul } from 'javascript-to-html'
+import { code, codeBlock, docsLayout, pageCodeTabs } from '../../lib/fr.js'
+import { enhanceSnippets } from '../../lib/snippets/enhance.js'
+
+const s = enhanceSnippets('fr')
+
+export default () =>
+  docsLayout({
+    title: 'Améliorations',
+    description:
+      'Confier le balisage rendu côté serveur à un petit module navigateur, chargé seulement sur les pages qui l’utilisent.',
+    activeHref: '/fr/docs/enhance',
+    children: [
+      p(
+        'Une partie de l’interactivité doit s’exécuter dans le navigateur : un compteur, un bouton copier, un formulaire qui se vérifie pendant la saisie. ',
+        code('enhance()'),
+        ' marque le balisage qu’un module doit prendre en charge. Le serveur rend le HTML comme d’habitude, donc il fonctionne avant l’arrivée du JavaScript, et le navigateur ne charge le module que sur les pages qui l’utilisent. Le module ajoute du comportement au DOM qu’il trouve. Pas d’hydratation, pas de runtime de framework.',
+      ),
+      p(
+        'Un ',
+        a({ href: '/fr/docs/islands' }, 'îlot serveur'),
+        ' rend une région sur un serveur quand la page est consultée. Une amélioration exécute du code pour une région dans le navigateur. Les deux prennent les mêmes arguments et fonctionnent ensemble.',
+      ),
+      h2('Écrire le module'),
+      p(
+        'Une amélioration est un module ordinaire, n’importe où sous ',
+        code('src/'),
+        '. Son export par défaut reçoit l’élément et les props. Lisez ce dont vous avez besoin dans le balisage, que le serveur a déjà rendu :',
+      ),
+      codeBlock('src/client/counter.js', s.counterModule, 'javascript'),
+      p(
+        'TypeScript fonctionne aussi. Typez la fonction avec ',
+        code('Enhancer<Props>'),
+        ' depuis ',
+        code('sitelo/enhance/client'),
+        '.',
+      ),
+      h2('Le placer dans une page'),
+      p(
+        'Importez ',
+        code('enhance()'),
+        ' depuis ',
+        code('sitelo/enhance'),
+        '. Elle prend les mêmes arguments que ',
+        code('island()'),
+        ' : un nom, des props, le HTML et des options. Le HTML va dans un ',
+        code('<div>'),
+        ' que le module reçoit.',
+      ),
+      pageCodeTabs({
+        file: 'src/index.ht.js',
+        template: s.pageTemplate,
+        ht: s.pageHt,
+        jsx: s.pageJsx,
+      }),
+      p(
+        'JSX échappe la chaîne renvoyée par une fonction, donc l’onglet JSX étale ',
+        code('enhanceAttributes()'),
+        ' sur l’élément à la place. Plus de détails ci-dessous.',
+      ),
+      h2('Enregistrer les modules'),
+      p(
+        'Le script que la page charge passe à ',
+        code('mountEnhancements()'),
+        ' une table des noms vers les modules :',
+      ),
+      codeBlock('src/enhance.js', s.registry, 'javascript'),
+      p(
+        'Vous écrivez la table à la main, volontairement. Chaque ',
+        code('import()'),
+        ' est un import dynamique ordinaire, donc le build donne à chaque module son propre chunk, et une page ne télécharge que ceux que ses éléments nomment. En dev, Vite les sert tels quels. Comme c’est du code ordinaire, TypeScript le vérifie et knip le suit.',
+      ),
+      p(
+        'Passez ',
+        code('when'),
+        ' pour choisir quand un module est importé. Les valeurs sont les mêmes que pour un îlot :',
+      ),
+      codeBlock('enhance-when', s.strategy, 'js'),
+      ul(
+        { class: 'docs-list' },
+        li(code("'load'"), ' (par défaut) — dès que la page charge'),
+        li(code("'idle'"), ' — via ', code('requestIdleCallback'), ' (repli sur un timeout)'),
+        li(
+          code("'visible'"),
+          ' — quand l’élément entre dans le viewport, via IntersectionObserver. ',
+          code('rootMargin'),
+          ' le déclenche en avance et vaut ',
+          code("'200px'"),
+          ' par défaut',
+        ),
+      ),
+      h2('Votre propre élément'),
+      p(
+        code('enhance()'),
+        ' place un ',
+        code('<div>'),
+        ' autour du balisage. Quand l’élément lui-même compte, comme un ',
+        code('<form>'),
+        ' avec son propre ',
+        code('action'),
+        ', mettez les attributs dessus avec ',
+        code('enhanceAttributes(name, props, options)'),
+        '. C’est un objet d’attributs, donc javascript-to-html et JSX l’acceptent comme attributs, et dans un template literal il devient le texte des attributs :',
+      ),
+      pageCodeTabs({
+        file: 'src/search.ht.js',
+        template: s.formTemplate,
+        ht: s.formHt,
+        jsx: s.formJsx,
+      }),
+      p('Le module reçoit le formulaire lui-même :'),
+      codeBlock('src/client/search.js', s.searchModule, 'javascript'),
+      h2('Que passer en props'),
+      p(
+        'Les props sont du JSON écrit dans la page et transmis au module en second argument. Chaque élément de la page porte sa propre copie, donc ne passez que ce que le balisage ne dit pas déjà : un réglage sans place naturelle dans le HTML, comme ',
+        code('minLength'),
+        ' ci-dessus. Une valeur que la page affiche, comme le nombre de départ du compteur, se lit mieux dans le DOM, pour que les deux ne puissent pas diverger. Les grosses données vont dans le HTML lui-même, ou dans un fichier que le module récupère.',
+      ),
+      p(
+        'Contrairement aux props d’un îlot, elles ne retournent jamais à un serveur, donc il n’y a rien à signer. Elles sont toutefois dans le source de la page : n’y mettez pas de secrets.',
+      ),
+      h2('Vérifié au build'),
+      p(
+        'Le build lit la table dans vos appels à ',
+        code('mountEnhancements()'),
+        ' et échoue sur une page qui nomme une amélioration absente de la table :',
+      ),
+      codeBlock('sitelo build', s.buildError, 'text'),
+      p(
+        code("missingAssets: 'warn'"),
+        ' en fait un avertissement, comme pour un script manquant, et ',
+        code('sitelo'),
+        ' (dev) avertit au rendu de chaque page. Le build doit pouvoir lire la table : écrivez-la comme un objet littéral dans l’appel, ou comme une ',
+        code('const'),
+        ' dans le même fichier. Une table construite à l’exécution, avec un spread ou importée d’un autre module, ne peut pas être lue, et rien n’est alors vérifié. Les améliorations à l’intérieur d’îlots serveur sont rendues au moment de la requête, donc le build ne les voit pas non plus.',
+      ),
+      h2('État et erreurs'),
+      p(
+        'Le ',
+        code('data-sitelo-enhance-state'),
+        ' de chaque élément passe par ',
+        code('pending'),
+        ' (en attente de son moment), ',
+        code('loading'),
+        ' et ',
+        code('ready'),
+        '. Si le module ne se charge pas ou lève une erreur, l’état vaut ',
+        code('error'),
+        ', le balisage du serveur reste tel quel, et l’erreur part vers ',
+        code('mountEnhancements(modules, { onError })'),
+        ', ou dans la console. Utilisez l’état en CSS quand la page doit changer une fois le module chargé :',
+      ),
+      codeBlock('styles.css', s.stateCss, 'css'),
+      h2('Bon à savoir'),
+      ul(
+        { class: 'docs-list' },
+        li(
+          'Une même amélioration peut apparaître autant de fois que vous voulez sur une page. Le module est téléchargé une fois et s’exécute une fois par élément : gardez l’état propre à chaque élément dans la fonction, et cherchez avec ',
+          code('element.querySelector()'),
+          ' plutôt que dans tout le document.',
+        ),
+        li(
+          'Une amélioration à l’intérieur d’un îlot serveur est montée quand le HTML de l’îlot arrive : le chargeur d’îlots émet ',
+          code('sitelo:island-load'),
+          ' et ',
+          code('mountEnhancements()'),
+          ' l’écoute. Chargez les deux chargeurs depuis le même script.',
+        ),
+        li(
+          code('mountEnhancements()'),
+          ' n’exécute jamais un module deux fois sur le même élément, vous pouvez donc le rappeler après avoir ajouté du balisage vous-même.',
+        ),
+        li(
+          'Besoin d’un framework dans une seule boîte ? Montez-le depuis le module, par exemple avec ',
+          code('createRoot(element).render(<Chart {...props} />)'),
+          '. Seules les pages qui contiennent cette boîte le téléchargent.',
+        ),
+      ),
+    ],
+  })

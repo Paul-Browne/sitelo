@@ -1,5 +1,6 @@
 import htmlPages from 'vite-plugin-html-pages';
 
+import { enhanceCheck } from './enhance-plugin.js';
 import { llmsTxt, normalizeLlmsOptions } from './llms.js';
 import { robotsTxt } from './robots.js';
 import { sitemap } from './sitemap.js';
@@ -76,6 +77,12 @@ export default function sitelo(options = {}) {
       ? []
       : [robotsTxt({ site: options.site, root: options.root, pagesDir: options.pagesDir })]),
     ...(llmsOptions ? [llmsTxt({ site: options.site, ...llmsOptions })] : []),
+    // After html-pages, whose generateBundle emits the pages this reads.
+    enhanceCheck({
+      root: options.root,
+      pagesDir: options.pagesDir,
+      missingAssets: options.missingAssets,
+    }),
     uiRuntime({ ...uiClient, prune: pruneCss }),
   ];
 }

@@ -115,6 +115,7 @@ export const TRANSLATED_PATHS = new Set([
   '/docs/routing',
   '/docs/data',
   '/docs/islands',
+  '/docs/enhance',
   '/docs/ui',
   '/docs/assets',
   '/docs/images',

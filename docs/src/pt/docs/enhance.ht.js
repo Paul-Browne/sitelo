@@ -1,0 +1,180 @@
+import { a, h2, li, p, ul } from 'javascript-to-html'
+import { code, codeBlock, docsLayout, pageCodeTabs } from '../../lib/pt.js'
+import { enhanceSnippets } from '../../lib/snippets/enhance.js'
+
+const s = enhanceSnippets('pt')
+
+export default () =>
+  docsLayout({
+    title: 'Melhorias',
+    description:
+      'Entregue a marcação renderizada no servidor a um pequeno módulo do navegador, carregado apenas nas páginas que o usam.',
+    activeHref: '/pt/docs/enhance',
+    children: [
+      p(
+        'Há interatividade que tem de correr no navegador: um contador, um botão de copiar, um formulário que se valida enquanto se escreve. ',
+        code('enhance()'),
+        ' marca a marcação de que um módulo deve tomar conta. O servidor renderiza o HTML como sempre, por isso funciona antes de chegar qualquer JavaScript, e o navegador só carrega o módulo nas páginas que o usam. O módulo acrescenta comportamento ao DOM que encontra. Sem hidratação nem runtime de framework.',
+      ),
+      p(
+        'Uma ',
+        a({ href: '/pt/docs/islands' }, 'ilha de servidor'),
+        ' renderiza uma região num servidor quando a página é visitada. Uma melhoria corre código para uma região no navegador. As duas recebem os mesmos argumentos e funcionam em conjunto.',
+      ),
+      h2('Escrever o módulo'),
+      p(
+        'Uma melhoria é um módulo normal, em qualquer sítio dentro de ',
+        code('src/'),
+        '. O seu export por omissão recebe o elemento e as props. Lê o que precisas da marcação, que o servidor já renderizou:',
+      ),
+      codeBlock('src/client/counter.js', s.counterModule, 'javascript'),
+      p(
+        'TypeScript também funciona. Tipa a função com ',
+        code('Enhancer<Props>'),
+        ' de ',
+        code('sitelo/enhance/client'),
+        '.',
+      ),
+      h2('Colocá-lo numa página'),
+      p(
+        'Importa ',
+        code('enhance()'),
+        ' de ',
+        code('sitelo/enhance'),
+        '. Recebe os mesmos argumentos que ',
+        code('island()'),
+        ': um nome, props, o HTML e opções. O HTML fica dentro de um ',
+        code('<div>'),
+        ' que o módulo recebe.',
+      ),
+      pageCodeTabs({
+        file: 'src/index.ht.js',
+        template: s.pageTemplate,
+        ht: s.pageHt,
+        jsx: s.pageJsx,
+      }),
+      p(
+        'O JSX escapa a string devolvida por uma função, por isso o separador JSX espalha ',
+        code('enhanceAttributes()'),
+        ' sobre o elemento. Mais sobre isso abaixo.',
+      ),
+      h2('Registar os módulos'),
+      p(
+        'O script que a página carrega passa a ',
+        code('mountEnhancements()'),
+        ' um mapa de nomes para módulos:',
+      ),
+      codeBlock('src/enhance.js', s.registry, 'javascript'),
+      p(
+        'O mapa escreve-se à mão, de propósito. Cada ',
+        code('import()'),
+        ' é um import dinâmico normal, por isso o build dá a cada módulo o seu próprio chunk, e uma página só descarrega os que os seus elementos nomeiam. Em desenvolvimento, o Vite serve-os tal como estão. Como é código normal, o TypeScript verifica-o e o knip segue-o.',
+      ),
+      p(
+        'Passa ',
+        code('when'),
+        ' para decidir quando um módulo é importado. Aceita os mesmos valores que uma ilha:',
+      ),
+      codeBlock('enhance-when', s.strategy, 'js'),
+      ul(
+        { class: 'docs-list' },
+        li(code("'load'"), ' (por omissão) — assim que a página carrega'),
+        li(code("'idle'"), ' — com ', code('requestIdleCallback'), ' (recorre a um timeout)'),
+        li(
+          code("'visible'"),
+          ' — quando o elemento entra no ecrã, via IntersectionObserver. ',
+          code('rootMargin'),
+          ' antecipa o carregamento e vale ',
+          code("'200px'"),
+          ' por omissão',
+        ),
+      ),
+      h2('O teu próprio elemento'),
+      p(
+        code('enhance()'),
+        ' põe um ',
+        code('<div>'),
+        ' à volta da marcação. Quando o próprio elemento importa, como um ',
+        code('<form>'),
+        ' com o seu próprio ',
+        code('action'),
+        ', põe os atributos nele com ',
+        code('enhanceAttributes(name, props, options)'),
+        '. É um objeto de atributos, por isso o javascript-to-html e o JSX aceitam-no como atributos, e dentro de um template literal transforma-se no texto dos atributos:',
+      ),
+      pageCodeTabs({
+        file: 'src/search.ht.js',
+        template: s.formTemplate,
+        ht: s.formHt,
+        jsx: s.formJsx,
+      }),
+      p('O módulo recebe o próprio formulário:'),
+      codeBlock('src/client/search.js', s.searchModule, 'javascript'),
+      h2('O que passar como props'),
+      p(
+        'As props são JSON escrito na página e entregue ao módulo como segundo argumento. Cada elemento da página leva a sua própria cópia, por isso passa apenas o que a marcação ainda não diz: uma definição sem lugar natural no HTML, como ',
+        code('minLength'),
+        ' acima. Um valor que a página mostra, como o número inicial do contador, lê-se melhor do DOM, para que os dois não possam divergir. Dados grandes pertencem ao próprio HTML, ou a um ficheiro que o módulo vai buscar.',
+      ),
+      p(
+        'Ao contrário das props de uma ilha, estas nunca voltam a um servidor, por isso não há nada para assinar. Mesmo assim estão no código-fonte da página, portanto não ponhas segredos nelas.',
+      ),
+      h2('Verificado no build'),
+      p(
+        'O build lê o mapa das tuas chamadas a ',
+        code('mountEnhancements()'),
+        ' e falha numa página que nomeie uma melhoria que o mapa não tem:',
+      ),
+      codeBlock('sitelo build', s.buildError, 'text'),
+      p(
+        code("missingAssets: 'warn'"),
+        ' transforma isso num aviso, tal como faz com um script em falta, e o ',
+        code('sitelo'),
+        ' (dev) avisa ao renderizar cada página. O build tem de conseguir ler o mapa, por isso escreve-o como um objeto literal na chamada, ou como uma ',
+        code('const'),
+        ' no mesmo ficheiro. Um mapa montado em tempo de execução, com um spread ou importado de outro módulo, não pode ser lido, e então nada é verificado. As melhorias dentro de ilhas de servidor são renderizadas no momento do pedido, por isso o build também não as vê.',
+      ),
+      h2('Estado e erros'),
+      p(
+        'O ',
+        code('data-sitelo-enhance-state'),
+        ' de cada elemento passa por ',
+        code('pending'),
+        ' (à espera do seu momento), ',
+        code('loading'),
+        ' e ',
+        code('ready'),
+        '. Se o módulo não carregar ou lançar um erro, o estado é ',
+        code('error'),
+        ', a marcação do servidor fica como estava e o erro vai para ',
+        code('mountEnhancements(modules, { onError })'),
+        ', ou para a consola. Usa o estado em CSS quando a página deve mudar assim que o módulo estiver carregado:',
+      ),
+      codeBlock('styles.css', s.stateCss, 'css'),
+      h2('Bom saber'),
+      ul(
+        { class: 'docs-list' },
+        li(
+          'A mesma melhoria pode aparecer numa página quantas vezes quiseres. O módulo é descarregado uma vez e corre uma vez por elemento, por isso guarda o estado de cada elemento dentro da função e procura com ',
+          code('element.querySelector()'),
+          ' em vez de em todo o documento.',
+        ),
+        li(
+          'Uma melhoria dentro de uma ilha de servidor é montada quando chega o HTML da ilha: o carregador de ilhas emite ',
+          code('sitelo:island-load'),
+          ' e ',
+          code('mountEnhancements()'),
+          ' escuta-o. Carrega os dois carregadores a partir do mesmo script.',
+        ),
+        li(
+          code('mountEnhancements()'),
+          ' nunca corre um módulo duas vezes no mesmo elemento, por isso podes voltar a chamá-lo depois de acrescentares marcação tu próprio.',
+        ),
+        li(
+          'Queres um framework numa só caixa? Monta-o a partir do módulo, por exemplo com ',
+          code('createRoot(element).render(<Chart {...props} />)'),
+          '. Só as páginas com essa caixa o descarregam.',
+        ),
+      ),
+    ],
+  })

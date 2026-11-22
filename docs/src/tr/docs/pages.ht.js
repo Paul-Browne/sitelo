@@ -110,7 +110,9 @@ export default () =>
       p(
         'Tıklamalar, formlar ve diğer istemci davranışları için ',
         a({ href: '/tr/docs/assets' }, 'varlık hattı'),
-        ' üzerinden normal bir betik bağlayın ya da istek anında HTML için ',
+        ' üzerinden normal bir betik bağlayın, bir bölgeyi ',
+        a({ href: '/tr/docs/enhance' }, 'geliştirmeler'),
+        ' ile bir tarayıcı modülüne devredin ya da istek anında HTML için ',
         a({ href: '/tr/docs/islands' }, 'sunucu adaları'),
         ' kullanın. JSX sözdizimine ihtiyacınız yoksa ',
         a({ href: 'https://ht.js.org', rel: 'noopener' }, 'ht.js'),

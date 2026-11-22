@@ -130,6 +130,14 @@ Component library shipped with sitelo, at the `sitelo/ui` entry point. Component
 - Dev + preview: `sitelo` / `sitelo preview` serve `/_sitelo/islands/<name>` automatically
 - Production: Node host, or Netlify/Vercel stubs in https://sitelo.dev/examples/islands
 
+## Enhancements
+
+- `enhance(name, props, html, { when })` from `sitelo/enhance` wraps server-rendered markup in a `<div>` for a browser module; `enhanceAttributes(name, props, options)` puts the same attributes on your own element (an object for javascript-to-html and JSX, attribute text in a template literal)
+- Client: `mountEnhancements({ counter: () => import('./client/counter.js') })` from `sitelo/enhance/client`; each module's default export gets `(element, props)`. No hydration, no framework runtime
+- Each `import()` is its own chunk, fetched only on pages that use it. Pass only props the markup does not already say
+- The build fails on a page that names an enhancement no `mountEnhancements()` call registers (a warning with `missingAssets: 'warn'`); keep the map an object literal in the call or a `const` in the same file
+- Docs: https://sitelo.dev/docs/enhance
+
 ## Deploy
 
 Static site = publish `dist/`. Example host configs: https://sitelo.dev/examples/basic
