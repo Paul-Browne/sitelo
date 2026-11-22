@@ -69,8 +69,8 @@ default.
 - **JSX/TSX pages** (`*.ht.jsx`, `*.ht.tsx`) are rendered once, to static
   HTML, with `react-dom/server`, so the project needs `react` and
   `react-dom`. No React runtime ships. `onClick`, hooks, `window` and
-  `document` do nothing. For interactivity use a client script or a server
-  island.
+  `document` do nothing. For interactivity use a client script,
+  `enhance()`, or a server island.
 - **javascript-to-html** (`import { html, head, body, h1 } from 'javascript-to-html'`)
   is the recommended way to build markup from functions:
   `html({ lang: 'en' }, head(title('Hi')), body(h1('Hi')))`.
@@ -253,7 +253,7 @@ Read the reference before you work on that feature:
 | `data()`, `fetchWithCache`, `readJson`, `readJsonCollection` | [references/data.md](references/data.md) |
 | Every config option; sitemap, robots.txt, llms.txt, RSS, Pagefind, link checking, build report, dev toolbar, knip | [references/configuration.md](references/configuration.md) |
 | `images: true`, `srcset`, `?w=400&h=400` thumbnails, blur-up `placeholder`, `data-no-optimize` | [references/images.md](references/images.md) |
-| Server islands: request-time regions, `island()`, `mountIslands()`, production handlers, signed props | [references/islands.md](references/islands.md) |
+| Server islands: request-time regions, `island()`, `mountIslands()`, production handlers, signed props. Browser code for a region: `enhance()`, `mountEnhancements()` | [references/islands.md](references/islands.md) |
 | `sitelo lighthouse`, score thresholds, CI | [references/lighthouse.md](references/lighthouse.md) |
 | Hosting on Netlify, Vercel, Cloudflare, GitHub Pages, containers or your own server | [references/deployment.md](references/deployment.md) |
 | Components: buttons, cards, forms, modals, theming, icons | the **sitelo-ui** skill |
@@ -261,7 +261,7 @@ Read the reference before you work on that feature:
 ## Mistakes to avoid
 
 - Adding React, a router or a hydration layer to "make it interactive".
-  Link a small client script instead, or use a server island.
+  Link a small client script, use `enhance()`, or use a server island.
 - Writing a `layout.ht.js` and expecting it to wrap the other pages. It
   becomes a page at `/layout`. Layouts belong in `src/lib/`.
 - Testing a dynamic route only in dev and forgetting `generateStaticParams`.

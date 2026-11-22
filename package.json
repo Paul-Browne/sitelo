@@ -76,6 +76,14 @@
       "types": "./src/jsx-dev-runtime.d.ts",
       "import": "./src/jsx-dev-runtime.js"
     },
+    "./enhance": {
+      "types": "./src/enhance.d.ts",
+      "import": "./src/enhance.js"
+    },
+    "./enhance/client": {
+      "types": "./src/enhance-client.d.ts",
+      "import": "./src/enhance-client.js"
+    },
     "./islands": {
       "types": "./src/islands.d.ts",
       "import": "./src/islands.js"

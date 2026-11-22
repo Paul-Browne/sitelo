@@ -1,5 +1,11 @@
 export declare const DEFAULT_ISLANDS_ENDPOINT: string;
 
+/**
+ * `'sitelo:island-load'`: dispatched on an island's element, bubbling,
+ * once its HTML has been swapped in.
+ */
+export declare const ISLAND_LOAD_EVENT: 'sitelo:island-load';
+
 export interface MountIslandsOptions {
   /** Islands endpoint base path or URL. Default `/_sitelo/islands`. */
   endpoint?: string;

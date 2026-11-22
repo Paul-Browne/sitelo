@@ -74,6 +74,9 @@ That's the whole mental model. Everything else is convenience on top.
 - **Server islands** — static pages with regions rendered on the server at
   request time, loaded eagerly, on idle, or on scroll, with optional
   signed props
+- **Enhancements** — hand server-rendered markup to a browser module,
+  loaded eagerly, on idle, or on scroll, with no hydration and no
+  framework runtime
 - **Parallel static generation** — renders large sites concurrently
 - **`404.html`, `sitemap.xml`, `robots.txt`, RSS, Pagefind** — generated for you,
   and `llms.txt` with a Markdown copy of every page when you opt in
@@ -275,7 +278,8 @@ with your pages. It renders JSX to a static HTML string, writes the
 file, and stops. Event-handler props like `onClick` won't do anything
 in the browser (the dev server warns if it finds any); hooks and
 `window`/`document` are not available as a client app would expect.
-For interactivity, add a normal client script or a server island.
+For interactivity, add a normal client script, an
+[enhancement](#enhancements), or a server island.
 
 ### 5. javascript-to-html
 
@@ -1545,6 +1549,106 @@ Notes:
   to the browser.
 - No island endpoint in production? The fallback HTML simply stays —
   pages degrade gracefully.
+
+---
+
+## Enhancements
+
+Some interactivity has to run in the browser: a counter, a copy button,
+a form that checks itself as you type. `enhance()` marks the markup a
+module should take over, and the browser loads that module only on
+pages that use it, when you say. There is no hydration and no framework
+runtime: the server renders the HTML as usual, so it works before the
+module arrives, and the module adds behaviour to the DOM it finds.
+
+**1. Write the module.** Its default export gets the wrapper element and
+the props:
+
+```ts
+// src/client/counter.ts
+import type { Enhancer } from 'sitelo/enhance/client'
+
+const counter: Enhancer<{ start: number }> = (element, { start }) => {
+  const output = element.querySelector('output')!
+  let count = start
+
+  element.querySelector('button')!.addEventListener('click', () => {
+    output.value = String(++count)
+  })
+}
+
+export default counter
+```
+
+**2. Place it in a page** with `enhance(name, props, html, options)`. It
+takes the same arguments as `island()`:
+
+```js
+// src/index.ht.js
+import { enhance } from 'sitelo/enhance'
+
+export default () => `
+  <html>
+    <body>
+      ${enhance(
+        'counter',
+        { start: 0 },
+        '<button type="button">Add one</button> <output>0</output>',
+        { when: 'visible' },
+      )}
+      <script type="module" src="/enhance.ts"></script>
+    </body>
+  </html>
+`
+```
+
+**3. Register the modules** in the script the page links:
+
+```ts
+// src/enhance.ts
+import { mountEnhancements } from 'sitelo/enhance/client'
+
+mountEnhancements({
+  counter: () => import('./client/counter.ts'),
+  copy: () => import('./client/copy.ts'),
+})
+```
+
+You write the map out by hand, on purpose. Each `import()` is an
+ordinary dynamic import, so the build gives every module its own chunk,
+and a page downloads only the ones its wrappers name. In dev, Vite
+serves them as they are. Because it is plain code, TypeScript checks it,
+and knip follows it once `src/enhance.ts` is listed as an entry (see
+[Finding unused code](#finding-unused-code)).
+
+`when` takes the same values as an island's: `'load'` (the default),
+`'idle'` and `'visible'`, with `rootMargin` for `'visible'`.
+
+Each wrapper's `data-sitelo-enhance-state` moves through `pending`
+(waiting for its moment), `loading` and `ready`. If the module fails to
+load or throws, the state is `error`, the server's markup stays as it
+was, and the error goes to `mountEnhancements(modules, { onError })`, or
+to the console. Use the state in CSS when the page should change once
+the module is in:
+
+```css
+[data-sitelo-enhance-state="ready"] .no-js-hint { display: none; }
+```
+
+Notes:
+
+- An enhancement inside a server island is mounted when the island's
+  HTML arrives. The islands loader dispatches `sitelo:island-load` on
+  the island, and `mountEnhancements()` listens for it, so load both
+  from the same script.
+- `mountEnhancements()` never runs a module twice on one element, so it
+  is safe to call again after adding markup yourself.
+- Props are JSON in the page, like island props. They never go back to
+  a server, so there is nothing to sign, but they are in the page
+  source, so keep secrets out of them.
+- Want a framework in one box? Mount it from the module, as in
+  `createRoot(element).render(<Chart {...props} />)`. Only pages with
+  that box download it, and sitelo stays out of it.
 
 ---
 
