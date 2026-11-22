@@ -118,6 +118,8 @@ export default () =>
       p(
         'Pour les clics, les formulaires et le reste du comportement client, liez un script normal via le ',
         a({ href: '/fr/docs/assets' }, 'pipeline de ressources'),
+        ', confiez une région à un module navigateur avec les ',
+        a({ href: '/fr/docs/enhance' }, 'améliorations'),
         ', ou utilisez les ',
         a({ href: '/fr/docs/islands' }, 'îlots serveur'),
         ' pour du HTML généré à la requête. Quand vous n’avez pas besoin de la syntaxe JSX, préférez ',

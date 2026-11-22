@@ -1,0 +1,180 @@
+import { a, h2, li, p, ul } from 'javascript-to-html'
+import { code, codeBlock, docsLayout, pageCodeTabs } from '../../lib/it.js'
+import { enhanceSnippets } from '../../lib/snippets/enhance.js'
+
+const s = enhanceSnippets('it')
+
+export default () =>
+  docsLayout({
+    title: 'Miglioramenti',
+    description:
+      'Affida il markup renderizzato sul server a un piccolo modulo del browser, caricato solo nelle pagine che lo usano.',
+    activeHref: '/it/docs/enhance',
+    children: [
+      p(
+        'Una parte dell’interattività deve girare nel browser: un contatore, un pulsante copia, un form che si controlla mentre scrivi. ',
+        code('enhance()'),
+        ' segna il markup di cui un modulo deve occuparsi. Il server renderizza l’HTML come sempre, quindi funziona prima che arrivi il JavaScript, e il browser carica il modulo solo nelle pagine che lo usano. Il modulo aggiunge comportamento al DOM che trova. Niente hydration, niente runtime di framework.',
+      ),
+      p(
+        'Una ',
+        a({ href: '/it/docs/islands' }, 'island server'),
+        ' renderizza una regione su un server quando la pagina viene visitata. Un miglioramento esegue codice per una regione nel browser. Le due accettano gli stessi argomenti e funzionano insieme.',
+      ),
+      h2('Scrivere il modulo'),
+      p(
+        'Un miglioramento è un modulo normale, ovunque sotto ',
+        code('src/'),
+        '. Il suo export di default riceve l’elemento e le props. Leggi ciò che ti serve dal markup, che il server ha già renderizzato:',
+      ),
+      codeBlock('src/client/counter.js', s.counterModule, 'javascript'),
+      p(
+        'Funziona anche TypeScript. Tipizza la funzione con ',
+        code('Enhancer<Props>'),
+        ' da ',
+        code('sitelo/enhance/client'),
+        '.',
+      ),
+      h2('Metterlo in una pagina'),
+      p(
+        'Importa ',
+        code('enhance()'),
+        ' da ',
+        code('sitelo/enhance'),
+        '. Accetta gli stessi argomenti di ',
+        code('island()'),
+        ': un nome, le props, l’HTML e le opzioni. L’HTML finisce dentro un ',
+        code('<div>'),
+        ' che il modulo riceve.',
+      ),
+      pageCodeTabs({
+        file: 'src/index.ht.js',
+        template: s.pageTemplate,
+        ht: s.pageHt,
+        jsx: s.pageJsx,
+      }),
+      p(
+        'JSX esegue l’escape della stringa restituita da una funzione, quindi la scheda JSX distribuisce ',
+        code('enhanceAttributes()'),
+        ' sull’elemento. Più dettagli qui sotto.',
+      ),
+      h2('Registrare i moduli'),
+      p(
+        'Lo script che la pagina include passa a ',
+        code('mountEnhancements()'),
+        ' una mappa da nomi a moduli:',
+      ),
+      codeBlock('src/enhance.js', s.registry, 'javascript'),
+      p(
+        'La mappa si scrive a mano, di proposito. Ogni ',
+        code('import()'),
+        ' è un normale import dinamico, quindi il build dà a ogni modulo il suo chunk e una pagina scarica solo quelli nominati dai suoi elementi. In sviluppo Vite li serve così come sono. Essendo codice normale, TypeScript lo controlla e knip lo segue.',
+      ),
+      p(
+        'Passa ',
+        code('when'),
+        ' per decidere quando importare un modulo. Accetta gli stessi valori di una island:',
+      ),
+      codeBlock('enhance-when', s.strategy, 'js'),
+      ul(
+        { class: 'docs-list' },
+        li(code("'load'"), ' (predefinito) — appena la pagina carica'),
+        li(code("'idle'"), ' — con ', code('requestIdleCallback'), ' (ripiega su un timeout)'),
+        li(
+          code("'visible'"),
+          ' — quando l’elemento entra nella vista, tramite IntersectionObserver. ',
+          code('rootMargin'),
+          ' lo anticipa e vale ',
+          code("'200px'"),
+          ' di default',
+        ),
+      ),
+      h2('Il tuo elemento'),
+      p(
+        code('enhance()'),
+        ' mette un ',
+        code('<div>'),
+        ' attorno al markup. Quando conta l’elemento stesso, come un ',
+        code('<form>'),
+        ' con il suo ',
+        code('action'),
+        ', metti gli attributi direttamente su di esso con ',
+        code('enhanceAttributes(name, props, options)'),
+        '. È un oggetto di attributi, quindi javascript-to-html e JSX lo accettano come attributi, e dentro un template literal diventa il testo degli attributi:',
+      ),
+      pageCodeTabs({
+        file: 'src/search.ht.js',
+        template: s.formTemplate,
+        ht: s.formHt,
+        jsx: s.formJsx,
+      }),
+      p('Il modulo riceve il form stesso:'),
+      codeBlock('src/client/search.js', s.searchModule, 'javascript'),
+      h2('Cosa passare come props'),
+      p(
+        'Le props sono JSON scritto nella pagina e passato al modulo come secondo argomento. Ogni elemento della pagina ne porta una copia, quindi passa solo ciò che il markup non dice già: un’impostazione senza un posto naturale nell’HTML, come ',
+        code('minLength'),
+        ' sopra. Un valore che la pagina mostra, come il numero iniziale del contatore, è meglio leggerlo dal DOM, così i due non possono divergere. I dati voluminosi stanno nell’HTML stesso, o in un file che il modulo scarica.',
+      ),
+      p(
+        'A differenza delle props di una island, queste non tornano mai a un server, quindi non c’è nulla da firmare. Sono però nel sorgente della pagina, quindi non metterci segreti.',
+      ),
+      h2('Controllato al build'),
+      p(
+        'Il build legge la mappa dalle tue chiamate a ',
+        code('mountEnhancements()'),
+        ' e fallisce su una pagina che nomina un miglioramento assente dalla mappa:',
+      ),
+      codeBlock('sitelo build', s.buildError, 'text'),
+      p(
+        code("missingAssets: 'warn'"),
+        ' lo trasforma in un avviso, come per uno script mancante, e ',
+        code('sitelo'),
+        ' (dev) avvisa mentre renderizza ogni pagina. Il build deve poter leggere la mappa, quindi scrivila come oggetto letterale nella chiamata, o come ',
+        code('const'),
+        ' nello stesso file. Una mappa costruita a runtime, con uno spread o importata da un altro modulo, non si può leggere, e allora non si controlla nulla. I miglioramenti dentro le island server vengono renderizzati al momento della richiesta, quindi il build non li vede neanche.',
+      ),
+      h2('Stato ed errori'),
+      p(
+        'Il ',
+        code('data-sitelo-enhance-state'),
+        ' di ogni elemento passa per ',
+        code('pending'),
+        ' (in attesa del suo momento), ',
+        code('loading'),
+        ' e ',
+        code('ready'),
+        '. Se il modulo non si carica o lancia un errore, lo stato è ',
+        code('error'),
+        ', il markup del server resta com’era e l’errore va a ',
+        code('mountEnhancements(modules, { onError })'),
+        ', o alla console. Usa lo stato nel CSS quando la pagina deve cambiare una volta caricato il modulo:',
+      ),
+      codeBlock('styles.css', s.stateCss, 'css'),
+      h2('Buono a sapersi'),
+      ul(
+        { class: 'docs-list' },
+        li(
+          'Lo stesso miglioramento può comparire in una pagina quante volte vuoi. Il modulo viene scaricato una volta ed eseguito una volta per elemento, quindi tieni lo stato di ogni elemento dentro la funzione e cerca con ',
+          code('element.querySelector()'),
+          ' invece che in tutto il documento.',
+        ),
+        li(
+          'Un miglioramento dentro una island server viene montato quando arriva l’HTML della island: il loader delle island emette ',
+          code('sitelo:island-load'),
+          ' e ',
+          code('mountEnhancements()'),
+          ' lo ascolta. Carica entrambi i loader dallo stesso script.',
+        ),
+        li(
+          code('mountEnhancements()'),
+          ' non esegue mai un modulo due volte sullo stesso elemento, quindi puoi richiamarlo dopo aver aggiunto markup tu stesso.',
+        ),
+        li(
+          'Vuoi un framework in un solo riquadro? Montalo dal modulo, per esempio con ',
+          code('createRoot(element).render(<Chart {...props} />)'),
+          '. Lo scaricano solo le pagine con quel riquadro.',
+        ),
+      ),
+    ],
+  })

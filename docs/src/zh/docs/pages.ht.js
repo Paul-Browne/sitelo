@@ -117,7 +117,9 @@ export default () =>
       p(
         '点击、表单和其他客户端行为，请通过',
         a({ href: '/zh/docs/assets' }, '资源流水线'),
-        '引入一个普通脚本，或使用',
+        '引入一个普通脚本，用',
+        a({ href: '/zh/docs/enhance' }, '渐进增强'),
+        '把一块区域交给浏览器模块，或使用',
         a({ href: '/zh/docs/islands' }, '服务端区块'),
         '来获得请求时生成的 HTML。当你不需要 JSX 语法时，更适合用 ',
         a({ href: 'https://ht.js.org', rel: 'noopener' }, 'ht.js'),

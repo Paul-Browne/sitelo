@@ -118,6 +118,8 @@ export default () =>
       p(
         'Per clic, form e altri comportamenti lato client, collega un normale script tramite la ',
         a({ href: '/it/docs/assets' }, 'pipeline delle risorse'),
+        ', affida una regione a un modulo del browser con i ',
+        a({ href: '/it/docs/enhance' }, 'miglioramenti'),
         ', oppure usa le ',
         a({ href: '/it/docs/islands' }, 'island server'),
         ' per HTML generato al momento della richiesta. Quando non ti serve la sintassi JSX, preferisci ',
